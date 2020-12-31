@@ -1,0 +1,7 @@
+# https://securitytxt.org/
+
+# Attack us, we will strike back twice, attack one of our customers and we will phase you :)
+
+Contact: hello@bloom.sh
+Encryption:
+Acknowledgements:

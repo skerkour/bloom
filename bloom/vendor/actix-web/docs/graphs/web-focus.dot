@@ -1,0 +1,32 @@
+digraph {
+    subgraph cluster_web {
+        label="actix/actix-web"
+        "awc"
+        "web"
+        "files"
+        "http"
+        "multipart"
+        "web-actors"
+        "codegen"
+        "http-test"
+    }
+
+    "web" -> { "codec" "service" "utils" "router" "rt" "server" "testing" "macros" "threadpool" "tls" "codegen" "http" "awc" }
+    "awc" -> { "codec" "service" "http" "rt" }
+    "web-actors" -> { "actix" "web" "http" "codec" }
+    "multipart" -> { "web" "service" "utils" }
+    "http" -> { "service" "codec" "connect" "utils" "rt" "threadpool" }
+    "http" -> { "actix" "tls" }[color=blue] // optional
+    "files" -> { "web" }
+    "http-test" -> { "service" "codec" "connect" "utils" "rt" "server" "testing" "awc" }
+
+    // net
+
+    "utils" -> { "service" "rt" "codec" }
+    "tracing" -> { "service" }
+    "tls" -> { "service" "codec" "utils" }
+    "testing" -> { "rt" "macros" "server" "service" }
+    "server" -> { "service" "rt" "codec" "utils" }
+    "rt" -> { "macros" "threadpool" }
+    "connect" -> { "service" "codec" "utils" "rt" }
+}

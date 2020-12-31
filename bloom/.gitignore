@@ -1,0 +1,18 @@
+# build directory
+/dist/
+
+# rust
+/target
+**/*.rs.bk
+
+# project files
+!vendor/**
+
+# certificats directory
+/certs/
+
+# data directory
+/_data/
+.env*
+stripe.json
+/public/

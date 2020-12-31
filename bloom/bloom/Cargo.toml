@@ -1,0 +1,33 @@
+[package]
+name = "bloom"
+version = "0.1.0"
+authors = ["Sylvain Kerkour <sylvain@kerkour.fr>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[[bin]]
+name = "bloom"
+path = "src/main.rs"
+
+
+[profile.release]
+lto = true
+debug = false
+debug-assertions = false
+codegen-units = 1
+
+
+[dependencies]
+kernel = { path = "../kernel" }
+http_server = { path = "../http_server" }
+worker = { path = "../worker" }
+stdx = { path = "../stdx" }
+
+actix-web = "3"
+clap = "2"
+tokio = { version = "0.2", features = ["full"] }
+
+[target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
+version = "0.3"

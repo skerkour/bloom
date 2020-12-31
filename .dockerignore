@@ -1,0 +1,16 @@
+/Dockerfile
+
+/bloom/_data/
+/bloom/dist/
+/bloom/.env
+/bloom/target/
+
+/webapp/node_modules/
+/webapp/dist/
+/webapp/.env.local
+
+/chatbox.js/node_modules/
+/chatbox.js/dist/
+
+/bloom.js/node_modules/
+/bloom.js/dist/

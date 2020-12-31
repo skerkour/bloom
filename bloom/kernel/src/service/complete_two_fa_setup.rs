@@ -1,0 +1,77 @@
+use std::io::BufWriter;
+
+use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, otp::totp};
+
+use super::Service;
+use crate::{
+    consts::{self, TwoFaMethod},
+    entities::User,
+    errors::kernel::Error,
+};
+
+impl Service {
+    pub async fn complete_two_fa_setup(&self, actor: Option<User>) -> Result<String, crate::Error> {
+        let mut actor = self.current_user(actor)?;
+
+        if actor.two_fa_enabled {
+            return Err(Error::TwoFaAlreadyEnabled.into());
+        }
+
+        // generate secrete
+        let totp_key = totp::generate();
+        // TODO
+        // if err != nil {
+        //     errMessage := "kernel.SetupTwoFA: generating TOTP"
+        //     logger.Error(errMessage, log.Err("error", err))
+        //     err = errors.Internal(errMessage, err)
+        //     return
+        // }
+
+        // encrypt secret
+        let (encrypted_totp_secret, nonce) = crypto::aead_encrypt(
+            &self.config.master_key,
+            totp_key.secret().as_bytes(),
+            &actor.id.as_bytes()[..],
+        );
+        // TODO
+        // if err != nil {
+        //     errMessage := "kernel.SetupTwoFA: encrypting secret"
+        //     logger.Error(errMessage, log.Err("error", err))
+        //     err = errors.Internal(errMessage, err)
+        //     return
+        // }
+
+        actor.encrypted_totp_secret = Some(encrypted_totp_secret);
+        actor.totp_secret_nonce = Some(nonce);
+        actor.two_fa_method = Some(TwoFaMethod::Totp);
+        actor.updated_at = Utc::now();
+        self.repo.update_user(&self.db, &actor).await?;
+
+        let qr_code_image = totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE);
+        // TODO
+        // if err != nil {
+        //     errMessage := "kernel.SetupTwoFA: generating TOTP QR code"
+        //     logger.Error(errMessage, log.Err("error", err))
+        //     return
+        // }
+
+        let ref mut qr_code_buffer = BufWriter::new(Vec::new());
+        let mut jpeg_encoder = JpegEncoder::new_with_quality(qr_code_buffer, consts::TOTP_QR_JPEG_QUALITY);
+        jpeg_encoder.encode(
+            qr_code_image.as_bytes(),
+            consts::TOTP_QR_CODE_SIZE,
+            consts::TOTP_QR_CODE_SIZE,
+            qr_code_image.color(),
+        )?;
+        // TODO
+        // if err != nil {
+        //     errMessage := "kernel.SetupTwoFA: encoding QR code to jpeg"
+        //     logger.Error(errMessage, log.Err("error", err))
+        //     err = errors.Internal(errMessage, err)
+        //     return
+        // }
+
+        let base64_encoded_qr_code_image = base64::encode(qr_code_buffer.buffer());
+        Ok(base64_encoded_qr_code_image)
+    }
+}

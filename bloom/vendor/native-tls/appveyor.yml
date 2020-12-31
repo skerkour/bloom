@@ -1,0 +1,12 @@
+environment:
+  RUST_VERSION: 1.37.0
+  TARGET: x86_64-pc-windows-msvc
+install:
+  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-${env:RUST_VERSION}-${env:TARGET}.exe"
+  - rust-%RUST_VERSION%-%TARGET%.exe /VERYSILENT /NORESTART /DIR="C:\Program Files\Rust"
+  - SET PATH=%PATH%;C:\Program Files\Rust\bin
+  - rustc -V
+  - cargo -V
+build: false
+test_script:
+  - cargo test

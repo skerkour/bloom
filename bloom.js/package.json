@@ -1,0 +1,27 @@
+{
+  "name": "bloom.js",
+  "version": "0.1.0",
+  "description": "Bloom's JavaScript SDK",
+  "main": "index.js",
+  "scripts": {
+    "build": "uglifyjs src/index.js -o dist/bloom.js --compress --mangle",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloom42/bloom.git"
+  },
+  "keywords": [
+    "bloom"
+  ],
+  "author": "Sylvain Kerkour",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/bloom42/bloom/-/issues"
+  },
+  "homepage": "https://github.com/bloom42/bloom",
+  "dependencies": {},
+  "devDependencies": {
+    "uglify-js": "^3.12.0"
+  }
+}

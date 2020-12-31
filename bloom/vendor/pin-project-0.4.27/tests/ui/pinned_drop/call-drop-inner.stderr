@@ -1,0 +1,10 @@
+error[E0061]: this function takes 0 arguments but 1 argument was supplied
+  --> $DIR/call-drop-inner.rs:12:9
+   |
+9  | #[pinned_drop]
+   | -------------- defined here
+...
+12 |         __drop_inner(__self);
+   |         ^^^^^^^^^^^^ ------ supplied 1 argument
+   |         |
+   |         expected 0 arguments

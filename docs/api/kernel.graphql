@@ -1,0 +1,55 @@
+# This schema is automatically generated. Do not edit.
+
+scalar Time
+
+input RegisterInput {
+  username: String!
+  email: String!
+}
+
+type SignedIn {
+  session: Session
+}
+
+type Mutation {
+  register(input: RegisterInput!): RegistrationStarted!
+  completeRegistration(input: CompleteRegistrationInput!): SignedIn!
+}
+
+interface Namespace {
+  id: ID
+  createdAt: Time!
+  name: String!
+}
+
+input CompleteRegistrationInput {
+  pendingUserId: String!
+  code: String!
+}
+
+type Query {
+  user(username: String!): User!
+  namespace(username: String!): Namespace!
+}
+
+type User implements Namespace {
+  id: ID
+  createdAt: Time!
+  name: String!
+  username: String!
+}
+
+type Session {
+  id: ID!
+  createdAt: Time!
+  token: String
+}
+
+type RegistrationStarted {
+  pendingUserId: ID!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

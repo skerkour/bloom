@@ -1,0 +1,25 @@
+use crate::{
+    api::kernel::model::{input, SignedIn},
+    ServerContext,
+};
+use actix_web::web;
+use kernel::{http::api, service};
+use std::sync::Arc;
+use web::Json;
+
+pub async fn complete_two_fa_challenge(
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::CompleteTwoFaChallenge>,
+) -> Result<api::Response<SignedIn>, kernel::Error> {
+    let input = input.into_inner();
+    let service_input = service::CompleteTwoFaChallengeInput {
+        pending_session_id: input.pending_session_id,
+        code: input.code,
+    };
+    let res = ctx
+        .kernel_service
+        .complete_two_fa_challenge(None, service_input)
+        .await?;
+
+    Ok(api::Response::ok(res.into()))
+}

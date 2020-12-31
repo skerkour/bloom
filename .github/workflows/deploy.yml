@@ -1,0 +1,41 @@
+name: Deploy
+
+on: [workflow_dispatch]
+
+jobs:
+  deploy:
+    name: Deploy job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Heroku Container registry
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
+
+      # replace heroku pull by docker pull ghcr.io/bloom42/bloom:latest
+      # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
+      - name: Build and tag Docker image
+        run: |
+          docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release
+          docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
+          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web ghcr.io/bloom42/bloom
+          docker tag ghcr.io/bloom42/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
+          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
+
+
+      - name: Tag and push Heroku image
+        # see here for the details of the release pahse https://devcenter.heroku.com/articles/container-registry-and-runtime#release-phase
+        run: |
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
+
+      - name: Deploy
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release -a ${{ secrets.HEROKU_APP_PRODUCTION }} web release
+
+      - name: Purge CDN
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CDN_ID }} --paths "/*"

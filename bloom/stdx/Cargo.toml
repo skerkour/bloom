@@ -1,0 +1,24 @@
+[package]
+name = "stdx"
+description = "The missing pieces of Rust standard library"
+version = "0.1.0"
+authors = ["skerkour <sylvain@kerkour.fr>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "0.2", features = ["blocking"] }
+thiserror = "1"
+hex = "0.4"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+base64 = "0.13"
+tryhard = { version = "0.2", default-features = false, features = ["tokio-02"] }
+rand = { version = "0.8" }
+chrono = { version  = "0.4", features = ["serde"] }
+image = "0.23"
+lazy_static = "1.4"
+serde = { version = "1", features = ["derive"] }
+dotenv = "0.15"
+num_cpus = "1"
+regex = "1"

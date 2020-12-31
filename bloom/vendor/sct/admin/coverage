@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import os
+import glob
+import subprocess
+
+LLVM_PATH = glob.glob('/usr/lib/llvm-3.8/lib/clang/3.8.[0-9]/lib/linux/')[0]
+COVERAGE_OPTIONS = '-Ccodegen-units=1 -Clink-dead-code -Cpasses=insert-gcov-profiling -Zno-landing-pads -L%s -lclang_rt.profile-x86_64' % LLVM_PATH
+LCOVOPTS = '--gcov-tool ./admin/llvm-gcov --rc lcov_branch_coverage=1 --rc lcov_excl_line=assert'.split()
+
+def lcov_exe(*args):
+    return ['lcov'] + LCOVOPTS + list(args)
+
+def sh(cmd):
+    subprocess.check_call(cmd, shell = True)
+
+def cleanup():
+    sh('cargo clean')
+    sh("rm -rf *.gcda *.gcno")
+
+def run(which):
+    exe = filter(lambda x: '.d' not in x, glob.glob('target/debug/' + which + '-*'))[0]
+    sh('./' + exe)
+
+def cargo():
+    # run stable cargo, because nightly is oft-broken
+    out = subprocess.check_output(['rustup', 'run', 'stable', 'rustup', 'which', 'cargo'])
+    return out.strip()
+
+def rustc(*args):
+    exe = [cargo(), 'rustc', '--all-features'] + list(args)
+    env = dict(os.environ)
+    env.update(RUSTC_WRAPPER = './admin/coverage-rustc',
+               COVERAGE_OPTIONS = COVERAGE_OPTIONS,
+               CARGO_INCREMENTAL = '0')
+    subprocess.check_call(exe, env = env)
+
+def lcov(outfile):
+    exe = lcov_exe('--capture', '--directory', '.', '--base-directory', '.', '-o', outfile)
+    subprocess.check_call(exe)
+    return outfile
+
+def merge(outfile, infiles):
+    arg = []
+    for i in infiles:
+        arg.append('--add')
+        arg.append(i)
+    arg.append('-o')
+    arg.append(outfile)
+    subprocess.check_call(lcov_exe(*arg))
+
+def extract(outfile, infile):
+    subprocess.check_call(lcov_exe('--extract', infile, os.getcwd() + '/src/*', '-o', outfile))
+
+def genhtml(outdir, infile):
+    subprocess.check_call(['genhtml', '--branch-coverage', '--demangle-cpp', '--legend',
+        infile, '-o', outdir, '--ignore-errors', 'source'])
+
+all_infos = []
+
+# unit tests
+cleanup()
+rustc('--profile', 'test', '--lib')
+run('sct')
+all_infos.append(lcov('sct.info'))
+
+merge('coverage.info', all_infos)
+extract('final.info', 'coverage.info')
+genhtml('target/coverage/', 'final.info')

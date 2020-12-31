@@ -1,0 +1,41 @@
+commands:
+
+  make: !Command
+    description: Build the library
+    container: ubuntu
+    run: [cargo, build]
+
+  test: !Command
+    description: Run unit tests
+    container: ubuntu
+    run: [cargo, test]
+
+  cargo: !Command
+    description: Run any cargo command
+    symlink-name: cargo
+    container: ubuntu
+    run: [cargo]
+
+  _bulk: !Command
+    description: Run `bulk` command (for version bookkeeping)
+    container: ubuntu
+    run: [bulk]
+
+containers:
+
+  ubuntu:
+    setup:
+    - !Ubuntu xenial
+    - !Install [ca-certificates, git, build-essential, vim]
+
+    - !TarInstall
+      url: "https://static.rust-lang.org/dist/rust-1.31.0-x86_64-unknown-linux-gnu.tar.gz"
+      script: "./install.sh --prefix=/usr \
+                --components=rustc,rust-std-x86_64-unknown-linux-gnu,cargo"
+    - &bulk !Tar
+      url: "https://github.com/tailhook/bulk/releases/download/v0.4.12/bulk-v0.4.12.tar.gz"
+      sha256: 7deeb4895b3909afea46194ef01bafdeb30ff89fc4a7b6497172ba117734040e
+      path: /
+
+    environ:
+      HOME: /work/target

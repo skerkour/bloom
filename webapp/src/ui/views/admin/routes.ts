@@ -1,0 +1,51 @@
+import { RouteConfig } from 'vue-router';
+
+const Index = () => import(/* webpackChunkName: "chunk-admin" */ './index.vue');
+
+const Groups = () => import(/* webpackChunkName: "chunk-admin" */ './groups/groups.vue');
+const Group = () => import(/* webpackChunkName: "chunk-admin" */ './groups/group.vue');
+
+const Users = () => import(/* webpackChunkName: "chunk-admin" */ './users/users.vue');
+const User = () => import(/* webpackChunkName: "chunk-admin" */ './users/user.vue');
+
+const Projects = () => import(/* webpackChunkName: "chunk-admin" */ './projects/projects.vue');
+const Project = () => import(/* webpackChunkName: "chunk-admin" */ './projects/project.vue');
+
+
+const routes: Array<RouteConfig> = [
+  {
+    path: '/admin',
+    component: Index,
+  },
+
+  {
+    path: '/admin/groups',
+    component: Groups,
+  },
+  {
+    path: '/admin/groups/:groupId',
+    component: Group,
+  },
+
+  {
+    path: '/admin/projects',
+    component: Projects,
+  },
+  {
+    path: '/admin/projects/:projectId',
+    component: Project,
+  },
+
+  {
+    path: '/admin/users',
+    component: Users,
+  },
+  {
+    path: '/admin/users/:username',
+    component: User,
+  },
+
+  { path: '/admin*', redirect: '/admin' },
+];
+
+export default routes;

@@ -1,0 +1,5 @@
+# See options here: https://github.com/rust-lang/rustfmt/blob/master/Configurations.md
+max_width = 120
+# fn_call_width = 100
+# fn_args_layout = "Compressed"
+# imports_layout = "HorizontalVertical"

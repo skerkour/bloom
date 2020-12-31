@@ -1,0 +1,21 @@
+[workspace]
+members = [
+  # core
+  "bloom",
+  "kernel",
+  "http_server",
+  "scheduler",
+  "worker",
+  "stdx",
+
+  # apps
+  "analytics",
+  "contacts",
+  "files",
+  "inbox",
+]
+
+# to be able to run with `cargo run`, `check` and so on without selecting a specific package with `-p`
+default-members = [
+  "bloom",
+]

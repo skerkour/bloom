@@ -1,0 +1,269 @@
+<template>
+  <v-container fluid id="blm-dropzone">
+    <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''">
+      {{ error }}
+    </v-alert>
+
+    <b-folder-toolbar
+      :folder="folder"
+      @new-folder-clicked="openNewFolderDialog"
+      @upload-files-clicked="onUploadFilesClicked"
+    />
+
+    <b-files-list
+      :files="folder.children"
+      @move-to-trash="onMoveToTrash"
+      @rename="onFileRename"
+      v-model="selected"
+      :loading="loading"
+    />
+
+    <b-new-folder-dialog
+      v-model="showNewFolderDialog"
+      :parent="folder"
+      @created="onFolderCreated"
+    />
+
+    <b-rename-file-dialog
+      v-if="showRenameFileDialog"
+      v-model="showRenameFileDialog"
+      :file="fileToRename"
+      @renamed="onFileRenamed"
+    />
+
+    <b-files-upload-dialog
+      v-model="showFilesUploadDialog"
+      :error="filesUploadError"
+      :files="uploadingFiles"
+      @cancel="onCancelUploads"
+    />
+
+    <input type="file" class="files-input" ref="files-input"
+      multiple v-on:change="handleFilesUpload(true)" />
+
+    <v-overlay :value="droppingFiles">
+      <h3 class="text-h4">
+        Drop to upload
+      </h3>
+    </v-overlay>
+  </v-container>
+</template>
+
+
+<script lang="ts">
+import { PropType } from 'vue';
+import axios, { CancelTokenSource } from 'axios';
+import { VueApp } from '@/app/vue';
+import { CompleteFileUploadInput, File as ApiFile, MoveFilesToTrashInput } from '@/api/graphql/model';
+import BFilesList from '@/ui/components/collaboration/files_list.vue';
+import BFolderToolbar from '@/ui/components/collaboration/folder_toolbar.vue';
+import BNewFolderDialog from '@/ui/components/collaboration/new_folder_dialog.vue';
+import BRenameFileDialog from '@/ui/components/collaboration/rename_file_dialog.vue';
+import BFilesUploadDialog from '@/ui/components/collaboration/files_upload_dialog.vue';
+import { UploadingFile } from '@/domain/collaboration/service';
+import { StorageSignedUploadUrlInput } from '@/domain/kernel/service';
+
+export default VueApp.extend({
+  name: 'BFolder',
+  components: {
+    BFilesList,
+    BFolderToolbar,
+    BNewFolderDialog,
+    BRenameFileDialog,
+    BFilesUploadDialog,
+  },
+  props: {
+    folder: {
+      type: Object as PropType<ApiFile>,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      showNewFolderDialog: false,
+      error: '',
+      loading: false,
+      fileToRename: null as ApiFile | null,
+      showRenameFileDialog: false,
+      showFilesUploadDialog: false,
+      selected: [],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      axiosCancelSource: null as CancelTokenSource | null,
+      filesUploadError: '',
+      uploadingFiles: [] as UploadingFile[],
+      filesToUpload: [] as File[],
+      droppingFiles: false,
+    };
+  },
+  mounted() {
+    if (this.isDragAndDropCapable()) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const dropzone = document.querySelector('#blm-dropzone')!;
+      ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop']
+        .forEach((evt) => {
+          /*
+            For each event add an event listener that prevents the default action
+            (opening the file in the browser) and stop the propagation of the event (so
+            no other elements open the file in the browser)
+          */
+          dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.droppingFiles = true;
+          }, false);
+        });
+      // Add an event listener for drop to the form
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      dropzone.addEventListener('drop', (e: any) => {
+        if (!e.dataTransfer || !e.dataTransfer.files) {
+          return;
+        }
+
+        this.filesToUpload = [];
+        e.dataTransfer.files.forEach((file: File) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (this.filesToUpload as any).push(file);
+        });
+
+        this.droppingFiles = false;
+        this.handleFilesUpload(false);
+      });
+    }
+  },
+  methods: {
+    openNewFolderDialog() {
+      this.showNewFolderDialog = true;
+    },
+    onFolderCreated(file: ApiFile) {
+      this.folder.children.push(file);
+    },
+    async onMoveToTrash(files: ApiFile[]): Promise<void> {
+      this.loading = true;
+      this.error = '';
+      const input: MoveFilesToTrashInput = {
+        files: files.map((file: ApiFile) => file.id),
+      };
+
+      try {
+        await this.$collaborationService.moveFilesToTrash(input);
+        const trashedSet = new Set<string>();
+        files.forEach((file: ApiFile) => trashedSet.add(file.id));
+        this.folder.children = this.folder.children
+          .filter((file: ApiFile) => !trashedSet.has(file.id));
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    onFileRename(fileToRename: ApiFile) {
+      this.fileToRename = fileToRename;
+      this.showRenameFileDialog = true;
+    },
+    onFileRenamed(renamedFile: ApiFile) {
+      this.folder.children = this.folder.children.map((file: ApiFile) => {
+        if (file.id === renamedFile.id) {
+          file.name = renamedFile.name;
+        }
+        return file;
+      });
+      this.showRenameFileDialog = false;
+    },
+    onUploadFilesClicked() {
+      (this.$refs['files-input'] as HTMLElement).click();
+    },
+    async handleFilesUpload(direct: boolean) {
+      if (direct) {
+        this.filesToUpload = (this.$refs['files-input'] as HTMLInputElement).files as unknown as File[];
+      }
+
+      if (!this.filesToUpload || this.filesToUpload.length === 0) {
+        return;
+      }
+
+      this.showFilesUploadDialog = true;
+
+      try {
+        this.uploadingFiles = Array.from(this.filesToUpload).map((file: File) => ({
+          name: file.name,
+          progress: 0,
+        }));
+        for (let i = 0; i < this.filesToUpload.length; i += 1) {
+          const fileToUpload = this.filesToUpload[i];
+          this.axiosCancelSource = axios.CancelToken.source();
+
+          // get presignedUrl
+          const getSignedUrlDataInput: StorageSignedUploadUrlInput = {
+            size: fileToUpload.size,
+          };
+          // eslint-disable-next-line no-await-in-loop, max-len
+          const signedUrlData = await this.$kernelService.storageSignedUploadUrl(getSignedUrlDataInput);
+
+          // upload to s3
+          const options = {
+            cancelToken: this.axiosCancelSource.token,
+            headers: {
+              // 'Content-Type': 'multipart/form-data',
+              // Authorization: undefined,
+            },
+            onUploadProgress: (progressEvent: ProgressEvent) => {
+              this.uploadingFiles[i].progress = Math.ceil(
+                (progressEvent.loaded / progressEvent.total) * 100,
+              );
+              this.$set(this.uploadingFiles, i, this.uploadingFiles[i]);
+            },
+          };
+          // eslint-disable-next-line no-await-in-loop
+          await axios.put(signedUrlData.url, fileToUpload, options);
+          // const uploadedFile = await
+          // this.$collaborationService.uploadFile(this.folder.id, fileToUpload, options);
+
+          // complete upload
+          const completeUploadInput: CompleteFileUploadInput = {
+            parentId: this.folder.id,
+            name: fileToUpload.name,
+            size: fileToUpload.size,
+            mimeType: fileToUpload.type,
+            tmpKey: signedUrlData.tmpKey,
+          };
+
+          // eslint-disable-next-line no-await-in-loop, max-len
+          const uploadedFile = await this.$collaborationService.completeFileUpload(completeUploadInput);
+          this.folder.children.push(uploadedFile);
+        }
+        this.uploadingFiles = [];
+        this.showFilesUploadDialog = false;
+      } catch (err) {
+        if (err.message) {
+          this.filesUploadError = err.message;
+        }
+      } finally {
+        this.loading = false;
+        this.axiosCancelSource = null;
+        this.filesToUpload = [];
+      }
+    },
+    onCancelUploads() {
+      this.showFilesUploadDialog = false;
+      this.filesUploadError = '';
+      if (this.axiosCancelSource) {
+        this.axiosCancelSource.cancel();
+      }
+    },
+    isDragAndDropCapable(): boolean {
+      const div = document.createElement('div');
+      return (('draggable' in div)
+        || ('ondragstart' in div && 'ondrop' in div))
+        && 'FormData' in window
+        && 'FileReader' in window;
+    },
+  },
+});
+</script>
+
+
+<style lang="scss" scoped>
+.files-input {
+  display: none;
+}
+</style>

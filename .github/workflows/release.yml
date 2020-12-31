@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - release
+    # tags:
+    # - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and tag Docker image
+        run: |
+          make docker
+          docker tag ghcr.io/bloom42/bloom registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
+          docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release -f Dockerfile.release .
+
+      - name: Login to container registries
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku container:login
+          echo ${{ secrets.PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push Heroku image
+        # see here for the details of the release phase https://devcenter.heroku.com/articles/container-registry-and-runtime#release-phase
+        run: |
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release
+
+
+
+      - name: Release
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release -a ${{ secrets.HEROKU_APP_STAGING }} web release

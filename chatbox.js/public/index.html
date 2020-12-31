@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <script type="text/javascript">
+      // bloom mock
+      window.$bloom = {
+        project: '3bde3e56-ec7a-46ef-88f4-ce1456832cfd',
+        url: 'http://localhost:8000',
+
+        // emulate bloom.js retrieving data from localStorage
+        anonymous_id: '195bfa59-d412-42c9-bd2d-0e52f33d06e2',
+      };
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <strong>
+        We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without
+        JavaScript enabled. Please enable it to continue.
+      </strong>
+    </noscript>
+    <div id="bloom-chatbox"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

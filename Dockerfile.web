@@ -1,0 +1,3 @@
+FROM ghcr.io/bloom42/bloom:latest
+
+CMD ["/bloom/bloom", "server"]
