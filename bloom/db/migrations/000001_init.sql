@@ -121,8 +121,7 @@ CREATE TABLE kernel_groups (
   used_storage BIGINT NOT NULL,
   plan TEXT NOT NULL,
 
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE,
-  creator_id UUID NOT NULL REFERENCES kernel_users(id)
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX index_kernel_groups_on_namespace_id ON kernel_groups (namespace_id);
 

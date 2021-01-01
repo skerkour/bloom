@@ -45,7 +45,6 @@ impl Service {
             plan: BillingPlan::Free,
             avatar: None,
             namespace_id: namespace.id,
-            creator_id: actor.id,
             path,
         };
         self.repo.create_group(&mut tx, &group).await?;

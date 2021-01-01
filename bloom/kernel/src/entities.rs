@@ -53,7 +53,6 @@ pub struct Group {
     pub path: String,
 
     pub namespace_id: uuid::Uuid,
-    pub creator_id: uuid::Uuid,
 }
 
 /// Session entity is a session of a bloom user. It may not necessarily map 1:1 with users' devices
