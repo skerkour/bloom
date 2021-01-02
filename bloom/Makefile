@@ -6,8 +6,6 @@ TARGET_DIR = target
 RELEASE_BINARY = target/release/$(NAME)
 PUBLIC_DIR = public
 
-DEFAULT_ENV_FILE = env.example
-DIST_ENV_FILE = .env
 EMAILS_BLOCKLIST_FILE = email_domains_blocklist.txt
 
 
@@ -22,7 +20,6 @@ dev:
 build:
 	cargo build --release
 	cp -r $(RELEASE_BINARY) $(DIST_DIR)/
-	cp $(DEFAULT_ENV_FILE) $(DIST_DIR)/$(DIST_ENV_FILE)
 	cp $(EMAILS_BLOCKLIST_FILE) $(DIST_DIR)/$(EMAILS_BLOCKLIST_FILE)
 
 
@@ -36,7 +33,6 @@ build_static:
 	cargo build --target x86_64-unknown-linux-musl --release
 	mv target/x86_64-unknown-linux-musl/release/$(NAME) $(RELEASE_BINARY)
 	cp -r $(RELEASE_BINARY) $(DIST_DIR)/
-	cp $(DEFAULT_ENV_FILE) $(DIST_DIR)/$(DIST_ENV_FILE)
 	cp $(EMAILS_BLOCKLIST_FILE) $(DIST_DIR)/$(EMAILS_BLOCKLIST_FILE)
 
 
