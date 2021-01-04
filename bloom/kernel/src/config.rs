@@ -244,9 +244,9 @@ pub struct S3 {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Worker {
-    pub concurrency: u64,
+    pub concurrency: usize,
 }
-const DEFAULT_WORKER_CONCURRENCY: u64 = 1_000;
+const DEFAULT_WORKER_CONCURRENCY: usize = 500;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Sentry {
@@ -412,7 +412,7 @@ impl Config {
         // worker
         let worker_concurrency = std::env::var(ENV_WORKER_CONCURRENCY)
             .ok()
-            .map_or(Ok(DEFAULT_WORKER_CONCURRENCY), |env_val| env_val.parse::<u64>())?;
+            .map_or(Ok(DEFAULT_WORKER_CONCURRENCY), |env_val| env_val.parse::<usize>())?;
 
         let worker = Worker {
             concurrency: worker_concurrency,

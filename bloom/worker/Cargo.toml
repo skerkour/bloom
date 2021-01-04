@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 kernel = { path = "../kernel" }
+stdx = { path = "../stdx" }
 
 tokio = { version = "0.2", features = ["full"] }
 futures = "0.3"

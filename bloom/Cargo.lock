@@ -3450,6 +3450,7 @@ dependencies = [
  "futures",
  "kernel",
  "reqwest",
+ "stdx",
  "tokio",
 ]
 

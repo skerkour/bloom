@@ -88,6 +88,10 @@ impl Queue for PostgresQueue {
         Ok(())
     }
 
+    async fn fail_job(&self, job_id: String) -> Result<(), crate::Error> {
+        unimplemented!(); // TODO
+    }
+
     async fn pull(&self, number_of_jobs: u32) -> Result<Vec<Job>, crate::Error> {
         let number_of_jobs = if (number_of_jobs > 100) { 100 } else { number_of_jobs };
         let now = chrono::Utc::now();
