@@ -7,7 +7,7 @@ use worker::Worker;
 
 mod worker;
 
-pub async fn run(queue: Arc<dyn Queue>, concurrency: usize) -> Result<(), Error> {
+pub async fn run(queue: Arc<dyn Queue>, concurrency: u64) -> Result<(), Error> {
     let ten_ms = Duration::from_millis(10);
     let one_hundred_ms = Duration::from_millis(100);
 
