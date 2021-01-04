@@ -35,20 +35,26 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        // 	contentSecurityPolicy := "default-src 'self' https://js.stripe.com; img-src 'self' data:; script-src 'self' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline'; object-src 'none'; connect-src 'self'"
-        // 	expectCT := "max-age=86400, enforce"
+        let mut content_security_policy_value = String::from("default-src 'self' https://js.stripe.com; img-src 'self' data:; script-src 'self' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline'; object-src 'none'; connect-src 'self'");
+        let mut expect_ct_value = String::from("max-age=86400, enforce");
 
-        // 	if server.config.S3.Bucket != "" {
-        // 		contentSecurityPolicy += fmt.Sprintf(" https://%s.s3.%s.amazonaws.com", server.config.S3.Bucket, server.config.S3.Region)
-        // 	}
-        // 	if server.config.Sentry.IngestDomain != "" && server.config.Sentry.SecurityReportURI != "" {
-        // 		contentSecurityPolicy += fmt.Sprintf(" %s; report-uri %s", server.config.Sentry.IngestDomain, server.config.Sentry.SecurityReportURI)
-        // 		expectCT += fmt.Sprintf(`, report-uri="%s"`, server.config.Sentry.SecurityReportURI)
-        // 	}
+        if let Some(ref s3_bucket) = self.config.s3.bucket {
+            content_security_policy_value = content_security_policy_value
+                + format!("https://{}.s3.{}.amazonaws.com", s3_bucket, &self.config.s3.region).as_str();
+        }
+
+        if let Some(ref ingest_domain) = self.config.sentry.ingest_domain {
+            if let Some(ref security_report_uri) = self.config.sentry.security_report_uri {
+                content_security_policy_value = content_security_policy_value
+                    + format!(" {}; report-uri {}", ingest_domain, security_report_uri).as_str();
+                expect_ct_value = expect_ct_value + format!(", report-uri=\"{}\"", security_report_uri).as_str();
+            }
+        }
+
         ok(SecurityHeadersMiddleware2 {
             service,
-            content_security_policy_value: String::new(),
-            expect_ct_value: String::new(),
+            content_security_policy_value,
+            expect_ct_value,
         })
     }
 }
@@ -103,9 +109,16 @@ where
             HeaderName::from_static("Strict-Transport-Security"),
             HeaderValue::from_static("max-age=63072000; includeSubDomains; preload"),
         );
-
-        // 		w.Header().Set("Expect-CT", expectCT)
-        // 		w.Header().Set("Content-Security-Policy", contentSecurityPolicy)
+        headers.insert(
+            HeaderName::from_static("Content-Security-Policy"),
+            HeaderValue::from_str(&self.content_security_policy_value)
+                .expect("middlewares/security_headers: generating Content-Security-Policy header"),
+        );
+        headers.insert(
+            HeaderName::from_static("Expect-CT"),
+            HeaderValue::from_str(&self.expect_ct_value)
+                .expect("middlewares/security_headers: generating Expect-CT header"),
+        );
 
         // propagate the call
         self.service.call(req)
