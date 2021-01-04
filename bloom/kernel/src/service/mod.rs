@@ -29,6 +29,7 @@ mod complete_registration;
 mod complete_sign_in;
 mod complete_two_fa_challenge;
 mod complete_two_fa_setup;
+mod config;
 mod create_group;
 mod create_namespace;
 mod decline_group_invitation;
@@ -53,7 +54,7 @@ mod verify_email;
 pub struct Service {
     repo: Repository,
     db: DB,
-    config: Config,
+    config: Arc<Config>,
     queue: Arc<dyn drivers::Queue>,
     mailer: Arc<dyn drivers::Mailer>,
     storage: Arc<dyn drivers::Storage>,
@@ -104,6 +105,8 @@ impl Service {
             .collect();
 
         let valid_namespace_alphabet = consts::NAMESPACE_ALPHABET.chars().collect();
+
+        let config = Arc::new(config);
 
         Service {
             db,

@@ -3,7 +3,6 @@
 #[allow(unconditional_recursion)]
 use actix_files::NamedFile;
 use actix_web::{middleware, web, App, HttpServer};
-use kernel::config;
 use std::sync::Arc;
 
 mod context;
@@ -16,16 +15,18 @@ async fn route_index() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open("public/index.html")?)
 }
 
-pub async fn run(conf: config::Http, kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::Error> {
+pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::Error> {
+    let config = kernel_service.config();
     let context = Arc::new(ServerContext { kernel_service });
 
-    let endpoint = format!("0.0.0.0:{}", conf.port);
+    let endpoint = format!("0.0.0.0:{}", config.http.port);
     println!("Starting server at: {:?}", &endpoint);
     HttpServer::new(move || {
         App::new()
             .data(Arc::clone(&context))
             .wrap(middleware::Compress::default())
             .wrap(middlewares::RequestIdMiddleware)
+            .wrap(middlewares::SecurityHeadersMiddleware::new(Arc::clone(&config)))
             .service(
                 web::scope("/api")
                     .service(web::resource("").route(web::get().to(api::index)))
@@ -129,7 +130,7 @@ pub async fn run(conf: config::Http, kernel_service: Arc<kernel::Service>) -> Re
             )
             .service(
                 // serve webapp
-                actix_files::Files::new("/", &conf.public_directory)
+                actix_files::Files::new("/", &config.http.public_directory)
                     .index_file("index.html")
                     .prefer_utf8(true)
                     .default_handler(web::route().to(route_index)),

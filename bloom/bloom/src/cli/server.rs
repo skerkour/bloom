@@ -44,7 +44,7 @@ pub fn run() -> Result<(), kernel::Error> {
             join(worker_task, server_task, scheduler_task)???
         */
 
-        http_server::run(config.http, kernel_service).await
+        http_server::run(config, kernel_service).await
         // Ok(sys.await?)
     })
 }

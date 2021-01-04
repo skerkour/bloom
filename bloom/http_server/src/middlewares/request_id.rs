@@ -52,12 +52,9 @@ where
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
-        // generate request id token
+    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
+        // generate request id
         let request_id: Uuid = Ulid::new().into();
-
-        // make object mutable (required as the header must be used inside `.call`)
-        let mut req = req;
 
         // add request id header (for using in the log wrapper)
         req.headers_mut().append(
