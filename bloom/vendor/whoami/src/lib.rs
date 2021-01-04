@@ -1,3 +1,13 @@
+// WhoAmI
+// Copyright © 2017-2020 Jeron Aldaron Lau.
+//
+// Licensed under any of:
+//  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+//  - MIT License (https://mit-license.org/)
+//  - Boost Software License, Version 1.0 (https://www.boost.org/LICENSE_1_0.txt)
+// At your choosing (See accompanying files LICENSE_APACHE_2_0.txt,
+// LICENSE_MIT.txt and LICENSE_BOOST_1_0.txt).
+//
 //! Crate for getting the user's username, realname and environment.
 //!
 //! ## Getting Started
@@ -43,8 +53,8 @@
 
 #![warn(missing_docs)]
 #![doc(
-    html_logo_url = "https://libcala.github.io/whoami/res/icon.svg",
-    html_favicon_url = "https://libcala.github.io/whoami/res/icon.svg"
+    html_logo_url = "https://raw.githubusercontent.com/libcala/whoami/main/res/icon.svg",
+    html_favicon_url = "https://raw.githubusercontent.com/libcala/whoami/main/res/icon.svg"
 )]
 
 use std::ffi::OsString;

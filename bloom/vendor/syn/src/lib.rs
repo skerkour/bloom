@@ -250,25 +250,18 @@
 //!   dynamic library libproc_macro from rustc toolchain.
 
 // Syn types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/syn/1.0.56")]
+#![doc(html_root_url = "https://docs.rs/syn/1.0.57")]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
-#![deny(clippy::all, clippy::pedantic)]
 // Ignored clippy lints.
 #![allow(
-    clippy::blocks_in_if_conditions,
-    clippy::cognitive_complexity,
     clippy::doc_markdown,
     clippy::eval_order_dependence,
     clippy::inherent_to_string,
     clippy::large_enum_variant,
-    clippy::manual_non_exhaustive,
-    clippy::manual_strip,
-    clippy::match_like_matches_macro,
     clippy::match_on_vec_items,
     clippy::needless_doctest_main,
     clippy::needless_pass_by_value,
     clippy::never_loop,
-    clippy::suspicious_op_assign_impl,
     clippy::too_many_arguments,
     clippy::trivially_copy_pass_by_ref,
     clippy::unnecessary_unwrap
@@ -280,7 +273,6 @@
     clippy::empty_enum,
     clippy::expl_impl_clone_on_copy,
     clippy::if_not_else,
-    clippy::items_after_statements,
     clippy::match_same_arms,
     clippy::missing_errors_doc,
     clippy::module_name_repetitions,
@@ -292,7 +284,6 @@
     clippy::single_match_else,
     clippy::too_many_lines,
     clippy::unseparated_literal_suffix,
-    clippy::use_self,
     clippy::used_underscore_binding,
     clippy::wildcard_imports
 )]

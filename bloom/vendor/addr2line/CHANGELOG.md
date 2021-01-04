@@ -1,3 +1,17 @@
+## 0.14.1 (2020/12/31)
+
+### Fixed
+
+* Fix location lookup for skeleton units.
+  [#201](https://github.com/gimli-rs/addr2line/pull/201)
+
+### Added
+
+* Added `Context::find_location_range`.
+  [#196](https://github.com/gimli-rs/addr2line/pull/196)
+  [#199](https://github.com/gimli-rs/addr2line/pull/199)
+
+
 ## 0.14.0 (2020/10/27)
 
 ### Breaking changes

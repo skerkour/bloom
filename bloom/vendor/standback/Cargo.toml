@@ -13,8 +13,8 @@
 [package]
 edition = "2018"
 name = "standback"
-version = "0.2.13"
-authors = ["Jacob Pratt <the.z.cuber@gmail.com>", "The Rust Project Developers"]
+version = "0.2.14"
+authors = ["Jacob Pratt <open-source@jhpratt.dev>", "The Rust Project Developers"]
 build = "build.rs"
 include = ["src/**/*", "LICENSE-*", "README.md", "CHANGELOG.md", "build.rs"]
 description = "New standard library, old compiler."

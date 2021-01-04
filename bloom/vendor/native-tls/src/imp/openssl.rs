@@ -10,14 +10,14 @@ use self::openssl::ssl::{
     self, MidHandshakeSslStream, SslAcceptor, SslConnector, SslContextBuilder, SslMethod,
     SslVerifyMode,
 };
-use self::openssl::x509::{X509, store::X509StoreBuilder, X509VerifyResult};
+use self::openssl::x509::{store::X509StoreBuilder, X509VerifyResult, X509};
 use std::error;
 use std::fmt;
 use std::io;
 use std::sync::Once;
 
-use {Protocol, TlsAcceptorBuilder, TlsConnectorBuilder};
 use self::openssl::pkey::Private;
+use {Protocol, TlsAcceptorBuilder, TlsConnectorBuilder};
 
 #[cfg(have_min_max_version)]
 fn supported_protocols(
@@ -274,6 +274,26 @@ impl TlsConnector {
             }
         }
 
+        #[cfg(feature = "alpn")]
+        {
+            if !builder.alpn.is_empty() {
+                // Wire format is each alpn preceded by its length as a byte.
+                let mut alpn_wire_format = Vec::with_capacity(
+                    builder
+                        .alpn
+                        .iter()
+                        .map(|s| s.as_bytes().len())
+                        .sum::<usize>()
+                        + builder.alpn.len(),
+                );
+                for alpn in builder.alpn.iter().map(|s| s.as_bytes()) {
+                    alpn_wire_format.push(alpn.len() as u8);
+                    alpn_wire_format.extend(alpn);
+                }
+                connector.set_alpn_protos(&alpn_wire_format)?;
+            }
+        }
+
         #[cfg(target_os = "android")]
         load_android_root_certs(&mut connector)?;
 
@@ -305,8 +325,7 @@ impl TlsConnector {
 
 impl fmt::Debug for TlsConnector {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt
-            .debug_struct("TlsConnector")
+        fmt.debug_struct("TlsConnector")
             // n.b. SslConnector is a newtype on SslContext which implements a noop Debug so it's omitted
             .field("use_sni", &self.use_sni)
             .field("accept_invalid_hostnames", &self.accept_invalid_hostnames)
@@ -365,6 +384,15 @@ impl<S: io::Read + io::Write> TlsStream<S> {
 
     pub fn peer_certificate(&self) -> Result<Option<Certificate>, Error> {
         Ok(self.0.ssl().peer_certificate().map(Certificate))
+    }
+
+    #[cfg(feature = "alpn")]
+    pub fn negotiated_alpn(&self) -> Result<Option<Vec<u8>>, Error> {
+        Ok(self
+            .0
+            .ssl()
+            .selected_alpn_protocol()
+            .map(|alpn| alpn.to_vec()))
     }
 
     pub fn tls_server_end_point(&self) -> Result<Option<Vec<u8>>, Error> {

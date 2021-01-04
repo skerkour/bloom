@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v0.2.7]
+
+### Added
+
+* Added support for ALPN in client APIs flagged under the `alpn` Cargo feature.
+
 ## [v0.2.6]
 
 ### Fixed
@@ -93,7 +99,8 @@
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/sfackler/rust-native-tls/compare/v0.2.6...master
+[Unreleased]: https://github.com/sfackler/rust-native-tls/compare/v0.2.7...master
+[v0.2.7]: https://github.com/sfackler/rust-native-tls/compare/v0.2.6...v0.2.7
 [v0.2.6]: https://github.com/sfackler/rust-native-tls/compare/v0.2.5...v0.2.6
 [v0.2.5]: https://github.com/sfackler/rust-native-tls/compare/v0.2.4...v0.2.5
 [v0.2.4]: https://github.com/sfackler/rust-native-tls/compare/v0.2.3...v0.2.4

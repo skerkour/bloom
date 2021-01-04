@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2021-01-03
+### Changed
+- Update `cfg-if` to v1.0. [#166]
+- Update `wasi` to v0.10. [#167]
+
+### Fixed
+- Multithreaded WASM support. [#165]
+
+### Removed
+- Windows XP support. [#177]
+- Direct `stdweb` support. [#178]
+- CloudABI support. [#184]
+
+[#165]: https://github.com/rust-random/getrandom/pull/165
+[#166]: https://github.com/rust-random/getrandom/pull/166
+[#167]: https://github.com/rust-random/getrandom/pull/167
+[#177]: https://github.com/rust-random/getrandom/pull/177
+[#178]: https://github.com/rust-random/getrandom/pull/178
+[#184]: https://github.com/rust-random/getrandom/pull/184
+
 ## [0.2.0] - 2020-09-10
 ### Features for using getrandom on unsupported targets
 
@@ -31,6 +51,18 @@ The following (off by default) Cargo features have been added:
 [#149]: https://github.com/rust-random/getrandom/pull/149
 [#153]: https://github.com/rust-random/getrandom/pull/153
 [#159]: https://github.com/rust-random/getrandom/pull/159
+
+## [0.1.16] - 2020-12-31
+### Changed
+- Update `cfg-if` to v1.0. [#173]
+- Implement `std::error::Error` for the `Error` type on additional targets. [#169]
+
+### Fixed
+- Multithreaded WASM support. [#171]
+
+[#173]: https://github.com/rust-random/getrandom/pull/173
+[#171]: https://github.com/rust-random/getrandom/pull/171
+[#169]: https://github.com/rust-random/getrandom/pull/169
 
 ## [0.1.15] - 2020-09-10
 ### Changed

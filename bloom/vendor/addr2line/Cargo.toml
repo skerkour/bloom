@@ -12,14 +12,14 @@
 
 [package]
 name = "addr2line"
-version = "0.14.0"
+version = "0.14.1"
 authors = ["Nick Fitzgerald <fitzgen@gmail.com>", "Philip Craig <philipjcraig@gmail.com>", "Jon Gjengset <jon@thesquareplanet.com>", "Noah Bergbauer <noah.bergbauer@tum.de>"]
 exclude = ["/benches/*", "/fixtures/*"]
 description = "A cross-platform symbolication library written in Rust, using `gimli`"
 documentation = "https://docs.rs/addr2line"
 readme = "./README.md"
 keywords = ["DWARF", "debug", "elf", "symbolicate", "atos"]
-categories = ["development-tools::debugging", "command-line-utilities"]
+categories = ["development-tools::debugging"]
 license = "Apache-2.0/MIT"
 repository = "https://github.com/gimli-rs/addr2line"
 [profile.bench]
@@ -95,7 +95,7 @@ version = "0.3.13"
 version = "2"
 
 [dev-dependencies.findshlibs]
-version = "0.7"
+version = "0.8"
 
 [dev-dependencies.memmap]
 version = "0.7"

@@ -13,8 +13,7 @@
 //! | Target            | Target Triple      | Implementation
 //! | ----------------- | ------------------ | --------------
 //! | Linux, Android    | `*‑linux‑*`        | [`getrandom`][1] system call if available, otherwise [`/dev/urandom`][2] after successfully polling `/dev/random` |
-//! | Windows           | `*‑pc‑windows‑*`   | [`RtlGenRandom`][3] |
-//! | [Windows UWP][22] | `*‑uwp‑windows‑*`  | [`BCryptGenRandom`][23] |
+//! | Windows           | `*‑windows‑*`      | [`BCryptGenRandom`][3] |
 //! | macOS             | `*‑apple‑darwin`   | [`getentropy()`][19] if available, otherwise [`/dev/random`][20] (identical to `/dev/urandom`)
 //! | iOS               | `*‑apple‑ios`      | [`SecRandomCopyBytes`][4]
 //! | FreeBSD           | `*‑freebsd`        | [`getrandom()`][21] if available, otherwise [`kern.arandom`][5]
@@ -23,8 +22,7 @@
 //! | Dragonfly BSD     | `*‑dragonfly`      | [`/dev/random`][8]
 //! | Solaris, illumos  | `*‑solaris`, `*‑illumos` | [`getrandom()`][9] if available, otherwise [`/dev/random`][10]
 //! | Fuchsia OS        | `*‑fuchsia`        | [`cprng_draw`][11]
-//! | Redox             | `*‑cloudabi`       | [`rand:`][12]
-//! | CloudABI          | `*‑redox`          | [`cloudabi_sys_random_get`][13]
+//! | Redox             | `*‑redox`          | [`rand:`][12]
 //! | Haiku             | `*‑haiku`          | `/dev/random` (identical to `/dev/urandom`)
 //! | SGX               | `x86_64‑*‑sgx`     | [RDRAND][18]
 //! | VxWorks           | `*‑wrs‑vxworks‑*`  | `randABytes` after checking entropy pool initialization with `randSecure`
@@ -69,9 +67,8 @@
 //! that you are building for an environment containing JavaScript, and will
 //! call the appropriate methods. Both web browser (main window and Web Workers)
 //! and Node.js environments are supported, invoking the methods
-//! [described above](#supported-targets). This crate can be built with either
-//! the [wasm-bindgen](https://github.com/rust-lang/rust-bindgen) or
-//! [cargo-web](https://github.com/koute/cargo-web) toolchains.
+//! [described above](#supported-targets) using the
+//! [wasm-bindgen](https://github.com/rust-lang/rust-bindgen) toolchain.
 //!
 //! This feature has no effect on targets other than `wasm32-unknown-unknown`.
 //!
@@ -123,7 +120,7 @@
 //!
 //! [1]: http://man7.org/linux/man-pages/man2/getrandom.2.html
 //! [2]: http://man7.org/linux/man-pages/man4/urandom.4.html
-//! [3]: https://docs.microsoft.com/en-us/windows/desktop/api/ntsecapi/nf-ntsecapi-rtlgenrandom
+//! [3]: https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
 //! [4]: https://developer.apple.com/documentation/security/1399291-secrandomcopybytes?language=objc
 //! [5]: https://www.freebsd.org/cgi/man.cgi?query=random&sektion=4
 //! [6]: https://man.openbsd.org/getentropy.2
@@ -133,7 +130,6 @@
 //! [10]: https://docs.oracle.com/cd/E86824_01/html/E54777/random-7d.html
 //! [11]: https://fuchsia.dev/fuchsia-src/zircon/syscalls/cprng_draw
 //! [12]: https://github.com/redox-os/randd/blob/master/src/main.rs
-//! [13]: https://github.com/nuxinl/cloudabi#random_get
 //! [14]: https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues
 //! [15]: https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
 //! [16]: #webassembly-support
@@ -142,8 +138,6 @@
 //! [19]: https://www.unix.com/man-page/mojave/2/getentropy/
 //! [20]: https://www.unix.com/man-page/mojave/4/random/
 //! [21]: https://www.freebsd.org/cgi/man.cgi?query=getrandom&manpath=FreeBSD+12.0-stable
-//! [22]: https://docs.microsoft.com/en-us/windows/uwp/
-//! [23]: https://docs.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
 
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk.png",
@@ -152,6 +146,8 @@
 )]
 #![no_std]
 #![warn(rust_2018_idioms, unused_lifetimes, missing_docs)]
+// `matches!` macro was added only in Rust 1.42, which is bigger than our MSRV
+#![allow(clippy::match_like_matches_macro)]
 
 #[macro_use]
 extern crate cfg_if;
@@ -186,8 +182,6 @@ cfg_if! {
     } else if #[cfg(any(target_os = "freebsd", target_os = "netbsd"))] {
         mod util_libc;
         #[path = "bsd_arandom.rs"] mod imp;
-    } else if #[cfg(target_os = "cloudabi")] {
-        #[path = "cloudabi.rs"] mod imp;
     } else if #[cfg(target_os = "fuchsia")] {
         #[path = "fuchsia.rs"] mod imp;
     } else if #[cfg(target_os = "ios")] {
@@ -204,8 +198,6 @@ cfg_if! {
     } else if #[cfg(target_os = "vxworks")] {
         mod util_libc;
         #[path = "vxworks.rs"] mod imp;
-    } else if #[cfg(all(windows, target_vendor = "uwp"))] {
-        #[path = "windows_uwp.rs"] mod imp;
     } else if #[cfg(windows)] {
         #[path = "windows.rs"] mod imp;
     } else if #[cfg(all(target_arch = "x86_64", target_env = "sgx"))] {
@@ -215,9 +207,7 @@ cfg_if! {
         #[path = "rdrand.rs"] mod imp;
     } else if #[cfg(all(feature = "js",
                         target_arch = "wasm32", target_os = "unknown"))] {
-        #[cfg_attr(cargo_web, path = "stdweb.rs")]
-        #[cfg_attr(not(cargo_web), path = "wasm-bindgen.rs")]
-        mod imp;
+        #[path = "js.rs"] mod imp;
     } else if #[cfg(feature = "custom")] {
         use custom as imp;
     } else {

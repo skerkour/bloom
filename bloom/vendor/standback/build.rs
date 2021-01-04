@@ -3,7 +3,7 @@ use version_check::{Channel, Version};
 // We assume that features are never stabilized in patch versions.
 // If a "Rust 2.0" is ever released, we'll have to handle that explicitly.
 const MSRV_MINOR: u16 = 31;
-const CURRENT_MINOR: u16 = 48;
+const CURRENT_MINOR: u16 = 49;
 
 fn main() {
     let msrv = Version::from_mmp(1, MSRV_MINOR, 0);

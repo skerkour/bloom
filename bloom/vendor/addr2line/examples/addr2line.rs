@@ -189,6 +189,8 @@ fn main() {
                 if do_functions {
                     if let Some(func) = frame.function {
                         print_function(&func.raw_name().unwrap(), func.language, demangle);
+                    } else if let Some(name) = symbols.get(probe).map(|x| x.name()) {
+                        print_function(name, None, demangle);
                     } else {
                         print!("??");
                     }

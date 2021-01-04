@@ -1,14 +1,39 @@
+// WhoAmI
+// Copyright © 2017-2020 Jeron Aldaron Lau.
+//
+// Licensed under any of:
+//  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+//  - MIT License (https://mit-license.org/)
+//  - Boost Software License, Version 1.0 (https://www.boost.org/LICENSE_1_0.txt)
+// At your choosing (See accompanying files LICENSE_APACHE_2_0.txt,
+// LICENSE_MIT.txt and LICENSE_BOOST_1_0.txt).
+
 use crate::{DesktopEnv, Platform};
 
 use std::{
     convert::TryInto,
     ffi::OsString,
     os::{
-        raw::{c_char, c_int, c_uchar, c_ulong},
+        raw::{c_char, c_int, c_uchar, c_ulong, c_ushort},
         windows::ffi::OsStringExt,
     },
     ptr,
 };
+
+#[repr(C)]
+struct OsVersionInfoEx {
+    os_version_info_size: c_ulong,
+    major_version: c_ulong,
+    minor_version: c_ulong,
+    build_number: c_ulong,
+    platform_id: c_ulong,
+    sz_csd_version: [u16; 128],
+    service_pack_major: c_ushort,
+    service_pack_minor: c_ushort,
+    suite_mask: c_ushort,
+    product_type: c_uchar,
+    reserved: c_uchar,
+}
 
 #[allow(unused)]
 #[repr(C)]
@@ -55,6 +80,11 @@ extern "system" {
         b: *mut c_char,
         c: *mut c_ulong,
     ) -> c_int;
+}
+
+#[link(name = "ntdll")]
+extern "system" {
+    fn RtlGetVersion(a: *mut OsVersionInfoEx) -> u32;
 }
 
 // Convert an OsString into a String
@@ -246,32 +276,29 @@ pub fn distro_os() -> Option<OsString> {
 }
 
 pub fn distro() -> Option<String> {
-    extern "system" {
-        fn GetVersion() -> usize;
-    }
+    let mut version = std::mem::MaybeUninit::<OsVersionInfoEx>::zeroed();
 
-    let bits = unsafe { GetVersion() } as u32;
+    let version = unsafe {
+        (*version.as_mut_ptr()).os_version_info_size =
+            std::mem::size_of::<OsVersionInfoEx>() as u32;
+        RtlGetVersion(version.as_mut_ptr());
+        version.assume_init()
+    };
 
-    let mut out = "Windows ".to_string();
+    let product = match version.product_type {
+        1 => "Workstation",
+        2 => "Domain Controller",
+        3 => "Server",
+        _ => "Unknown",
+    };
 
-    let major: u8 = (bits & 0b00000000_00000000_00000000_11111111) as u8;
-    let minor: u8 = ((bits & 0b00000000_00000000_11111111_00000000) >> 8) as u8;
-    let build: u16 =
-        ((bits & 0b11111111_11111111_00000000_00000000) >> 16) as u16;
-
-    match major {
-        5 => out.push_str("XP"),
-        6 => match minor {
-            0 => out.push_str("Vista"),
-            1 => out.push_str("7"),
-            2 => match build {
-                9200 => out.push_str("10"),
-                _ => out.push_str("8"),
-            },
-            _ => out.push_str("8"),
-        },
-        _ => out.push_str("Unknown"),
-    }
+    let out = format!(
+        "Windows {}.{}.{} ({})",
+        version.major_version,
+        version.minor_version,
+        version.build_number,
+        product
+    );
 
     Some(out)
 }

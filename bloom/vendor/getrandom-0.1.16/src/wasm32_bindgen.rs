@@ -13,15 +13,21 @@ use core::cell::RefCell;
 use core::mem;
 use std::thread_local;
 
+use js_sys::Uint8Array;
+// We have to rename wasm_bindgen to bindgen in the Cargo.toml for backwards
+// compatibility. We have to rename it back here or else the macros will break.
+extern crate bindgen as wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
 use crate::error::{BINDGEN_CRYPTO_UNDEF, BINDGEN_GRV_UNDEF};
 use crate::Error;
 
+const CHUNK_SIZE: usize = 256;
+
 #[derive(Clone, Debug)]
 enum RngSource {
     Node(NodeCrypto),
-    Browser(BrowserCrypto),
+    Browser(BrowserCrypto, Uint8Array),
 }
 
 // JsValues are always per-thread, so we initialize RngSource for each thread.
@@ -41,15 +47,16 @@ pub fn getrandom_inner(dest: &mut [u8]) -> Result<(), Error> {
 
         match source.as_ref().unwrap() {
             RngSource::Node(n) => n.random_fill_sync(dest),
-            RngSource::Browser(n) => {
-                // see https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
-                //
-                // where it says:
-                //
-                // > A QuotaExceededError DOMException is thrown if the
-                // > requested length is greater than 65536 bytes.
-                for chunk in dest.chunks_mut(65536) {
-                    n.get_random_values(chunk)
+            RngSource::Browser(crypto, buf) => {
+                // getRandomValues does not work with all types of WASM memory,
+                // so we initially write to browser memory to avoid exceptions.
+                for chunk in dest.chunks_mut(CHUNK_SIZE) {
+                    // The chunk can be smaller than buf's length, so we call to
+                    // JS to create a smaller view of buf without allocation.
+                    let sub_buf = buf.subarray(0, chunk.len() as u32);
+
+                    crypto.get_random_values(&sub_buf);
+                    sub_buf.copy_to(chunk);
                 }
             }
         };
@@ -75,7 +82,8 @@ fn getrandom_init() -> Result<RngSource, Error> {
             return Err(BINDGEN_GRV_UNDEF);
         }
 
-        return Ok(RngSource::Browser(crypto));
+        let buf = Uint8Array::new_with_length(CHUNK_SIZE as u32);
+        return Ok(RngSource::Browser(crypto, buf));
     }
 
     return Ok(RngSource::Node(MODULE.require("crypto")));
@@ -102,7 +110,7 @@ extern "C" {
     #[wasm_bindgen(method, js_name = getRandomValues, structural, getter)]
     fn get_random_values_fn(me: &BrowserCrypto) -> JsValue;
     #[wasm_bindgen(method, js_name = getRandomValues, structural)]
-    fn get_random_values(me: &BrowserCrypto, buf: &mut [u8]);
+    fn get_random_values(me: &BrowserCrypto, buf: &Uint8Array);
 
     #[derive(Clone, Debug)]
     type NodeCrypto;

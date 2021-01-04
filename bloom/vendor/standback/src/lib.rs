@@ -43,6 +43,11 @@
 //! The following methods and constants are available via the prelude:
 //!
 //! ```rust,ignore
+//! // 1.49
+//! slice::select_nth_unstable
+//! slice::select_nth_unstable_by
+//! slice::select_nth_unstable_by_key
+//!
 //! // 1.48
 //! slice::as_ptr_range
 //! slice::as_mut_ptr_range
@@ -558,6 +563,8 @@ mod v1_46;
 mod v1_47;
 #[cfg(__standback_before_1_48)]
 mod v1_48;
+#[cfg(__standback_before_1_49)]
+mod v1_49;
 
 pub mod prelude {
     #[cfg(__standback_before_1_42)]
@@ -613,6 +620,8 @@ pub mod prelude {
     pub use crate::v1_47::{Range_v1_47, Result_v1_47};
     #[cfg(__standback_before_1_48)]
     pub use crate::v1_48::Slice_v1_48;
+    #[cfg(__standback_before_1_49)]
+    pub use crate::v1_49::Slice_v1_49;
     #[cfg(__standback_before_1_39)]
     pub use core::unimplemented as todo;
 }

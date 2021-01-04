@@ -13,15 +13,15 @@
 [package]
 edition = "2018"
 name = "whoami"
-version = "1.0.1"
+version = "1.0.3"
 authors = ["Jeron Aldaron Lau <jeronlau@plopgrizzly.com>"]
 description = "Retrieve the current user and environment."
-homepage = "https://libcala.github.io/whoami"
+homepage = "https://github.com/libcala/whoami/blob/main/CHANGELOG.md"
 documentation = "https://docs.rs/whoami"
 readme = "README.md"
 keywords = ["user", "username", "whoami", "platform", "detect"]
-categories = ["os"]
-license = "Apache-2.0/Zlib"
+categories = ["os::freebsd-apis", "wasm", "os::linux-apis", "os::macos-apis", "os::windows-apis"]
+license = "Apache-2.0 OR MIT OR BSL-1.0"
 repository = "https://github.com/libcala/whoami"
 
 [features]

@@ -1,7 +1,5 @@
 # rust-native-tls
 
-[![CircleCI](https://circleci.com/gh/sfackler/rust-native-tls.svg?style=shield)](https://circleci.com/gh/sfackler/rust-native-tls) [![Build Status](https://travis-ci.org/sfackler/rust-native-tls.svg?branch=master)](https://travis-ci.org/sfackler/rust-native-tls)
-
 [Documentation](https://docs.rs/native-tls)
 
 An abstraction over platform-specific TLS implementations.

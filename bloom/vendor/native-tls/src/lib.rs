@@ -95,13 +95,11 @@
 //! ```
 #![doc(html_root_url = "https://docs.rs/native-tls/0.2")]
 #![warn(missing_docs)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[macro_use]
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 extern crate lazy_static;
-
-#[cfg(test)]
-extern crate hex;
 
 use std::any::Any;
 use std::error;
@@ -328,6 +326,8 @@ pub struct TlsConnectorBuilder {
     accept_invalid_hostnames: bool,
     use_sni: bool,
     disable_built_in_roots: bool,
+    #[cfg(feature = "alpn")]
+    alpn: Vec<String>,
 }
 
 impl TlsConnectorBuilder {
@@ -373,6 +373,16 @@ impl TlsConnectorBuilder {
     /// Defaults to `false` -- built-in system certs will be used.
     pub fn disable_built_in_roots(&mut self, disable: bool) -> &mut TlsConnectorBuilder {
         self.disable_built_in_roots = disable;
+        self
+    }
+
+    /// Request specific protocols through ALPN (Application-Layer Protocol Negotiation).
+    ///
+    /// Defaults to no protocols.
+    #[cfg(feature = "alpn")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alpn")))]
+    pub fn request_alpns(&mut self, protocols: &[&str]) -> &mut TlsConnectorBuilder {
+        self.alpn = protocols.iter().map(|s| (*s).to_owned()).collect();
         self
     }
 
@@ -464,6 +474,8 @@ impl TlsConnector {
             accept_invalid_certs: false,
             accept_invalid_hostnames: false,
             disable_built_in_roots: false,
+            #[cfg(feature = "alpn")]
+            alpn: vec![],
         }
     }
 
@@ -642,6 +654,13 @@ impl<S: io::Read + io::Write> TlsStream<S> {
     /// [RFC 5929]: https://tools.ietf.org/html/rfc5929
     pub fn tls_server_end_point(&self) -> Result<Option<Vec<u8>>> {
         Ok(self.0.tls_server_end_point()?)
+    }
+
+    /// Returns the negotiated ALPN protocol.
+    #[cfg(feature = "alpn")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alpn")))]
+    pub fn negotiated_alpn(&self) -> Result<Option<Vec<u8>>> {
+        Ok(self.0.negotiated_alpn()?)
     }
 
     /// Shuts down the TLS session.

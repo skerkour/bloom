@@ -72,7 +72,7 @@ use core::num::NonZeroU32;
 ///
 /// Now any user of `getrandom` (direct or indirect) on this target will use the
 /// registered function. As noted in the
-/// [top-level documentation](index.html#use-a-custom-implementation) this
+/// [top-level documentation](index.html#custom-implementations) this
 /// registration only has an effect on unsupported targets.
 #[macro_export]
 macro_rules! register_custom_getrandom {

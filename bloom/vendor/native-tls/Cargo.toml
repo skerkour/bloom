@@ -12,16 +12,23 @@
 
 [package]
 name = "native-tls"
-version = "0.2.6"
+version = "0.2.7"
 authors = ["Steven Fackler <sfackler@gmail.com>"]
 description = "A wrapper over a platform's native TLS implementation"
 readme = "README.md"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/sfackler/rust-native-tls"
-[dev-dependencies.hex]
-version = "0.4.2"
+[package.metadata.docs.rs]
+features = ["alpn"]
+rustdoc-args = ["--cfg", "docsrs"]
+[dev-dependencies.tempfile]
+version = "3.0"
+
+[dev-dependencies.test-cert-gen]
+version = "0.1"
 
 [features]
+alpn = ["security-framework/alpn"]
 vendored = ["openssl/vendored"]
 [target."cfg(any(target_os = \"macos\", target_os = \"ios\"))".dependencies.lazy_static]
 version = "1.4.0"
