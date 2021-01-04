@@ -26,7 +26,7 @@ pub fn run() -> Result<(), kernel::Error> {
         let mailer = Arc::new(SesMailer::new());
         let storage = Arc::new(S3Storage::new());
 
-        let kernel_service = Arc::new(kernel::Service::new(config.clone(), db, queue, mailer, storage));
+        let kernel_service = Arc::new(kernel::Service::new(config, db, queue, mailer, storage));
 
         /*
             if flag_worker {
