@@ -28,6 +28,12 @@ stdx = { path = "../stdx" }
 actix-web = "3"
 clap = "2"
 tokio = { version = "0.2", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.3"
+
+
+[build-dependencies]
+stdx = { path = "../stdx" }
