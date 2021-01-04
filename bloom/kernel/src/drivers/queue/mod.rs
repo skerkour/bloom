@@ -5,8 +5,6 @@ use stdx::chrono;
 
 pub mod postgres;
 
-// TODO: sqs, redis
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Job {
     pub id: String,

@@ -1,6 +1,6 @@
 use kernel::Error;
-use stdx::rand::{thread_rng, Rng};
 use stdx::encoding::base64;
+use stdx::rand::{thread_rng, Rng};
 
 pub fn run() -> Result<(), Error> {
     let mut rng = thread_rng();

@@ -20,7 +20,7 @@ use crate::{
 };
 use sqlx::types::Uuid;
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
-use stdx::{uuid};
+use stdx::uuid;
 
 mod accept_group_invitation;
 mod cancel_group_invitation;

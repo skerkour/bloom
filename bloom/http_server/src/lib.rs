@@ -7,6 +7,7 @@ use kernel::config;
 use std::sync::Arc;
 
 mod context;
+mod middlewares;
 
 pub mod api;
 pub use context::{RequestContext, ServerContext};
@@ -24,6 +25,7 @@ pub async fn run(conf: config::Http, kernel_service: Arc<kernel::Service>) -> Re
         App::new()
             .data(Arc::clone(&context))
             .wrap(middleware::Compress::default())
+            .wrap(middlewares::RequestIdMiddleware)
             .service(
                 web::scope("/api")
                     .service(web::resource("").route(web::get().to(api::index)))
