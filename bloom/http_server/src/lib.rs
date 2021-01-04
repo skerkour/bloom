@@ -27,6 +27,7 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
             .wrap(middleware::Compress::default())
             .wrap(middlewares::RequestIdMiddleware)
             .wrap(middlewares::SecurityHeadersMiddleware::new(Arc::clone(&config)))
+            .wrap(middlewares::CacheHeadersMiddleware)
             .service(
                 web::scope("/api")
                     .service(web::resource("").route(web::get().to(api::index)))
