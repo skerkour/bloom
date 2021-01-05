@@ -5,13 +5,14 @@ use kernel::{
     Error,
 };
 use std::sync::Arc;
+use stdx::log::LevelFilter;
 
 pub fn run() -> Result<(), Error> {
     let config = Config::load()?;
     let log_level = if config.debug {
-        stdx::log::LevelFilter::Debug
+        LevelFilter::Debug
     } else {
-        stdx::log::LevelFilter::Info
+        LevelFilter::Info
     };
     Builder::new().filter_level(log_level).init();
 

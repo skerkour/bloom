@@ -5,14 +5,15 @@ use kernel::{
     config::Config,
     drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
 };
+use stdx::log::LevelFilter;
 // use tokio::task;
 
 pub fn run() -> Result<(), kernel::Error> {
     let config = Config::load()?;
     let log_level = if config.debug {
-        stdx::log::LevelFilter::Debug
+        LevelFilter::Debug
     } else {
-        stdx::log::LevelFilter::Info
+        LevelFilter::Info
     };
     Builder::new().filter_level(log_level).init();
 
