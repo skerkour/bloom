@@ -59,15 +59,15 @@ where
         async move {
             let mut res = req_fut.await?;
             let headers = res.headers_mut();
-            headers.append(
+            headers.insert(
                 HeaderName::from_static("cache-control"),
                 HeaderValue::from_static("no-cache, no-store, no-transform, must-revalidate, private, max-age=0"),
             );
-            headers.append(
+            headers.insert(
                 HeaderName::from_static("x-accel-expires"),
                 HeaderValue::from_static("0"),
             );
-            headers.append(HeaderName::from_static("pragma"), HeaderValue::from_static("no-cache"));
+            headers.insert(HeaderName::from_static("pragma"), HeaderValue::from_static("no-cache"));
             // "Expires": time.Unix(0, 0).Format(time.RFC1123),
 
             Ok(res)

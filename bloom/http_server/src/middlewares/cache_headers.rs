@@ -11,6 +11,9 @@ use futures::{
 };
 use std::task::{Context, Poll};
 
+const CACHE_CONTROL_HEADER: &str = "cache-control";
+const X_ACCEL_EXPIRES_HEADER: &str = "x-accel-expires";
+
 /// Security headers middleware.
 /// sets the correct headers for CDN caching
 pub struct CacheHeadersMiddleware;
@@ -59,14 +62,18 @@ where
         async move {
             let mut res = req_fut.await?;
             let headers = res.headers_mut();
-            headers.append(
-                HeaderName::from_static("cache-control"),
-                HeaderValue::from_static("public, max-age=0, s-maxage=31536000"),
-            );
-            headers.append(
-                HeaderName::from_static("x-accel-expires"),
-                HeaderValue::from_static("31536000"),
-            );
+            if !headers.contains_key(CACHE_CONTROL_HEADER) {
+                headers.insert(
+                    HeaderName::from_static(CACHE_CONTROL_HEADER),
+                    HeaderValue::from_static("public, max-age=0, s-maxage=31536000"),
+                );
+            }
+            if !headers.contains_key(X_ACCEL_EXPIRES_HEADER) {
+                headers.insert(
+                    HeaderName::from_static(X_ACCEL_EXPIRES_HEADER),
+                    HeaderValue::from_static("31536000"),
+                );
+            }
 
             Ok(res)
         }
