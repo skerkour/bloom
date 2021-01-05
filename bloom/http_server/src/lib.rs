@@ -18,13 +18,14 @@ async fn route_index() -> Result<NamedFile, actix_web::Error> {
 
 pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::Error> {
     let config = kernel_service.config();
-    let context = Arc::new(ServerContext { kernel_service });
+    let context = Arc::new(ServerContext { kernel_service: kernel_service.clone() });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);
     info!("Starting HTTP server. endpoint={:?}", &endpoint);
     HttpServer::new(move || {
         App::new()
             .data(Arc::clone(&context))
+            .wrap(middlewares::AuthMiddleware::new(kernel_service.clone()))
             .wrap(middleware::Compress::default())
             .wrap(middlewares::RequestIdMiddleware)
             .wrap(middlewares::SecurityHeadersMiddleware::new(Arc::clone(&config)))

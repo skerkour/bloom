@@ -37,7 +37,7 @@ pub async fn run(kernel_service: Arc<Service>, queue: Arc<dyn Queue>) -> Result<
                     Err(err) => {
                         error!("worker.run: sending job: {}", err);
                         let _ = queue_tx.fail_job(job_id).await; // TODO: handle error?
-                    },
+                    }
                 }
             }
             delay_for(ten_ms).await;

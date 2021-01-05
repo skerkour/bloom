@@ -1,5 +1,9 @@
 use env_logger::Builder;
-use kernel::{Error, config::Config, drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage}};
+use kernel::{
+    config::Config,
+    drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
+    Error,
+};
 use std::sync::Arc;
 
 pub fn run() -> Result<(), Error> {

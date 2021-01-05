@@ -143,7 +143,7 @@ impl Service {
         unimplemented!();
     }
 
-    pub async fn decode_and_check_session_token(&self) -> Result<(), Error> {
+    pub async fn decode_and_check_session_token(&self, token: String) -> Result<User, Error> {
         unimplemented!();
     }
 }
