@@ -17,6 +17,7 @@ use crate::{
         VERIFY_EMAIL_EMAIL_TEMPLATE, VERIFY_EMAIL_EMAIL_TEMPLATE_ID,
     },
     repository::Repository,
+    Error,
 };
 use sqlx::types::Uuid;
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
@@ -119,6 +120,27 @@ impl Service {
             invalid_namespaces,
             valid_namespace_alphabet,
         }
+    }
+
+    // TODO
+    pub async fn send_register_email(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
+
+    pub async fn send_sign_in_email(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
+
+    pub async fn send_email_changed_email(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
+
+    pub async fn send_verify_email_email(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
+
+    pub async fn send_group_invitation_email(&self) -> Result<(), Error> {
+        unimplemented!();
     }
 }
 

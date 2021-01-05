@@ -1,19 +1,23 @@
 use futures::stream::StreamExt;
-use kernel::{drivers::Queue, Error};
+use kernel::{drivers::Queue, Error, Service};
 use std::{sync::Arc, time::Duration};
-use stdx::log::error;
+use stdx::log::{error, info};
 use tokio::{sync::mpsc, time::delay_for};
 use worker::Worker;
 
 mod worker;
 
-pub async fn run(queue: Arc<dyn Queue>, concurrency: usize) -> Result<(), Error> {
+pub async fn run(kernel_service: Arc<Service>, queue: Arc<dyn Queue>) -> Result<(), Error> {
     let ten_ms = Duration::from_millis(10);
     let one_hundred_ms = Duration::from_millis(100);
 
-    let worker = Worker::new();
+    let config = kernel_service.config();
+    let concurrency = config.worker.concurrency;
+    let worker = Worker::new(kernel_service);
     let (mut tx, rx) = mpsc::channel(concurrency);
     let queue_tx = queue.clone();
+
+    info!("worker.run: Starting worker. concurrency={}", concurrency);
 
     tokio::spawn(async move {
         loop {
