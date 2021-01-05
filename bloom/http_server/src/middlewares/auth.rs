@@ -53,6 +53,7 @@
 // 	token = parts[1]
 // 	return
 // }
+use crate::context::Actor;
 use actix_web::Result;
 use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
@@ -64,11 +65,17 @@ use futures::{
     future::{err, ok, Ready},
     Future,
 };
-use std::{cell::RefCell, convert::TryFrom, pin::Pin, rc::Rc, sync::Arc, task::{Context, Poll}};
-use stdx::{log::error, ulid::Ulid};
+use kernel::Error as kernelError;
 use kernel::Service as KernelService;
-
-use crate::context::Actor;
+use std::{
+    cell::RefCell,
+    convert::TryFrom,
+    pin::Pin,
+    rc::Rc,
+    sync::Arc,
+    task::{Context, Poll},
+};
+use stdx::log::error;
 
 /// The header get by the middleware
 pub const AUTHORIZATION_HEADER: &str = "authorization";
@@ -83,12 +90,29 @@ struct AuthorizationToken {
 }
 
 impl TryFrom<String> for AuthorizationToken {
-    type Error = Error;
+    type Error = kernelError;
 
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        Ok(AuthorizationToken{
-            token_type: AuthorizationTokenType::Basic, // TODO
-            token: String::new(), // TODO
+    fn try_from(header_value: String) -> Result<Self, Self::Error> {
+        let parts: Vec<String> = header_value.trim().split(' ').map(|part| part.to_string()).collect();
+        if parts.len() != 2 {
+            return Err(kernelError::InvalidArgument(String::from(
+                "Invalid Authorization token",
+            )));
+        }
+
+        let token_type = match parts[0].as_str() {
+            "basic" => AuthorizationTokenType::Basic,
+            "anonnymous" => AuthorizationTokenType::Anonymous,
+            _ => {
+                return Err(kernelError::InvalidArgument(String::from(
+                    "Invalid Authorization token",
+                )))
+            }
+        };
+
+        Ok(AuthorizationToken {
+            token_type,
+            token: parts[1].clone(),
         })
     }
 }
@@ -131,7 +155,6 @@ pub struct AuthMiddleware2<S> {
     kernel_service: Arc<KernelService>,
 }
 
-
 impl<S, B> Service for AuthMiddleware2<S>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
@@ -163,24 +186,40 @@ where
             }
         };
         let service = self.service.clone();
-        let mut actor =  Actor::None;
+        let mut actor = Actor::None;
         let kernel_service = self.kernel_service.clone();
 
         Box::pin(async move {
             if let Some(auth_header) = auth_header {
-                if let Some(auth_token) = AuthorizationToken::try_from(auth_header).ok() {
-                    actor = match auth_token.token_type {
-                        AuthorizationTokenType::Basic => {
-                            let user = kernel_service.decode_and_check_session_token(auth_token.token).await.ok();
-                            match user {
-                                Some(user) => Actor::User(user),
-                                None => Actor::None,
+                match AuthorizationToken::try_from(auth_header) {
+                    Ok(auth_token) => {
+                        actor = match auth_token.token_type {
+                            AuthorizationTokenType::Basic => {
+                                match kernel_service.decode_and_validate_session_token(auth_token.token).await {
+                                    Ok(user) => Actor::User(user),
+                                    Err(err) => {
+                                        error!("middlewares/auth: decoding session token: {}", err);
+                                        Actor::None
+                                    }
+                                }
                             }
-                        }
-                        AuthorizationTokenType::Anonymous => {
-                            Actor::Anonymous(Ulid::new().into()) // TODO
-                        }
-                    };
+                            AuthorizationTokenType::Anonymous => {
+                                match kernel_service
+                                    .decode_and_validate_anonymous_token(auth_token.token)
+                                    .await
+                                {
+                                    Ok(anonymous_id) => Actor::Anonymous(anonymous_id),
+                                    Err(err) => {
+                                        error!("middlewares/auth: decoding anonymous token: {}", err);
+                                        Actor::None
+                                    }
+                                }
+                            }
+                        };
+                    }
+                    Err(err) => {
+                        error!("middlewares/auth: decoding auth token: {}", err);
+                    }
                 }
             }
 
@@ -201,8 +240,8 @@ impl FromRequest for Actor {
         if let Some(actor) = req.extensions().get::<Actor>() {
             ok(actor.clone())
         } else {
-            error!("middlewares/request_id: request_id is missing");
-            err(ErrorInternalServerError("request_id is missing"))
+            error!("middlewares/auth: auth is missing");
+            err(ErrorInternalServerError("auth is missing"))
         }
     }
 }

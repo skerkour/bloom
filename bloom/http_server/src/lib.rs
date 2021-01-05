@@ -18,7 +18,9 @@ async fn route_index() -> Result<NamedFile, actix_web::Error> {
 
 pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::Error> {
     let config = kernel_service.config();
-    let context = Arc::new(ServerContext { kernel_service: kernel_service.clone() });
+    let context = Arc::new(ServerContext {
+        kernel_service: kernel_service.clone(),
+    });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);
     info!("Starting HTTP server. endpoint={:?}", &endpoint);
