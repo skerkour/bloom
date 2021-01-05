@@ -142,6 +142,10 @@ impl Service {
     pub async fn send_group_invitation_email(&self) -> Result<(), Error> {
         unimplemented!();
     }
+
+    pub async fn decode_and_check_session_token(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
 }
 
 // #[async_trait::async_trait]

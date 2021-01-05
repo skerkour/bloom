@@ -1,5 +1,5 @@
 use env_logger::Builder;
-use kernel::{config::Config, drivers::queue::postgres::PostgresQueue, Error};
+use kernel::{Error, config::Config, drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage}};
 use std::sync::Arc;
 
 pub fn run() -> Result<(), Error> {
@@ -20,7 +20,11 @@ pub fn run() -> Result<(), Error> {
     runtime.block_on(async move {
         let db = kernel::db::connect(&config.database).await?;
         let queue = Arc::new(PostgresQueue::new(db.clone()));
+        let mailer = Arc::new(SesMailer::new());
+        let storage = Arc::new(S3Storage::new());
 
-        worker::run(queue, config.worker.concurrency).await
+        let kernel_service = Arc::new(kernel::Service::new(config, db, queue.clone(), mailer, storage));
+
+        worker::run(kernel_service, queue).await
     })
 }
