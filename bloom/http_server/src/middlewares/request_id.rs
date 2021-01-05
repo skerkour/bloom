@@ -4,7 +4,10 @@ use actix_web::http::header::{HeaderName, HeaderValue};
 use actix_web::Result;
 use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use futures::future::{err, ok, Ready};
+use futures::{
+    future::{err, ok, LocalBoxFuture, Ready},
+    FutureExt,
+};
 use std::task::{Context, Poll};
 use stdx::{ulid::Ulid, uuid::Uuid};
 
@@ -46,28 +49,32 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = S::Future;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, req: ServiceRequest) -> Self::Future {
         // generate request id
         let request_id: Uuid = Ulid::new().into();
-
-        // add request id header (for using in the log wrapper)
-        req.headers_mut().append(
-            HeaderName::from_static(REQUEST_ID_HEADER),
-            HeaderValue::from_str(&request_id.to_hyphenated().to_string())
-                .expect("middlewares/request_id: generating header value"),
-        );
-
         // add request id extension (for extractor)
         req.extensions_mut().insert(RequestId(request_id));
+        let req_fut = self.service.call(req);
 
-        // propagate the call
-        self.service.call(req)
+        async move {
+            let mut res = req_fut.await?;
+
+            // add request id header (for using in the log wrapper)
+            res.headers_mut().insert(
+                HeaderName::from_static(REQUEST_ID_HEADER),
+                HeaderValue::from_str(&request_id.to_hyphenated().to_string())
+                    .expect("middlewares/request_id: generating header value"),
+            );
+
+            Ok(res)
+        }
+        .boxed_local()
     }
 }
 

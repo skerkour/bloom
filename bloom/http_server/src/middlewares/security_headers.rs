@@ -5,7 +5,10 @@ use actix_web::{
     dev::{Service, Transform},
     http::{HeaderName, HeaderValue},
 };
-use futures::future::{ok, Ready};
+use futures::{
+    future::{ok, LocalBoxFuture, Ready},
+    FutureExt,
+};
 use kernel::config::Config;
 use std::{
     sync::Arc,
@@ -81,46 +84,53 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = S::Future;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
-        let headers = req.headers_mut();
-        headers.insert(
-            HeaderName::from_static("X-Content-Type-Options"),
-            HeaderValue::from_static("nosniff"),
-        );
-        headers.insert(
-            HeaderName::from_static("X-Frame-Options"),
-            HeaderValue::from_static("Deny"),
-        );
-        headers.insert(
-            HeaderName::from_static("X-XSS-Protection"),
-            HeaderValue::from_static("1; mode=block"),
-        );
-        headers.insert(
-            HeaderName::from_static("X-Download-Options"),
-            HeaderValue::from_static("noopen"),
-        );
-        headers.insert(
-            HeaderName::from_static("Strict-Transport-Security"),
-            HeaderValue::from_static("max-age=63072000; includeSubDomains; preload"),
-        );
-        headers.insert(
-            HeaderName::from_static("Content-Security-Policy"),
-            HeaderValue::from_str(&self.content_security_policy_value)
-                .expect("middlewares/security_headers: generating Content-Security-Policy header"),
-        );
-        headers.insert(
-            HeaderName::from_static("Expect-CT"),
-            HeaderValue::from_str(&self.expect_ct_value)
-                .expect("middlewares/security_headers: generating Expect-CT header"),
-        );
+    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+        let req_fut = self.service.call(req);
+        let content_security_policy_value = self.content_security_policy_value.clone();
+        let expect_ct_value = self.expect_ct_value.clone();
 
-        // propagate the call
-        self.service.call(req)
+        async move {
+            let mut res = req_fut.await?;
+
+            let headers = res.headers_mut();
+            headers.insert(
+                HeaderName::from_static("x-content-type-options"),
+                HeaderValue::from_static("nosniff"),
+            );
+            headers.insert(
+                HeaderName::from_static("x-frame-options"),
+                HeaderValue::from_static("Deny"),
+            );
+            headers.insert(
+                HeaderName::from_static("x-xss-protection"),
+                HeaderValue::from_static("1; mode=block"),
+            );
+            headers.insert(
+                HeaderName::from_static("x-download-options"),
+                HeaderValue::from_static("noopen"),
+            );
+            headers.insert(
+                HeaderName::from_static("strict-transport-security"),
+                HeaderValue::from_static("max-age=63072000; includeSubDomains; preload"),
+            );
+            headers.insert(
+                HeaderName::from_static("content-security-policy"),
+                HeaderValue::from_str(&content_security_policy_value)
+                    .expect("middlewares/security_headers: generating Content-Security-Policy header"),
+            );
+            headers.insert(
+                HeaderName::from_static("expect-ct"),
+                HeaderValue::from_str(&expect_ct_value)
+                    .expect("middlewares/security_headers: generating Expect-CT header"),
+            );
+            Ok(res)
+        }
+        .boxed_local()
     }
 }

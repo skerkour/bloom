@@ -21,7 +21,7 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
     let context = Arc::new(ServerContext { kernel_service });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);
-    info!("Starting server. endpoint={:?}", &endpoint);
+    info!("Starting HTTP server. endpoint={:?}", &endpoint);
     HttpServer::new(move || {
         App::new()
             .data(Arc::clone(&context))
@@ -31,6 +31,7 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
             .wrap(middlewares::CacheHeadersMiddleware)
             .service(
                 web::scope("/api")
+                    .wrap(middlewares::NoCacheHeadersMiddleware)
                     .service(web::resource("").route(web::get().to(api::index)))
                     .service(
                         // kernel

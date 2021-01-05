@@ -14,8 +14,7 @@ pub fn run() -> Result<(), kernel::Error> {
     } else {
         stdx::log::LevelFilter::Info
     };
-    let mut log_builder = Builder::new();
-    log_builder.filter_level(log_level);
+    Builder::new().filter_level(log_level).init();
 
     actix_web::rt::System::new("server::run").block_on(async move {
         // let mut runtime = tokio::runtime::Builder::new()

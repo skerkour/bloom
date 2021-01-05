@@ -12,10 +12,10 @@ use futures::{
 use std::task::{Context, Poll};
 
 /// Security headers middleware.
-/// sets the correct headers for CDN caching
-pub struct CacheHeadersMiddleware;
+/// sets the correct headers for no API caching
+pub struct NoCacheHeadersMiddleware;
 
-impl<S, B> Transform<S> for CacheHeadersMiddleware
+impl<S, B> Transform<S> for NoCacheHeadersMiddleware
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -25,20 +25,20 @@ where
     type Response = ServiceResponse<B>;
     type Error = Error;
     type InitError = ();
-    type Transform = CacheHeadersMiddleware2<S>;
+    type Transform = NoCacheHeadersMiddleware2<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(CacheHeadersMiddleware2 { service })
+        ok(NoCacheHeadersMiddleware2 { service })
     }
 }
 
 /// Actual actix-web middleware
-pub struct CacheHeadersMiddleware2<S> {
+pub struct NoCacheHeadersMiddleware2<S> {
     service: S,
 }
 
-impl<S, B> Service for CacheHeadersMiddleware2<S>
+impl<S, B> Service for NoCacheHeadersMiddleware2<S>
 where
     S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
@@ -61,12 +61,14 @@ where
             let headers = res.headers_mut();
             headers.append(
                 HeaderName::from_static("cache-control"),
-                HeaderValue::from_static("public, max-age=0, s-maxage=31536000"),
+                HeaderValue::from_static("no-cache, no-store, no-transform, must-revalidate, private, max-age=0"),
             );
             headers.append(
                 HeaderName::from_static("x-accel-expires"),
-                HeaderValue::from_static("31536000"),
+                HeaderValue::from_static("0"),
             );
+            headers.append(HeaderName::from_static("pragma"), HeaderValue::from_static("no-cache"));
+            // "Expires": time.Unix(0, 0).Format(time.RFC1123),
 
             Ok(res)
         }

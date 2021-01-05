@@ -11,6 +11,8 @@ pub struct PostgresQueue {
     max_attempts: u32,
 }
 
+const MAX_FAILED_ATTEMPTS: i32 = 5;
+
 /// A Job, as represented in DB
 /// we use a BIGSERIAL instead of habitual UUID (ULID) to improve performance:
 /// faster index insert / retrieves, smaller index size...
@@ -60,19 +62,19 @@ impl PostgresQueue {
 impl Queue for PostgresQueue {
     async fn push(&self, job: Message, date: Option<chrono::DateTime<chrono::Utc>>) -> Result<(), crate::Error> {
         let scheduled_for = date.unwrap_or(chrono::Utc::now());
-        let receive_count = 0;
+        let failed_attempts = 0;
         let message = Json(job);
         let status = PostgresJobStatus::Queued;
         let now = chrono::Utc::now();
         let query = "INSERT INTO kernel_queue
-            (created_at, updated_at, scheduled_for, receive_count, status, message)
+            (created_at, updated_at, scheduled_for, failed_attempts, status, message)
             VALUES ($1, $2, $3, $4, $5, $6)";
 
         sqlx::query(query)
             .bind(now)
             .bind(now)
             .bind(scheduled_for)
-            .bind(receive_count)
+            .bind(failed_attempts)
             .bind(status)
             .bind(message)
             .execute(&self.db)
@@ -89,7 +91,19 @@ impl Queue for PostgresQueue {
     }
 
     async fn fail_job(&self, job_id: String) -> Result<(), crate::Error> {
-        unimplemented!(); // TODO
+        let job_id = job_id.parse::<i64>()?;
+        let now = chrono::Utc::now();
+        let query = "UPDATE kernel_queue
+            SET status = $1, updated_at = $2, failed_attempts = failed_attempts + 1
+            WHERE id = $3";
+
+        sqlx::query(query)
+            .bind(PostgresJobStatus::Queued)
+            .bind(now)
+            .bind(job_id)
+            .execute(&self.db)
+            .await?;
+        Ok(())
     }
 
     async fn pull(&self, number_of_jobs: u32) -> Result<Vec<Job>, crate::Error> {
@@ -100,10 +114,10 @@ impl Queue for PostgresQueue {
             WHERE id IN (
                 SELECT id
                 FROM kernel_queue
-                WHERE status = $3 AND scheduled_for >= $4
+                WHERE status = $3 AND scheduled_for >= $4 AND failed_attempts <= $5
                 ORDER BY scheduled_for
                 FOR UPDATE SKIP LOCKED
-                LIMIT $5
+                LIMIT $6
             )
             RETURNING *";
 
@@ -112,6 +126,7 @@ impl Queue for PostgresQueue {
             .bind(now)
             .bind(PostgresJobStatus::Queued)
             .bind(now)
+            .bind(MAX_FAILED_ATTEMPTS)
             .bind(number_of_jobs)
             .fetch_all(&self.db)
             .await?;
@@ -128,6 +143,7 @@ impl Queue for PostgresQueue {
 
 impl PostgresQueue {
     // TODO: repush jobs that were running for to much time
+    // TODO: mark job as failed
     async fn watch_loop(&self) {
         loop {
             delay_for(Duration::from_secs(5)).await;

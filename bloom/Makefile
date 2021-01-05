@@ -14,7 +14,7 @@ all: build
 
 .PHONY: dev
 dev:
-	RUST_LOG=debug cargo watch -x 'run -- server'
+	cargo watch -x 'run -- server'
 
 .PHONY: build
 build:

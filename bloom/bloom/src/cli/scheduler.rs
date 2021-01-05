@@ -9,8 +9,7 @@ pub fn run() -> Result<(), Error> {
     } else {
         stdx::log::LevelFilter::Info
     };
-    let mut log_builder = Builder::new();
-    log_builder.filter_level(log_level);
+    Builder::new().filter_level(log_level).init();
 
     error!("scheduler: TODO");
     Ok(())
