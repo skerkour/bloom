@@ -16,6 +16,17 @@ all: build
 dev:
 	cargo watch -x 'run -- server'
 
+
+.PHONY: dev_worker
+dev_worker:
+	cargo watch -x 'run -- worker'
+
+
+.PHONY: dev_scheduler
+dev_scheduler:
+	cargo watch -x 'run -- scheduler'
+
+
 .PHONY: build
 build:
 	cargo build --release

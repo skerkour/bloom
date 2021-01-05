@@ -31,9 +31,13 @@ pub async fn run(kernel_service: Arc<Service>, queue: Arc<dyn Queue>) -> Result<
             };
 
             for job in jobs {
+                let job_id = job.id.clone();
                 match tx.send(job).await {
                     Ok(_) => {}
-                    Err(err) => error!("worker.run: sending job: {}", err),
+                    Err(err) => {
+                        error!("worker.run: sending job: {}", err);
+                        let _ = queue_tx.fail_job(job_id).await; // TODO: handle error?
+                    },
                 }
             }
             delay_for(ten_ms).await;
@@ -43,6 +47,8 @@ pub async fn run(kernel_service: Arc<Service>, queue: Arc<dyn Queue>) -> Result<
 
     rx.for_each_concurrent(concurrency, |job| async {
         let job_id = job.id.clone();
+
+        // TODO: handle error?
         let _ = match worker.handle_job(job).await {
             Ok(_) => queue.delete_job(job_id).await,
             Err(err) => {
