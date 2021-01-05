@@ -1,6 +1,7 @@
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
 use sqlx::types::Uuid;
+use stdx::log::error;
 
 impl Repository {
     pub async fn find_groups_for_user<'c, C: Queryer<'c>>(
@@ -19,7 +20,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_groups_for_user: finding groups: {}", &err);
+                error!("kernel.find_groups_for_user: finding groups: {}", &err);
                 Err(err.into())
             }
             Ok(res) => Ok(res),

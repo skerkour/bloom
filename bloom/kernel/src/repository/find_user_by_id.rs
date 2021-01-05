@@ -1,6 +1,6 @@
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
-use stdx::uuid::Uuid;
+use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
     pub async fn find_user_by_id<'c, C: Queryer<'c>>(&self, db: C, user_id: Uuid) -> Result<entities::User, Error> {
@@ -12,7 +12,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_user_by_id: finding user: {}", &err);
+                error!("kernel.find_user_by_id: finding user: {}", &err);
                 Err(err.into())
             }
             Ok(None) => Err(Error::UserNotFound),

@@ -5,7 +5,7 @@ use crate::{
     errors::kernel::Error,
 };
 use std::collections::HashSet;
-use stdx::{chrono::Utc, ulid::Ulid};
+use stdx::{chrono::Utc, log::error, ulid::Ulid};
 
 impl Service {
     pub async fn invite_people_in_group(
@@ -100,7 +100,7 @@ impl Service {
                 invitation_id: invitation.id,
             };
             match self.queue.push(job, None).await {
-                Err(err) => println!("kernel.invite_people_in_group: queueing invitation email: {}", err),
+                Err(err) => error!("kernel.invite_people_in_group: queueing invitation email: {}", err),
                 Ok(_) => {}
             };
         }

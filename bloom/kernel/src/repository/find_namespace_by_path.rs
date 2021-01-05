@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
 
@@ -15,7 +17,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_namespace_by_path: finding namespace: {}", &err);
+                error!("kernel.find_namespace_by_path: finding namespace: {}", &err);
                 Err(err.into())
             }
             Ok(None) => Err(Error::NamespaceNotFound),

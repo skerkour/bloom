@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use env_logger::Builder;
 use kernel::{
     config::Config,
     drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
@@ -7,14 +8,21 @@ use kernel::{
 // use tokio::task;
 
 pub fn run() -> Result<(), kernel::Error> {
+    let config = Config::load()?;
+    let log_level = if config.debug {
+        stdx::log::LevelFilter::Debug
+    } else {
+        stdx::log::LevelFilter::Info
+    };
+    let mut log_builder = Builder::new();
+    log_builder.filter_level(log_level);
+
     actix_web::rt::System::new("server::run").block_on(async move {
         // let mut runtime = tokio::runtime::Builder::new()
         //     .threaded_scheduler()
         //     .enable_all()
         //     .build()
         //     .unwrap();
-
-        let config = Config::load()?;
 
         // // see here for how to run actix-web in a tokio runtime https://github.com/actix/actix-web/issues/1283
         // let actix_system_local_set = task::LocalSet::new();

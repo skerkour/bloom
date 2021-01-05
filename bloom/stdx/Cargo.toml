@@ -22,3 +22,4 @@ serde = { version = "1", features = ["derive"] }
 dotenv = "0.15"
 num_cpus = "1"
 regex = "1"
+log = "0.4"

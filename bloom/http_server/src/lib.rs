@@ -4,6 +4,7 @@
 use actix_files::NamedFile;
 use actix_web::{middleware, web, App, HttpServer};
 use std::sync::Arc;
+use stdx::log::info;
 
 mod context;
 mod middlewares;
@@ -20,7 +21,7 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
     let context = Arc::new(ServerContext { kernel_service });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);
-    println!("Starting server at: {:?}", &endpoint);
+    info!("Starting server. endpoint={:?}", &endpoint);
     HttpServer::new(move || {
         App::new()
             .data(Arc::clone(&context))

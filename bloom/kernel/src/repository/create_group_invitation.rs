@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db::Queryer, entities::GroupInvitation, errors::kernel::Error};
 
@@ -22,7 +24,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.create_group_invitation: Inserting group invitation: {}", &err);
+                error!("kernel.create_group_invitation: Inserting group invitation: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

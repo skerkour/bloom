@@ -130,7 +130,7 @@ mod tests {
         ];
 
         for (input, expected) in tests {
-            // println!("{} - {}", input, expected);
+            // info!("{} - {}", input, expected);
             assert_eq!(email(input), expected, "Email `{}` was not classified correctly", input);
         }
     }

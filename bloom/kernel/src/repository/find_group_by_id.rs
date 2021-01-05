@@ -1,6 +1,6 @@
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
-use stdx::uuid::Uuid;
+use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
     pub async fn find_group_by_id<'c, C: Queryer<'c>>(&self, db: C, group_id: Uuid) -> Result<entities::Group, Error> {
@@ -12,7 +12,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_group_by_id: finding group: {}", &err);
+                error!("kernel.find_group_by_id: finding group: {}", &err);
                 Err(err.into())
             }
             Ok(None) => Err(Error::GroupNotFound),

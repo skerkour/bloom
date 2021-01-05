@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
 
@@ -20,7 +22,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.update_pending_session: updating pending session: {}", &err);
+                error!("kernel.update_pending_session: updating pending session: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

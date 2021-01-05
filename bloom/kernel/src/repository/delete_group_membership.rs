@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db::Queryer, entities::GroupMembership, errors::kernel::Error};
 
@@ -16,7 +18,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.kernel_groups_members: Deleting group member: {}", &err);
+                error!("kernel.kernel_groups_members: Deleting group member: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

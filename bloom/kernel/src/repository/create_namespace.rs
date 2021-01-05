@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
 
@@ -22,7 +24,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.create_namespace: Inserting namespace: {}", &err);
+                error!("kernel.create_namespace: Inserting namespace: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

@@ -1,7 +1,7 @@
-use std::{sync::Arc, time::Duration};
-
 use futures::stream::StreamExt;
 use kernel::{drivers::Queue, Error};
+use std::{sync::Arc, time::Duration};
+use stdx::log::error;
 use tokio::{sync::mpsc, time::delay_for};
 use worker::Worker;
 
@@ -20,7 +20,7 @@ pub async fn run(queue: Arc<dyn Queue>, concurrency: usize) -> Result<(), Error>
             let jobs = match queue_tx.pull(50).await {
                 Ok(jobs) => jobs,
                 Err(err) => {
-                    println!("worker.run: pulling jobs: {}", err);
+                    error!("worker.run: pulling jobs: {}", err);
                     delay_for(one_hundred_ms).await;
                     Vec::new()
                 }
@@ -29,7 +29,7 @@ pub async fn run(queue: Arc<dyn Queue>, concurrency: usize) -> Result<(), Error>
             for job in jobs {
                 match tx.send(job).await {
                     Ok(_) => {}
-                    Err(err) => println!("worker.run: sending job: {}", err),
+                    Err(err) => error!("worker.run: sending job: {}", err),
                 }
             }
             delay_for(ten_ms).await;
@@ -42,7 +42,7 @@ pub async fn run(queue: Arc<dyn Queue>, concurrency: usize) -> Result<(), Error>
         let _ = match worker.handle_job(job).await {
             Ok(_) => queue.delete_job(job_id).await,
             Err(err) => {
-                println!("worker.run: handling job: {}", &err);
+                error!("worker.run: handling job: {}", &err);
                 queue.fail_job(job_id).await
             }
         };

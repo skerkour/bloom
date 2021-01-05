@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
 
@@ -15,7 +17,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_user_by_email_or_username: finding user: {}", &err);
+                error!("kernel.find_user_by_email_or_username: finding user: {}", &err);
                 Err(err.into())
             }
             Ok(None) => Err(Error::UserNotFound),

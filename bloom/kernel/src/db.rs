@@ -1,6 +1,7 @@
 use crate::config;
 use sqlx::{postgres::PgPoolOptions, Executor, Pool, Postgres, Transaction};
 use std::time::Duration;
+use stdx::log::error;
 
 pub type DB = Pool<Postgres>;
 pub trait Queryer<'c>: Executor<'c, Database = sqlx::Postgres> {}
@@ -21,7 +22,7 @@ pub async fn connect(database: &config::Database) -> Result<DB, crate::Error> {
         .connect(&database.url)
         .await
         .map_err(|err| {
-            println!("db: connecting to DB: {}", err);
+            error!("db: connecting to DB: {}", err);
             err.into()
         })
 }

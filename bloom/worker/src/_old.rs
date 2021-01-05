@@ -1,18 +1,18 @@
 
 // async fn handle_job_ref(client: &Client, job: Job) {
-//     println!("received job({:?})", &job.payload);
+//     info!("received job({:?})", &job.payload);
 //     let resp = client.get(&job.event).send().await.unwrap();
 //     let headers = resp.headers();
 //     let x_cache_header = headers.get("x-cache");
-//     println!("completed job({:?}): {:?}", &job.payload, x_cache_header);
+//     info!("completed job({:?}): {:?}", &job.payload, x_cache_header);
 // }
 
 // async fn handle_job_arc(client: Arc<Client>, job: Job) {
-//     println!("received job({:?})", &job.payload);
+//     info!("received job({:?})", &job.payload);
 //     let resp = client.get(&job.event).send().await.unwrap();
 //     let headers = resp.headers();
 //     let x_cache_header = headers.get("x-cache");
-//     println!("completed job({:?}): {:?}", &job.payload, x_cache_header);
+//     info!("completed job({:?}): {:?}", &job.payload, x_cache_header);
 // }
 
 
@@ -33,17 +33,17 @@
 // consumer_stream
 // .for_each(|task| async {
 //     match task {
-//         Ok(task) => println!("completed request {:?}", &task.payload),
-//                 Err(err) => eprintln!("Got an error: {}", err),
+//         Ok(task) => info!("completed request {:?}", &task.payload),
+//                 Err(err) => einfo!("Got an error: {}", err),
 //     }
 // })
 // .await;
 // while let Some(task) = consumer_stream.next().await {
 //     match task {
-//         Ok(task) => println!("completed request {:?}", &task.unwrap().payload),
-//         Err(err) => eprintln!("Error: {}", err),
+//         Ok(task) => info!("completed request {:?}", &task.unwrap().payload),
+//         Err(err) => einfo!("Error: {}", err),
 //     }
-//     // println!("completed request {:?}", &task.payload);
+//     // info!("completed request {:?}", &task.payload);
 // }
 
 // producer_task.await.unwrap();

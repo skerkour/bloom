@@ -1,3 +1,5 @@
+use stdx::log::error;
+
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
 
@@ -21,7 +23,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.create_session: Inserting session: {}", &err);
+                error!("kernel.create_session: Inserting session: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

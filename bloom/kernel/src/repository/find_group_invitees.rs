@@ -1,6 +1,6 @@
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
-use stdx::uuid::Uuid;
+use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
     pub async fn find_group_invitees<'c, C: Queryer<'c>>(
@@ -18,7 +18,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.find_group_invitees: finding invitees: {}", &err);
+                error!("kernel.find_group_invitees: finding invitees: {}", &err);
                 Err(err.into())
             }
             Ok(res) => Ok(res),

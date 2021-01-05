@@ -13,6 +13,7 @@ pub use chrono;
 pub use dotenv;
 pub use image;
 pub use lazy_static;
+pub use log;
 pub use num_cpus;
 pub use rand;
 pub use regex;

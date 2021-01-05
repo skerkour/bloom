@@ -1,5 +1,6 @@
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
+use stdx::log::error;
 
 impl Repository {
     pub async fn create_group_membership<'c, C: db::Queryer<'c>>(
@@ -20,7 +21,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.create_group_membership: Inserting membership: {}", &err);
+                error!("kernel.create_group_membership: Inserting membership: {}", &err);
                 Err(err.into())
             }
             Ok(_) => Ok(()),

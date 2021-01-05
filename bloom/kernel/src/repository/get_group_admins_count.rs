@@ -1,6 +1,6 @@
 use super::Repository;
 use crate::{consts::GroupRole, db::Queryer, errors::kernel::Error};
-use stdx::uuid::Uuid;
+use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
     pub async fn get_group_admins_count<'c, C: Queryer<'c>>(&self, db: C, group_id: Uuid) -> Result<i64, Error> {
@@ -13,7 +13,7 @@ impl Repository {
             .await
         {
             Err(err) => {
-                println!("kernel.get_group_admins_count: finding admins count: {}", &err);
+                error!("kernel.get_group_admins_count: finding admins count: {}", &err);
                 Err(err)
             }
             Ok(res) => Ok(res),
