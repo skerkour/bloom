@@ -15,7 +15,6 @@ const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
 const ENV_APP_MASTER_KEY: &str = "APP_MASTER_KEY";
 const ENV_APP_OLD_MASTER_KEY: &str = "APP_OLD_MASTER_KEY";
 const ENV_APP_SELF_HOSTED: &str = "APP_SELF_HOSTED";
-const ENV_APP_DEBUG: &str = "APP_DEBUG";
 const ENV_DATABASE_URL: &str = "DATABASE_URL";
 const ENV_DATABASE_POOL_SIZE: &str = "DATABASE_POOL_SIZE";
 const ENV_HTTP_PORT: &str = "PORT";
@@ -47,12 +46,11 @@ const ENV_SENTRY_DSN: &str = "SENTRY_DSN";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    pub env: String,
+    pub env: Env,
     pub base_url: String,
     pub master_key: Vec<u8>,
     pub old_master_key: Option<Vec<u8>>, // used for key rotation
     pub self_hosted: bool,
-    pub debug: bool,
     // CountriesDataFile string `env:"APP_COUNTRIES_DATA" envDefault:"countries.json"`
     pub http: Http,
     pub database: Database,
@@ -66,12 +64,47 @@ pub struct Config {
     pub worker: Worker,
     pub sentry: Sentry,
 }
-
-const DEFAULT_APP_DEBUG: bool = false;
 const DEFAULT_APP_SELF_HOSTED: bool = false;
 const APP_ENV_DEV: &str = "dev";
 const APP_ENV_STAGING: &str = "staging";
 const APP_ENV_PRODUCTION: &str = "production";
+
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Env {
+    Dev,
+    Staging,
+    Production,
+}
+
+impl FromStr for Env {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Env, Error> {
+        match s {
+            APP_ENV_DEV => Ok(Env::Dev),
+            APP_ENV_STAGING => Ok(Env::Staging),
+            APP_ENV_PRODUCTION => Ok(Env::Production),
+            _ => Err(Error::InvalidArgument(format!(
+                "config: {} is not a valid env. Valid values are [{}, {}, {}]",
+                s,
+                Env::Dev,
+                Env::Staging,
+                Env::Production,
+            ))),
+        }
+    }
+}
+
+impl fmt::Display for Env {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Env::Dev => write!(f, "{}", APP_ENV_DEV),
+            Env::Staging => write!(f, "{}", APP_ENV_STAGING),
+            Env::Production => write!(f, "{}", APP_ENV_PRODUCTION),
+        }
+    }
+}
 
 /// Database contains the data necessary to connect to a database
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -262,7 +295,9 @@ impl Config {
         dotenv::dotenv().ok();
 
         // app
-        let env = std::env::var(ENV_APP_ENV).map_err(|_| env_not_found(ENV_APP_ENV))?;
+        let env = std::env::var(ENV_APP_ENV)
+            .map_err(|_| env_not_found(ENV_APP_ENV))?
+            .parse::<Env>()?;
         let base_url = std::env::var(ENV_APP_BASE_URL).map_err(|_| env_not_found(ENV_APP_BASE_URL))?;
         let master_key = std::env::var(ENV_APP_MASTER_KEY)
             .map_err(|_| env_not_found(ENV_APP_MASTER_KEY))
@@ -273,9 +308,6 @@ impl Config {
         let self_hosted = std::env::var(ENV_APP_SELF_HOSTED)
             .ok()
             .map_or(Ok(DEFAULT_APP_SELF_HOSTED), |env_val| env_val.parse::<bool>())?;
-        let debug = std::env::var(ENV_APP_DEBUG)
-            .ok()
-            .map_or(Ok(DEFAULT_APP_DEBUG), |env_val| env_val.parse::<bool>())?;
 
         // http
         let http_port = std::env::var(ENV_HTTP_PORT)
@@ -435,7 +467,6 @@ impl Config {
             master_key,
             old_master_key,
             self_hosted,
-            debug,
             http,
             database,
             smtp,
@@ -455,11 +486,7 @@ impl Config {
     }
 
     fn clean_and_validate(&mut self) -> Result<(), Error> {
-        // app
-        match self.env.as_str() {
-            APP_ENV_DEV | APP_ENV_STAGING | APP_ENV_PRODUCTION => Ok(()),
-            env => Err(Error::InvalidArgument(format!("config: Invalid env: {}", env))),
-        }?;
+        // TODO
         Ok(())
     }
 }

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use env_logger::Builder;
 use kernel::{
-    config::Config,
+    config::{Config, Env},
     drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
 };
 use stdx::log::LevelFilter;
@@ -10,10 +10,10 @@ use stdx::log::LevelFilter;
 
 pub fn run() -> Result<(), kernel::Error> {
     let config = Config::load()?;
-    let log_level = if config.debug {
-        LevelFilter::Debug
-    } else {
+    let log_level = if config.env == Env::Production {
         LevelFilter::Info
+    } else {
+        LevelFilter::Debug
     };
     Builder::new().filter_level(log_level).init();
 
