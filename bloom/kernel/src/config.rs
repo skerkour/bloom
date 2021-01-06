@@ -220,7 +220,7 @@ pub struct Aws {
     pub access_key_id: Option<String>,
     pub default_region: String,
 }
-const DEFAULT_AWS_REGION: &str = "eu-central-1"; // Ireland
+const DEFAULT_AWS_REGION: &str = "eu-west-1"; // Ireland
 
 /// Smtp contains the data necessary to send emails using the SMTP protocol
 #[derive(Debug, Clone, Serialize, Deserialize)]
