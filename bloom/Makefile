@@ -79,7 +79,8 @@ update:
 
 .PHONY: test
 test:
-	cargo test --doc --all
+	# cargo test --doc --all
+	cargo test --all
 
 
 .PHONY: clean
