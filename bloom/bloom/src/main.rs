@@ -1,4 +1,4 @@
-use clap::{App, SubCommand};
+use clap::{App, Arg, SubCommand};
 
 mod cli;
 
@@ -32,7 +32,12 @@ fn main() -> Result<(), kernel::Error> {
         .subcommand(SubCommand::with_name(cli::RELEASE_SUBCOMMAND).about(cli::RELEASE_DESCRIPTION))
         .subcommand(SubCommand::with_name(cli::SCHEDULER_SUBCOMMAND).about(cli::SCHEDULER_DESCRIPTION))
         .subcommand(SubCommand::with_name(cli::VERSION_SUBCOMMAND).about(cli::VERSION_DESCRIPTION))
-        .subcommand(SubCommand::with_name(cli::SERVER_SUBCOMMAND).about(cli::SERVER_DESCRIPTION))
+        .subcommand(
+            SubCommand::with_name(cli::SERVER_SUBCOMMAND)
+                .arg(Arg::with_name("scheduler"))
+                .arg(Arg::with_name("worker"))
+                .about(cli::SERVER_DESCRIPTION),
+        )
         .subcommand(SubCommand::with_name(cli::WORKER_SUBCOMMAND).about(cli::WORKER_DESCRIPTION))
         .setting(clap::AppSettings::ArgRequiredElseHelp)
         .setting(clap::AppSettings::DisableVersion)
@@ -42,7 +47,7 @@ fn main() -> Result<(), kernel::Error> {
     if let Some(_) = cli.subcommand_matches(cli::VERSION_SUBCOMMAND) {
         cli::version::run();
     } else if let Some(_) = cli.subcommand_matches(cli::SERVER_SUBCOMMAND) {
-        cli::server::run()?;
+        cli::server::run(cli)?;
     } else if let Some(_) = cli.subcommand_matches(cli::MASTERKEY_SUBCOMMAND) {
         cli::masterkey::run()?;
     } else if let Some(_) = cli.subcommand_matches(cli::RELEASE_SUBCOMMAND) {
