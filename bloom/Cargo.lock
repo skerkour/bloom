@@ -507,6 +507,7 @@ dependencies = [
  "http_server",
  "jemallocator",
  "kernel",
+ "scheduler",
  "serde",
  "stdx",
  "tokio",

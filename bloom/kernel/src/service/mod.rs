@@ -150,6 +150,10 @@ impl Service {
     pub async fn decode_and_validate_anonymous_token(&self, _token: String) -> Result<Uuid, Error> {
         unimplemented!();
     }
+
+    pub async fn dispatch_delete_old_data(&self) -> Result<(), Error> {
+        unimplemented!();
+    }
 }
 
 // #[async_trait::async_trait]

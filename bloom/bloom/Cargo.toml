@@ -24,6 +24,7 @@ kernel = { path = "../kernel" }
 http_server = { path = "../http_server" }
 worker = { path = "../worker" }
 stdx = { path = "../stdx" }
+scheduler = { path = "../scheduler" }
 
 actix-web = "3"
 clap = "2"
