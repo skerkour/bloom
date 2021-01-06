@@ -17,6 +17,11 @@ dev:
 	cargo watch -x 'run -- server'
 
 
+.PHONY: dev_all
+dev_all:
+	cargo watch -x 'run -- server --worker --scheduler'
+
+
 .PHONY: dev_worker
 dev_worker:
 	cargo watch -x 'run -- worker'

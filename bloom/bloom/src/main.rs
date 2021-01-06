@@ -34,8 +34,16 @@ fn main() -> Result<(), kernel::Error> {
         .subcommand(SubCommand::with_name(cli::VERSION_SUBCOMMAND).about(cli::VERSION_DESCRIPTION))
         .subcommand(
             SubCommand::with_name(cli::SERVER_SUBCOMMAND)
-                .arg(Arg::with_name("scheduler"))
-                .arg(Arg::with_name("worker"))
+                .arg(
+                    Arg::with_name("scheduler")
+                        .long("scheduler")
+                        .help("Also run the scheduler in parallel"),
+                )
+                .arg(
+                    Arg::with_name("worker")
+                        .long("worker")
+                        .help("Also run the worker in parallel"),
+                )
                 .about(cli::SERVER_DESCRIPTION),
         )
         .subcommand(SubCommand::with_name(cli::WORKER_SUBCOMMAND).about(cli::WORKER_DESCRIPTION))
@@ -47,7 +55,10 @@ fn main() -> Result<(), kernel::Error> {
     if let Some(_) = cli.subcommand_matches(cli::VERSION_SUBCOMMAND) {
         cli::version::run();
     } else if let Some(_) = cli.subcommand_matches(cli::SERVER_SUBCOMMAND) {
-        cli::server::run(cli)?;
+        cli::server::run(
+            cli.subcommand_matches(cli::SERVER_SUBCOMMAND)
+                .expect("bloom.main: unwrapping server subcommand_matches"),
+        )?;
     } else if let Some(_) = cli.subcommand_matches(cli::MASTERKEY_SUBCOMMAND) {
         cli::masterkey::run()?;
     } else if let Some(_) = cli.subcommand_matches(cli::RELEASE_SUBCOMMAND) {
