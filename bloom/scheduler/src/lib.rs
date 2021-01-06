@@ -33,6 +33,7 @@ pub async fn run(kernel_service: Arc<Service>) -> Result<(), Error> {
             return Err(Error::Internal);
         }
     };
+    info!("scheduler.run: scheduler stopped.");
 
     Ok(())
 }

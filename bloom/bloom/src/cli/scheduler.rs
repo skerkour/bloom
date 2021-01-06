@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
 use env_logger::Builder;
-use kernel::{Error, config::{Config, Env}, drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage}};
-use stdx::log::{LevelFilter};
+use kernel::{
+    config::{Config, Env},
+    drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
+    Error,
+};
+use stdx::log::LevelFilter;
 
 pub fn run() -> Result<(), Error> {
     let config = Config::load()?;
