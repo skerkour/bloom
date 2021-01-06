@@ -6,7 +6,7 @@ use scheduler::{Scheduler, TryToScheduler};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::sync::RwLock;
+use tokio::{sync::RwLock, task::JoinHandle};
 // use tokio::task::JoinHandle;
 // use tracing_futures::Instrument;
 
@@ -181,20 +181,18 @@ impl JobExecutor {
     }
 
     /// Starts the JobExecutor
-    pub async fn run(&self) -> Result<(), SchedulerError> {
+    pub async fn run(&self) -> Result<JoinHandle<()>, SchedulerError> {
         let was_running = self.executor.running.swap(true, Ordering::SeqCst);
         if !was_running {
             let executor = self.executor.clone();
-            // Ok(async move {
-            debug!("stdx/job_scheduler: Starting the job executor");
-            while executor.is_running() {
-                executor.run_pending_jobs().await;
-                tokio::time::delay_for(executor.sleep_between_checks.load(Ordering::SeqCst)).await;
-            }
-            debug!("stdx/job_scheduler: Job executor stopped");
-            // ()
-            // })
-            Ok(())
+            Ok(tokio::spawn(async move {
+                debug!("stdx/job_scheduler: Starting the job executor");
+                while executor.is_running() {
+                    executor.run_pending_jobs().await;
+                    tokio::time::delay_for(executor.sleep_between_checks.load(Ordering::SeqCst)).await;
+                }
+                debug!("stdx/job_scheduler: Job executor stopped");
+            }))
         } else {
             warn!("The JobExecutor is already running.");
             Err(SchedulerError::JobExecutionStateError {

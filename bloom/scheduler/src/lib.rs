@@ -26,13 +26,21 @@ pub async fn run(kernel_service: Arc<Service>) -> Result<(), Error> {
         .await;
 
     info!("scheduler.run: Starting scheduler.");
-    match scheduler.run().await {
-        Ok(_) => {}
+    let join_handle_res = match scheduler.run().await {
+        Ok(join_handle) => join_handle.await,
+        Err(err) => {
+            error!("scheduler.run: starting scheduler: {}", err);
+            return Err(Error::Internal);
+        }
+    };
+
+    match join_handle_res {
+        Ok(()) => {}
         Err(err) => {
             error!("scheduler.run: running scheduler: {}", err);
             return Err(Error::Internal);
         }
-    };
+    }
     info!("scheduler.run: scheduler stopped.");
 
     Ok(())
