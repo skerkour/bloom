@@ -3,13 +3,20 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use files::service;
 use kernel::http::api;
 use std::sync::Arc;
 use web::Json;
 
 pub async fn empty_trash(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::EmptyTrash>,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::EmptyTrash>,
 ) -> Result<api::Response<Success>, kernel::Error> {
-    unimplemented!(); // TODO
+    let input = input.into_inner();
+    let service_input = service::EmptyTrashInput {
+        namespace: input.namespace,
+    };
+    ctx.files_service.empty_trash(None, service_input).await?;
+
+    Ok(api::Response::ok(true.into()))
 }
