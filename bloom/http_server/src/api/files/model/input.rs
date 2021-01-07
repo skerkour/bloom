@@ -38,3 +38,9 @@ pub struct CreateFolder {
     pub parent_id: Id,
     pub name: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RenameFile {
+    pub file_id: Id,
+    pub name: String,
+}

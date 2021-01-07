@@ -8,3 +8,5 @@ mod move_files;
 pub use move_files::move_files;
 mod create_folder;
 pub use create_folder::create_folder;
+mod rename_file;
+pub use rename_file::rename_file;
