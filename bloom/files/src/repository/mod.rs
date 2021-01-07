@@ -1,3 +1,4 @@
+mod find_file_by_id;
 #[derive(Debug)]
 pub struct Repository {}
 
