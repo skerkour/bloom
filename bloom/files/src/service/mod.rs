@@ -5,6 +5,7 @@ use sqlx::types::Uuid;
 use std::sync::Arc;
 
 mod complete_file_upload;
+mod create_folder;
 
 #[derive(Debug)]
 pub struct Service {
@@ -27,9 +28,15 @@ impl Service {
 }
 
 #[derive(Debug, Clone)]
-pub struct CompleteFileUpload {
+pub struct CompleteFileUploadInput {
     pub upload_id: Uuid,
     pub parent_id: Uuid,
     pub name: String,
     pub mime_type: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct CreateFolderInput {
+    pub parent_id: Uuid,
+    pub name: String,
 }

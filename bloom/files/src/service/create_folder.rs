@@ -1,13 +1,13 @@
 use kernel::entities::User;
 
-use super::{CompleteFileUploadInput, Service};
+use super::{CreateFolderInput, Service};
 use crate::entities::File;
 
 impl Service {
-    pub async fn complete_file_upload(
+    pub async fn create_folder(
         &self,
         _actor: Option<User>,
-        _input: CompleteFileUploadInput,
+        _input: CreateFolderInput,
     ) -> Result<File, kernel::Error> {
         unimplemented!();
     }

@@ -3,13 +3,21 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use files::service;
 use kernel::http::api;
 use std::sync::Arc;
 use web::Json;
 
 pub async fn create_folder(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::CreateFolder>,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::CreateFolder>,
 ) -> Result<api::Response<File>, kernel::Error> {
-    unimplemented!();
+    let input = input.into_inner();
+    let service_input = service::CreateFolderInput {
+        parent_id: input.parent_id,
+        name: input.name,
+    };
+    let file = ctx.files_service.create_folder(None, service_input).await?;
+
+    Ok(api::Response::ok(file.into()))
 }

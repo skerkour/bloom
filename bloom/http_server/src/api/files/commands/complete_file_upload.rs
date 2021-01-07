@@ -13,7 +13,7 @@ pub async fn complete_file_upload(
     input: Json<input::CompleteFileUpload>,
 ) -> Result<api::Response<File>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = service::CompleteFileUpload {
+    let service_input = service::CompleteFileUploadInput {
         upload_id: input.upload_id,
         parent_id: input.parent_id,
         name: input.name,
