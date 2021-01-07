@@ -9,6 +9,7 @@ mod create_folder;
 mod empty_trash;
 mod move_files;
 mod move_files_to_trash;
+mod rename_file;
 
 #[derive(Debug)]
 pub struct Service {
@@ -68,4 +69,10 @@ pub struct EmptyTrashInput {
 pub struct MoveFilesInput {
     pub files: Vec<Uuid>,
     pub destination: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct RenameFileInput {
+    pub file_id: Uuid,
+    pub name: String,
 }

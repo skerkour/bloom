@@ -3,13 +3,21 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use files::service;
 use kernel::http::api;
 use std::sync::Arc;
 use web::Json;
 
 pub async fn rename_file(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::RenameFile>,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::RenameFile>,
 ) -> Result<api::Response<File>, kernel::Error> {
-    unimplemented!();
+    let input = input.into_inner();
+    let service_input = service::RenameFileInput {
+        file_id: input.file_id,
+        name: input.name,
+    };
+    let file = ctx.files_service.rename_file(None, service_input).await?;
+
+    Ok(api::Response::ok(file.into()))
 }
