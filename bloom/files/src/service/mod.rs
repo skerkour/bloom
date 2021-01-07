@@ -7,6 +7,7 @@ use stdx::uuid::Uuid;
 mod complete_file_upload;
 mod create_folder;
 mod empty_trash;
+mod find_file;
 mod move_files;
 mod move_files_to_trash;
 mod rename_file;
@@ -76,4 +77,10 @@ pub struct MoveFilesInput {
 pub struct RenameFileInput {
     pub file_id: Uuid,
     pub name: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct FindFileInput {
+    pub namespace: String,
+    pub file_id: Option<Uuid>,
 }
