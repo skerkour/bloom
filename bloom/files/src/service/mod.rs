@@ -1,12 +1,13 @@
 use crate::repository::Repository;
 use kernel::service::Service as KernelService;
 use kernel::{db::DB, drivers};
-use stdx::uuid::Uuid;
 use std::sync::Arc;
+use stdx::uuid::Uuid;
 
 mod complete_file_upload;
 mod create_folder;
 mod empty_trash;
+mod move_files_to_trash;
 
 #[derive(Debug)]
 pub struct Service {
@@ -41,8 +42,6 @@ pub struct CreateFolderInput {
     pub parent_id: Uuid,
     pub name: String,
 }
-
-
 
 #[derive(Debug, Clone)]
 pub struct TrashInput {
