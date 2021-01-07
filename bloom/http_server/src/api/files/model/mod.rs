@@ -8,3 +8,9 @@ pub struct File {
     id: Id,
     created_at: Time,
 }
+
+impl From<files::entities::File> for File {
+    fn from(_item: files::entities::File) -> Self {
+        unimplemented!(); // TODO
+    }
+}

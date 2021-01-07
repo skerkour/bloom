@@ -16,10 +16,14 @@ async fn route_index() -> Result<NamedFile, actix_web::Error> {
     Ok(NamedFile::open("public/index.html")?)
 }
 
-pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::Error> {
+pub async fn run(
+    kernel_service: Arc<kernel::Service>,
+    files_service: Arc<files::Service>,
+) -> Result<(), ::kernel::Error> {
     let config = kernel_service.config();
     let context = Arc::new(ServerContext {
         kernel_service: kernel_service.clone(),
+        files_service,
     });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);

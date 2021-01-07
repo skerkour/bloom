@@ -500,6 +500,7 @@ dependencies = [
  "actix-web",
  "clap",
  "env_logger",
+ "files",
  "http_server",
  "jemallocator",
  "kernel",
@@ -913,6 +914,11 @@ checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 [[package]]
 name = "files"
 version = "0.1.0"
+dependencies = [
+ "kernel",
+ "sqlx",
+ "stdx",
+]
 
 [[package]]
 name = "flate2"
@@ -1280,6 +1286,7 @@ version = "0.1.0"
 dependencies = [
  "actix-files",
  "actix-web",
+ "files",
  "futures",
  "kernel",
  "serde",

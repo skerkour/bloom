@@ -5,6 +5,7 @@ use stdx::uuid::Uuid;
 #[derive(Clone)]
 pub struct ServerContext {
     pub kernel_service: Arc<kernel::Service>,
+    pub files_service: Arc<files::Service>,
 }
 
 #[derive(Clone)]

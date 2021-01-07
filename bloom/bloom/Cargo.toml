@@ -25,6 +25,7 @@ http_server = { path = "../http_server" }
 worker = { path = "../worker" }
 stdx = { path = "../stdx" }
 scheduler = { path = "../scheduler" }
+files = { path = "../files" }
 
 actix-web = "3"
 clap = "2"

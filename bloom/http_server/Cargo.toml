@@ -9,6 +9,8 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
+files = { path = "../files" }
+
 
 actix-web = "3"
 actix-files = "0.4"

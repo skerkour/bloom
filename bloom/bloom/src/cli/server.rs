@@ -42,7 +42,14 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
         let mailer = Arc::new(SesMailer::new());
         let storage = Arc::new(S3Storage::new());
 
-        let kernel_service = Arc::new(kernel::Service::new(config, db, queue.clone(), mailer, storage));
+        let kernel_service = Arc::new(kernel::Service::new(
+            config,
+            db.clone(),
+            queue.clone(),
+            mailer,
+            storage.clone(),
+        ));
+        let files_service = Arc::new(files::Service::new(kernel_service.clone(), db, storage));
 
         if worker_flag {
             let kernel_service = kernel_service.clone();
@@ -55,7 +62,7 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
             tokio::spawn(async move { scheduler::run(kernel_service).await }); // TODO: handle error ?
         }
 
-        http_server::run(kernel_service.clone()).await?;
+        http_server::run(kernel_service.clone(), files_service).await?;
 
         Ok(sys.await?)
     })
