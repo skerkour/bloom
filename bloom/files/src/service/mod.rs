@@ -10,6 +10,7 @@ mod empty_trash;
 mod move_files;
 mod move_files_to_trash;
 mod rename_file;
+mod restore_files_from_trash;
 
 #[derive(Debug)]
 pub struct Service {
