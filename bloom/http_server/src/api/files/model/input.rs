@@ -11,3 +11,8 @@ pub struct File {
 pub struct Trash {
     pub namespace: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MoveFilesToTrash {
+    pub files: Vec<Id>,
+}

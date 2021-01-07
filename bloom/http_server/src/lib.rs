@@ -136,11 +136,18 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                     )
                     // files
                     .service(
-                        web::scope("/files").service(
-                            web::scope("/queries")
-                                .service(web::resource("/file").route(web::post().to(api::files::queries::file)))
-                                .service(web::resource("/trash").route(web::post().to(api::files::queries::trash))),
-                        ),
+                        web::scope("/files")
+                            .service(
+                                web::scope("/commands").service(
+                                    web::resource("/move_files_to_trash")
+                                        .route(web::post().to(api::files::commands::move_files_to_trash)),
+                                ),
+                            )
+                            .service(
+                                web::scope("/queries")
+                                    .service(web::resource("/file").route(web::post().to(api::files::queries::file)))
+                                    .service(web::resource("/trash").route(web::post().to(api::files::queries::trash))),
+                            ),
                     )
                     .default_service(
                         // 404 for GET request
