@@ -16,3 +16,8 @@ pub struct Trash {
 pub struct MoveFilesToTrash {
     pub files: Vec<Id>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RestoreFilesFromTrash {
+    pub files: Vec<Id>,
+}

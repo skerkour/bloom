@@ -138,10 +138,15 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                     .service(
                         web::scope("/files")
                             .service(
-                                web::scope("/commands").service(
-                                    web::resource("/move_files_to_trash")
-                                        .route(web::post().to(api::files::commands::move_files_to_trash)),
-                                ),
+                                web::scope("/commands")
+                                    .service(
+                                        web::resource("/move_files_to_trash")
+                                            .route(web::post().to(api::files::commands::move_files_to_trash)),
+                                    )
+                                    .service(
+                                        web::resource("/restore_files_from_trash")
+                                            .route(web::post().to(api::files::commands::restore_files_from_trash)),
+                                    ),
                             )
                             .service(
                                 web::scope("/queries")
