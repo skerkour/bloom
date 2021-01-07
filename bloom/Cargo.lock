@@ -329,10 +329,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "analytics"
-version = "0.1.0"
-
-[[package]]
 name = "ansi_term"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -673,13 +669,6 @@ name = "const_fn"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cd51eab21ab4fd6a3bf889e2d0958c0a6e3a61ad04260325e919e652a2a62826"
-
-[[package]]
-name = "contacts"
-version = "0.1.0"
-dependencies = [
- "kernel",
-]
 
 [[package]]
 name = "cookie"

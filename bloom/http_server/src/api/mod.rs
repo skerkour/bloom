@@ -2,6 +2,7 @@ use ::kernel::http::api;
 use actix_web::{web::Json, Responder};
 use std::collections::HashMap;
 
+pub mod files;
 pub mod kernel;
 pub mod scalars;
 

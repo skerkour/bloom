@@ -36,8 +36,8 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                 web::scope("/api")
                     .wrap(middlewares::NoCacheHeadersMiddleware)
                     .service(web::resource("").route(web::get().to(api::index)))
+                    // kernel
                     .service(
-                        // kernel
                         web::scope("/kernel")
                             .service(
                                 web::scope("/commands")
@@ -128,6 +128,14 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                                     ),
                             )
                             .service(web::scope("/queries")),
+                    )
+                    // files
+                    .service(
+                        web::scope("/files").service(
+                            web::scope("/queries")
+                                .service(web::resource("/file").route(web::post().to(api::files::queries::file)))
+                                .service(web::resource("/trash").route(web::post().to(api::files::queries::trash))),
+                        ),
                     )
                     .default_service(
                         // 404 for GET request
