@@ -88,9 +88,8 @@ CMD ["/bloom/bloom", "server", "--worker", "--scheduler"]
 LABEL maintainer="Bloom <https://bloom.sh>"
 LABEL homepage=https://bloom.sh
 LABEL org.opencontainers.image.name=bloom
-LABEL repository=https://github.com/bloom42/bloom
+LABEL repository=https://github.com/skerkour/bloom
 
 
-# If some crashes of slowness are noticed when running the static rust binary with musl and Jemalloc
-# it can be because musl's allocator is slow.
-# see here for details https://andygrove.io/2020/05/why-musl-extremely-slow/
+# If some crashes or slowness are noticed when running the static rust binary with musl and Jemalloc
+# see here: https://andygrove.io/2020/05/why-musl-extremely-slow/
