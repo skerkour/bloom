@@ -8,6 +8,7 @@ mod complete_file_upload;
 mod create_folder;
 mod empty_trash;
 mod find_file;
+mod find_trash;
 mod move_files;
 mod move_files_to_trash;
 mod rename_file;
