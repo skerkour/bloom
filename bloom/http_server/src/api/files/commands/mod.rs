@@ -10,3 +10,5 @@ mod create_folder;
 pub use create_folder::create_folder;
 mod rename_file;
 pub use rename_file::rename_file;
+mod complete_file_upload;
+pub use complete_file_upload::complete_file_upload;

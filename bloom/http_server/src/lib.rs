@@ -163,6 +163,10 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                                         web::resource("/rename_file")
                                             .route(web::post().to(api::files::commands::rename_file)),
                                     )
+                                    .service(
+                                        web::resource("/complete_file_upload")
+                                            .route(web::post().to(api::files::commands::complete_file_upload)),
+                                    ),
                             )
                             .service(
                                 web::scope("/queries")

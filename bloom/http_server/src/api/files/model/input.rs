@@ -29,7 +29,7 @@ pub struct EmptyTrash {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MoveFiles {
-    pub files:  Vec<Id>,
+    pub files: Vec<Id>,
     pub destination: Id,
 }
 
@@ -43,4 +43,12 @@ pub struct CreateFolder {
 pub struct RenameFile {
     pub file_id: Id,
     pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompleteFileUpload {
+    pub upload_id: Id,
+    pub parent_id: Id,
+    pub name: String,
+    pub mime_type: String,
 }

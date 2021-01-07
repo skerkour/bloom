@@ -155,6 +155,7 @@ impl Service {
         unimplemented!(); // TODO
     }
 
+    // create an entity that can be retrieved later with the size, the user and the tmp_key
     pub async fn get_signed_storage_url(
         &self,
         _actor: Option<User>,
@@ -376,8 +377,7 @@ pub struct DecodedSessionToken {
 #[derive(Debug, Clone)]
 pub struct SignedStorageUrl {
     pub url: String,
-    pub key: String,
-    pub size: u64,
+    pub upload_id: Uuid,
 }
 
 // type NamespaceAndCustomer struct {

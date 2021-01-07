@@ -129,16 +129,14 @@ impl From<kernel::entities::GroupInvitation> for GroupInvitation {
 #[derive(Serialize, Deserialize)]
 pub struct SignedStorageUrl {
     pub url: String,
-    pub key: String,
-    pub size: u64,
+    pub upload_id: Id,
 }
 
 impl From<kernel::service::SignedStorageUrl> for SignedStorageUrl {
     fn from(item: kernel::service::SignedStorageUrl) -> Self {
         SignedStorageUrl {
             url: item.url,
-            key: item.key,
-            size: item.size,
+            upload_id: item.upload_id,
         }
     }
 }
