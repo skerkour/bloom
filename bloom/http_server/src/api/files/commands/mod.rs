@@ -4,3 +4,5 @@ mod restore_files_from_trash;
 pub use restore_files_from_trash::restore_files_from_trash;
 mod empty_trash;
 pub use empty_trash::empty_trash;
+mod move_files;
+pub use move_files::move_files;

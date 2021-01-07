@@ -26,3 +26,9 @@ pub struct RestoreFilesFromTrash {
 pub struct EmptyTrash {
     pub namespace: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MoveFiles {
+    pub files:  Vec<Id>,
+    pub destination: Id,
+}

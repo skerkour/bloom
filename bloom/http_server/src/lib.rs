@@ -150,7 +150,11 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                                     .service(
                                         web::resource("/empty_trash")
                                             .route(web::post().to(api::files::commands::empty_trash)),
-                                    ),
+                                    )
+                                    .service(
+                                        web::resource("/move_files")
+                                            .route(web::post().to(api::files::commands::move_files)),
+                                    )
                             )
                             .service(
                                 web::scope("/queries")
