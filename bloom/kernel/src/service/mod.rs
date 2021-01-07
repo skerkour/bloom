@@ -124,35 +124,43 @@ impl Service {
 
     // TODO
     pub async fn send_register_email(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn send_sign_in_email(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn send_email_changed_email(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn send_verify_email_email(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn send_group_invitation_email(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn decode_and_validate_session_token(&self, _token: String) -> Result<User, Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn decode_and_validate_anonymous_token(&self, _token: String) -> Result<Uuid, Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
     }
 
     pub async fn dispatch_delete_old_data(&self) -> Result<(), Error> {
-        unimplemented!();
+        unimplemented!(); // TODO
+    }
+
+    pub async fn get_signed_storage_url(
+        &self,
+        _actor: Option<User>,
+        _input: GetSignedStorageUploadUrlInput,
+    ) -> Result<SignedStorageUrl, Error> {
+        unimplemented!(); // TODO
     }
 }
 
@@ -365,11 +373,12 @@ pub struct DecodedSessionToken {
 // 	Role GroupRole `db:"role"`
 // }
 
-// type SignedStorageUploadUrl struct {
-// 	URL    string
-// 	TmpKey string
-// 	Size   int64
-// }
+#[derive(Debug, Clone)]
+pub struct SignedStorageUrl {
+    pub url: String,
+    pub key: String,
+    pub size: u64,
+}
 
 // type NamespaceAndCustomer struct {
 // 	Customer

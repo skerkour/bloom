@@ -127,7 +127,12 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                                             .route(web::post().to(api::kernel::commands::remove_member_from_group)),
                                     ),
                             )
-                            .service(web::scope("/queries")),
+                            .service(
+                                web::scope("/queries").service(
+                                    web::resource("/signed_storage_url")
+                                        .route(web::post().to(api::kernel::queries::signed_storage_url)),
+                                ),
+                            ),
                     )
                     // files
                     .service(

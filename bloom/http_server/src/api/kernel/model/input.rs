@@ -116,3 +116,8 @@ pub struct RemoveMemberFromGroup {
     pub group_id: Id,
     pub username: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct SignedStorageUrl {
+    pub filesize: u64,
+}
