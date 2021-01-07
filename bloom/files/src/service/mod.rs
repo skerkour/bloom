@@ -7,6 +7,7 @@ use stdx::uuid::Uuid;
 mod complete_file_upload;
 mod create_folder;
 mod empty_trash;
+mod move_files;
 mod move_files_to_trash;
 
 #[derive(Debug)]
