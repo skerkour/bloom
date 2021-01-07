@@ -32,3 +32,9 @@ pub struct MoveFiles {
     pub files:  Vec<Id>,
     pub destination: Id,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateFolder {
+    pub parent_id: Id,
+    pub name: String,
+}

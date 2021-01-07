@@ -155,6 +155,10 @@ pub async fn run(kernel_service: Arc<kernel::Service>) -> Result<(), ::kernel::E
                                         web::resource("/move_files")
                                             .route(web::post().to(api::files::commands::move_files)),
                                     )
+                                    .service(
+                                        web::resource("/create_folder")
+                                            .route(web::post().to(api::files::commands::create_folder)),
+                                    )
                             )
                             .service(
                                 web::scope("/queries")
