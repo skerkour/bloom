@@ -11,6 +11,7 @@ kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
 files = { path = "../files" }
 analytics = { path = "../analytics" }
+inbox = { path = "../inbox" }
 
 
 actix-web = "3"

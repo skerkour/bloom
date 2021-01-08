@@ -1,5 +1,4 @@
 use crate::repository::Repository;
-use kernel::service::Service as KernelService;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::uuid::Uuid;
@@ -21,11 +20,11 @@ pub struct Service {
     repo: Repository,
     db: DB,
     storage: Arc<dyn drivers::Storage>,
-    kernel_service: Arc<KernelService>,
+    kernel_service: Arc<kernel::Service>,
 }
 
 impl Service {
-    pub fn new(kernel_service: Arc<KernelService>, db: DB, storage: Arc<dyn drivers::Storage>) -> Service {
+    pub fn new(kernel_service: Arc<kernel::Service>, db: DB, storage: Arc<dyn drivers::Storage>) -> Service {
         let repo = Repository::new();
         Service {
             db,

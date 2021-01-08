@@ -16,7 +16,7 @@
 // 			}
 
 // 			if tokenType == TokenTypeBasic {
-// 				currentUser, currentSession, err := server.kernelService.VerifySessionToken(reqCtx, token)
+// 				currentUser, currentSession, err := server.kernel::Service.VerifySessionToken(reqCtx, token)
 // 				if err != nil {
 // 					api.SendError(w, r, http.StatusUnauthorized, err)
 // 					return
@@ -59,7 +59,6 @@ use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 use actix_web::{Error, HttpMessage};
 use kernel::Actor;
 use kernel::Error as kernelError;
-use kernel::Service as KernelService;
 use std::{
     cell::RefCell,
     convert::TryFrom,
@@ -116,11 +115,11 @@ impl TryFrom<String> for AuthorizationToken {
 
 /// Auth middleware.
 pub struct AuthMiddleware {
-    kernel_service: Arc<KernelService>,
+    kernel_service: Arc<kernel::Service>,
 }
 
 impl AuthMiddleware {
-    pub fn new(kernel_service: Arc<KernelService>) -> Self {
+    pub fn new(kernel_service: Arc<kernel::Service>) -> Self {
         AuthMiddleware { kernel_service }
     }
 }
@@ -149,7 +148,7 @@ where
 /// Actual actix-web middleware
 pub struct AuthMiddleware2<S> {
     service: Rc<RefCell<S>>,
-    kernel_service: Arc<KernelService>,
+    kernel_service: Arc<kernel::Service>,
 }
 
 impl<S, B> Service for AuthMiddleware2<S>

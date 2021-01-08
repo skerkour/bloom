@@ -2,11 +2,6 @@ use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 
-mod handle_page_event;
-mod handle_track_event;
-mod process_page_event;
-mod process_track_event;
-
 #[derive(Debug)]
 pub struct Service {
     repo: Repository,

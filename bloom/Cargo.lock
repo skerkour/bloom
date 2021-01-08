@@ -511,6 +511,7 @@ dependencies = [
  "env_logger",
  "files",
  "http_server",
+ "inbox",
  "jemallocator",
  "kernel",
  "scheduler",
@@ -1296,6 +1297,7 @@ dependencies = [
  "actix-web",
  "analytics",
  "files",
+ "inbox",
  "kernel",
  "serde",
  "stdx",
@@ -1423,6 +1425,10 @@ dependencies = [
 [[package]]
 name = "inbox"
 version = "0.1.0"
+dependencies = [
+ "kernel",
+ "stdx",
+]
 
 [[package]]
 name = "indexmap"

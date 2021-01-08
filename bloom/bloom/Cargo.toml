@@ -27,6 +27,7 @@ stdx = { path = "../stdx" }
 scheduler = { path = "../scheduler" }
 files = { path = "../files" }
 analytics = { path = "../analytics" }
+inbox = { path = "../inbox" }
 
 
 actix-web = "3"
