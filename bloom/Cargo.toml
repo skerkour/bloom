@@ -9,6 +9,7 @@ members = [
   "stdx",
 
   # apps
+  "analytics",
   "files",
   "inbox",
 ]

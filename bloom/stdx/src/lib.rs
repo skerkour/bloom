@@ -19,6 +19,7 @@ pub use log;
 pub use num_cpus;
 pub use rand;
 pub use regex;
+pub use sqlx;
 pub use tokio;
 pub use tryhard as retry;
 pub use uuid;

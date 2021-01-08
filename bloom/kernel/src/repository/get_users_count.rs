@@ -1,6 +1,7 @@
 use super::Repository;
 use crate::{db::Queryer, errors::kernel::Error};
 use stdx::log::error;
+use stdx::sqlx;
 
 impl Repository {
     pub async fn get_users_count<'c, C: Queryer<'c>>(&self, db: C) -> Result<i64, Error> {

@@ -1,7 +1,7 @@
-use stdx::log::error;
-
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
+use stdx::log::error;
+use stdx::sqlx;
 
 impl Repository {
     pub async fn find_users_by_usernames<'c, C: Queryer<'c>>(

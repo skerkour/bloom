@@ -1,5 +1,5 @@
 [package]
-name = "files"
+name = "analytics"
 version = "0.1.0"
 authors = ["Sylvain Kerkour <sylvain@kerkour.fr>"]
 edition = "2018"
@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
+
+sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }

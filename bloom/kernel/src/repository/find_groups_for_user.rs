@@ -1,7 +1,8 @@
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
-use sqlx::types::Uuid;
 use stdx::log::error;
+use stdx::sqlx;
+use stdx::uuid::Uuid;
 
 impl Repository {
     pub async fn find_groups_for_user<'c, C: Queryer<'c>>(

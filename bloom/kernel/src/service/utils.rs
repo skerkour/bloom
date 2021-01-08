@@ -3,7 +3,7 @@ use crate::{
     entities::{Session, User},
     errors::kernel::Error,
 };
-use sqlx::types::Uuid;
+use stdx::uuid::Uuid;
 
 impl Service {
     pub async fn new_session(&self, _user_id: Uuid) -> Result<Session, crate::Error> {

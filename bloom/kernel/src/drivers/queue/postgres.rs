@@ -1,8 +1,8 @@
 use super::{Job, Queue};
 use crate::{db::DB, domain::messages::Message};
-use sqlx::types::Json;
 use std::time::Duration;
 use stdx::chrono;
+use stdx::sqlx::{self, types::Json};
 use tokio::time::delay_for;
 
 #[derive(Debug, Clone)]

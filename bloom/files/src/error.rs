@@ -1,3 +1,5 @@
+use stdx::sqlx;
+
 pub enum Error {
     // Files
     FileNotFound,

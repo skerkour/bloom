@@ -1,7 +1,7 @@
-use stdx::log::error;
-
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
+use stdx::log::error;
+use stdx::sqlx;
 
 impl Repository {
     pub async fn create_group<'c, C: db::Queryer<'c>>(&self, db: C, group: &entities::Group) -> Result<(), Error> {

@@ -19,9 +19,8 @@ use crate::{
     repository::Repository,
     Error,
 };
-use sqlx::types::Uuid;
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
-use stdx::uuid;
+use stdx::uuid::Uuid;
 
 mod accept_group_invitation;
 mod cancel_group_invitation;
@@ -237,12 +236,12 @@ pub struct CreateNamespaceInput {
 #[derive(Debug, Clone)]
 pub struct UpdatePaymentMethodInput {
     pub stripe_id: String,
-    pub namespace_id: uuid::Uuid,
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct ChangeSubscriptionInput {
-    pub namespace_id: uuid::Uuid,
+    pub namespace_id: Uuid,
     pub plan: BillingPlan,
 }
 
@@ -287,7 +286,7 @@ pub struct VerifyPendingEmailInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateGroupProfileInput {
-    pub group_id: uuid::Uuid,
+    pub group_id: Uuid,
     pub name: Option<String>,
     pub path: Option<String>,
     pub description: Option<String>,
@@ -296,34 +295,34 @@ pub struct UpdateGroupProfileInput {
 
 #[derive(Debug, Clone)]
 pub struct InvitePeopleInGroupInput {
-    pub group_id: uuid::Uuid,
+    pub group_id: Uuid,
     pub usernames: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
 pub struct AcceptGroupInvitationInput {
-    pub invitation_id: uuid::Uuid,
+    pub invitation_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct CancelGroupInvitationInput {
-    pub invitation_id: uuid::Uuid,
+    pub invitation_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct DeclineGroupInvitationInput {
-    pub invitation_id: uuid::Uuid,
+    pub invitation_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct RemoveMemberFromGroupInput {
-    pub group_id: uuid::Uuid,
+    pub group_id: Uuid,
     pub username: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct QuitGroupInput {
-    pub group_id: uuid::Uuid,
+    pub group_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
@@ -343,7 +342,7 @@ pub struct DisableTwoFaInput {
 
 #[derive(Debug, Clone)]
 pub struct CompleteTwoFaChallengeInput {
-    pub pending_session_id: uuid::Uuid,
+    pub pending_session_id: Uuid,
     pub code: String,
 }
 

@@ -1,7 +1,7 @@
-use stdx::log::error;
-
 use super::Repository;
 use crate::{db::Queryer, entities, errors::kernel::Error};
+use stdx::log::error;
+use stdx::sqlx;
 
 impl Repository {
     pub async fn find_user_by_email_or_username<'c, C: Queryer<'c>>(

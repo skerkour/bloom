@@ -1,7 +1,7 @@
-use stdx::log::error;
-
 use super::Repository;
 use crate::{db, entities, errors::kernel::Error};
+use stdx::log::error;
+use stdx::sqlx;
 
 impl Repository {
     pub async fn update_user<'c, C: db::Queryer<'c>>(&self, db: C, user: &entities::User) -> Result<(), Error> {

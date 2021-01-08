@@ -329,6 +329,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "analytics"
+version = "0.1.0"
+dependencies = [
+ "kernel",
+ "sqlx",
+ "stdx",
+]
+
+[[package]]
 name = "ansi_term"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -916,7 +925,6 @@ name = "files"
 version = "0.1.0"
 dependencies = [
  "kernel",
- "sqlx",
  "stdx",
 ]
 
@@ -1523,7 +1531,6 @@ dependencies = [
  "futures-util",
  "serde",
  "serde_json",
- "sqlx",
  "stdx",
  "tera",
  "thiserror",
@@ -2766,6 +2773,7 @@ dependencies = [
  "rand 0.8.1",
  "regex",
  "serde",
+ "sqlx",
  "thiserror",
  "tokio",
  "tryhard",

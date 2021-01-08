@@ -26,3 +26,4 @@ log = "0.4"
 atomic = "0.5"
 futures = "0.3"
 cron = "0.7"
+sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }

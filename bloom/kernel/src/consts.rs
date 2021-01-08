@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
+use stdx::sqlx;
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Copy, Eq, PartialEq)]
 #[sqlx(rename_all = "snake_case")]

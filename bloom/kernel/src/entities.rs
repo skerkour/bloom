@@ -1,4 +1,5 @@
 use crate::consts::{BillingPlan, GroupRole, NamespaceType, TaxIdType, TwoFaMethod};
+use stdx::sqlx;
 use stdx::{chrono, uuid};
 
 #[derive(sqlx::FromRow, Debug, Clone)]

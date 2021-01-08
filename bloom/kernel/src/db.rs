@@ -1,7 +1,7 @@
 use crate::config;
-use sqlx::{postgres::PgPoolOptions, Executor, Pool, Postgres, Transaction};
 use std::time::Duration;
 use stdx::log::error;
+use stdx::sqlx::{self, postgres::PgPoolOptions, Executor, Pool, Postgres, Transaction};
 
 pub type DB = Pool<Postgres>;
 pub trait Queryer<'c>: Executor<'c, Database = sqlx::Postgres> {}
