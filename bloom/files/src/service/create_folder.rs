@@ -2,10 +2,10 @@ use std::unimplemented;
 
 use super::{CreateFolderInput, Service};
 use crate::entities::File;
-use kernel::entities::User;
+use kernel::Actor;
 
 impl Service {
-    pub async fn create_folder(&self, actor: Option<User>, _input: CreateFolderInput) -> Result<File, kernel::Error> {
+    pub async fn create_folder(&self, actor: Actor, _input: CreateFolderInput) -> Result<File, kernel::Error> {
         let _actor = self.kernel_service.current_user(actor)?;
 
         // parent, err := service.collaborationRepo.FindFile(ctx, service.db, input.ParentID)

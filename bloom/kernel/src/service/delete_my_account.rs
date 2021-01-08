@@ -1,14 +1,10 @@
 use stdx::{crypto, otp::totp};
 
 use super::{DeleteMyAccountInput, Service};
-use crate::{consts::BillingPlan, entities::User, errors::kernel::Error};
+use crate::{consts::BillingPlan, errors::kernel::Error, Actor};
 
 impl Service {
-    pub async fn delete_my_account(
-        &self,
-        actor: Option<User>,
-        input: DeleteMyAccountInput,
-    ) -> Result<(), crate::Error> {
+    pub async fn delete_my_account(&self, actor: Actor, input: DeleteMyAccountInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
         if actor.two_fa_enabled {

@@ -1,10 +1,10 @@
 use super::{DeclineGroupInvitationInput, Service};
-use crate::{entities::User, errors::kernel::Error};
+use crate::{errors::kernel::Error, Actor};
 
 impl Service {
     pub async fn decline_group_invitation(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: DeclineGroupInvitationInput,
     ) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;

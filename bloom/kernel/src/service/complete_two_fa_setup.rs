@@ -1,16 +1,14 @@
-use std::io::BufWriter;
-
-use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, otp::totp};
-
 use super::Service;
 use crate::{
     consts::{self, TwoFaMethod},
-    entities::User,
     errors::kernel::Error,
+    Actor,
 };
+use std::io::BufWriter;
+use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, otp::totp};
 
 impl Service {
-    pub async fn complete_two_fa_setup(&self, actor: Option<User>) -> Result<String, crate::Error> {
+    pub async fn complete_two_fa_setup(&self, actor: Actor) -> Result<String, crate::Error> {
         let mut actor = self.current_user(actor)?;
 
         if actor.two_fa_enabled {

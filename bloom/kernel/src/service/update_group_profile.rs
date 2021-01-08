@@ -2,14 +2,15 @@ use stdx::chrono::Utc;
 
 use super::{Service, UpdateGroupProfileInput};
 use crate::{
-    entities::{Group, Namespace, User},
+    entities::{Group, Namespace},
     errors::kernel::Error,
+    Actor,
 };
 
 impl Service {
     pub async fn update_group_profile(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: UpdateGroupProfileInput,
     ) -> Result<Group, crate::Error> {
         let actor = self.current_user(actor)?;

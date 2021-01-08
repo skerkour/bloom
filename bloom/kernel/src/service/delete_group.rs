@@ -1,14 +1,13 @@
-use stdx::chrono::Utc;
-
 use super::{DeleteGroupInput, Service};
 use crate::{
     consts::{BillingPlan, GroupRole},
-    entities::User,
     errors::kernel::Error,
+    Actor,
 };
+use stdx::chrono::Utc;
 
 impl Service {
-    pub async fn delete_group(&self, actor: Option<User>, input: DeleteGroupInput) -> Result<(), crate::Error> {
+    pub async fn delete_group(&self, actor: Actor, input: DeleteGroupInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
         let group = self.repo.find_group_by_id(&self.db, input.group_id).await?;

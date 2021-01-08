@@ -1,14 +1,14 @@
-use stdx::{chrono::Utc, ulid::Ulid};
-
 use super::{CreateGroupInput, CreateNamespaceInput, Service};
 use crate::{
     consts::{BillingPlan, GroupRole, NamespaceType},
-    entities::{Group, GroupMembership, User},
+    entities::{Group, GroupMembership},
     errors::kernel::Error,
+    Actor,
 };
+use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
-    pub async fn create_group(&self, actor: Option<User>, input: CreateGroupInput) -> Result<Group, crate::Error> {
+    pub async fn create_group(&self, actor: Actor, input: CreateGroupInput) -> Result<Group, crate::Error> {
         let actor = self.current_user(actor)?;
 
         // clean and validate input

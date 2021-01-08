@@ -1,8 +1,9 @@
 use super::{InvitePeopleInGroupInput, Service};
 use crate::{
     consts::{self, GroupRole},
-    entities::{GroupInvitation, User},
+    entities::GroupInvitation,
     errors::kernel::Error,
+    Actor,
 };
 use std::collections::HashSet;
 use stdx::{chrono::Utc, log::error, ulid::Ulid};
@@ -10,7 +11,7 @@ use stdx::{chrono::Utc, log::error, ulid::Ulid};
 impl Service {
     pub async fn invite_people_in_group(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: InvitePeopleInGroupInput,
     ) -> Result<Vec<GroupInvitation>, crate::Error> {
         let actor = self.current_user(actor)?;

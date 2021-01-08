@@ -3,13 +3,14 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
-use kernel::{http::api, service};
+use kernel::{http::api, service, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn complete_two_fa_challenge(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::CompleteTwoFaChallenge>,
+    actor: Actor,
 ) -> Result<api::Response<SignedIn>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::CompleteTwoFaChallengeInput {
@@ -18,7 +19,7 @@ pub async fn complete_two_fa_challenge(
     };
     let res = ctx
         .kernel_service
-        .complete_two_fa_challenge(None, service_input)
+        .complete_two_fa_challenge(actor, service_input)
         .await?;
 
     Ok(api::Response::ok(res.into()))

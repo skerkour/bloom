@@ -10,4 +10,3 @@ edition = "2018"
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
 
-sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }

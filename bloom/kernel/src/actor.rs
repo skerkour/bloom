@@ -10,7 +10,20 @@ pub enum Actor {
     None,
 }
 
-/// Actor extractor
+impl Actor {
+    pub fn is_none(&self) -> bool {
+        match self {
+            Actor::None => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_some(&self) -> bool {
+        !self.is_none()
+    }
+}
+
+/// actix-web Actor extractor
 impl FromRequest for Actor {
     type Error = Error;
     type Future = Ready<Result<Self, Self::Error>>;
@@ -23,5 +36,29 @@ impl FromRequest for Actor {
             error!("middlewares/auth: auth is missing");
             err(ErrorInternalServerError("auth is missing"))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Actor;
+    use stdx::uuid::Uuid;
+
+    #[test]
+    fn actor_is_none() {
+        let actor = Actor::None;
+        assert_eq!(actor.is_none(), true);
+
+        let actor = Actor::Anonymous(Uuid::new_v4());
+        assert_eq!(actor.is_none(), false);
+    }
+
+    #[test]
+    fn actor_is_some() {
+        let actor = Actor::None;
+        assert_eq!(actor.is_some(), false);
+
+        let actor = Actor::Anonymous(Uuid::new_v4());
+        assert_eq!(actor.is_some(), true);
     }
 }

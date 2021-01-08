@@ -1,9 +1,5 @@
 use super::{RegisterInput, Service};
-use crate::{
-    consts,
-    entities::{PendingUser, User},
-    errors::kernel::Error,
-};
+use crate::{consts, entities::PendingUser, errors::kernel::Error, Actor};
 use stdx::{
     chrono, crypto,
     rand::{thread_rng, Rng},
@@ -12,7 +8,7 @@ use stdx::{sync::threadpool::spawn_blocking, ulid::Ulid};
 use tokio::time::delay_for;
 
 impl Service {
-    pub async fn register(&self, actor: Option<User>, input: RegisterInput) -> Result<PendingUser, crate::Error> {
+    pub async fn register(&self, actor: Actor, input: RegisterInput) -> Result<PendingUser, crate::Error> {
         if actor.is_some() {
             return Err(Error::MustNotBeAuthenticated.into());
         }

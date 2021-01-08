@@ -1,3 +1,5 @@
+use super::{CompleteRegistrationInput, CreateNamespaceInput, Service, SignedIn};
+use crate::{consts, entities, errors::kernel::Error, Actor};
 use consts::{BillingPlan, NamespaceType};
 use stdx::{
     chrono::{Duration, Utc},
@@ -8,17 +10,10 @@ use stdx::{
 };
 use tokio::time::delay_for;
 
-use super::{CompleteRegistrationInput, CreateNamespaceInput, Service, SignedIn};
-use crate::{
-    consts,
-    entities::{self, User},
-    errors::kernel::Error,
-};
-
 impl Service {
     pub async fn complete_registration(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: CompleteRegistrationInput,
     ) -> Result<SignedIn, crate::Error> {
         if actor.is_some() {

@@ -7,12 +7,12 @@ use stdx::{
 use tokio::time::delay_for;
 
 use super::{CompleteTwoFaChallengeInput, Service, SignedIn};
-use crate::{consts, entities::User, errors::kernel::Error};
+use crate::{consts, errors::kernel::Error, Actor};
 
 impl Service {
     pub async fn complete_two_fa_challenge(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: CompleteTwoFaChallengeInput,
     ) -> Result<SignedIn, crate::Error> {
         let actor = self.current_user(actor)?;

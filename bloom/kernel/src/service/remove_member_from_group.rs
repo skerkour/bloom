@@ -1,10 +1,10 @@
 use super::{RemoveMemberFromGroupInput, Service};
-use crate::{consts::GroupRole, entities::User, errors::kernel::Error};
+use crate::{consts::GroupRole, errors::kernel::Error, Actor};
 
 impl Service {
     pub async fn remove_member_from_group(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: RemoveMemberFromGroupInput,
     ) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;

@@ -1,3 +1,5 @@
+use super::{CompleteSignInInput, Service, SignedIn};
+use crate::{consts, errors::kernel::Error, Actor};
 use consts::TwoFaMethod;
 use stdx::{
     chrono::{Duration, Utc},
@@ -7,15 +9,8 @@ use stdx::{
 };
 use tokio::time::delay_for;
 
-use super::{CompleteSignInInput, Service, SignedIn};
-use crate::{consts, entities::User, errors::kernel::Error};
-
 impl Service {
-    pub async fn complete_sign_in(
-        &self,
-        actor: Option<User>,
-        input: CompleteSignInInput,
-    ) -> Result<SignedIn, crate::Error> {
+    pub async fn complete_sign_in(&self, actor: Actor, input: CompleteSignInInput) -> Result<SignedIn, crate::Error> {
         if actor.is_some() {
             return Err(Error::MustNotBeAuthenticated.into());
         }

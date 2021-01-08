@@ -1,16 +1,16 @@
-use stdx::chrono::Utc;
-
 use super::{AcceptGroupInvitationInput, Service};
 use crate::{
     consts::GroupRole,
-    entities::{Group, GroupMembership, User},
+    entities::{Group, GroupMembership},
     errors::kernel::Error,
+    Actor,
 };
+use stdx::chrono::Utc;
 
 impl Service {
     pub async fn accept_group_invitation(
         &self,
-        actor: Option<User>,
+        actor: Actor,
         input: AcceptGroupInvitationInput,
     ) -> Result<Group, crate::Error> {
         let actor = self.current_user(actor)?;

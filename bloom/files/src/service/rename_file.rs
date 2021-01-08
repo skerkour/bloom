@@ -1,9 +1,9 @@
 use super::{RenameFileInput, Service};
 use crate::entities::File;
-use kernel::entities::User;
+use kernel::Actor;
 
 impl Service {
-    pub async fn rename_file(&self, _actor: Option<User>, _input: RenameFileInput) -> Result<File, kernel::Error> {
+    pub async fn rename_file(&self, _actor: Actor, _input: RenameFileInput) -> Result<File, kernel::Error> {
         unimplemented!();
     }
 }

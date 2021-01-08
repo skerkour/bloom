@@ -1,3 +1,5 @@
+use super::{Service, VerifyEmailInput};
+use crate::{consts, errors::kernel::Error, Actor};
 use stdx::{
     chrono::{Duration, Utc},
     crypto,
@@ -6,11 +8,8 @@ use stdx::{
 };
 use tokio::time::delay_for;
 
-use super::{Service, VerifyEmailInput};
-use crate::{consts, entities::User, errors::kernel::Error};
-
 impl Service {
-    pub async fn verify_email(&self, actor: Option<User>, input: VerifyEmailInput) -> Result<(), crate::Error> {
+    pub async fn verify_email(&self, actor: Actor, input: VerifyEmailInput) -> Result<(), crate::Error> {
         let mut actor = self.current_user(actor)?;
 
         // sleep to prevent spam and bruteforce

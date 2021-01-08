@@ -1,10 +1,10 @@
 use stdx::{chrono::Utc, crypto, otp::totp};
 
 use super::{DisableTwoFaInput, Service};
-use crate::{entities::User, errors::kernel::Error};
+use crate::{errors::kernel::Error, Actor};
 
 impl Service {
-    pub async fn disable_two_fa(&self, actor: Option<User>, input: DisableTwoFaInput) -> Result<(), crate::Error> {
+    pub async fn disable_two_fa(&self, actor: Actor, input: DisableTwoFaInput) -> Result<(), crate::Error> {
         let mut actor = self.current_user(actor)?;
 
         if !actor.two_fa_enabled {

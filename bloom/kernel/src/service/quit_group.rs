@@ -1,8 +1,8 @@
 use super::{QuitGroupInput, Service};
-use crate::{entities::User, errors::kernel::Error};
+use crate::{errors::kernel::Error, Actor};
 
 impl Service {
-    pub async fn quit_group(&self, actor: Option<User>, input: QuitGroupInput) -> Result<(), crate::Error> {
+    pub async fn quit_group(&self, actor: Actor, input: QuitGroupInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
         // check that user is member

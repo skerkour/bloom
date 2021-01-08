@@ -5,14 +5,11 @@ use crate::{
     consts,
     entities::{Namespace, PendingEmail, User},
     errors::kernel::Error,
+    Actor,
 };
 
 impl Service {
-    pub async fn update_my_profile(
-        &self,
-        actor: Option<User>,
-        input: UpdateMyProfileInput,
-    ) -> Result<User, crate::Error> {
+    pub async fn update_my_profile(&self, actor: Actor, input: UpdateMyProfileInput) -> Result<User, crate::Error> {
         let mut actor = self.current_user(actor)?;
 
         let mut namespace: Option<Namespace> = None;

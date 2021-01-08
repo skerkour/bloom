@@ -1,9 +1,5 @@
 use super::{Service, SignInInput};
-use crate::{
-    consts,
-    entities::{PendingSession, User},
-    errors::kernel::Error,
-};
+use crate::{consts, entities::PendingSession, errors::kernel::Error, Actor};
 use stdx::{
     chrono::Utc,
     crypto,
@@ -14,8 +10,8 @@ use stdx::{
 use tokio::time::delay_for;
 
 impl Service {
-    pub async fn sign_in(&self, actor: Option<User>, input: SignInInput) -> Result<PendingSession, crate::Error> {
-        if actor.is_some() {
+    pub async fn sign_in(&self, actor: Actor, input: SignInInput) -> Result<PendingSession, crate::Error> {
+        if actor.is_none() {
             return Err(Error::MustNotBeAuthenticated.into());
         }
 

@@ -17,7 +17,7 @@ use crate::{
         VERIFY_EMAIL_EMAIL_TEMPLATE, VERIFY_EMAIL_EMAIL_TEMPLATE_ID,
     },
     repository::Repository,
-    Error,
+    Actor, Error,
 };
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
 use stdx::uuid::Uuid;
@@ -157,7 +157,7 @@ impl Service {
     // create an entity that can be retrieved later with the size, the user and the tmp_key
     pub async fn get_signed_storage_url(
         &self,
-        _actor: Option<User>,
+        _actor: Actor,
         _input: GetSignedStorageUploadUrlInput,
     ) -> Result<SignedStorageUrl, Error> {
         unimplemented!(); // TODO

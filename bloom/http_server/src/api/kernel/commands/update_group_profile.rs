@@ -3,13 +3,14 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
-use kernel::{http::api, service};
+use kernel::{http::api, service, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn update_group_profile(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::UpdateGroupProfile>,
+    actor: Actor,
 ) -> Result<api::Response<Group>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::UpdateGroupProfileInput {
@@ -18,7 +19,7 @@ pub async fn update_group_profile(
         path: input.path,
         description: input.description,
     };
-    let group = ctx.kernel_service.update_group_profile(None, service_input).await?;
+    let group = ctx.kernel_service.update_group_profile(actor, service_input).await?;
 
     Ok(api::Response::ok(group.into()))
 }

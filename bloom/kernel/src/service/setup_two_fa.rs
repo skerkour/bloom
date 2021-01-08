@@ -1,10 +1,10 @@
 use stdx::{chrono::Utc, crypto, otp::totp};
 
 use super::{EnableTwoFaInput, Service};
-use crate::{entities::User, errors::kernel::Error};
+use crate::{errors::kernel::Error, Actor};
 
 impl Service {
-    pub async fn setup_two_fa(&self, actor: Option<User>, input: EnableTwoFaInput) -> Result<(), crate::Error> {
+    pub async fn setup_two_fa(&self, actor: Actor, input: EnableTwoFaInput) -> Result<(), crate::Error> {
         let mut actor = self.current_user(actor)?;
 
         if actor.encrypted_totp_secret == None || actor.totp_secret_nonce == None || actor.two_fa_method == None {
