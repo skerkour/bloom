@@ -180,6 +180,87 @@ CREATE INDEX index_files_on_explicitly_trashed ON files (explicitly_trashed);
 -- #################################################################################################
 -- Analytics
 -- #################################################################################################
+CREATE TABLE analytics_visitors (
+  id UUID NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  anonymous_id UUID NOT NULL,
+
+  -- contact_id UUID REFERENCES contacts (id) ON DELETE CASCADE,
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+
+  PRIMARY KEY(id)
+);
+CREATE INDEX index_analytics_visitors_on_anonymous_id ON analytics_visitors (anonymous_id);
+CREATE INDEX index_analytics_visitors_on_namespace_id ON analytics_visitors (namespace_id);
+
+
+CREATE TABLE analytics_page_events (
+  id UUID NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  received_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  page_name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  user_agent TEXT NOT NULL,
+  referrer TEXT NOT NULL,
+  device_type TEXT NOT NULL,
+  country TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  os_name TEXT NOT NULL,
+  os_version TEXT NOT NULL,
+  browser_name TEXT NOT NULL,
+  browser_version TEXT NOT NULL,
+  path TEXT NOT NULL,
+  screen_width BIGINT NOT NULL,
+  screen_height BIGINT NOT NULL,
+
+  visitor_id UUID NOT NULL REFERENCES analytics_visitors (id) ON DELETE CASCADE,
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+
+  PRIMARY KEY(id)
+);
+CREATE INDEX index_analytics_page_events_on_namespace_id ON analytics_page_events (namespace_id);
+CREATE INDEX index_analytics_page_events_on_visitor_id ON analytics_page_events (visitor_id);
+CREATE INDEX index_analytics_page_events_on_timestamp ON analytics_page_events (timestamp);
+
+
+CREATE TABLE analytics_track_events (
+  id UUID NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  received_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  event_name TEXT NOT NULL,
+  properties JSONB NOT NULL,
+
+  url TEXT NOT NULL,
+  user_agent TEXT NOT NULL,
+  referrer TEXT NOT NULL,
+  device_type TEXT NOT NULL,
+  country TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  os_name TEXT NOT NULL,
+  os_version TEXT NOT NULL,
+  browser_name TEXT NOT NULL,
+  browser_version TEXT NOT NULL,
+  path TEXT NOT NULL,
+  screen_width BIGINT NOT NULL,
+  screen_height BIGINT NOT NULL,
+
+  visitor_id UUID NOT NULL REFERENCES analytics_visitors (id) ON DELETE CASCADE,
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+
+  PRIMARY KEY(id)
+);
+CREATE INDEX index_analytics_track_events_on_namespace_id ON analytics_track_events (namespace_id);
+CREATE INDEX index_analytics_track_events_on_visitor_id ON analytics_track_events (visitor_id);
+CREATE INDEX index_analytics_track_events_on_timestamp ON analytics_track_events (timestamp);
+
 
 
 -- #################################################################################################
