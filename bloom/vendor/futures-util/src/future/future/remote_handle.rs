@@ -4,6 +4,7 @@ use {
     futures_core::{
         future::Future,
         task::{Context, Poll},
+        ready,
     },
     std::{
         any::Any,
@@ -16,7 +17,7 @@ use {
         },
         thread,
     },
-    pin_project::pin_project,
+    pin_project_lite::pin_project,
 };
 
 /// The handle to a remote future returned by
@@ -69,16 +70,17 @@ impl<T: 'static> Future for RemoteHandle<T> {
 
 type SendMsg<Fut> = Result<<Fut as Future>::Output, Box<(dyn Any + Send + 'static)>>;
 
-/// A future which sends its output to the corresponding `RemoteHandle`.
-/// Created by [`remote_handle`](crate::future::FutureExt::remote_handle).
-#[pin_project]
-#[must_use = "futures do nothing unless you `.await` or poll them"]
-#[cfg_attr(docsrs, doc(cfg(feature = "channel")))]
-pub struct Remote<Fut: Future> {
-    tx: Option<Sender<SendMsg<Fut>>>,
-    keep_running: Arc<AtomicBool>,
-    #[pin]
-    future: CatchUnwind<AssertUnwindSafe<Fut>>,
+pin_project! {
+    /// A future which sends its output to the corresponding `RemoteHandle`.
+    /// Created by [`remote_handle`](crate::future::FutureExt::remote_handle).
+    #[must_use = "futures do nothing unless you `.await` or poll them"]
+    #[cfg_attr(docsrs, doc(cfg(feature = "channel")))]
+    pub struct Remote<Fut: Future> {
+        tx: Option<Sender<SendMsg<Fut>>>,
+        keep_running: Arc<AtomicBool>,
+        #[pin]
+        future: CatchUnwind<AssertUnwindSafe<Fut>>,
+    }
 }
 
 impl<Fut: Future + fmt::Debug> fmt::Debug for Remote<Fut> {
@@ -95,11 +97,11 @@ impl<Fut: Future> Future for Remote<Fut> {
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()> {
         let this = self.project();
 
-        if let Poll::Ready(_) = this.tx.as_mut().unwrap().poll_canceled(cx) {
-            if !this.keep_running.load(Ordering::SeqCst) {
-                // Cancelled, bail out
-                return Poll::Ready(())
-            }
+        if this.tx.as_mut().unwrap().poll_canceled(cx).is_ready()
+            && !this.keep_running.load(Ordering::SeqCst)
+        {
+            // Cancelled, bail out
+            return Poll::Ready(());
         }
 
         let output = ready!(this.future.poll(cx));

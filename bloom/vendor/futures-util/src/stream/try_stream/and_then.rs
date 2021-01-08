@@ -1,21 +1,23 @@
 use core::fmt;
 use core::pin::Pin;
 use futures_core::future::TryFuture;
+use futures_core::ready;
 use futures_core::stream::{Stream, TryStream, FusedStream};
 use futures_core::task::{Context, Poll};
 #[cfg(feature = "sink")]
 use futures_sink::Sink;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 
-/// Stream for the [`and_then`](super::TryStreamExt::and_then) method.
-#[pin_project]
-#[must_use = "streams do nothing unless polled"]
-pub struct AndThen<St, Fut, F> {
-    #[pin]
-    stream: St,
-    #[pin]
-    future: Option<Fut>,
-    f: F,
+pin_project! {
+    /// Stream for the [`and_then`](super::TryStreamExt::and_then) method.
+    #[must_use = "streams do nothing unless polled"]
+    pub struct AndThen<St, Fut, F> {
+        #[pin]
+        stream: St,
+        #[pin]
+        future: Option<Fut>,
+        f: F,
+    }
 }
 
 impl<St, Fut, F> fmt::Debug for AndThen<St, Fut, F>

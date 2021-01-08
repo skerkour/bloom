@@ -12,7 +12,7 @@ use std::{
 // opening a GitHub issue if your build environment requires some way to enable
 // these cfgs other than by executing our build script.
 fn main() {
-    let rustc = env::var_os("RUSTC").map_or_else(|| "rustc".into(), PathBuf::from);
+    let rustc: PathBuf = env::var_os("RUSTC").unwrap_or_else(|| "rustc".into()).into();
     let version = match Version::from_rustc(&rustc) {
         Ok(version) => version.print(),
         Err(e) => {
@@ -25,9 +25,10 @@ fn main() {
         }
     };
 
-    let out_dir = env::var_os("OUT_DIR").map(PathBuf::from).expect("OUT_DIR not set");
-    let out_file = out_dir.join("version");
-    fs::write(out_file, version).expect("failed to write version.rs");
+    let out_dir: PathBuf = env::var_os("OUT_DIR").expect("OUT_DIR not set").into();
+    let out_file = &out_dir.join("version");
+    fs::write(out_file, version)
+        .unwrap_or_else(|e| panic!("failed to write {}: {}", out_file.display(), e));
 
     // Mark as build script has been run successfully.
     println!("cargo:rustc-cfg=const_fn_has_build_script");

@@ -1101,6 +1101,7 @@ pub const O_SYNC: ::c_int = 0x101000;
 pub const O_ASYNC: ::c_int = 0x2000;
 pub const O_NDELAY: ::c_int = 0x800;
 pub const O_DSYNC: ::c_int = 4096;
+pub const O_RSYNC: ::c_int = O_SYNC;
 
 pub const NI_MAXHOST: ::size_t = 1025;
 pub const NI_MAXSERV: ::size_t = 32;
@@ -2465,6 +2466,8 @@ extern "C" {
     pub fn setutent();
     pub fn getutent() -> *mut utmp;
 
+    pub fn seekdir(dirp: *mut ::DIR, loc: ::c_long);
+    pub fn telldir(dirp: *mut ::DIR) -> ::c_long;
     pub fn fallocate(
         fd: ::c_int,
         mode: ::c_int,

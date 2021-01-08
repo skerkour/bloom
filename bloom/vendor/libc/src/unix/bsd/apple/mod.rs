@@ -690,6 +690,10 @@ impl siginfo_t {
     pub unsafe fn si_uid(&self) -> ::uid_t {
         self.si_uid
     }
+
+    pub unsafe fn si_status(&self) -> ::c_int {
+        self.si_status
+    }
 }
 
 cfg_if! {
@@ -1903,6 +1907,9 @@ pub const PTHREAD_PROCESS_PRIVATE: ::c_int = 2;
 pub const PTHREAD_PROCESS_SHARED: ::c_int = 1;
 pub const PTHREAD_CREATE_JOINABLE: ::c_int = 1;
 pub const PTHREAD_CREATE_DETACHED: ::c_int = 2;
+#[cfg(target_arch = "aarch64")]
+pub const PTHREAD_STACK_MIN: ::size_t = 16384;
+#[cfg(not(target_arch = "aarch64"))]
 pub const PTHREAD_STACK_MIN: ::size_t = 8192;
 
 pub const RLIMIT_CPU: ::c_int = 0;
@@ -2839,7 +2846,9 @@ pub const HW_L3CACHESIZE: ::c_int = 22;
 pub const HW_TB_FREQ: ::c_int = 23;
 pub const HW_MEMSIZE: ::c_int = 24;
 pub const HW_AVAILCPU: ::c_int = 25;
-pub const HW_MAXID: ::c_int = 26;
+pub const HW_TARGET: ::c_int = 26;
+pub const HW_PRODUCT: ::c_int = 27;
+pub const HW_MAXID: ::c_int = 28;
 pub const USER_CS_PATH: ::c_int = 1;
 pub const USER_BC_BASE_MAX: ::c_int = 2;
 pub const USER_BC_DIM_MAX: ::c_int = 3;
@@ -3125,6 +3134,9 @@ pub const SETALL: ::c_int = 9;
 // sys/shm.h
 pub const SHM_RDONLY: ::c_int = 0x1000;
 pub const SHM_RND: ::c_int = 0x2000;
+#[cfg(target_arch = "aarch64")]
+pub const SHMLBA: ::c_int = 16 * 1024;
+#[cfg(not(target_arch = "aarch64"))]
 pub const SHMLBA: ::c_int = 4096;
 pub const SHM_R: ::c_int = IPC_R;
 pub const SHM_W: ::c_int = IPC_W;
@@ -3269,7 +3281,7 @@ extern "C" {
     pub fn setgrent();
     #[doc(hidden)]
     #[deprecated(since = "0.2.49", note = "Deprecated in MacOSX 10.5")]
-    #[link_name = "daemon$1050"]
+    #[cfg_attr(not(target_arch = "aarch64"), link_name = "daemon$1050")]
     pub fn daemon(nochdir: ::c_int, noclose: ::c_int) -> ::c_int;
     #[doc(hidden)]
     #[deprecated(since = "0.2.49", note = "Deprecated in MacOSX 10.10")]
@@ -3437,9 +3449,15 @@ extern "C" {
     ) -> ::c_int;
     pub fn __error() -> *mut ::c_int;
     pub fn backtrace(buf: *mut *mut ::c_void, sz: ::c_int) -> ::c_int;
-    #[cfg_attr(target_os = "macos", link_name = "statfs$INODE64")]
+    #[cfg_attr(
+        all(target_os = "macos", not(target_arch = "aarch64")),
+        link_name = "statfs$INODE64"
+    )]
     pub fn statfs(path: *const ::c_char, buf: *mut statfs) -> ::c_int;
-    #[cfg_attr(target_os = "macos", link_name = "fstatfs$INODE64")]
+    #[cfg_attr(
+        all(target_os = "macos", not(target_arch = "aarch64")),
+        link_name = "fstatfs$INODE64"
+    )]
     pub fn fstatfs(fd: ::c_int, buf: *mut statfs) -> ::c_int;
     pub fn kevent(
         kq: ::c_int,

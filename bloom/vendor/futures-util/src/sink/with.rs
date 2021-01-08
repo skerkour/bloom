@@ -2,21 +2,23 @@ use core::fmt;
 use core::marker::PhantomData;
 use core::pin::Pin;
 use futures_core::future::Future;
+use futures_core::ready;
 use futures_core::stream::Stream;
 use futures_core::task::{Context, Poll};
 use futures_sink::Sink;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 
-/// Sink for the [`with`](super::SinkExt::with) method.
-#[pin_project]
-#[must_use = "sinks do nothing unless polled"]
-pub struct With<Si, Item, U, Fut, F> {
-    #[pin]
-    sink: Si,
-    f: F,
-    #[pin]
-    state: Option<Fut>,
-    _phantom: PhantomData<fn(U) -> Item>,
+pin_project! {
+    /// Sink for the [`with`](super::SinkExt::with) method.
+    #[must_use = "sinks do nothing unless polled"]
+    pub struct With<Si, Item, U, Fut, F> {
+        #[pin]
+        sink: Si,
+        f: F,
+        #[pin]
+        state: Option<Fut>,
+        _phantom: PhantomData<fn(U) -> Item>,
+    }
 }
 
 impl<Si, Item, U, Fut, F> fmt::Debug for With<Si, Item, U, Fut, F>
@@ -46,6 +48,22 @@ where Si: Sink<Item>,
             state: None,
             sink,
             f,
+            _phantom: PhantomData,
+        }
+    }
+}
+
+impl<Si, Item, U, Fut, F> Clone for With<Si, Item, U, Fut, F>
+where
+    Si: Clone,
+    F: Clone,
+    Fut: Clone,
+{
+    fn clone(&self) -> Self {
+        Self {
+            state: self.state.clone(),
+            sink: self.sink.clone(),
+            f: self.f.clone(),
             _phantom: PhantomData,
         }
     }

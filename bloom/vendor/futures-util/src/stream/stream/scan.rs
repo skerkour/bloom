@@ -1,26 +1,28 @@
 use core::fmt;
 use core::pin::Pin;
 use futures_core::future::Future;
+use futures_core::ready;
 use futures_core::stream::{FusedStream, Stream};
 use futures_core::task::{Context, Poll};
 #[cfg(feature = "sink")]
 use futures_sink::Sink;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 
 struct StateFn<S, F> {
     state: S,
     f: F,
 }
 
-/// Stream for the [`scan`](super::StreamExt::scan) method.
-#[pin_project]
-#[must_use = "streams do nothing unless polled"]
-pub struct Scan<St: Stream, S, Fut, F> {
-    #[pin]
-    stream: St,
-    state_f: Option<StateFn<S, F>>,
-    #[pin]
-    future: Option<Fut>,
+pin_project! {
+    /// Stream for the [`scan`](super::StreamExt::scan) method.
+    #[must_use = "streams do nothing unless polled"]
+    pub struct Scan<St: Stream, S, Fut, F> {
+        #[pin]
+        stream: St,
+        state_f: Option<StateFn<S, F>>,
+        #[pin]
+        future: Option<Fut>,
+    }
 }
 
 impl<St, S, Fut, F> fmt::Debug for Scan<St, S, Fut, F>

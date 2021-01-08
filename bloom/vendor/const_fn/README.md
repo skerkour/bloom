@@ -1,4 +1,4 @@
-# \#\[const\_fn\]
+# \#\[const_fn\]
 
 [![crates.io](https://img.shields.io/crates/v/const_fn.svg?style=flat-square&logo=rust)](https://crates.io/crates/const_fn)
 [![docs.rs](https://img.shields.io/badge/docs.rs-const__fn-blue?style=flat-square)](https://docs.rs/const_fn)

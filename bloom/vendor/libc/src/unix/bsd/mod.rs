@@ -439,6 +439,13 @@ pub const TCP_MAXSEG: ::c_int = 2;
 
 pub const PIPE_BUF: usize = 512;
 
+pub const CLD_EXITED: ::c_int = 1;
+pub const CLD_KILLED: ::c_int = 2;
+pub const CLD_DUMPED: ::c_int = 3;
+pub const CLD_TRAPPED: ::c_int = 4;
+pub const CLD_STOPPED: ::c_int = 5;
+pub const CLD_CONTINUED: ::c_int = 6;
+
 pub const POLLIN: ::c_short = 0x1;
 pub const POLLPRI: ::c_short = 0x2;
 pub const POLLOUT: ::c_short = 0x4;
@@ -625,7 +632,10 @@ extern "C" {
         egid: *mut ::gid_t,
     ) -> ::c_int;
 
-    #[cfg_attr(target_os = "macos", link_name = "glob$INODE64")]
+    #[cfg_attr(
+        all(target_os = "macos", not(target_arch = "aarch64")),
+        link_name = "glob$INODE64")
+    ]
     #[cfg_attr(target_os = "netbsd", link_name = "__glob30")]
     #[cfg_attr(
         all(target_os = "freebsd", any(freebsd11, freebsd10)),

@@ -13,10 +13,10 @@
 [package]
 edition = "2018"
 name = "pin-project"
-version = "1.0.2"
+version = "1.0.3"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
+exclude = ["/.github", "/ci", "/scripts"]
 description = "A crate for safe and ergonomic pin-projection.\n"
-homepage = "https://github.com/taiki-e/pin-project"
 documentation = "https://docs.rs/pin-project"
 readme = "README.md"
 keywords = ["pin", "macros", "attribute"]
@@ -26,16 +26,16 @@ repository = "https://github.com/taiki-e/pin-project"
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 [dependencies.pin-project-internal]
-version = "=1.0.2"
+version = "=1.0.3"
 default-features = false
-[dev-dependencies.pin-project-auxiliary-macro]
-version = "0"
-
 [dev-dependencies.rustversion]
 version = "1"
 
 [dev-dependencies.static_assertions]
 version = "1"
+
+[dev-dependencies.tempfile]
+version = "3"
 
 [dev-dependencies.trybuild]
 version = "1"

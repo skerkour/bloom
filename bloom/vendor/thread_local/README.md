@@ -3,10 +3,10 @@ thread_local
 
 [![Build Status](https://travis-ci.org/Amanieu/thread_local-rs.svg?branch=master)](https://travis-ci.org/Amanieu/thread_local-rs) [![Crates.io](https://img.shields.io/crates/v/thread_local.svg)](https://crates.io/crates/thread_local)
 
-This library provides the `ThreadLocal` and `CachedThreadLocal` types which
-allow a separate copy of an object to be used for each thread. This allows for
-per-object thread-local storage, unlike the standard library's `thread_local!`
-macro which only allows static thread-local storage.
+This library provides the `ThreadLocal` type which allow a separate copy of an
+object to be used for each thread. This allows for per-object thread-local
+storage, unlike the standard library's `thread_local!` macro which only allows
+static thread-local storage.
 
 [Documentation](https://amanieu.github.io/thread_local-rs/thread_local/index.html)
 
@@ -24,6 +24,10 @@ and this to your crate root:
 ```rust
 extern crate thread_local;
 ```
+
+## Minimum Rust version
+
+This crate's minimum supported Rust version (MSRV) is 1.28.0.
 
 ## License
 

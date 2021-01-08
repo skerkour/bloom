@@ -57,19 +57,28 @@
 //!
 //! ## Similar: Safety
 //!
-//! pin-project-lite guarantees safety in much the same way as [pin-project]. Both are completely safe unless you write other unsafe code.
+//! pin-project-lite guarantees safety in much the same way as [pin-project].
+//! Both are completely safe unless you write other unsafe code.
 //!
 //! ## Different: Minimal design
 //!
-//! This library does not tackle as expansive of a range of use cases as [pin-project] does. If your use case is not already covered, please use [pin-project].
+//! This library does not tackle as expansive of a range of use cases as
+//! [pin-project] does. If your use case is not already covered, please use
+//! [pin-project].
 //!
 //! ## Different: No proc-macro related dependencies
 //!
-//! This is the **only** reason to use this crate. However, **if you already have proc-macro related dependencies in your crate's dependency graph, there is no benefit from using this crate.** (Note: There is almost no difference in the amount of code generated between [pin-project] and pin-project-lite.)
+//! This is the **only** reason to use this crate. However, **if you already
+//! have proc-macro related dependencies in your crate's dependency graph, there
+//! is no benefit from using this crate.** (Note: There is almost no difference
+//! in the amount of code generated between [pin-project] and pin-project-lite.)
 //!
 //! ## Different: No useful error messages
 //!
-//! This macro does not handle any invalid input. So error messages are not to be useful in most cases. If you do need useful error messages, then upon error you can pass the same input to [pin-project] to receive a helpful description of the compile error.
+//! This macro does not handle any invalid input. So error messages are not to
+//! be useful in most cases. If you do need useful error messages, then upon
+//! error you can pass the same input to [pin-project] to receive a helpful
+//! description of the compile error.
 //!
 //! ## Different: No support for custom Drop implementation
 //!
@@ -89,23 +98,16 @@
 //! [unsafe-unpin]: https://docs.rs/pin-project/1/pin_project/attr.pin_project.html#unsafeunpin
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/pin-project-lite/0.2.0")]
 #![doc(test(
     no_crate_inject,
-    attr(deny(warnings, rust_2018_idioms, single_use_lifetimes), allow(dead_code))
+    attr(
+        deny(warnings, rust_2018_idioms, single_use_lifetimes),
+        allow(dead_code, unused_variables)
+    )
 ))]
 #![warn(unsafe_code)]
 #![warn(future_incompatible, rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
 #![warn(clippy::all, clippy::default_trait_access)]
-// mem::take, #[non_exhaustive], and Option::{as_deref, as_deref_mut} require Rust 1.40,
-// matches! requires Rust 1.42, str::{strip_prefix, strip_suffix} requires Rust 1.45
-#![allow(
-    clippy::mem_replace_with_default,
-    clippy::manual_non_exhaustive,
-    clippy::option_as_ref_deref,
-    clippy::match_like_matches_macro,
-    clippy::manual_strip
-)]
 
 /// A macro that creates a projection type covering all the fields of struct.
 ///

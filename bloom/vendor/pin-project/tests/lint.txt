@@ -79,7 +79,8 @@ Lint checks provided by rustc:
                                              non-snake-case  warn     variables, methods, functions, lifetime parameters and modules should have snake case names
                                      non-upper-case-globals  warn     static constants should have uppercase identifiers
                                     no-mangle-generic-items  warn     generic items must be mangled
-                                       overlapping-patterns  warn     detects overlapping patterns
+                                overlapping-range-endpoints  warn     detects range patterns with overlapping endpoints
+                                                  panic-fmt  warn     detect braces in single-argument panic!() invocations
                                             path-statements  warn     path statements with no effect
                                     private-intra-doc-links  warn     linking from a public item to a private one
                                           private-in-public  warn     detect private items in public interfaces not caught by the old implementation
@@ -100,6 +101,7 @@ Lint checks provided by rustc:
                                            unreachable-code  warn     detects unreachable code paths
                                        unreachable-patterns  warn     detects unreachable patterns
                                    unstable-name-collisions  warn     detects name collision with an existing but unstable method
+                                unsupported-naked-functions  warn     unsupported naked function definitions
                                           unused-allocation  warn     detects unnecessary allocations that can be eliminated
                                          unused-assignments  warn     detect assignments that will never be read
                                           unused-attributes  warn     detects attributes that were not used by the compiler
@@ -126,6 +128,7 @@ Lint checks provided by rustc:
                                          incomplete-include  deny     trailing content in included file
                                  invalid-type-param-default  deny     type parameter default erroneously allowed in invalid location
     macro-expanded-macro-exports-accessed-by-absolute-paths  deny     macro-expanded `macro_export` macros from the current crate cannot be referred to by absolute paths
+                                 missing-fragment-specifier  deny     detects missing fragment specifiers in unused `macro_rules!` patterns
                                          mutable-transmutes  deny     mutating transmuted &mut T from &T may cause undefined behavior
                                       no-mangle-const-items  deny     const items will not have their symbols exported
                               order-dependent-trait-objects  deny     trait-object types were treated as different depending on marker-trait order
@@ -143,12 +146,12 @@ Lint groups provided by rustc:
                        name  sub-lints
                        ----  ---------
                    warnings  all lints that are set to issue warnings
-        future-incompatible  keyword-idents, anonymous-parameters, illegal-floating-point-literal-pattern, private-in-public, pub-use-of-private-extern-crate, invalid-type-param-default, safe-packed-borrows, patterns-in-fns-without-body, late-bound-lifetime-arguments, order-dependent-trait-objects, coherence-leak-check, tyvar-behind-raw-pointer, absolute-paths-not-starting-with-crate, unstable-name-collisions, where-clauses-object-safety, proc-macro-derive-resolution-fallback, macro-expanded-macro-exports-accessed-by-absolute-paths, ill-formed-attribute-input, conflicting-repr-hints, ambiguous-associated-items, mutable-borrow-reservation-conflict, indirect-structural-match, pointer-structural-match, nontrivial-structural-match, soft-unstable, cenum-impl-drop-cast, const-evaluatable-unchecked, uninhabited-static, array-into-iter
+        future-incompatible  keyword-idents, anonymous-parameters, illegal-floating-point-literal-pattern, private-in-public, pub-use-of-private-extern-crate, invalid-type-param-default, safe-packed-borrows, patterns-in-fns-without-body, missing-fragment-specifier, late-bound-lifetime-arguments, order-dependent-trait-objects, coherence-leak-check, tyvar-behind-raw-pointer, absolute-paths-not-starting-with-crate, unstable-name-collisions, where-clauses-object-safety, proc-macro-derive-resolution-fallback, macro-expanded-macro-exports-accessed-by-absolute-paths, ill-formed-attribute-input, conflicting-repr-hints, ambiguous-associated-items, mutable-borrow-reservation-conflict, indirect-structural-match, pointer-structural-match, nontrivial-structural-match, soft-unstable, cenum-impl-drop-cast, const-evaluatable-unchecked, uninhabited-static, unsupported-naked-functions, array-into-iter
           nonstandard-style  non-camel-case-types, non-snake-case, non-upper-case-globals
     rust-2018-compatibility  keyword-idents, anonymous-parameters, tyvar-behind-raw-pointer, absolute-paths-not-starting-with-crate
            rust-2018-idioms  bare-trait-objects, unused-extern-crates, ellipsis-inclusive-range-patterns, elided-lifetimes-in-paths, explicit-outlives-requirements
                     rustdoc  non-autolinks, broken-intra-doc-links, private-intra-doc-links, invalid-codeblock-attributes, missing-doc-code-examples, private-doc-tests, invalid-html-tags
-                     unused  unused-imports, unused-variables, unused-assignments, dead-code, unused-mut, unreachable-code, unreachable-patterns, overlapping-patterns, unused-must-use, unused-unsafe, path-statements, unused-attributes, unused-macros, unused-allocation, unused-doc-comments, unused-extern-crates, unused-features, unused-labels, unused-parens, unused-braces, redundant-semicolons
+                     unused  unused-imports, unused-variables, unused-assignments, dead-code, unused-mut, unreachable-code, unreachable-patterns, unused-must-use, unused-unsafe, path-statements, unused-attributes, unused-macros, unused-allocation, unused-doc-comments, unused-extern-crates, unused-features, unused-labels, unused-parens, unused-braces, redundant-semicolons
 
 
-Compiler plugins can provide additional lints and lint groups. To see a listing of these, re-run `rustc -W help` with a crate filename.
+Lint tools like Clippy can provide additional lints and lint groups.

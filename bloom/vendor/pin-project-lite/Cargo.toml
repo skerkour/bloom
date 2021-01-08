@@ -13,10 +13,10 @@
 [package]
 edition = "2018"
 name = "pin-project-lite"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
+exclude = ["/.github", "/scripts"]
 description = "A lightweight version of pin-project written with declarative macros.\n"
-homepage = "https://github.com/taiki-e/pin-project-lite"
 documentation = "https://docs.rs/pin-project-lite"
 readme = "README.md"
 keywords = ["pin", "macros"]

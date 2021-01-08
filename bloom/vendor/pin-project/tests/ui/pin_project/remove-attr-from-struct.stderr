@@ -7,15 +7,15 @@ error: #[pin_project] attribute has been removed
    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: cannot find attribute `pin` in this scope
-  --> $DIR/remove-attr-from-struct.rs:10:7
-   |
-10 |     #[pin] //~ ERROR cannot find attribute `pin` in this scope
-   |       ^^^
-
-error: cannot find attribute `pin` in this scope
   --> $DIR/remove-attr-from-struct.rs:17:7
    |
 17 |     #[pin] //~ ERROR cannot find attribute `pin` in this scope
+   |       ^^^
+
+error: cannot find attribute `pin` in this scope
+  --> $DIR/remove-attr-from-struct.rs:10:7
+   |
+10 |     #[pin] //~ ERROR cannot find attribute `pin` in this scope
    |       ^^^
 
 error[E0277]: `PhantomPinned` cannot be unpinned

@@ -39,6 +39,8 @@
 
 // Check interoperability with rustc and clippy lints.
 
+mod auxiliary;
+
 pub mod basic {
     include!("include/basic.rs");
 
@@ -1023,42 +1025,15 @@ pub mod clippy_used_underscore_binding {
 
 // Run `./dev.sh +$toolchain test --test lint` to update this.
 #[cfg(not(miri))]
-#[allow(box_pointers)]
 #[allow(clippy::restriction)]
-#[rustversion::attr(before(2020-11-08), ignore)] // Note: This date is commit-date and the day before the toolchain date.
+#[rustversion::attr(before(2020-12-25), ignore)] // Note: This date is commit-date and the day before the toolchain date.
 #[test]
 fn check_lint_list() {
-    use std::{env, fs, path::Path, process::Command, str};
+    use auxiliary::assert_diff;
+    use std::{env, process::Command, str};
 
-    type Result<T, E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
-
-    fn assert_eq(expected_path: &str, actual: &str) -> Result<()> {
-        let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-        let expected_path = &manifest_dir.join(expected_path);
-        let expected = fs::read_to_string(expected_path)?;
-        if expected != actual {
-            if env::var_os("CI").is_some() {
-                let actual_path =
-                    &manifest_dir.join("target").join(expected_path.file_name().unwrap());
-                fs::write(actual_path, actual)?;
-                let status = Command::new("git")
-                    .args(&["--no-pager", "diff", "--no-index", "--"])
-                    .args(&[expected_path, actual_path])
-                    .status()?;
-                assert!(!status.success());
-                panic!("assertion failed");
-            } else {
-                fs::write(expected_path, actual)?;
-            }
-        }
-        Ok(())
-    }
-
-    (|| -> Result<()> {
-        let rustc = env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
-        let output = Command::new(rustc).args(&["-W", "help"]).output()?;
-        let new = str::from_utf8(&output.stdout)?;
-        assert_eq("tests/lint.txt", new)
-    })()
-    .unwrap_or_else(|e| panic!("{}", e));
+    let rustc = env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
+    let output = Command::new(rustc).args(&["-W", "help"]).output().unwrap();
+    let new = str::from_utf8(&output.stdout).unwrap();
+    assert_diff("tests/lint.txt", new);
 }

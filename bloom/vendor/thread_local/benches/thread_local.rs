@@ -1,18 +1,28 @@
-#![feature(test)]
-
+extern crate criterion;
 extern crate thread_local;
-extern crate test;
 
-use thread_local::{ThreadLocal, CachedThreadLocal};
+use criterion::{black_box, BatchSize};
 
-#[bench]
-fn thread_local(b: &mut test::Bencher) {
-    let local = ThreadLocal::new();
-    b.iter(|| { let _: &i32 = local.get_or(|| Box::new(0)); });
-}
+use thread_local::ThreadLocal;
 
-#[bench]
-fn cached_thread_local(b: &mut test::Bencher) {
-    let local = CachedThreadLocal::new();
-    b.iter(|| { let _: &i32 = local.get_or(|| Box::new(0)); });
+fn main() {
+    let mut c = criterion::Criterion::default().configure_from_args();
+
+    c.bench_function("get", |b| {
+        let local = ThreadLocal::new();
+        local.get_or(|| Box::new(0));
+        b.iter(|| {
+            black_box(local.get());
+        });
+    });
+
+    c.bench_function("insert", |b| {
+        b.iter_batched_ref(
+            ThreadLocal::new,
+            |local| {
+                black_box(local.get_or(|| 0));
+            },
+            BatchSize::SmallInput,
+        )
+    });
 }

@@ -42,13 +42,14 @@
 
 #![doc(test(
     no_crate_inject,
-    attr(deny(warnings, rust_2018_idioms, single_use_lifetimes), allow(dead_code))
+    attr(
+        deny(warnings, rust_2018_idioms, single_use_lifetimes),
+        allow(dead_code, unused_variables)
+    )
 ))]
 #![forbid(unsafe_code)]
 #![warn(future_incompatible, rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
 #![warn(clippy::all, clippy::default_trait_access)]
-// mem::take requires Rust 1.40
-#![allow(clippy::mem_replace_with_default)]
 
 // older compilers require explicit `extern crate`.
 #[allow(unused_extern_crates)]

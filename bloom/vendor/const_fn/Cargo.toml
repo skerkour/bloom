@@ -13,8 +13,9 @@
 [package]
 edition = "2018"
 name = "const_fn"
-version = "0.4.4"
+version = "0.4.5"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
+exclude = ["/.github", "/scripts"]
 description = "An attribute for easy generation of const functions with conditional compilations.\n"
 documentation = "https://docs.rs/const_fn"
 readme = "README.md"

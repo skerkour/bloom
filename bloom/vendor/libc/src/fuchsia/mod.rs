@@ -209,6 +209,12 @@ s! {
         pub imr_interface: in_addr,
     }
 
+    pub struct ip_mreqn {
+        pub imr_multiaddr: in_addr,
+        pub imr_address: in_addr,
+        pub imr_ifindex: ::c_int,
+    }
+
     pub struct ipv6_mreq {
         pub ipv6mr_multiaddr: in6_addr,
         pub ipv6mr_interface: ::c_uint,
@@ -1327,6 +1333,7 @@ pub const S_ISGID: ::c_int = 0x400;
 pub const S_ISVTX: ::c_int = 0x200;
 
 pub const IF_NAMESIZE: ::size_t = 16;
+pub const IFNAMSIZ: ::size_t = IF_NAMESIZE;
 
 pub const LOG_EMERG: ::c_int = 0;
 pub const LOG_ALERT: ::c_int = 1;
@@ -1762,14 +1769,17 @@ pub const SCM_TIMESTAMP: ::c_int = SO_TIMESTAMP;
 
 pub const SOCK_RAW: ::c_int = 3;
 pub const SOCK_RDM: ::c_int = 4;
+
+pub const IP_TTL: ::c_int = 2;
+pub const IP_HDRINCL: ::c_int = 3;
+pub const IP_FREEBIND: ::c_int = 15;
+pub const IP_TRANSPARENT: ::c_int = 19;
 pub const IP_MULTICAST_IF: ::c_int = 32;
 pub const IP_MULTICAST_TTL: ::c_int = 33;
 pub const IP_MULTICAST_LOOP: ::c_int = 34;
-pub const IP_TTL: ::c_int = 2;
-pub const IP_HDRINCL: ::c_int = 3;
 pub const IP_ADD_MEMBERSHIP: ::c_int = 35;
 pub const IP_DROP_MEMBERSHIP: ::c_int = 36;
-pub const IP_TRANSPARENT: ::c_int = 19;
+
 pub const IPV6_UNICAST_HOPS: ::c_int = 16;
 pub const IPV6_MULTICAST_IF: ::c_int = 17;
 pub const IPV6_MULTICAST_HOPS: ::c_int = 18;
@@ -1979,6 +1989,13 @@ pub const LOG_PERROR: ::c_int = 0x20;
 pub const PIPE_BUF: usize = 4096;
 
 pub const SI_LOAD_SHIFT: ::c_uint = 16;
+
+pub const CLD_EXITED: ::c_int = 1;
+pub const CLD_KILLED: ::c_int = 2;
+pub const CLD_DUMPED: ::c_int = 3;
+pub const CLD_TRAPPED: ::c_int = 4;
+pub const CLD_STOPPED: ::c_int = 5;
+pub const CLD_CONTINUED: ::c_int = 6;
 
 pub const SIGEV_SIGNAL: ::c_int = 0;
 pub const SIGEV_NONE: ::c_int = 1;

@@ -65,23 +65,16 @@
 //! [struct-default-expanded]: https://github.com/taiki-e/pin-project/blob/master/examples/struct-default-expanded.rs
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/pin-project/1.0.2")]
 #![doc(test(
     no_crate_inject,
-    attr(deny(warnings, rust_2018_idioms, single_use_lifetimes), allow(dead_code))
+    attr(
+        deny(warnings, rust_2018_idioms, single_use_lifetimes),
+        allow(dead_code, unused_variables)
+    )
 ))]
 #![warn(future_incompatible, rust_2018_idioms, single_use_lifetimes, unreachable_pub)]
 #![warn(missing_docs)]
 #![warn(clippy::all, clippy::default_trait_access)]
-// mem::take, #[non_exhaustive], and Option::{as_deref, as_deref_mut} require Rust 1.40,
-// matches! requires Rust 1.42, str::{strip_prefix, strip_suffix} requires Rust 1.45
-#![allow(
-    clippy::mem_replace_with_default,
-    clippy::manual_non_exhaustive,
-    clippy::option_as_ref_deref,
-    clippy::match_like_matches_macro,
-    clippy::manual_strip
-)]
 #![allow(clippy::needless_doctest_main)]
 
 #[doc(inline)]

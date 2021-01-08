@@ -4,7 +4,7 @@
 use std::env;
 
 // Run `./dev.sh +$toolchain test --test compiletest` to update this.
-#[rustversion::attr(before(2020-10-28), ignore)] // Note: This date is commit-date and the day before the toolchain date.
+#[rustversion::attr(before(2020-11-25), ignore)] // Note: This date is commit-date and the day before the toolchain date.
 #[test]
 fn ui() {
     if env::var_os("CI").is_none() {

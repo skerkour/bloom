@@ -1,3 +1,4 @@
+use futures_core::ready;
 use futures_core::stream::Stream;
 use futures_core::task::{Context, Poll};
 use futures_io::AsyncBufRead;
@@ -5,19 +6,19 @@ use std::io;
 use std::mem;
 use std::pin::Pin;
 use super::read_line::read_line_internal;
-use pin_project::pin_project;
+use pin_project_lite::pin_project;
 
-/// Stream for the [`lines`](super::AsyncBufReadExt::lines) method.
-
-#[pin_project]
-#[derive(Debug)]
-#[must_use = "streams do nothing unless polled"]
-pub struct Lines<R> {
-    #[pin]
-    reader: R,
-    buf: String,
-    bytes: Vec<u8>,
-    read: usize,
+pin_project! {
+    /// Stream for the [`lines`](super::AsyncBufReadExt::lines) method.
+    #[derive(Debug)]
+    #[must_use = "streams do nothing unless polled"]
+    pub struct Lines<R> {
+        #[pin]
+        reader: R,
+        buf: String,
+        bytes: Vec<u8>,
+        read: usize,
+    }
 }
 
 impl<R: AsyncBufRead> Lines<R> {
