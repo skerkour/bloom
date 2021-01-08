@@ -1295,7 +1295,6 @@ dependencies = [
  "actix-files",
  "actix-web",
  "files",
- "futures",
  "kernel",
  "serde",
  "stdx",
@@ -3511,7 +3510,6 @@ dependencies = [
 name = "worker"
 version = "0.1.0"
 dependencies = [
- "futures",
  "kernel",
  "reqwest",
  "stdx",

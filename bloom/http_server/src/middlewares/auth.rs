@@ -53,18 +53,11 @@
 // 	token = parts[1]
 // 	return
 // }
-use crate::context::Actor;
+use actix_web::dev::{Service, Transform};
 use actix_web::Result;
-use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use actix_web::{
-    dev::{Service, Transform},
-    error::ErrorInternalServerError,
-};
-use futures::{
-    future::{err, ok, Ready},
-    Future,
-};
+use actix_web::{Error, HttpMessage};
+use kernel::Actor;
 use kernel::Error as kernelError;
 use kernel::Service as KernelService;
 use std::{
@@ -74,6 +67,10 @@ use std::{
     rc::Rc,
     sync::Arc,
     task::{Context, Poll},
+};
+use stdx::futures::{
+    future::{ok, Ready},
+    Future,
 };
 use stdx::log::error;
 
@@ -227,21 +224,5 @@ where
 
             service.borrow_mut().call(req).await
         })
-    }
-}
-
-/// Actor extractor
-impl FromRequest for Actor {
-    type Error = Error;
-    type Future = Ready<Result<Self, Self::Error>>;
-    type Config = ();
-
-    fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
-        if let Some(actor) = req.extensions().get::<Actor>() {
-            ok(actor.clone())
-        } else {
-            error!("middlewares/auth: auth is missing");
-            err(ErrorInternalServerError("auth is missing"))
-        }
     }
 }

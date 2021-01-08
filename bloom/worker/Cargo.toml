@@ -11,5 +11,4 @@ kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
 
 tokio = { version = "0.2", features = ["full"] }
-futures = "0.3"
 reqwest = { version = "0.10", features = ["json", "rustls-tls"] }

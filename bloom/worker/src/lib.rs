@@ -1,6 +1,6 @@
-use futures::stream::StreamExt;
 use kernel::{drivers::Queue, Error, Service};
 use std::{sync::Arc, time::Duration};
+use stdx::futures::stream::StreamExt;
 use stdx::log::{error, info};
 use tokio::{sync::mpsc, time::delay_for};
 use worker::Worker;

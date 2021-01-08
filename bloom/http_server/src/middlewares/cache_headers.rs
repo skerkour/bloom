@@ -5,11 +5,11 @@ use actix_web::{
     dev::{Service, Transform},
     http::{HeaderName, HeaderValue},
 };
-use futures::{
+use std::task::{Context, Poll};
+use stdx::futures::{
     future::{ok, LocalBoxFuture, Ready},
     FutureExt,
 };
-use std::task::{Context, Poll};
 
 const CACHE_CONTROL_HEADER: &str = "cache-control";
 const X_ACCEL_EXPIRES_HEADER: &str = "x-accel-expires";

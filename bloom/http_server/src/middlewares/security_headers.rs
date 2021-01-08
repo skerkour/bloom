@@ -5,14 +5,14 @@ use actix_web::{
     dev::{Service, Transform},
     http::{HeaderName, HeaderValue},
 };
-use futures::{
-    future::{ok, LocalBoxFuture, Ready},
-    FutureExt,
-};
 use kernel::config::Config;
 use std::{
     sync::Arc,
     task::{Context, Poll},
+};
+use stdx::futures::{
+    future::{ok, LocalBoxFuture, Ready},
+    FutureExt,
 };
 
 /// Security headers middleware.

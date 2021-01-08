@@ -5,11 +5,11 @@ use actix_web::{
     dev::{Service, Transform},
     http::{HeaderName, HeaderValue},
 };
-use futures::{
+use std::task::{Context, Poll};
+use stdx::futures::{
     future::{ok, LocalBoxFuture, Ready},
     FutureExt,
 };
-use std::task::{Context, Poll};
 
 /// Security headers middleware.
 /// sets the correct headers for no API caching

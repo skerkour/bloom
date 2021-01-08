@@ -4,11 +4,11 @@ use actix_web::http::header::{HeaderName, HeaderValue};
 use actix_web::Result;
 use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use futures::{
+use std::task::{Context, Poll};
+use stdx::futures::{
     future::{err, ok, LocalBoxFuture, Ready},
     FutureExt,
 };
-use std::task::{Context, Poll};
 use stdx::{ulid::Ulid, uuid::Uuid};
 
 /// The header set by the middleware

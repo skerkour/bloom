@@ -1,3 +1,4 @@
+mod actor;
 mod errors;
 mod repository;
 
@@ -10,6 +11,7 @@ pub mod entities;
 pub mod http;
 pub mod notifications;
 pub mod service;
+pub use actor::Actor;
 pub use errors::Error;
 pub use service::Service;
 
