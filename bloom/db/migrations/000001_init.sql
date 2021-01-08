@@ -149,3 +149,39 @@ CREATE TABLE kernel_group_invitations (
 );
 CREATE INDEX index_kernel_group_invitations_on_group_id ON kernel_group_invitations (group_id);
 CREATE INDEX index_kernel_group_invitations_on_invitee_id ON kernel_group_invitations (invitee_id);
+
+
+-- #################################################################################################
+-- Files
+-- #################################################################################################
+CREATE TABLE files (
+  id UUID NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  size BIGINT NOT NULL,
+  type TEXT NOT NULL,
+  explicitly_trashed BOOLEAN NOT NULL,
+  trashed_at TIMESTAMP WITH TIME ZONE,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id), -- no on delete cascade, because need to be removed from storage
+  parent_id UUID REFERENCES files (id),
+
+  PRIMARY KEY(id)
+);
+CREATE INDEX index_files_on_namespace_id ON files (namespace_id);
+CREATE INDEX index_files_on_parent_id ON files (parent_id);
+CREATE INDEX index_files_on_type ON files (type);
+CREATE INDEX index_files_on_name ON files (name);
+CREATE INDEX index_files_on_explicitly_trashed ON files (explicitly_trashed);
+
+
+-- #################################################################################################
+-- Analytics
+-- #################################################################################################
+
+
+-- #################################################################################################
+-- Inbox
+-- #################################################################################################
