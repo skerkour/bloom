@@ -506,6 +506,7 @@ name = "bloom"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "analytics",
  "clap",
  "env_logger",
  "files",
@@ -1293,6 +1294,7 @@ version = "0.1.0"
 dependencies = [
  "actix-files",
  "actix-web",
+ "analytics",
  "files",
  "kernel",
  "serde",
@@ -3509,6 +3511,7 @@ dependencies = [
 name = "worker"
 version = "0.1.0"
 dependencies = [
+ "analytics",
  "kernel",
  "reqwest",
  "stdx",

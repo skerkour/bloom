@@ -26,6 +26,8 @@ worker = { path = "../worker" }
 stdx = { path = "../stdx" }
 scheduler = { path = "../scheduler" }
 files = { path = "../files" }
+analytics = { path = "../analytics" }
+
 
 actix-web = "3"
 clap = "2"

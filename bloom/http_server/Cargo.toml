@@ -10,6 +10,7 @@ edition = "2018"
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
 files = { path = "../files" }
+analytics = { path = "../analytics" }
 
 
 actix-web = "3"

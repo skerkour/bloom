@@ -28,8 +28,9 @@ pub fn run() -> Result<(), Error> {
         let mailer = Arc::new(SesMailer::new());
         let storage = Arc::new(S3Storage::new());
 
-        let kernel_service = Arc::new(kernel::Service::new(config, db, queue.clone(), mailer, storage));
+        let kernel_service = Arc::new(kernel::Service::new(config, db.clone(), queue.clone(), mailer, storage));
+        let analytics_service = Arc::new(analytics::Service::new(kernel_service.clone(), db, queue.clone()));
 
-        worker::run(kernel_service, queue).await
+        worker::run(kernel_service, analytics_service, queue).await
     })
 }

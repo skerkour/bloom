@@ -49,11 +49,13 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
             mailer,
             storage.clone(),
         ));
-        let files_service = Arc::new(files::Service::new(kernel_service.clone(), db, storage));
+        let files_service = Arc::new(files::Service::new(kernel_service.clone(), db.clone(), storage));
+        let analytics_service = Arc::new(analytics::Service::new(kernel_service.clone(), db, queue.clone()));
 
         if worker_flag {
             let kernel_service = kernel_service.clone();
-            tokio::spawn(async move { worker::run(kernel_service, queue).await });
+            let analytics_service = analytics_service.clone();
+            tokio::spawn(async move { worker::run(kernel_service, analytics_service, queue).await });
             // TODO: handle error?
         }
 
@@ -62,7 +64,7 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
             tokio::spawn(async move { scheduler::run(kernel_service).await }); // TODO: handle error ?
         }
 
-        http_server::run(kernel_service.clone(), files_service).await?;
+        http_server::run(kernel_service.clone(), files_service, analytics_service).await?;
 
         Ok(sys.await?)
     })

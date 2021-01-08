@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
+analytics = { path = "../analytics" }
 
 tokio = { version = "0.2", features = ["full"] }
 reqwest = { version = "0.10", features = ["json", "rustls-tls"] }

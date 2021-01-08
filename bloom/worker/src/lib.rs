@@ -1,4 +1,4 @@
-use kernel::{drivers::Queue, Error, Service};
+use kernel::{drivers::Queue, Error};
 use std::{sync::Arc, time::Duration};
 use stdx::futures::stream::StreamExt;
 use stdx::log::{error, info};
@@ -7,13 +7,17 @@ use worker::Worker;
 
 mod worker;
 
-pub async fn run(kernel_service: Arc<Service>, queue: Arc<dyn Queue>) -> Result<(), Error> {
+pub async fn run(
+    kernel_service: Arc<kernel::Service>,
+    analytics_service: Arc<analytics::Service>,
+    queue: Arc<dyn Queue>,
+) -> Result<(), Error> {
     let ten_ms = Duration::from_millis(10);
     let one_hundred_ms = Duration::from_millis(100);
 
     let config = kernel_service.config();
     let concurrency = config.worker.concurrency;
-    let worker = Worker::new(kernel_service);
+    let worker = Worker::new(kernel_service, analytics_service);
     let (mut tx, rx) = mpsc::channel(concurrency);
     let queue_tx = queue.clone();
 

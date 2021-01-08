@@ -19,11 +19,13 @@ async fn route_index() -> Result<NamedFile, actix_web::Error> {
 pub async fn run(
     kernel_service: Arc<kernel::Service>,
     files_service: Arc<files::Service>,
+    analytics_service: Arc<analytics::Service>,
 ) -> Result<(), ::kernel::Error> {
     let config = kernel_service.config();
     let context = Arc::new(ServerContext {
         kernel_service: kernel_service.clone(),
         files_service,
+        analytics_service,
     });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);
@@ -177,6 +179,20 @@ pub async fn run(
                                     .service(web::resource("/file").route(web::post().to(api::files::queries::file)))
                                     .service(web::resource("/trash").route(web::post().to(api::files::queries::trash))),
                             ),
+                    )
+                    // analytics
+                    .service(
+                        web::scope("/analytics").service(
+                            web::scope("/events")
+                                .service(
+                                    web::resource("/track")
+                                        .route(web::post().to(api::analytics::commands::handle_track_event)),
+                                )
+                                .service(
+                                    web::resource("/page")
+                                        .route(web::post().to(api::analytics::commands::handle_page_event)),
+                                ),
+                        ),
                     )
                     .default_service(
                         // 404 for GET request
