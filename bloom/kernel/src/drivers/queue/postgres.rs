@@ -1,7 +1,7 @@
 use super::{Job, Queue};
 use crate::{db::DB, domain::messages::Message};
 use std::time::Duration;
-use stdx::chrono;
+use stdx::{chrono, ulid::Ulid, uuid::Uuid};
 use stdx::sqlx::{self, types::Json};
 use tokio::time::delay_for;
 
@@ -18,7 +18,7 @@ const MAX_FAILED_ATTEMPTS: i32 = 5;
 /// faster index insert / retrieves, smaller index size...
 #[derive(sqlx::FromRow, Debug, Clone)]
 struct PostgresJob {
-    id: i64,
+    id: Uuid,
     created_at: chrono::DateTime<chrono::Utc>,
     updated_at: chrono::DateTime<chrono::Utc>,
 
@@ -66,11 +66,13 @@ impl Queue for PostgresQueue {
         let message = Json(job);
         let status = PostgresJobStatus::Queued;
         let now = chrono::Utc::now();
+        let job_id: Uuid = Ulid::new().into();
         let query = "INSERT INTO kernel_queue
-            (created_at, updated_at, scheduled_for, failed_attempts, status, message)
-            VALUES ($1, $2, $3, $4, $5, $6)";
+            (id, created_at, updated_at, scheduled_for, failed_attempts, status, message)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)";
 
         sqlx::query(query)
+            .bind(job_id)
             .bind(now)
             .bind(now)
             .bind(scheduled_for)

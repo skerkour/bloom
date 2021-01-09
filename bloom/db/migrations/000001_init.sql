@@ -2,7 +2,7 @@
 -- Kernel
 -- #################################################################################################
 CREATE TABLE kernel_queue (
-  id BIGSERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
