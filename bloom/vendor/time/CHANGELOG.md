@@ -7,6 +7,14 @@ Versioning].
 
 ---
 
+## 0.2.24 [2021-01-08]
+
+### Fixed
+
+- The implementation of `OffsetDateTime::timestamp`, `OffsetDateTime::unix_timestamp`,
+  `PrimitiveDatetime::timestamp`, and `OffsetDateTime::unix_timestamp` have been corrected. This
+  affects all negative timestamps with a nonzero subsecond value.
+
 ## 0.2.23 [2020-11-17]
 
 ## Compatibility notes

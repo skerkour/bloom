@@ -1023,6 +1023,28 @@ pub mod clippy_used_underscore_binding {
     }
 }
 
+pub mod clippy_ref_option_ref {
+    use pin_project::pin_project;
+
+    #[pin_project]
+    #[derive(Debug)]
+    pub struct Struct<'a> {
+        #[pin]
+        pub _pinned: Option<&'a ()>,
+        pub _unpinned: Option<&'a ()>,
+    }
+
+    #[pin_project(project = EnumProj, project_ref = EnumProjRef)]
+    #[derive(Debug)]
+    pub enum Enum<'a> {
+        Struct {
+            #[pin]
+            _pinned: Option<&'a ()>,
+            _unpinned: Option<&'a ()>,
+        },
+    }
+}
+
 // Run `./dev.sh +$toolchain test --test lint` to update this.
 #[cfg(not(miri))]
 #[allow(clippy::restriction)]

@@ -10,6 +10,10 @@ Note: In this file, do not use the hard wrap in the middle of a sentence for com
 
 ## [Unreleased]
 
+## [1.0.4] - 2021-01-09
+
+- [Suppress `clippy::ref_option_ref` lint in generated code.](https://github.com/taiki-e/pin-project/pull/308)
+
 ## [1.0.3] - 2021-01-05
 
 - Exclude unneeded files from crates.io.
@@ -671,7 +675,8 @@ See also [tracking issue for 0.4 release][21].
 
 Initial release
 
-[Unreleased]: https://github.com/taiki-e/pin-project/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/taiki-e/pin-project/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/taiki-e/pin-project/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/taiki-e/pin-project/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/taiki-e/pin-project/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/taiki-e/pin-project/compare/v1.0.0...v1.0.1

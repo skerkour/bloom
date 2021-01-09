@@ -167,13 +167,13 @@ impl ResourceDef {
 
     /// Is prefix path a match against this resource.
     pub fn is_prefix_match(&self, path: &str) -> Option<usize> {
-        let plen = path.len();
+        let p_len = path.len();
         let path = if path.is_empty() { "/" } else { path };
 
         match self.tp {
             PatternType::Static(ref s) => {
                 if s == path {
-                    Some(plen)
+                    Some(p_len)
                 } else {
                     None
                 }
@@ -211,7 +211,7 @@ impl ResourceDef {
                 } else {
                     return None;
                 };
-                Some(min(plen, len))
+                Some(min(p_len, len))
             }
             PatternType::DynamicSet(ref re, ref params) => {
                 if let Some(idx) = re.matches(path).into_iter().next() {
@@ -252,11 +252,11 @@ impl ResourceDef {
                 }
             }
             PatternType::Prefix(ref s) => {
-                let rpath = path.path();
-                let len = if s == rpath {
+                let r_path = path.path();
+                let len = if s == r_path {
                     s.len()
-                } else if rpath.starts_with(s)
-                    && (s.ends_with('/') || rpath.split_at(s.len()).1.starts_with('/'))
+                } else if r_path.starts_with(s)
+                    && (s.ends_with('/') || r_path.split_at(s.len()).1.starts_with('/'))
                 {
                     if s.ends_with('/') {
                         s.len() - 1
@@ -266,8 +266,8 @@ impl ResourceDef {
                 } else {
                     return false;
                 };
-                let rpath_len = rpath.len();
-                path.skip(min(rpath_len, len) as u16);
+                let r_path_len = r_path.len();
+                path.skip(min(r_path_len, len) as u16);
                 true
             }
             PatternType::Dynamic(ref re, ref names, len) => {
@@ -361,11 +361,11 @@ impl ResourceDef {
             }
             PatternType::Prefix(ref s) => {
                 let len = {
-                    let rpath = res.resource_path().path();
-                    if s == rpath {
+                    let r_path = res.resource_path().path();
+                    if s == r_path {
                         s.len()
-                    } else if rpath.starts_with(s)
-                        && (s.ends_with('/') || rpath.split_at(s.len()).1.starts_with('/'))
+                    } else if r_path.starts_with(s)
+                        && (s.ends_with('/') || r_path.split_at(s.len()).1.starts_with('/'))
                     {
                         if s.ends_with('/') {
                             s.len() - 1
@@ -580,6 +580,8 @@ impl ResourceDef {
         mut for_prefix: bool,
     ) -> (String, Vec<PatternElement>, bool, usize) {
         if pattern.find('{').is_none() {
+            // TODO: MSRV: 1.45
+            #[allow(clippy::manual_strip)]
             return if pattern.ends_with('*') {
                 let path = &pattern[..pattern.len() - 1];
                 let re = String::from("^") + path + "(.*)";
@@ -594,39 +596,39 @@ impl ResourceDef {
             };
         }
 
-        let mut elems = Vec::new();
+        let mut elements = Vec::new();
         let mut re = String::from("^");
-        let mut dyn_elems = 0;
+        let mut dyn_elements = 0;
 
         while let Some(idx) = pattern.find('{') {
             let (prefix, rem) = pattern.split_at(idx);
-            elems.push(PatternElement::Str(String::from(prefix)));
+            elements.push(PatternElement::Str(String::from(prefix)));
             re.push_str(&escape(prefix));
             let (param_pattern, re_part, rem, tail) = Self::parse_param(rem);
             if tail {
                 for_prefix = true;
             }
 
-            elems.push(param_pattern);
+            elements.push(param_pattern);
             re.push_str(&re_part);
             pattern = rem;
-            dyn_elems += 1;
+            dyn_elements += 1;
         }
 
-        elems.push(PatternElement::Str(String::from(pattern)));
+        elements.push(PatternElement::Str(String::from(pattern)));
         re.push_str(&escape(pattern));
 
-        if dyn_elems > MAX_DYNAMIC_SEGMENTS {
+        if dyn_elements > MAX_DYNAMIC_SEGMENTS {
             panic!(
-                "Only {} dynanic segments are allowed, provided: {}",
-                MAX_DYNAMIC_SEGMENTS, dyn_elems
+                "Only {} dynamic segments are allowed, provided: {}",
+                MAX_DYNAMIC_SEGMENTS, dyn_elements
             );
         }
 
         if !for_prefix {
             re.push('$');
         }
-        (re, elems, true, pattern.chars().count())
+        (re, elements, true, pattern.chars().count())
     }
 }
 
@@ -718,10 +720,10 @@ mod tests {
         assert!(!re.is_match("/v/resource/1"));
         assert!(!re.is_match("/resource"));
 
-        let mut path = Path::new("/v151/resource/adahg32");
+        let mut path = Path::new("/v151/resource/adage32");
         assert!(re.match_path(&mut path));
         assert_eq!(path.get("version").unwrap(), "151");
-        assert_eq!(path.get("id").unwrap(), "adahg32");
+        assert_eq!(path.get("id").unwrap(), "adage32");
 
         let re = ResourceDef::new("/{id:[[:digit:]]{6}}");
         assert!(re.is_match("/012345"));
@@ -759,10 +761,10 @@ mod tests {
         assert!(!re.is_match("/v/resource/1"));
         assert!(!re.is_match("/resource"));
 
-        let mut path = Path::new("/v151/resource/adahg32");
+        let mut path = Path::new("/v151/resource/adage32");
         assert!(re.match_path(&mut path));
         assert_eq!(path.get("version").unwrap(), "151");
-        assert_eq!(path.get("id").unwrap(), "adahg32");
+        assert_eq!(path.get("id").unwrap(), "adage32");
 
         assert!(re.is_match("/012345"));
         assert!(!re.is_match("/012"));

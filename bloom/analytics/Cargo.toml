@@ -9,4 +9,3 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
-

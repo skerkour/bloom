@@ -1,7 +1,7 @@
 use kernel::{config::Config, Error};
 
 pub fn run() -> Result<(), Error> {
-    let mut runtime = tokio::runtime::Builder::new()
+    let mut runtime = stdx::tokio::runtime::Builder::new()
         .threaded_scheduler()
         .enable_all()
         .build()

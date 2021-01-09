@@ -1,6 +1,7 @@
 use super::{CompleteRegistrationInput, CreateNamespaceInput, Service, SignedIn};
 use crate::{consts, entities, errors::kernel::Error, Actor};
 use consts::{BillingPlan, NamespaceType};
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::{Duration, Utc},
     crypto,
@@ -8,7 +9,6 @@ use stdx::{
     sync::threadpool::spawn_blocking,
     ulid::Ulid,
 };
-use tokio::time::delay_for;
 
 impl Service {
     pub async fn complete_registration(

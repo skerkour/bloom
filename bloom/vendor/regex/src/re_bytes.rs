@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
+use std::iter::FusedIterator;
 use std::ops::{Index, Range};
 use std::str::FromStr;
 use std::sync::Arc;
@@ -690,6 +691,7 @@ impl Regex {
 ///
 /// `'r` is the lifetime of the compiled regular expression and `'t` is the
 /// lifetime of the matched byte string.
+#[derive(Debug)]
 pub struct Matches<'r, 't>(re_trait::Matches<'t, ExecNoSync<'r>>);
 
 impl<'r, 't> Iterator for Matches<'r, 't> {
@@ -701,6 +703,8 @@ impl<'r, 't> Iterator for Matches<'r, 't> {
     }
 }
 
+impl<'r, 't> FusedIterator for Matches<'r, 't> {}
+
 /// An iterator that yields all non-overlapping capture groups matching a
 /// particular regular expression.
 ///
@@ -708,6 +712,7 @@ impl<'r, 't> Iterator for Matches<'r, 't> {
 ///
 /// `'r` is the lifetime of the compiled regular expression and `'t` is the
 /// lifetime of the matched byte string.
+#[derive(Debug)]
 pub struct CaptureMatches<'r, 't>(
     re_trait::CaptureMatches<'t, ExecNoSync<'r>>,
 );
@@ -724,10 +729,13 @@ impl<'r, 't> Iterator for CaptureMatches<'r, 't> {
     }
 }
 
+impl<'r, 't> FusedIterator for CaptureMatches<'r, 't> {}
+
 /// Yields all substrings delimited by a regular expression match.
 ///
 /// `'r` is the lifetime of the compiled regular expression and `'t` is the
 /// lifetime of the byte string being split.
+#[derive(Debug)]
 pub struct Split<'r, 't> {
     finder: Matches<'r, 't>,
     last: usize,
@@ -757,12 +765,15 @@ impl<'r, 't> Iterator for Split<'r, 't> {
     }
 }
 
+impl<'r, 't> FusedIterator for Split<'r, 't> {}
+
 /// Yields at most `N` substrings delimited by a regular expression match.
 ///
 /// The last substring will be whatever remains after splitting.
 ///
 /// `'r` is the lifetime of the compiled regular expression and `'t` is the
 /// lifetime of the byte string being split.
+#[derive(Debug)]
 pub struct SplitN<'r, 't> {
     splits: Split<'r, 't>,
     n: usize,
@@ -790,7 +801,13 @@ impl<'r, 't> Iterator for SplitN<'r, 't> {
             Some(&text[self.splits.last..])
         }
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(self.n))
+    }
 }
+
+impl<'r, 't> FusedIterator for SplitN<'r, 't> {}
 
 /// An iterator over the names of all possible captures.
 ///
@@ -798,6 +815,7 @@ impl<'r, 't> Iterator for SplitN<'r, 't> {
 /// whole matched region) is always unnamed.
 ///
 /// `'r` is the lifetime of the compiled regular expression.
+#[derive(Clone, Debug)]
 pub struct CaptureNames<'r>(::std::slice::Iter<'r, Option<String>>);
 
 impl<'r> Iterator for CaptureNames<'r> {
@@ -813,7 +831,15 @@ impl<'r> Iterator for CaptureNames<'r> {
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.0.size_hint()
     }
+
+    fn count(self) -> usize {
+        self.0.count()
+    }
 }
+
+impl<'r> ExactSizeIterator for CaptureNames<'r> {}
+
+impl<'r> FusedIterator for CaptureNames<'r> {}
 
 /// CaptureLocations is a low level representation of the raw offsets of each
 /// submatch.
@@ -1057,7 +1083,7 @@ impl<'t, 'i> Index<&'i str> for Captures<'t> {
 ///
 /// The lifetime `'c` corresponds to the lifetime of the `Captures` value, and
 /// the lifetime `'t` corresponds to the originally matched text.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SubCaptureMatches<'c, 't: 'c> {
     caps: &'c Captures<'t>,
     it: SubCapturesPosIter<'c>,
@@ -1072,6 +1098,8 @@ impl<'c, 't> Iterator for SubCaptureMatches<'c, 't> {
             .map(|cap| cap.map(|(s, e)| Match::new(self.caps.text, s, e)))
     }
 }
+
+impl<'c, 't> FusedIterator for SubCaptureMatches<'c, 't> {}
 
 /// Replacer describes types that can be used to replace matches in a byte
 /// string.
@@ -1173,6 +1201,7 @@ where
 /// and performant (since capture groups don't need to be found).
 ///
 /// `'t` is the lifetime of the literal text.
+#[derive(Clone, Debug)]
 pub struct NoExpand<'t>(pub &'t [u8]);
 
 impl<'t> Replacer for NoExpand<'t> {

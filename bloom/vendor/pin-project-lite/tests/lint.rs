@@ -238,3 +238,27 @@ pub mod clippy_used_underscore_binding {
         }
     }
 }
+
+mod clippy_ref_option_ref {
+    use pin_project_lite::pin_project;
+
+    pin_project! {
+        pub struct Struct<'a> {
+            #[pin]
+            pub _pinned: Option<&'a ()>,
+            pub _unpinned: Option<&'a ()>,
+        }
+    }
+
+    pin_project! {
+        #[project = EnumProj]
+        #[project_ref = EnumProjRef]
+        pub enum Enum<'a> {
+            Struct {
+                #[pin]
+                _pinned: Option<&'a ()>,
+                _unpinned: Option<&'a ()>,
+            },
+        }
+    }
+}

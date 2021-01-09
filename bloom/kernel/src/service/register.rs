@@ -1,11 +1,11 @@
 use super::{RegisterInput, Service};
 use crate::{consts, entities::PendingUser, errors::kernel::Error, Actor};
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono, crypto,
     rand::{thread_rng, Rng},
 };
 use stdx::{sync::threadpool::spawn_blocking, ulid::Ulid};
-use tokio::time::delay_for;
 
 impl Service {
     pub async fn register(&self, actor: Actor, input: RegisterInput) -> Result<PendingUser, crate::Error> {

@@ -1,9 +1,9 @@
 use super::{Job, Queue};
 use crate::{db::DB, domain::messages::Message};
 use std::time::Duration;
-use stdx::{chrono, ulid::Ulid, uuid::Uuid};
 use stdx::sqlx::{self, types::Json};
-use tokio::time::delay_for;
+use stdx::tokio::time::delay_for;
+use stdx::{chrono, ulid::Ulid, uuid::Uuid};
 
 #[derive(Debug, Clone)]
 pub struct PostgresQueue {
@@ -52,7 +52,7 @@ impl PostgresQueue {
         let queue = PostgresQueue { db, max_attempts: 5 };
 
         let loop_queue = queue.clone();
-        tokio::spawn(async move { loop_queue.watch_loop().await });
+        stdx::tokio::spawn(async move { loop_queue.watch_loop().await });
 
         queue
     }

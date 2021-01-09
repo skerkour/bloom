@@ -1,6 +1,12 @@
 # Changes
 
-## Unreleased - 2020-xx-xx
+## Unreleased - 2021-xx-xx
+
+
+## 0.2.6 - 2021-01-09
+* Use `bytestring` version range compatible with Bytes v1.0. [#246]
+
+[#246]: https://github.com/actix/actix-net/pull/246
 
 
 ## 0.2.5 - 2020-09-20

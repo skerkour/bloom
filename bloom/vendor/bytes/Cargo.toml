@@ -13,10 +13,10 @@
 [package]
 edition = "2018"
 name = "bytes"
-version = "0.6.0"
+version = "1.0.0"
 authors = ["Carl Lerche <me@carllerche.com>", "Sean McArthur <sean@seanmonstar.com>"]
 description = "Types and traits for working with bytes"
-documentation = "https://docs.rs/bytes/0.6.0/bytes/"
+documentation = "https://docs.rs/bytes/1.0.0/bytes/"
 readme = "README.md"
 keywords = ["buffers", "zero-copy", "io"]
 categories = ["network-programming", "data-structures"]
@@ -34,4 +34,4 @@ version = "1.0"
 default = ["std"]
 std = []
 [target."cfg(loom)".dev-dependencies.loom]
-version = "0.3"
+version = "0.4"

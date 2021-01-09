@@ -86,6 +86,7 @@ impl<K: Eq> Eq for KeyRef<K> {}
 // due to conflicting implementations of `Borrow`. The layout of `&Qey<Q>` must be identical to
 // `&Q` in order to support transmuting in the `Qey::from_ref` method.
 #[derive(Hash, PartialEq, Eq)]
+#[repr(transparent)]
 struct Qey<Q: ?Sized>(Q);
 
 impl<Q: ?Sized> Qey<Q> {
@@ -109,11 +110,15 @@ impl<K, V> Node<K, V> {
     }
 }
 
+// drop empty node without dropping its key and value
 unsafe fn drop_empty_node<K, V>(the_box: *mut Node<K, V>) {
-    // Prevent compiler from trying to drop the un-initialized key and values in the node.
-    let Node { key, value, .. } = *Box::from_raw(the_box);
-    mem::forget(key);
-    mem::forget(value);
+    // Safety:
+    // In this crate all `Node` is allocated via `Box` or `alloc`, and `Box` uses the
+    // Global allocator for its allocation,
+    // (https://doc.rust-lang.org/std/boxed/index.html#memory-layout) so we can safely
+    // deallocate the pointer to `Node` by calling `dealloc` method
+    let layout = std::alloc::Layout::new::<Node<K, V>>();
+    std::alloc::dealloc(the_box as *mut u8, layout);
 }
 
 impl<K: Hash + Eq, V> LinkedHashMap<K, V> {

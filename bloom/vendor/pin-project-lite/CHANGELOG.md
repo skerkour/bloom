@@ -10,6 +10,14 @@ Note: In this file, do not use the hard wrap in the middle of a sentence for com
 
 ## [Unreleased]
 
+## [0.2.3] - 2021-01-09
+
+- [Suppress `clippy::unknown_clippy_lints` lint in generated code.](https://github.com/taiki-e/pin-project-lite/pull/47)
+
+## [0.2.2] - 2021-01-09
+
+- [Suppress `clippy::ref_option_ref` lint in generated code.](https://github.com/taiki-e/pin-project-lite/pull/45)
+
 ## [0.2.1] - 2021-01-05
 
 - Exclude unneeded files from crates.io.
@@ -143,7 +151,9 @@ Note: In this file, do not use the hard wrap in the middle of a sentence for com
 
 Initial release
 
-[Unreleased]: https://github.com/taiki-e/pin-project-lite/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/taiki-e/pin-project-lite/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/taiki-e/pin-project-lite/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/taiki-e/pin-project-lite/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/taiki-e/pin-project-lite/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/taiki-e/pin-project-lite/compare/v0.1.11...v0.2.0
 [0.1.11]: https://github.com/taiki-e/pin-project-lite/compare/v0.1.10...v0.1.11

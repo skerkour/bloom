@@ -133,6 +133,7 @@ fn proj_allowed_lints(kind: TypeKind) -> (TokenStream, TokenStream, TokenStream)
     let proj_ref = quote! {
         #global_allowed_lints
         #[allow(dead_code)] // This lint warns unused fields/variants.
+        #[allow(clippy::ref_option_ref)] // This lint warns `&Option<&<ty>>`.
         #[allow(clippy::type_repetition_in_bounds)] // https://github.com/rust-lang/rust-clippy/issues/4326
     };
     let proj_own = quote! {

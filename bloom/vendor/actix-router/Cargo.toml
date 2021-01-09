@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "actix-router"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Nikolay Kim <fafhrd91@gmail.com>"]
 description = "Resource path matching library"
 homepage = "https://actix.rs"
@@ -26,10 +26,10 @@ repository = "https://github.com/actix/actix-net.git"
 name = "actix_router"
 path = "src/lib.rs"
 [dependencies.bytestring]
-version = "0.1.2"
+version = ">=0.1.5, <2"
 
 [dependencies.http]
-version = "0.2.0"
+version = "0.2.2"
 optional = true
 
 [dependencies.log]

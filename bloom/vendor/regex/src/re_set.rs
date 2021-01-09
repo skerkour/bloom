@@ -320,6 +320,7 @@ impl<'a> IntoIterator for &'a SetMatches {
 /// This will always produces matches in ascending order of index, where the
 /// index corresponds to the index of the regex that matched with respect to
 /// its position when initially building the set.
+#[derive(Debug)]
 pub struct SetMatchesIntoIter(iter::Enumerate<vec::IntoIter<bool>>);
 
 impl Iterator for SetMatchesIntoIter {
@@ -352,6 +353,8 @@ impl DoubleEndedIterator for SetMatchesIntoIter {
     }
 }
 
+impl iter::FusedIterator for SetMatchesIntoIter {}
+
 /// A borrowed iterator over the set of matches from a regex set.
 ///
 /// The lifetime `'a` refers to the lifetime of a `SetMatches` value.
@@ -359,7 +362,7 @@ impl DoubleEndedIterator for SetMatchesIntoIter {
 /// This will always produces matches in ascending order of index, where the
 /// index corresponds to the index of the regex that matched with respect to
 /// its position when initially building the set.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SetMatchesIter<'a>(iter::Enumerate<slice::Iter<'a, bool>>);
 
 impl<'a> Iterator for SetMatchesIter<'a> {
@@ -391,6 +394,8 @@ impl<'a> DoubleEndedIterator for SetMatchesIter<'a> {
         }
     }
 }
+
+impl<'a> iter::FusedIterator for SetMatchesIter<'a> {}
 
 #[doc(hidden)]
 impl From<Exec> for RegexSet {

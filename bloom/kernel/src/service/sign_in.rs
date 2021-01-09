@@ -1,5 +1,6 @@
 use super::{Service, SignInInput};
 use crate::{consts, entities::PendingSession, errors::kernel::Error, Actor};
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::Utc,
     crypto,
@@ -7,7 +8,6 @@ use stdx::{
     sync::threadpool::spawn_blocking,
     ulid::Ulid,
 };
-use tokio::time::delay_for;
 
 impl Service {
     pub async fn sign_in(&self, actor: Actor, input: SignInInput) -> Result<PendingSession, crate::Error> {

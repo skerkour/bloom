@@ -1,12 +1,12 @@
 use super::{Service, VerifyEmailInput};
 use crate::{consts, errors::kernel::Error, Actor};
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::{Duration, Utc},
     crypto,
     rand::{thread_rng, Rng},
     sync::threadpool::spawn_blocking,
 };
-use tokio::time::delay_for;
 
 impl Service {
     pub async fn verify_email(&self, actor: Actor, input: VerifyEmailInput) -> Result<(), crate::Error> {

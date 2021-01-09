@@ -12,6 +12,7 @@ pub mod validator;
 pub use base64;
 pub use chrono;
 pub use dotenv;
+pub use env_logger;
 pub use futures;
 pub use image;
 pub use lazy_static;

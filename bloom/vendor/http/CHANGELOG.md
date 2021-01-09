@@ -1,3 +1,7 @@
+# 0.2.3 (January 7, 2021)
+
+* Upgrade internal (private) `bytes` dependency to 1.0.
+
 # 0.2.2 (December 14, 2020)
 
 * Fix (potential double) panic of (`HeaderMap`) `OccupiedEntry::remove_entry` and

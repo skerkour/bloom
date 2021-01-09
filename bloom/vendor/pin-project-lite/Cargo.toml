@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "pin-project-lite"
-version = "0.2.1"
+version = "0.2.3"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
 exclude = ["/.github", "/scripts"]
 description = "A lightweight version of pin-project written with declarative macros.\n"

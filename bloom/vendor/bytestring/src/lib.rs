@@ -1,37 +1,49 @@
-//! A utl-8 encoded read-only string with Bytes as a storage.
-use std::convert::TryFrom;
-use std::{borrow, fmt, hash, ops, str};
+//! A UTF-8 encoded read-only string using Bytes as storage.
+
+#![no_std]
+#![deny(rust_2018_idioms, nonstandard_style)]
+#![doc(html_logo_url = "https://actix.rs/img/logo.png")]
+#![doc(html_favicon_url = "https://actix.rs/favicon.ico")]
+
+extern crate alloc;
+
+use alloc::{string::String, vec::Vec};
+use core::{borrow, convert::TryFrom, fmt, hash, ops, str};
 
 use bytes::Bytes;
 
-/// A utf-8 encoded string with [`Bytes`] as a storage.
-///
-/// [`Bytes`]: https://docs.rs/bytes/0.5.3/bytes/struct.Bytes.html
-#[derive(Clone, Eq, Ord, PartialOrd, Default)]
+/// An immutable UTF-8 encoded string with [`Bytes`] as a storage.
+#[derive(Clone, Default, Eq, PartialOrd, Ord)]
 pub struct ByteString(Bytes);
 
 impl ByteString {
-    /// Creates a new `ByteString`.
-    pub fn new() -> Self {
+    /// Creates a new empty `ByteString`.
+    pub const fn new() -> Self {
         ByteString(Bytes::new())
     }
 
-    /// Get a reference to the underlying bytes object.
-    pub fn get_ref(&self) -> &Bytes {
+    /// Get a reference to the underlying `Bytes` object.
+    pub fn as_bytes(&self) -> &Bytes {
         &self.0
     }
 
-    /// Unwraps this `ByteString`, returning the underlying bytes object.
-    pub fn into_inner(self) -> Bytes {
+    /// Unwraps this `ByteString` into the underlying `Bytes` object.
+    pub fn into_bytes(self) -> Bytes {
         self.0
     }
 
-    /// Creates a new `ByteString` from a static str.
+    /// Creates a new `ByteString` from a `&'static str`.
     pub const fn from_static(src: &'static str) -> ByteString {
         Self(Bytes::from_static(src.as_bytes()))
     }
 
     /// Creates a new `ByteString` from a Bytes.
+    ///
+    /// # Safety
+    /// This function is unsafe because it does not check the bytes passed to it are valid UTF-8.
+    /// If this constraint is violated, it may cause memory unsafety issues with future users of
+    /// the `ByteString`, as we assume that `ByteString`s are valid UTF-8. However, the most likely
+    /// issue is that the data gets corrupted.
     pub const unsafe fn from_bytes_unchecked(src: Bytes) -> ByteString {
         Self(src)
     }
@@ -72,8 +84,10 @@ impl ops::Deref for ByteString {
 
     #[inline]
     fn deref(&self) -> &str {
-        let b = self.0.as_ref();
-        unsafe { str::from_utf8_unchecked(b) }
+        let bytes = self.0.as_ref();
+        // SAFETY:
+        // UTF-8 validity is guaranteed at during construction.
+        unsafe { str::from_utf8_unchecked(bytes) }
     }
 }
 
@@ -84,21 +98,24 @@ impl borrow::Borrow<str> for ByteString {
 }
 
 impl From<String> for ByteString {
+    #[inline]
     fn from(value: String) -> Self {
         Self(Bytes::from(value))
     }
 }
 
-impl<'a> From<&'a str> for ByteString {
-    fn from(value: &'a str) -> Self {
+impl From<&str> for ByteString {
+    #[inline]
+    fn from(value: &str) -> Self {
         Self(Bytes::copy_from_slice(value.as_ref()))
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for ByteString {
+impl TryFrom<&[u8]> for ByteString {
     type Error = str::Utf8Error;
 
-    fn try_from(value: &'a [u8]) -> Result<Self, Self::Error> {
+    #[inline]
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let _ = str::from_utf8(value)?;
         Ok(ByteString(Bytes::copy_from_slice(value)))
     }
@@ -107,15 +124,17 @@ impl<'a> TryFrom<&'a [u8]> for ByteString {
 impl TryFrom<Vec<u8>> for ByteString {
     type Error = str::Utf8Error;
 
+    #[inline]
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        let _ = str::from_utf8(value.as_ref())?;
-        Ok(ByteString(Bytes::from(value)))
+        let buf = String::from_utf8(value).map_err(|err| err.utf8_error())?;
+        Ok(ByteString(Bytes::from(buf)))
     }
 }
 
 impl TryFrom<Bytes> for ByteString {
     type Error = str::Utf8Error;
 
+    #[inline]
     fn try_from(value: Bytes) -> Result<Self, Self::Error> {
         let _ = str::from_utf8(value.as_ref())?;
         Ok(ByteString(value))
@@ -125,8 +144,9 @@ impl TryFrom<Bytes> for ByteString {
 impl TryFrom<bytes::BytesMut> for ByteString {
     type Error = str::Utf8Error;
 
+    #[inline]
     fn try_from(value: bytes::BytesMut) -> Result<Self, Self::Error> {
-        let _ = str::from_utf8(value.as_ref())?;
+        let _ = str::from_utf8(&value)?;
         Ok(ByteString(value.freeze()))
     }
 }
@@ -134,10 +154,20 @@ impl TryFrom<bytes::BytesMut> for ByteString {
 macro_rules! array_impls {
     ($($len:expr)+) => {
         $(
-            impl<'a> TryFrom<&'a [u8; $len]> for ByteString {
+            impl TryFrom<[u8; $len]> for ByteString {
                 type Error = str::Utf8Error;
 
-                fn try_from(value: &'a [u8; $len]) -> Result<Self, Self::Error> {
+                #[inline]
+                fn try_from(value: [u8; $len]) -> Result<Self, Self::Error> {
+                    ByteString::try_from(&value[..])
+                }
+            }
+
+            impl TryFrom<&[u8; $len]> for ByteString {
+                type Error = str::Utf8Error;
+
+                #[inline]
+                fn try_from(value: &[u8; $len]) -> Result<Self, Self::Error> {
                     ByteString::try_from(&value[..])
                 }
             }
@@ -145,22 +175,24 @@ macro_rules! array_impls {
     }
 }
 
-array_impls!(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16);
+array_impls!(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32);
 
 impl fmt::Debug for ByteString {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         (**self).fmt(fmt)
     }
 }
 
 impl fmt::Display for ByteString {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         (**self).fmt(fmt)
     }
 }
 
 #[cfg(feature = "serde")]
 mod serde {
+    use alloc::string::String;
+
     use serde::de::{Deserialize, Deserializer};
     use serde::ser::{Serialize, Serializer};
 
@@ -189,16 +221,19 @@ mod serde {
 
 #[cfg(test)]
 mod test {
+    use alloc::borrow::ToOwned;
+    use core::hash::{Hash, Hasher};
+
+    use siphasher::sip::SipHasher;
+
     use super::*;
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
 
     #[test]
     fn test_partial_eq() {
         let s: ByteString = ByteString::from_static("test");
         assert_eq!(s, "test");
         assert_eq!(s, *"test");
-        assert_eq!(s, "test".to_string());
+        assert_eq!(s, "test".to_owned());
     }
 
     #[test]
@@ -208,10 +243,10 @@ mod test {
 
     #[test]
     fn test_hash() {
-        let mut hasher1 = DefaultHasher::default();
+        let mut hasher1 = SipHasher::default();
         "str".hash(&mut hasher1);
 
-        let mut hasher2 = DefaultHasher::default();
+        let mut hasher2 = SipHasher::default();
         let s = ByteString::from_static("str");
         s.hash(&mut hasher2);
         assert_eq!(hasher1.finish(), hasher2.finish());
@@ -219,7 +254,7 @@ mod test {
 
     #[test]
     fn test_from_string() {
-        let s: ByteString = "hello".to_string().into();
+        let s: ByteString = "hello".to_owned().into();
         assert_eq!(&s, "hello");
         let t: &str = s.as_ref();
         assert_eq!(t, "hello");
@@ -237,8 +272,16 @@ mod test {
     }
 
     #[test]
-    fn test_try_from_rbytes() {
+    fn test_try_from_slice() {
         let _ = ByteString::try_from(b"nice bytes").unwrap();
+    }
+
+    #[test]
+    fn test_try_from_array() {
+        assert_eq!(
+            ByteString::try_from([b'h', b'i']).unwrap(),
+            ByteString::from_static("hi")
+        );
     }
 
     #[test]
@@ -247,7 +290,7 @@ mod test {
     }
 
     #[test]
-    fn test_try_from_bytesmut() {
+    fn test_try_from_bytes_mut() {
         let _ = ByteString::try_from(bytes::BytesMut::from(&b"nice bytes"[..])).unwrap();
     }
 

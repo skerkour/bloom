@@ -132,7 +132,13 @@ impl PrimitiveDateTime {
     #[allow(deprecated)]
     #[deprecated(since = "0.2.7", note = "This method assumes an offset of UTC.")]
     pub fn timestamp(self) -> i64 {
-        (self - Self::unix_epoch()).whole_seconds()
+        let days = (self.date.julian_day()
+            - internals::Date::from_yo_unchecked(1970, 1).julian_day())
+            * 86_400;
+        let hours = self.hour() as i64 * 3_600;
+        let minutes = self.minute() as i64 * 60;
+        let seconds = self.second() as i64;
+        days + hours + minutes + seconds
     }
 
     /// Get the `Date` component of the `PrimitiveDateTime`.

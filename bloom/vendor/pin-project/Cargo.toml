@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "pin-project"
-version = "1.0.3"
+version = "1.0.4"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
 exclude = ["/.github", "/ci", "/scripts"]
 description = "A crate for safe and ergonomic pin-projection.\n"
@@ -26,7 +26,7 @@ repository = "https://github.com/taiki-e/pin-project"
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 [dependencies.pin-project-internal]
-version = "=1.0.3"
+version = "=1.0.4"
 default-features = false
 [dev-dependencies.rustversion]
 version = "1"

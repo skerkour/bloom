@@ -1,13 +1,13 @@
 use clap::ArgMatches;
-use env_logger::Builder;
 use kernel::{
     config::{Config, Env},
     drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
 };
 use std::sync::Arc;
+use stdx::env_logger::Builder;
 use stdx::log::debug;
 use stdx::log::LevelFilter;
-use tokio::task;
+use stdx::tokio::task;
 
 // #[tokio::main]
 pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
@@ -27,7 +27,7 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
     );
 
     // see here for how to run actix-web in a tokio runtime https://github.com/actix/actix-web/issues/1283
-    let mut runtime = tokio::runtime::Builder::new()
+    let mut runtime = stdx::tokio::runtime::Builder::new()
         .threaded_scheduler()
         .enable_all()
         .build()
@@ -60,13 +60,14 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
         if worker_flag {
             let kernel_service = kernel_service.clone();
             let analytics_service = analytics_service.clone();
-            tokio::spawn(async move { worker::run(kernel_service, analytics_service, queue).await });
+            stdx::tokio::spawn(async move { worker::run(kernel_service, analytics_service, queue).await });
             // TODO: handle error?
         }
 
         if scheduler_flag {
             let kernel_service = kernel_service.clone();
-            tokio::spawn(async move { scheduler::run(kernel_service).await }); // TODO: handle error ?
+            stdx::tokio::spawn(async move { scheduler::run(kernel_service).await });
+            // TODO: handle error ?
         }
 
         http_server::run(kernel_service.clone(), files_service, analytics_service, inbox_service).await?;

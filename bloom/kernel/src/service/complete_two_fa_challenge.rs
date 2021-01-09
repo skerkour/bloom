@@ -1,13 +1,12 @@
+use super::{CompleteTwoFaChallengeInput, Service, SignedIn};
+use crate::{consts, errors::kernel::Error, Actor};
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::{Duration, Utc},
     crypto,
     otp::totp,
     rand::{thread_rng, Rng},
 };
-use tokio::time::delay_for;
-
-use super::{CompleteTwoFaChallengeInput, Service, SignedIn};
-use crate::{consts, errors::kernel::Error, Actor};
 
 impl Service {
     pub async fn complete_two_fa_challenge(

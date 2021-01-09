@@ -298,7 +298,13 @@ impl OffsetDateTime {
     /// );
     /// ```
     pub fn unix_timestamp(self) -> i64 {
-        (self - Self::unix_epoch()).whole_seconds()
+        let days = (self.utc_datetime.date.julian_day()
+            - internals::Date::from_yo_unchecked(1970, 1).julian_day())
+            * 86_400;
+        let hours = self.utc_datetime.hour() as i64 * 3_600;
+        let minutes = self.utc_datetime.minute() as i64 * 60;
+        let seconds = self.utc_datetime.second() as i64;
+        days + hours + minutes + seconds
     }
 
     /// Get the [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time).

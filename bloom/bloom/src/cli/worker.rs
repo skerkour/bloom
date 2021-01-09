@@ -1,10 +1,10 @@
-use env_logger::Builder;
 use kernel::{
     config::{Config, Env},
     drivers::{mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage},
     Error,
 };
 use std::sync::Arc;
+use stdx::env_logger::Builder;
 use stdx::log::LevelFilter;
 
 pub fn run() -> Result<(), Error> {
@@ -16,7 +16,7 @@ pub fn run() -> Result<(), Error> {
     };
     Builder::new().filter_level(log_level).init();
 
-    let mut runtime = tokio::runtime::Builder::new()
+    let mut runtime = stdx::tokio::runtime::Builder::new()
         .threaded_scheduler()
         .enable_all()
         .build()

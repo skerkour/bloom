@@ -1,13 +1,13 @@
 use super::{CompleteSignInInput, Service, SignedIn};
 use crate::{consts, errors::kernel::Error, Actor};
 use consts::TwoFaMethod;
+use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::{Duration, Utc},
     crypto,
     rand::{thread_rng, Rng},
     sync::threadpool::spawn_blocking,
 };
-use tokio::time::delay_for;
 
 impl Service {
     pub async fn complete_sign_in(&self, actor: Actor, input: CompleteSignInInput) -> Result<SignedIn, crate::Error> {
