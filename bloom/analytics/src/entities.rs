@@ -77,8 +77,9 @@ pub struct PageEvent {
     pub namespace_id: Uuid,
 }
 
-#[derive(sqlx::Type, Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(sqlx::Type, Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
 #[sqlx(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum DeviceType {
     Phone,
     Tablet,
@@ -86,14 +87,72 @@ pub enum DeviceType {
     Other,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct Analytics {
-    //   visits: [AnalyticsVisit!]!
-//   pages: [AnalyticsPage!]!
-//   referrers: [AnalyticsReferrer!]!
-//   devices: [AnalyticsDevice!]!
-//   browsers: [AnalyticsBrowser!]!
-//   countries: [AnalyticsCountry!]!
-//   oses: [AnalyticsOs!]!
-//   events: [AnalyticsEvent!]!
+    pub visits: Vec<Visit>,
+    pub pages: Vec<Page>,
+    pub referrers: Vec<Referrer>,
+    pub devices: Vec<Device>,
+    pub events: Vec<Event>,
+    // browsers: Vec<Browser>,
+    // countries: Vec<Country>,
+    // oses: Vec<Os>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Visit {
+    pub date: DateTime<Utc>,
+    pub views: i64,
+    pub visitors: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Page {
+    pub url: String,
+    pub path: String,
+    pub views: i64,
+    pub visitors: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Referrer {
+    pub referrer: String,
+    pub views: i64,
+    pub visitors: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Device {
+    pub r#type: DeviceType,
+    pub views: i64,
+    pub visitors: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Event {
+    pub event_name: String,
+    pub views: i64,
+    pub visitors: i64,
+}
+
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct Os {
+//     pub os: String,
+//     pub views: i64,
+//     pub visitors: i64,
+// }
+
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct Browser {
+//     pub browser: String,
+//     pub views: i64,
+//     pub visitors: i64,
+// }
+
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// pub struct Country {
+//     pub country: String,
+//     pub country_code: String,
+//     pub views: i64,
+//     pub visitors: i64,
+// }
