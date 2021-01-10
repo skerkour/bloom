@@ -1,11 +1,2 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PageEvent {
-    // TODO
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TrackEvent {
-    // TODO
-}
+pub type PageEvent = kernel::domain::analytics::events::PageEvent;
+pub type TrackEvent = kernel::domain::analytics::events::TrackEvent;

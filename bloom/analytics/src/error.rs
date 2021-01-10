@@ -1,6 +1,9 @@
 use stdx::sqlx;
 
 pub enum Error {
+    // Events
+    EventNotValid,
+
     // Other
     Internal,
 }
