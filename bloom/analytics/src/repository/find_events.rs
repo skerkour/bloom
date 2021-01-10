@@ -10,11 +10,7 @@ impl Repository {
 		WHERE namespace_id = $1 AND timestamp > (CURRENT_DATE - INTERVAL '30 days')
 		GROUP BY event_name";
 
-        match sqlx::query_as::<_, Event>(QUERY)
-            .bind(namespace_id)
-            .fetch_all(db)
-            .await
-        {
+        match sqlx::query_as::<_, Event>(QUERY).bind(namespace_id).fetch_all(db).await {
             Err(err) => {
                 error!("analytics.find_events: finding events: {}", &err);
                 Err(err.into())
