@@ -18,6 +18,13 @@ impl Service {
         }
     }
 
+    pub fn current_anonymous_id(&self, actor: Actor) -> Result<Uuid, crate::Error> {
+        match actor {
+            Actor::Anonymous(anonymous_id) => Ok(anonymous_id),
+            _ => Err(Error::AuthenticationRequired.into()),
+        }
+    }
+
     pub fn decode_session_token(&self, _token: String) -> Result<DecodedSessionToken, crate::Error> {
         unimplemented!(); // TODO
     }
