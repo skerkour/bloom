@@ -4,6 +4,9 @@ pub enum Error {
     // Events
     EventNotValid,
 
+    // Visitors
+    VisitorNotFound,
+
     // Other
     Internal,
 }
@@ -22,6 +25,9 @@ impl std::convert::From<Error> for kernel::Error {
         match err {
             // Events
             Error::EventNotValid => kernel::Error::InvalidArgument(String::from("event is not valid.")),
+
+            // Visitor
+            Error::VisitorNotFound => kernel::Error::NotFound(String::from("Visitor not found.")),
 
             // Other
             Error::Internal => kernel::Error::Internal,

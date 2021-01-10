@@ -1,5 +1,5 @@
-use crate::{entities::PageEvent, Error};
 use super::Repository;
+use crate::{entities::PageEvent, Error};
 use kernel::db::Queryer;
 use stdx::{log::error, sqlx};
 
