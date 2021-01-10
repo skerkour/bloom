@@ -8,23 +8,24 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "0.2", features = ["full"] }
-thiserror = "1"
-hex = "0.4"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+atomic = "0.5"
 base64 = "0.13"
-tryhard = { version = "0.2", default-features = false, features = ["tokio-02"] }
-rand = { version = "0.8" }
 chrono = { version  = "0.4", features = ["serde"] }
+cron = "0.7"
+dotenv = "0.15"
+env_logger = "0.8"
+futures = "0.3"
+hex = "0.4"
 image = "0.23"
 lazy_static = "1.4"
-serde = { version = "1", features = ["derive"] }
-dotenv = "0.15"
-num_cpus = "1"
-regex = "1"
 log = "0.4"
-atomic = "0.5"
-futures = "0.3"
-cron = "0.7"
+num_cpus = "1"
+rand = { version = "0.8" }
+regex = "1"
+serde = { version = "1", features = ["derive"] }
 sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }
-env_logger = "0.8"
+thiserror = "1"
+tokio = { version = "0.2", features = ["full"] }
+tryhard = { version = "0.2", default-features = false, features = ["tokio-02"] }
+uuid = { version = "0.8", features = ["serde", "v4"] }
+url = "2"
