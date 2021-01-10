@@ -99,14 +99,14 @@ pub struct Analytics {
     // oses: Vec<Os>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Visit {
     pub date: DateTime<Utc>,
     pub views: i64,
     pub visitors: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Page {
     pub url: String,
     pub path: String,
@@ -114,21 +114,21 @@ pub struct Page {
     pub visitors: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Referrer {
     pub referrer: String,
     pub views: i64,
     pub visitors: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Device {
-    pub r#type: DeviceType,
+    pub device_type: DeviceType,
     pub views: i64,
     pub visitors: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Event {
     pub event_name: String,
     pub views: i64,
