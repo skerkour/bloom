@@ -31,6 +31,7 @@ pub struct TrackEvent {
     pub event_name: String,
     pub properties: Json<HashMap<String, String>>,
 
+    pub page_name: String,
     pub url: String,
     pub user_agent: String,
     pub referrer: String,
@@ -58,7 +59,6 @@ pub struct PageEvent {
     pub received_at: DateTime<Utc>,
 
     pub page_name: String,
-
     pub url: String,
     pub user_agent: String,
     pub referrer: String,

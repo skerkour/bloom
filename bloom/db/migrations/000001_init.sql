@@ -238,6 +238,7 @@ CREATE TABLE analytics_track_events (
   event_name TEXT NOT NULL,
   properties JSONB NOT NULL,
 
+  page_name TEXT NOT NULL,
   url TEXT NOT NULL,
   user_agent TEXT NOT NULL,
   referrer TEXT NOT NULL,
