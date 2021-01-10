@@ -99,7 +99,6 @@
       timestamp: new Date().toISOString(),
       sent_at: new Date().toISOString(),
       project_id: bloomConfig.project,
-      title: document.title,
       name: document.title,
       url: window.location.href,
       referrer: document.referrer,
