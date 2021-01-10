@@ -23,4 +23,5 @@ pub use regex;
 pub use sqlx;
 pub use tokio;
 pub use tryhard as retry;
+pub use url;
 pub use uuid;

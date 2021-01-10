@@ -1,11 +1,15 @@
 use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
+use stdx::uuid::Uuid;
 
+mod find_or_create_visitor;
 mod handle_page_event;
 mod handle_track_event;
 mod process_page_event;
 mod process_track_event;
+mod utils;
+mod validators;
 
 #[derive(Debug)]
 pub struct Service {
@@ -26,4 +30,10 @@ impl Service {
             queue,
         }
     }
+}
+
+#[derive(Debug)]
+pub struct FindOrCreateVisitorInput {
+    pub anonymous_id: Uuid,
+    pub namespace_id: Uuid,
 }

@@ -16,3 +16,15 @@ impl std::convert::From<sqlx::Error> for Error {
         }
     }
 }
+
+impl std::convert::From<Error> for kernel::Error {
+    fn from(err: Error) -> Self {
+        match err {
+            // Events
+            Error::EventNotValid => kernel::Error::InvalidArgument(String::from("event is not valid.")),
+
+            // Other
+            Error::Internal => kernel::Error::Internal,
+        }
+    }
+}
