@@ -3,6 +3,7 @@ use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::uuid::Uuid;
 
+mod find_analytics;
 mod find_or_create_visitor;
 mod handle_page_event;
 mod handle_track_event;

@@ -184,17 +184,21 @@ pub async fn run(
                     )
                     // analytics
                     .service(
-                        web::scope("/analytics").service(
-                            web::scope("/events")
-                                .service(
-                                    web::resource("/track")
-                                        .route(web::post().to(api::analytics::commands::handle_track_event)),
-                                )
-                                .service(
-                                    web::resource("/page")
-                                        .route(web::post().to(api::analytics::commands::handle_page_event)),
-                                ),
-                        ),
+                        web::scope("/analytics")
+                            .service(
+                                web::scope("/events")
+                                    .service(
+                                        web::resource("/track")
+                                            .route(web::post().to(api::analytics::commands::handle_track_event)),
+                                    )
+                                    .service(
+                                        web::resource("/page")
+                                            .route(web::post().to(api::analytics::commands::handle_page_event)),
+                                    ),
+                            )
+                            .service(web::scope("/queries").service(
+                                web::resource("/analytics").route(web::post().to(api::analytics::queries::analytics)),
+                            )),
                     )
                     .default_service(
                         // 404 for GET request

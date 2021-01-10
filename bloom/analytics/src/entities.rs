@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-
+use serde::{Deserialize, Serialize};
 use sqlx::types::Json;
+use std::collections::HashMap;
 use stdx::{
     chrono::{DateTime, Utc},
     sqlx,
@@ -84,4 +84,16 @@ pub enum DeviceType {
     Tablet,
     Desktop,
     Other,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Analytics {
+    //   visits: [AnalyticsVisit!]!
+//   pages: [AnalyticsPage!]!
+//   referrers: [AnalyticsReferrer!]!
+//   devices: [AnalyticsDevice!]!
+//   browsers: [AnalyticsBrowser!]!
+//   countries: [AnalyticsCountry!]!
+//   oses: [AnalyticsOs!]!
+//   events: [AnalyticsEvent!]!
 }

@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
+
+serde = { version = "1", features = ["derive"] }
