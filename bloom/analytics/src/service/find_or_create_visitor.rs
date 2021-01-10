@@ -15,7 +15,6 @@ impl Service {
     {
         match self.repo.find_visitor_by_anonymous_id(db, input.anonymous_id).await {
             Ok(visitor) => Ok(visitor),
-            Err(err) => Err(err),
             Err(Error::VisitorNotFound) => {
                 let now = Utc::now();
                 let visitor = Visitor {
@@ -28,6 +27,7 @@ impl Service {
                 self.repo.create_visitor(db, &visitor).await?;
                 Ok(visitor)
             }
+            Err(err) => Err(err),
         }
     }
 }

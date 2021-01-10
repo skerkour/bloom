@@ -25,6 +25,7 @@ use stdx::uuid::Uuid;
 mod accept_group_invitation;
 mod cancel_group_invitation;
 mod check_namespace_exists;
+mod check_namespace_membership;
 mod complete_registration;
 mod complete_sign_in;
 mod complete_two_fa_challenge;
