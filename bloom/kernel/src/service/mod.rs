@@ -48,6 +48,7 @@ mod setup_two_fa;
 mod sign_in;
 mod update_group_profile;
 mod update_my_profile;
+mod update_namespace;
 mod utils;
 mod validators;
 mod verify_email;
