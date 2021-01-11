@@ -3,6 +3,7 @@ use stdx::sqlx;
 pub enum Error {
     // Files
     FileNotFound,
+    FileAlreadyExists,
 
     // Other
     Internal,
@@ -23,6 +24,7 @@ impl std::convert::From<Error> for kernel::Error {
         match err {
             // Files
             Error::FileNotFound => kernel::Error::NotFound(String::from("File not found.")),
+            Error::FileAlreadyExists => kernel::Error::AlreadyExists(String::from("File already exists.")),
 
             // Other
             Error::Internal => kernel::Error::Internal,

@@ -22,9 +22,8 @@ pub struct File {
     pub parent_id: Option<Uuid>,
 }
 
-impl  File {
+impl File {
     pub fn is_root(&self) -> bool {
         return self.name == consts::ROOT_FILE_NAME;
     }
-
 }
