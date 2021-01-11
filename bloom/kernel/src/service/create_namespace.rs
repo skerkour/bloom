@@ -3,6 +3,7 @@ use crate::{db::Queryer, entities::Namespace};
 use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
+    // TODO: init namespace (files)
     pub async fn create_namespace<'c, C: Queryer<'c>>(
         &self,
         db: C,

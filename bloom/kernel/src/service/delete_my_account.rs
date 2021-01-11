@@ -4,6 +4,7 @@ use super::{DeleteMyAccountInput, Service};
 use crate::{consts::BillingPlan, errors::kernel::Error, Actor};
 
 impl Service {
+    // TODO: clean namespace (files)
     pub async fn delete_my_account(&self, actor: Actor, input: DeleteMyAccountInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 

@@ -1,4 +1,5 @@
 mod create_file;
+mod detach_all_files_from_namespace;
 mod detach_all_trashed_files_from_namespace;
 mod find_all_trashed_files;
 mod find_children_recursively;

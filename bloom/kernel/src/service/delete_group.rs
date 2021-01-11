@@ -7,6 +7,7 @@ use crate::{
 use stdx::chrono::Utc;
 
 impl Service {
+    // TODO: clean namespace (files)
     pub async fn delete_group(&self, actor: Actor, input: DeleteGroupInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
