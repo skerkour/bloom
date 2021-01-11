@@ -1,9 +1,31 @@
 use super::{FindFileInput, Service};
-use crate::entities::File;
+use crate::{entities::File, Error};
 use kernel::Actor;
 
 impl Service {
-    pub async fn find_file(&self, _actor: Actor, _input: FindFileInput) -> Result<File, kernel::Error> {
-        unimplemented!();
+    pub async fn find_file(&self, actor: Actor, input: FindFileInput) -> Result<File, kernel::Error> {
+        let actor = self.kernel_service.current_user(actor)?;
+
+        self.kernel_service
+            .check_namespace_membership(&self.db, actor.id, input.namespace_id)
+            .await?;
+
+        let file = if let Some(file_id) = input.file_id {
+            self.repo.find_file_by_id(&self.db, file_id).await?
+        } else {
+            self.repo
+                .find_root_file_for_namespace(&self.db, input.namespace_id)
+                .await?
+        };
+
+        if file.namespace_id.is_none() {
+            return Err(Error::FileNotFound.into());
+        }
+
+        if file.namespace_id.unwrap() != input.namespace_id {
+            return Err(Error::FileNotFound.into());
+        }
+
+        Ok(file)
     }
 }

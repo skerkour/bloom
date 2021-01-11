@@ -84,6 +84,6 @@ pub struct RenameFileInput {
 
 #[derive(Debug, Clone)]
 pub struct FindFileInput {
-    pub namespace: String,
+    pub namespace_id: Uuid,
     pub file_id: Option<Uuid>,
 }

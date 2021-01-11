@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct File {
-    pub namespace: String,
+    pub namespace_id: Id,
     pub file_id: Option<Id>,
 }
 
