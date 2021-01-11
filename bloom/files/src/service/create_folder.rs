@@ -22,6 +22,16 @@ impl Service {
             return Err(Error::FolderIsInTrash.into());
         }
 
+        match self
+            .repo
+            .find_file_by_parent_and_name(&self.db, parent.id, &input.name)
+            .await
+        {
+            Ok(_) => return Err(Error::FileAlreadyExists.into()),
+            Err(Error::FileNotFound) => {}
+            Err(err) => return Err(err.into()),
+        };
+
         self.validate_file_name(&input.name)?;
 
         let now = Utc::now();

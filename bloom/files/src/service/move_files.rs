@@ -41,6 +41,16 @@ impl Service {
             if file.trashed_at.is_some() {
                 return Err(Error::PermissionDenied.into());
             }
+
+            match self
+                .repo
+                .find_file_by_parent_and_name(&self.db, input.destination, &file.name)
+                .await
+            {
+                Ok(_) => return Err(Error::FileAlreadyExists.into()),
+                Err(Error::FileNotFound) => {}
+                Err(err) => return Err(err.into()),
+            };
         }
 
         let destination = self.repo.find_file_by_id(&self.db, input.destination).await?;
