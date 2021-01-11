@@ -9,7 +9,7 @@ pub struct File {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Trash {
-    pub namespace: String,
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
