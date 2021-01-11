@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "buf-min"
-version = "0.2.0"
+version = "0.4.0"
 authors = ["Juan Aguilar Santillana <mhpoin@gmail.com>"]
 description = "Minimal buffer traits"
 documentation = "https://docs.rs/buf-min"
@@ -22,10 +22,17 @@ keywords = ["buffers"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/botika/buf-min"
 [package.metadata.docs.rs]
-all-features = true
-[dependencies.bytes]
+features = ["bytes-buf-tokio2"]
+[dependencies.bytes-tokio2]
+version = "0.5"
+optional = true
+package = "bytes"
+
+[dependencies.bytes-tokio3]
 version = "0.6"
 optional = true
+package = "bytes"
 
 [features]
-bytes-buf = ["bytes"]
+bytes-buf-tokio2 = ["bytes-tokio2"]
+bytes-buf-tokio3 = ["bytes-tokio3"]

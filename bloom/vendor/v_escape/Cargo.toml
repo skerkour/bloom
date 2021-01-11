@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "v_escape"
-version = "0.14.1"
+version = "0.15.0"
 authors = ["Juan Aguilar Santillana <mhpoin@gmail.com>"]
 description = "The simd optimized escaping code"
 documentation = "https://docs.rs/v_escape"
@@ -22,20 +22,22 @@ keywords = ["escaping", "simd"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/botika/v_escape"
 [dependencies.buf-min]
-version = "0.2"
+version = "0.4"
+optional = true
 
 [dependencies.v_escape_derive]
 version = "~0.8.4"
 [dev-dependencies.buf-min]
-version = "0.2"
-features = ["bytes-buf"]
+version = "0.4"
+features = ["bytes-buf-tokio3"]
 
 [dev-dependencies.bytes]
 version = "0.6"
 
 [features]
-bytes-buf = ["buf-min/bytes-buf"]
-default = ["bytes-buf"]
+bytes-buf-tokio2 = ["buf-min/bytes-buf-tokio2"]
+bytes-buf-tokio3 = ["buf-min/bytes-buf-tokio3"]
+default = ["bytes-buf-tokio2"]
 [badges.maintenance]
 status = "actively-developed"
 

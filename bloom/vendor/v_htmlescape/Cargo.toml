@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "v_htmlescape"
-version = "0.11.0"
+version = "0.12.0"
 authors = ["Juan Aguilar Santillana <mhpoin@gmail.com>"]
 description = "The simd optimized HTML escaping code"
 documentation = "https://docs.rs/v_htmlescape"
@@ -25,12 +25,13 @@ repository = "https://github.com/botika/v_escape"
 version = "1.0"
 
 [dependencies.v_escape]
-version = "0.14"
+version = "0.15"
 default-features = false
 
 [features]
-bytes-buf = ["v_escape/bytes-buf"]
-default = ["bytes-buf"]
+bytes-buf-tokio2 = ["v_escape/bytes-buf-tokio2"]
+bytes-buf-tokio3 = ["v_escape/bytes-buf-tokio3"]
+default = ["bytes-buf-tokio2"]
 [badges.maintenance]
 status = "actively-developed"
 
