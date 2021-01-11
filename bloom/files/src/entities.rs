@@ -4,6 +4,8 @@ use stdx::{
     uuid::Uuid,
 };
 
+use crate::consts;
+
 #[derive(sqlx::FromRow, Debug, Clone)]
 pub struct File {
     pub id: Uuid,
@@ -18,4 +20,11 @@ pub struct File {
 
     pub namespace_id: Option<Uuid>,
     pub parent_id: Option<Uuid>,
+}
+
+impl  File {
+    pub fn is_root(&self) -> bool {
+        return self.name == consts::ROOT_FILE_NAME;
+    }
+
 }
