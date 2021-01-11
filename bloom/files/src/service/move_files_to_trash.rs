@@ -1,7 +1,10 @@
-use crate::Error;
+use std::collections::{HashMap, HashSet};
+
+use crate::{entities::File, Error};
 
 use super::{MoveFilesToTrashInput, Service};
 use kernel::Actor;
+use stdx::{chrono::Utc, uuid::Uuid};
 
 impl Service {
     pub async fn move_files_to_trash(&self, actor: Actor, input: MoveFilesToTrashInput) -> Result<(), kernel::Error> {
@@ -43,45 +46,49 @@ impl Service {
             .check_namespace_membership(&self.db, actor.id, namespace_id)
             .await?;
 
-        // allChildren := make([][]collaboration.File, len(files))
-        // for i, file := range files {
-        //     var fileChildren []collaboration.File
+        let mut all_children = HashMap::<Uuid, Vec<File>>::with_capacity(files.len());
+        let mut unique_children = HashSet::<Uuid>::new();
+        let mut children_count: usize = 0;
 
-        //     fileChildren, err = service.collaborationRepo.FindChildrenRecursively(ctx, service.db, file.ID)
-        //     if err != nil {
-        //         return
-        //     }
-        //     allChildren[i] = fileChildren
-        // }
+        for file in &files {
+            let children = self.repo.find_children_recursively(&self.db, file.id).await?;
+            for child in &children {
+                unique_children.insert(child.id);
+                children_count += 1;
+            }
+            all_children.insert(file.id, children);
+        }
 
-        // err = service.db.Transaction(ctx, func(tx db.Queryer) (err error) {
-        //     now := time.Now().UTC()
-        //     for _, file := range files {
-        //         file.UpdatedAt = now
-        //         file.TrashedAt = &now
-        //         file.ExplicitlyTrashed = true
-        //         err = service.collaborationRepo.UpdateFile(ctx, tx, file)
-        //         if err != nil {
-        //             return
-        //         }
-        //     }
+        if unique_children.len() != children_count {
+            return Err(Error::PermissionDenied.into());
+        }
 
-        //     for _, children := range allChildren {
-        //         for _, file := range children {
-        //             file.UpdatedAt = now
-        //             file.TrashedAt = &now
-        //             err = service.collaborationRepo.UpdateFile(ctx, tx, file)
-        //             if err != nil {
-        //                 return
-        //             }
-        //         }
-        //     }
+        for file in &files {
+            if unique_children.contains(&file.id) {
+                return Err(Error::PermissionDenied.into());
+            }
+        }
 
-        //     return
-        // })
-        // if err != nil {
-        //     return
-        // }
+        let now = Utc::now();
+        let mut tx = self.db.begin().await?;
+
+        for mut file in files {
+            file.updated_at = now;
+            file.trashed_at = Some(now);
+            file.explicitly_trashed = true;
+            self.repo.update_file(&mut tx, &file).await?;
+        }
+
+        for (_, children) in all_children {
+            for mut child in children {
+                child.updated_at = now;
+                child.trashed_at = Some(now);
+                child.explicitly_trashed = false;
+                self.repo.update_file(&mut tx, &child).await?;
+            }
+        }
+
+        tx.commit().await?;
 
         Ok(())
     }
