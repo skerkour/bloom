@@ -26,14 +26,12 @@ impl Service {
         }
         let namespace_id = namespace_id.unwrap();
 
-        let root_file = self.repo.find_root_file_for_namespace(&self.db, namespace_id).await?;
-
         for file in &files {
             if file.namespace_id.is_none() || file.namespace_id.unwrap() != namespace_id {
                 return Err(Error::PermissionDenied.into());
             }
 
-            if file.id == root_file.id {
+            if file.is_root() {
                 return Err(Error::PermissionDenied.into());
             }
 
