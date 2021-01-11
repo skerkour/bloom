@@ -5,6 +5,9 @@ pub enum Error {
     FileNotFound,
     FileAlreadyExists,
     FolderIsInTrash,
+    FileNameIsTooShort,
+    FileNameIsTooLong,
+    FileNameIsNotValid,
 
     // Other
     Internal,
@@ -26,7 +29,10 @@ impl std::convert::From<Error> for kernel::Error {
             // Files
             Error::FileNotFound => kernel::Error::NotFound(String::from("File not found.")),
             Error::FileAlreadyExists => kernel::Error::AlreadyExists(String::from("File already exists.")),
-            Error::FolderIsInTrash => kernel::Error::InvalidArgument(String::from("Folder is in trash")),
+            Error::FolderIsInTrash => kernel::Error::InvalidArgument(String::from("Folder is in trash.")),
+            Error::FileNameIsTooShort => kernel::Error::InvalidArgument(String::from("File name is too short.")),
+            Error::FileNameIsTooLong => kernel::Error::InvalidArgument(String::from("File name is too long.")),
+            Error::FileNameIsNotValid => kernel::Error::InvalidArgument(String::from("File name is not valid.")),
 
             // Other
             Error::Internal => kernel::Error::Internal,
