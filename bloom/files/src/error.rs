@@ -4,6 +4,7 @@ pub enum Error {
     // Files
     FileNotFound,
     FileAlreadyExists,
+    FolderIsInTrash,
 
     // Other
     Internal,
@@ -25,6 +26,7 @@ impl std::convert::From<Error> for kernel::Error {
             // Files
             Error::FileNotFound => kernel::Error::NotFound(String::from("File not found.")),
             Error::FileAlreadyExists => kernel::Error::AlreadyExists(String::from("File already exists.")),
+            Error::FolderIsInTrash => kernel::Error::InvalidArgument(String::from("Folder is in trash")),
 
             // Other
             Error::Internal => kernel::Error::Internal,
