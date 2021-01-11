@@ -19,6 +19,7 @@ impl Service {
         let (group, membership) = self
             .find_group_and_membership(&self.db, actor.id, input.group_id)
             .await?;
+        let namespace = self.repo.find_namespace_by_id(&self.db, group.namespace_id).await?;
 
         if membership.role != GroupRole::Administrator {
             return Err(Error::PermissionDenied.into());
@@ -58,7 +59,7 @@ impl Service {
 
         if !self.config.self_hosted {
             let members_count_after_invites = current_group_members_count + number_of_users_to_invite;
-            match group.plan {
+            match namespace.plan {
                 crate::consts::BillingPlan::Free if members_count_after_invites > consts::MAX_MEMBERS_PLAN_FREE => {
                     Err(Error::MembersLimitReachedForPlan)
                 }

@@ -24,4 +24,8 @@ impl Service {
 
         Ok(())
     }
+
+    pub fn validate_file_type(&self, fileytpe: &str) -> Result<(), Error> {
+        todo!();
+    }
 }

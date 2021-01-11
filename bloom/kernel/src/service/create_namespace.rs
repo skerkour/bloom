@@ -1,5 +1,5 @@
 use super::{CreateNamespaceInput, Service};
-use crate::{db::Queryer, entities::Namespace};
+use crate::{consts::BillingPlan, db::Queryer, entities::Namespace};
 use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
@@ -20,6 +20,7 @@ impl Service {
             r#type: input.namespace_type,
             parent_id: None,
             used_storage: 0,
+            plan: BillingPlan::Free,
         };
         self.repo.create_namespace(db, &namespace).await?;
 

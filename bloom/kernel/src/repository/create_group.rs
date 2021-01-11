@@ -6,8 +6,8 @@ use stdx::sqlx;
 impl Repository {
     pub async fn create_group<'c, C: db::Queryer<'c>>(&self, db: C, group: &entities::Group) -> Result<(), Error> {
         const QUERY: &str = "INSERT INTO kernel_groups
-            (id, created_at, updated_at, path, name, description, avatar, plan, namespace_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)";
+            (id, created_at, updated_at, path, name, description, avatar, namespace_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
 
         match sqlx::query(QUERY)
             .bind(group.id)
@@ -17,7 +17,6 @@ impl Repository {
             .bind(&group.name)
             .bind(&group.description)
             .bind(&group.avatar)
-            .bind(group.plan)
             .bind(group.namespace_id)
             .execute(db)
             .await

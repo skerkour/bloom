@@ -23,6 +23,7 @@ CREATE TABLE kernel_namespaces (
   path TEXT NOT NULL,
   type TEXT NOT NULL,
   used_storage BIGINT NOT NULL,
+  plan TEXT NOT NULL,
 
   parent_id UUID REFERENCES kernel_namespaces(id)
 );
@@ -48,7 +49,6 @@ CREATE TABLE kernel_users (
   name TEXT NOT NULL,
   description TEXT NOT NULL,
   avatar TEXT,
-  plan TEXT NOT NULL,
 
   namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE
 );
@@ -118,7 +118,6 @@ CREATE TABLE kernel_groups (
   name TEXT NOT NULL,
   description TEXT NOT NULL,
   avatar TEXT,
-  plan TEXT NOT NULL,
 
   namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE
 );

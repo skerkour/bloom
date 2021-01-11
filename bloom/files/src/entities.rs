@@ -26,4 +26,8 @@ impl File {
     pub fn is_root(&self) -> bool {
         return self.name == consts::ROOT_FILE_NAME;
     }
+
+    pub fn storage_key(&self) -> String {
+        todo!();
+    }
 }

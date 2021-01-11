@@ -28,4 +28,8 @@ impl Service {
     pub fn decode_session_token(&self, _token: String) -> Result<DecodedSessionToken, crate::Error> {
         unimplemented!(); // TODO
     }
+
+    pub fn self_hosted(&self) -> bool {
+        self.config.self_hosted
+    }
 }

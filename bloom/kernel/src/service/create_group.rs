@@ -1,6 +1,6 @@
 use super::{CreateGroupInput, CreateNamespaceInput, Service};
 use crate::{
-    consts::{BillingPlan, GroupRole, NamespaceType},
+    consts::{GroupRole, NamespaceType},
     entities::{Group, GroupMembership},
     errors::kernel::Error,
     Actor,
@@ -41,7 +41,6 @@ impl Service {
             updated_at: now,
             name,
             description,
-            plan: BillingPlan::Free,
             avatar: None,
             namespace_id: namespace.id,
             path,

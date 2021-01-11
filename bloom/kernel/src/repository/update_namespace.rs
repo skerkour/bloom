@@ -10,8 +10,8 @@ impl Repository {
         namespace: &entities::Namespace,
     ) -> Result<(), Error> {
         const QUERY: &str = "UPDATE kernel_namespaces SET
-		updated_at = $1, path = $2, type = $3, parent_id = $4, used_storage = $5
-		WHERE id = $6";
+		updated_at = $1, path = $2, type = $3, parent_id = $4, used_storage = $5, plan = $6,
+		WHERE id = $7";
 
         match sqlx::query(QUERY)
             .bind(namespace.updated_at)
@@ -19,6 +19,7 @@ impl Repository {
             .bind(namespace.r#type)
             .bind(namespace.parent_id)
             .bind(namespace.used_storage)
+            .bind(namespace.plan)
             .bind(namespace.id)
             .execute(db)
             .await

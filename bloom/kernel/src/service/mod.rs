@@ -39,6 +39,7 @@ mod delete_my_account;
 mod disable_two_fa;
 mod find_group_and_membership;
 mod find_namespace_and_membership;
+mod find_upload;
 mod invite_people_in_group;
 mod quit_group;
 mod register;

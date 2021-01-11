@@ -20,7 +20,7 @@ impl Service {
             return Err(Error::AdminRoleRequired.into());
         }
 
-        if group.plan != BillingPlan::Free {
+        if namespace.plan != BillingPlan::Free {
             return Err(Error::SubscriptionIsActive.into());
         }
 

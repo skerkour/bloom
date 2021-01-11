@@ -8,6 +8,8 @@ impl Service {
     pub async fn delete_my_account(&self, actor: Actor, input: DeleteMyAccountInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
+        let namespace = self.repo.find_namespace_by_id(&self.db, actor.namespace_id).await?;
+
         if actor.two_fa_enabled {
             let mut two_fa_code = input.two_fa_totp_code.ok_or(Error::TwoFACodeIsNotValid)?;
 
@@ -45,7 +47,7 @@ impl Service {
             return Err(Error::LeaveAllGroupsBeforeDeletingAccount.into());
         }
 
-        if actor.plan != BillingPlan::Free {
+        if namespace.plan != BillingPlan::Free {
             return Err(Error::SubscriptionIsActive.into());
         }
 

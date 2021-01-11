@@ -1,6 +1,6 @@
 use super::{CompleteRegistrationInput, CreateNamespaceInput, Service, SignedIn};
 use crate::{consts, entities, errors::kernel::Error, Actor};
-use consts::{BillingPlan, NamespaceType};
+use consts::NamespaceType;
 use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::{Duration, Utc},
@@ -90,7 +90,6 @@ impl Service {
             totp_secret_nonce: None,
             name: pending_user.username,
             description: String::new(),
-            plan: BillingPlan::Free,
             avatar: None,
             namespace_id: namespace.id,
         };

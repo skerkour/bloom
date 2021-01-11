@@ -11,7 +11,7 @@ pub struct Namespace {
     pub path: String,
     pub r#type: NamespaceType,
     pub used_storage: i64,
-    // pub plan: BillingPlan,
+    pub plan: BillingPlan,
     pub parent_id: Option<uuid::Uuid>,
 }
 
@@ -33,7 +33,6 @@ pub struct User {
 
     pub name: String,
     pub description: String,
-    pub plan: BillingPlan,
     pub avatar: Option<String>,
 
     pub namespace_id: uuid::Uuid,
@@ -47,7 +46,6 @@ pub struct Group {
 
     pub name: String,
     pub description: String,
-    pub plan: BillingPlan,
     pub avatar: Option<String>,
     pub path: String,
 
@@ -183,6 +181,17 @@ pub struct SignedStorageUploadUrl {
     pub url: String,
     pub tmp_storage_key: String,
     pub size: u64,
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct Upload {
+    pub id: uuid::Uuid,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+
+    pub size: i64,
+    pub tmp_key: String,
+    pub namespace_id: uuid::Uuid,
 }
 
 // type NamespaceAndCustomer struct {

@@ -8,6 +8,7 @@ pub enum Error {
     FileNameIsTooShort,
     FileNameIsTooLong,
     FileNameIsNotValid,
+    StorageLimitReached,
 
     // Other
     Internal,
@@ -33,6 +34,9 @@ impl std::convert::From<Error> for kernel::Error {
             Error::FileNameIsTooShort => kernel::Error::InvalidArgument(String::from("File name is too short.")),
             Error::FileNameIsTooLong => kernel::Error::InvalidArgument(String::from("File name is too long.")),
             Error::FileNameIsNotValid => kernel::Error::InvalidArgument(String::from("File name is not valid.")),
+            Error::StorageLimitReached => kernel::Error::PermissionDenied(String::from(
+                "Storage limit reached. Please Upgrade your plan to upload more files.",
+            )),
 
             // Other
             Error::Internal => kernel::Error::Internal,

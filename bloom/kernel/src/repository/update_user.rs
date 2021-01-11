@@ -8,8 +8,8 @@ impl Repository {
         const QUERY: &str = "UPDATE kernel_users SET
         updated_at = $1, blocked_at = $2, email = $3, username = $4, name = $5, description = $6,
         is_admin = $7, avatar = $8, two_fa_enabled = $9, two_fa_method = $10, encrypted_totp_secret = $11,
-        totp_secret_nonce = $12, plan = $13
-		WHERE id = $14";
+        totp_secret_nonce = $12
+		WHERE id = $13";
 
         match sqlx::query(QUERY)
             .bind(user.updated_at)
@@ -24,7 +24,6 @@ impl Repository {
             .bind(user.two_fa_method)
             .bind(&user.encrypted_totp_secret)
             .bind(&user.totp_secret_nonce)
-            .bind(user.plan)
             .bind(user.id)
             .execute(db)
             .await

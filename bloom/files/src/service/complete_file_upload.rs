@@ -1,139 +1,102 @@
 use super::{CompleteFileUploadInput, Service};
-use crate::entities::File;
-use kernel::Actor;
+use crate::{consts, entities::File, Error};
+use kernel::{
+    consts::{BillingPlan, STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER, STORAGE_ULTRA},
+    Actor,
+};
+use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
     pub async fn complete_file_upload(
         &self,
-        _actor: Actor,
-        _input: CompleteFileUploadInput,
+        actor: Actor,
+        mut input: CompleteFileUploadInput,
     ) -> Result<File, kernel::Error> {
-        todo!();
-        // _, err = service.kernelService.CurrentUser(ctx)
-        // if err != nil {
-        //     return
-        // }
-        // logger := log.FromCtx(ctx)
+        let actor = self.kernel_service.current_user(actor)?;
 
-        // parent, err := service.collaborationRepo.FindFile(ctx, service.db, input.ParentID)
-        // if err != nil {
-        //     return
-        // }
+        let parent = self.repo.find_file_by_id(&self.db, input.parent_id).await?;
 
-        // if parent.ProjectID == nil {
-        //     err = collaboration.ErrFileNotFound
-        //     return
-        // }
+        if parent.namespace_id.is_none() {
+            return Err(Error::FileNotFound.into());
+        }
 
-        // // check project membership
-        // project, err := service.projectsService.FindProjectByID(ctx, *parent.ProjectID)
-        // if err != nil {
-        //     return
-        // }
+        let (mut namespace, _) = self
+            .kernel_service
+            .find_namespace_and_membership(&self.db, actor.id, parent.namespace_id.unwrap())
+            .await?;
 
-        // // clean and valdiate input
-        // if parent.TrashedAt != nil {
-        //     err = collaboration.ErrFolderIsTrashed
-        //     return
-        // }
+        // clean and valdiate input
+        if parent.trashed_at.is_some() {
+            return Err(Error::PermissionDenied.into());
+        }
 
-        // err = service.ValidateFileName(input.Name)
-        // if err != nil {
-        //     return
-        // }
+        self.validate_file_name(&input.name)?;
 
-        // if input.Type == "" {
-        //     input.Type = collaboration.FileTypeDefault
-        // }
+        if input.mime_type.is_empty() {
+            input.mime_type = consts::FILE_TYPE_DEFAULT.to_string();
+        }
 
-        // err = service.ValidateFileUploadType(input.Type)
-        // if err != nil {
-        //     return
-        // }
+        self.validate_file_type(&input.mime_type)?;
 
-        // _, err = service.collaborationRepo.FindFileByNameAndParent(ctx, service.db, input.ParentID, input.Name, false)
-        // if err == nil {
-        //     err = collaboration.ErrFileAlreadyExists
-        //     return
-        // }
-        // if err != nil {
-        //     if !errors.Is(err, collaboration.ErrFileNotFound) {
-        //         return
-        //     }
-        //     err = nil
-        // }
+        match self
+            .repo
+            .find_file_by_parent_and_name(&self.db, parent.id, &input.name)
+            .await
+        {
+            Ok(_) => return Err(Error::FileAlreadyExists.into()),
+            Err(Error::FileNotFound) => {}
+            Err(err) => return Err(err.into()),
+        };
 
-        // namespace, err := service.kernelService.FindNamespaceByID(ctx, service.db, project.NamespaceID)
-        // if err != nil {
-        //     return
-        // }
+        let upload = self.kernel_service.find_upload(&self.db, input.upload_id).await?;
 
-        // size, err := service.storage.GetFileSize(ctx, input.TmpKey)
-        // if err != nil {
-        //     errMessage := "collaboration.CompleteFileUpload: retrieving file size"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+        let size = self.storage.get_file_size(&upload.tmp_key).await?;
 
-        // if size != input.Size {
-        //     err = kernel.ErrPermissionDenied
-        //     return
-        // }
+        if size != upload.size {
+            return Err(Error::PermissionDenied.into());
+        }
 
-        // newFileID := uuid.New()
-        // now := time.Now().UTC()
+        let now = Utc::now();
+        namespace.updated_at = now;
+        namespace.used_storage += size;
 
-        // namespace.UsedStorage += size
+        if !self.kernel_service.self_hosted() {
+            if (namespace.plan == BillingPlan::Free && namespace.used_storage > STORAGE_FREE)
+                || (namespace.plan == BillingPlan::Starter && namespace.used_storage > STORAGE_STARTER)
+                || (namespace.plan == BillingPlan::Pro && namespace.used_storage > STORAGE_PRO)
+                || (namespace.plan == BillingPlan::Ultra && namespace.used_storage > STORAGE_ULTRA)
+                || namespace.used_storage < 0
+                || size < 0
+            {
+                return Err(Error::StorageLimitReached.into());
+            }
+        }
 
-        // // check if storage limits are not reached
-        // if (namespace.Plan == kernel.PlanFree && namespace.UsedStorage > kernel.PlanStorageFree) ||
-        //     (namespace.Plan == kernel.PlanStarter && namespace.UsedStorage > kernel.PlanStorageStarter) ||
-        //     (namespace.Plan == kernel.PlanPro && namespace.UsedStorage > kernel.PlanStoragePro) ||
-        //     (namespace.Plan == kernel.PlanUltra && namespace.UsedStorage > kernel.PlanStorageUltra) ||
-        //     namespace.UsedStorage < 0 {
-        //     err = kernel.ErrPlanStorageLimitReached
-        // }
-        // if err != nil {
-        //     return
-        // }
+        let file = File {
+            id: Ulid::new().into(),
+            created_at: now,
+            updated_at: now,
 
-        // ret = collaboration.File{
-        //     ID:                newFileID,
-        //     CreatedAt:         now,
-        //     UpdatedAt:         now,
-        //     Name:              input.Name,
-        //     Size:              input.Size,
-        //     Type:              input.Type,
-        //     ExplicitlyTrashed: false,
-        //     TrashedAt:         nil,
-        //     ProjectID:         parent.ProjectID,
-        //     ParentID:          &parent.ID,
-        // }
+            name: input.name,
+            size,
+            r#type: input.mime_type,
+            explicitly_trashed: false,
+            trashed_at: None,
 
-        // err = service.storage.CopyObject(ctx, input.TmpKey, ret.StorageKey())
-        // if err != nil {
-        //     errMessage := "collaboration.CompleteFileUpload: copying object from tmp"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+            namespace_id: Some(namespace.id),
+            parent_id: Some(parent.id),
+        };
 
-        // err = service.db.Transaction(ctx, func(tx db.Queryer) (err error) {
-        //     err = service.collaborationRepo.CreateFile(ctx, tx, ret)
-        //     if err != nil {
-        //         return
-        //     }
+        self.storage.copy_object(&upload.tmp_key, &file.storage_key()).await?;
 
-        //     err = service.kernelService.UpdateNamespace(ctx, tx, namespace)
-        //     if err != nil {
-        //         return
-        //     }
+        let mut tx = self.db.begin().await?;
 
-        //     return
-        // })
-        // if err != nil {
-        //     return
-        // }
+        self.repo.create_file(&mut tx, &file).await?;
+
+        self.kernel_service.update_namespace(&mut tx, &namespace).await?;
+
+        tx.commit().await?;
+
+        Ok(file)
     }
 }
