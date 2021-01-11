@@ -90,7 +90,6 @@ impl Service {
             totp_secret_nonce: None,
             name: pending_user.username,
             description: String::new(),
-            used_storage: 0,
             plan: BillingPlan::Free,
             avatar: None,
             namespace_id: namespace.id,

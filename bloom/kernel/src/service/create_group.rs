@@ -41,7 +41,6 @@ impl Service {
             updated_at: now,
             name,
             description,
-            used_storage: 0,
             plan: BillingPlan::Free,
             avatar: None,
             namespace_id: namespace.id,

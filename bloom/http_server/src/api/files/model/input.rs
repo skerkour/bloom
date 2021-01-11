@@ -24,7 +24,7 @@ pub struct RestoreFilesFromTrash {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmptyTrash {
-    pub namespace: String,
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

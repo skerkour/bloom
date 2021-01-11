@@ -67,7 +67,7 @@ pub struct RestoreFilesFromTrashInput {
 
 #[derive(Debug, Clone)]
 pub struct EmptyTrashInput {
-    pub namespace: String,
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

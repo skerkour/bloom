@@ -10,7 +10,7 @@ pub struct Namespace {
 
     pub path: String,
     pub r#type: NamespaceType,
-    // pub used_storage: i64,
+    pub used_storage: i64,
     // pub plan: BillingPlan,
     pub parent_id: Option<uuid::Uuid>,
 }
@@ -33,7 +33,6 @@ pub struct User {
 
     pub name: String,
     pub description: String,
-    pub used_storage: i64,
     pub plan: BillingPlan,
     pub avatar: Option<String>,
 
@@ -48,7 +47,6 @@ pub struct Group {
 
     pub name: String,
     pub description: String,
-    pub used_storage: i64,
     pub plan: BillingPlan,
     pub avatar: Option<String>,
     pub path: String,

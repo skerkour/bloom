@@ -10,8 +10,8 @@ impl Repository {
         namespace: &entities::Namespace,
     ) -> Result<(), Error> {
         const QUERY: &str = "INSERT INTO kernel_namespaces
-            (id, created_at, updated_at, path, type, parent_id)
-            VALUES ($1, $2, $3, $4, $5, $6)";
+            (id, created_at, updated_at, path, type, parent_id, used_storage)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)";
 
         match sqlx::query(QUERY)
             .bind(namespace.id)
@@ -20,6 +20,7 @@ impl Repository {
             .bind(&namespace.path)
             .bind(namespace.r#type)
             .bind(namespace.parent_id)
+            .bind(namespace.used_storage)
             .execute(db)
             .await
         {

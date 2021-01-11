@@ -18,6 +18,7 @@ impl Service {
             path: input.path,
             r#type: input.namespace_type,
             parent_id: None,
+            used_storage: 0,
         };
         self.repo.create_namespace(db, &namespace).await?;
 

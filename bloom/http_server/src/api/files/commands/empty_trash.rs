@@ -15,7 +15,7 @@ pub async fn empty_trash(
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::EmptyTrashInput {
-        namespace: input.namespace,
+        namespace_id: input.namespace_id,
     };
     ctx.files_service.empty_trash(actor, service_input).await?;
 
