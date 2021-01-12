@@ -54,11 +54,8 @@ fn main() -> Result<(), kernel::Error> {
 
     if let Some(_) = cli.subcommand_matches(cli::VERSION_SUBCOMMAND) {
         cli::version::run();
-    } else if let Some(_) = cli.subcommand_matches(cli::SERVER_SUBCOMMAND) {
-        cli::server::run(
-            cli.subcommand_matches(cli::SERVER_SUBCOMMAND)
-                .expect("bloom.main: unwrapping server subcommand_matches"),
-        )?;
+    } else if let Some(server_matches) = cli.subcommand_matches(cli::SERVER_SUBCOMMAND) {
+        cli::server::run(server_matches)?;
     } else if let Some(_) = cli.subcommand_matches(cli::MASTERKEY_SUBCOMMAND) {
         cli::masterkey::run()?;
     } else if let Some(_) = cli.subcommand_matches(cli::RELEASE_SUBCOMMAND) {
