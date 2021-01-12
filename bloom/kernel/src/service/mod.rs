@@ -20,11 +20,7 @@ use crate::{
     repository::Repository,
     Actor, Error,
 };
-use std::{
-    collections::HashSet,
-    fmt::Debug,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashSet, fmt::Debug, sync::Arc};
 use stdx::uuid::Uuid;
 
 mod accept_group_invitation;
@@ -70,8 +66,7 @@ pub struct Service {
     templates: tera::Tera,
     invalid_namespaces: HashSet<String>,
     valid_namespace_alphabet: HashSet<char>,
-    // TODO: improve
-    files_service: Arc<Mutex<Option<Arc<dyn files::Service>>>>,
+    files_service: Option<Arc<dyn files::Service>>,
 }
 
 impl Service {
@@ -129,7 +124,7 @@ impl Service {
             templates,
             invalid_namespaces,
             valid_namespace_alphabet,
-            files_service: Arc::new(Mutex::new(None)),
+            files_service: None,
         }
     }
 

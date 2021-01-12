@@ -35,11 +35,10 @@ impl Service {
         self.config.self_hosted
     }
 
-    pub fn inject_missing_dependencies(&self, files_service_to_inject: Arc<dyn files::Service>) -> () {
-        let mut files_service = self
-            .files_service
-            .lock()
-            .expect("kernel.inject_missing_dependencies: unwrapping files_service");
-        *files_service = Some(files_service_to_inject);
+    pub fn inject_missing_dependencies(&self, files_service: Arc<dyn files::Service>) -> () {
+        // this unsafe block is safe because as this method is called only when setting up services
+        // the method is never called concurrently
+        let selff = unsafe { &mut *(self as *const Service as *mut Service) };
+        selff.files_service = Some(files_service);
     }
 }

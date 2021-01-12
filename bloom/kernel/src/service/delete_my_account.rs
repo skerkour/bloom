@@ -53,8 +53,6 @@ impl Service {
         let mut tx = self.db.begin().await?;
 
         self.files_service
-            .lock()
-            .expect("kernel.create_namespace: unwrapping files_service")
             .as_ref()
             .expect("kernel.create_namespace: unwrapping files_service")
             .clean_namespace(&mut tx, actor.namespace_id)

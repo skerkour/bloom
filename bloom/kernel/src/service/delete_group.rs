@@ -38,8 +38,6 @@ impl Service {
         }
 
         self.files_service
-            .lock()
-            .expect("kernel.create_namespace: unwrapping files_service")
             .as_ref()
             .expect("kernel.create_namespace: unwrapping files_service")
             .clean_namespace(&mut tx, group.namespace_id)
