@@ -12,11 +12,7 @@ impl Repository {
         const QUERY: &str = "SELECT * FROM files
             WHERE namespace_id = $1 AND trashed_at IS NOT NULL AND explicitly_trashed = true";
 
-        match sqlx::query_as::<_, File>(QUERY)
-            .bind(namespace_id)
-            .fetch_all(db)
-            .await
-        {
+        match sqlx::query_as::<_, File>(QUERY).bind(namespace_id).fetch_all(db).await {
             Err(err) => {
                 error!("files.find_explicitly_trashed_files: Finding files: {}", &err);
                 Err(err.into())

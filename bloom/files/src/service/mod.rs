@@ -1,7 +1,10 @@
 use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
-use stdx::uuid::Uuid;
+use stdx::{
+    sqlx::{Postgres, Transaction},
+    uuid::Uuid,
+};
 
 mod clean_namespace;
 mod complete_file_upload;
@@ -33,6 +36,25 @@ impl Service {
             storage,
             kernel_service,
         }
+    }
+}
+
+#[async_trait::async_trait]
+impl kernel::domain::files::Service for Service {
+    async fn init_namespace<'c>(
+        &self,
+        tx: &mut Transaction<'c, Postgres>,
+        namespace_id: Uuid,
+    ) -> Result<(), kernel::Error> {
+        self.init_namespace(tx, namespace_id).await
+    }
+
+    async fn clean_namespace<'c>(
+        &self,
+        tx: &mut Transaction<'c, Postgres>,
+        namespace_id: Uuid,
+    ) -> Result<(), kernel::Error> {
+        self.clean_namespace(tx, namespace_id).await
     }
 }
 

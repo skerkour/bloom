@@ -3,7 +3,7 @@ use kernel::db::Queryer;
 use stdx::{chrono::Utc, ulid::Ulid, uuid::Uuid};
 
 impl Service {
-    pub async fn init_namespace<'c, C: Queryer<'c>>(&self, db: C, namespace_id: Uuid) -> Result<(), crate::Error> {
+    pub async fn init_namespace<'c, C: Queryer<'c>>(&self, db: C, namespace_id: Uuid) -> Result<(), kernel::Error> {
         let now = Utc::now();
         let root_file = File {
             id: Ulid::new().into(),

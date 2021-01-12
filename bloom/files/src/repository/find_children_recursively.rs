@@ -25,11 +25,7 @@ impl Repository {
           ) SELECT id, created_at, updated_at, name, size, type, explicitly_trashed, trashed_at, namespace_id, parent_id
           FROM tree WHERE $1 = ANY(tree.ancestors);";
 
-        match sqlx::query_as::<_, File>(QUERY)
-            .bind(file_id)
-            .fetch_all(db)
-            .await
-        {
+        match sqlx::query_as::<_, File>(QUERY).bind(file_id).fetch_all(db).await {
             Err(err) => {
                 error!("files.find_children_recursively: Finding files: {}", &err);
                 Err(err.into())

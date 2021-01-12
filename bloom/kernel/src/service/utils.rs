@@ -1,9 +1,11 @@
 use super::{DecodedSessionToken, Service};
 use crate::{
+    domain::files,
     entities::{Session, User},
     errors::kernel::Error,
     Actor,
 };
+use std::sync::Arc;
 use stdx::uuid::Uuid;
 
 impl Service {
@@ -31,5 +33,13 @@ impl Service {
 
     pub fn self_hosted(&self) -> bool {
         self.config.self_hosted
+    }
+
+    pub fn inject_missing_dependencies(&self, files_service_to_inject: Arc<dyn files::Service>) -> () {
+        let mut files_service = self
+            .files_service
+            .lock()
+            .expect("kernel.inject_missing_dependencies: unwrapping files_service");
+        *files_service = Some(files_service_to_inject);
     }
 }

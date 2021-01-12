@@ -4,7 +4,6 @@ use super::{DeleteMyAccountInput, Service};
 use crate::{consts::BillingPlan, errors::kernel::Error, Actor};
 
 impl Service {
-    // TODO: clean namespace (files)
     pub async fn delete_my_account(&self, actor: Actor, input: DeleteMyAccountInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
@@ -51,7 +50,19 @@ impl Service {
             return Err(Error::SubscriptionIsActive.into());
         }
 
-        self.repo.delete_namespace(&self.db, actor.namespace_id).await?;
+        let mut tx = self.db.begin().await?;
+
+        self.files_service
+            .lock()
+            .expect("kernel.create_namespace: unwrapping files_service")
+            .as_ref()
+            .expect("kernel.create_namespace: unwrapping files_service")
+            .clean_namespace(&mut tx, actor.namespace_id)
+            .await?;
+
+        self.repo.delete_namespace(&mut tx, actor.namespace_id).await?;
+
+        tx.commit().await?;
 
         Ok(())
     }

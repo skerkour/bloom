@@ -1,6 +1,3 @@
-// we allow unconditional_recursion because the lint seems to bug when resolvers methods call the object's
-// methods
-#[allow(unconditional_recursion)]
 use actix_files::NamedFile;
 use actix_web::{middleware, web, App, HttpServer};
 use std::sync::Arc;

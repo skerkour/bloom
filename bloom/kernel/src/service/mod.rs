@@ -3,6 +3,7 @@ use crate::{
     consts::NamespaceType,
     consts::{self, BillingPlan, TwoFaMethod},
     db::DB,
+    domain::files,
     drivers,
     entities::{Session, User},
     notifications::PAYMENT_ACTION_REQUIRED_EMAIL_TEMPLATE_ID,
@@ -19,7 +20,11 @@ use crate::{
     repository::Repository,
     Actor, Error,
 };
-use std::{collections::HashSet, fmt::Debug, sync::Arc};
+use std::{
+    collections::HashSet,
+    fmt::Debug,
+    sync::{Arc, Mutex},
+};
 use stdx::uuid::Uuid;
 
 mod accept_group_invitation;
@@ -65,6 +70,8 @@ pub struct Service {
     templates: tera::Tera,
     invalid_namespaces: HashSet<String>,
     valid_namespace_alphabet: HashSet<char>,
+    // TODO: improve
+    files_service: Arc<Mutex<Option<Arc<dyn files::Service>>>>,
 }
 
 impl Service {
@@ -122,6 +129,7 @@ impl Service {
             templates,
             invalid_namespaces,
             valid_namespace_alphabet,
+            files_service: Arc::new(Mutex::new(None)),
         }
     }
 

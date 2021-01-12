@@ -8,11 +8,7 @@ impl Repository {
         const QUERY: &str = "SELECT * FROM files
             WHERE id = ANY($1)";
 
-        match sqlx::query_as::<_, File>(QUERY)
-            .bind(file_ids)
-            .fetch_all(db)
-            .await
-        {
+        match sqlx::query_as::<_, File>(QUERY).bind(file_ids).fetch_all(db).await {
             Err(err) => {
                 error!("files.find_files_by_ids: Finding files: {}", &err);
                 Err(err.into())

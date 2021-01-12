@@ -13,11 +13,7 @@ impl Repository {
 		WHERE namespace_id = $1 AND trashed_at IS NOT NULL
         ORDER BY id DESC";
 
-        match sqlx::query_as::<_, File>(QUERY)
-            .bind(namespace_id)
-            .fetch_all(db)
-            .await
-        {
+        match sqlx::query_as::<_, File>(QUERY).bind(namespace_id).fetch_all(db).await {
             Err(err) => {
                 error!("files.find_all_trashed_files: Finding files: {}", &err);
                 Err(err.into())

@@ -19,7 +19,9 @@ impl Repository {
             .bind(file.parent_id)
             .bind(file.namespace_id)
             .bind(file.id)
-            .execute(db).await {
+            .execute(db)
+            .await
+        {
             Err(err) => {
                 error!("files.update_file: Updating file: {}", &err);
                 Err(err.into())

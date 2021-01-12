@@ -7,7 +7,6 @@ use crate::{
 use stdx::chrono::Utc;
 
 impl Service {
-    // TODO: clean namespace (files)
     pub async fn delete_group(&self, actor: Actor, input: DeleteGroupInput) -> Result<(), crate::Error> {
         let actor = self.current_user(actor)?;
 
@@ -37,6 +36,14 @@ impl Service {
             customer.updated_at = Utc::now();
             self.repo.update_customer(&mut tx, &customer).await?;
         }
+
+        self.files_service
+            .lock()
+            .expect("kernel.create_namespace: unwrapping files_service")
+            .as_ref()
+            .expect("kernel.create_namespace: unwrapping files_service")
+            .clean_namespace(&mut tx, group.namespace_id)
+            .await?;
 
         self.repo.delete_namespace(&mut tx, group.namespace_id).await?;
 

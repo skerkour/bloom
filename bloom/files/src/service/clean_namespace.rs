@@ -1,10 +1,16 @@
 use crate::Service;
-use kernel::db::Queryer;
-use stdx::uuid::Uuid;
+use stdx::{
+    sqlx::{Postgres, Transaction},
+    uuid::Uuid,
+};
 
 impl Service {
-    pub async fn clean_namespace<'c, C: Queryer<'c>>(&self, db: C, namespace_id: Uuid) -> Result<(), crate::Error> {
-        self.repo.detach_all_files_from_namespace(db, namespace_id).await?;
+    pub async fn clean_namespace<'c>(
+        &self,
+        tx: &mut Transaction<'c, Postgres>,
+        namespace_id: Uuid,
+    ) -> Result<(), kernel::Error> {
+        self.repo.detach_all_files_from_namespace(tx, namespace_id).await?;
         Ok(())
     }
 }
