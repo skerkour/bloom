@@ -1,5 +1,5 @@
 use super::Repository;
-use crate::{Error};
+use crate::Error;
 use kernel::db::Queryer;
 use stdx::{chrono::Utc, log::error, sqlx, uuid::Uuid};
 
@@ -11,16 +11,11 @@ impl Repository {
     ) -> Result<(), Error> {
         const QUERY: &str = "UPDATE files SET
         updated_at = $1, parent_id = NULL, namespace_id = NULL
-        WHERE project_id = $2";
+        WHERE namespace_id = $2";
 
         let now = Utc::now();
 
-        match sqlx::query(QUERY)
-            .bind(now)
-            .bind(namespace_id)
-            .execute(db)
-            .await
-        {
+        match sqlx::query(QUERY).bind(now).bind(namespace_id).execute(db).await {
             Err(err) => {
                 error!("files.detach_all_files_from_namespace: Updating file: {}", &err);
                 Err(err.into())
