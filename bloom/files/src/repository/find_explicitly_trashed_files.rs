@@ -10,7 +10,7 @@ impl Repository {
         namespace_id: Uuid,
     ) -> Result<Vec<File>, Error> {
         const QUERY: &str = "SELECT * FROM files
-        WHERE namespace_id = $1 AND trashed_at IS NOT NULL AND explicitly_trashed = true";
+            WHERE namespace_id = $1 AND trashed_at IS NOT NULL AND explicitly_trashed = true";
 
         match sqlx::query_as::<_, File>(QUERY)
             .bind(namespace_id)
