@@ -3,14 +3,19 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use inbox::service::DeleteContactInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn delete_contact(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::DeleteContact>,
-    _actor: Actor,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::DeleteContact>,
+    actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
-    todo!();
+    let input = input.into_inner();
+    let service_input = DeleteContactInput {};
+    ctx.inbox_service.delete_contact(actor, service_input).await?;
+
+    Ok(api::Response::ok(true.into()))
 }
