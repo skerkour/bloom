@@ -3,14 +3,20 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use inbox::service::CreateNewsletterListInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn create_newsletter_list(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::CreateNewsletterList>,
-    _actor: Actor,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::CreateNewsletterList>,
+    actor: Actor,
 ) -> Result<api::Response<model::NewsletterList>, kernel::Error> {
-    todo!();
+    let input = input.into_inner();
+    let service_input = CreateNewsletterListInput {
+    };
+    let list = ctx.inbox_service.create_newsletter_list(actor, service_input).await?;
+
+    Ok(api::Response::ok(list.into()))
 }
