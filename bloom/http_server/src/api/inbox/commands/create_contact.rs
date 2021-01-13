@@ -14,8 +14,7 @@ pub async fn create_contact(
     actor: Actor,
 ) -> Result<api::Response<model::Contact>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = CreateContactInput {
-    };
+    let service_input = CreateContactInput {};
     let contact = ctx.inbox_service.create_contact(actor, service_input).await?;
 
     Ok(api::Response::ok(contact.into()))
