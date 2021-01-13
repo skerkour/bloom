@@ -40,8 +40,6 @@
 
 // Check interoperability with rustc and clippy lints.
 
-mod auxiliary;
-
 pub mod basic {
     include!("include/basic.rs");
 }
@@ -239,7 +237,7 @@ pub mod clippy_used_underscore_binding {
     }
 }
 
-mod clippy_ref_option_ref {
+pub mod clippy_ref_option_ref {
     use pin_project_lite::pin_project;
 
     pin_project! {

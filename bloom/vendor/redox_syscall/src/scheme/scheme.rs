@@ -1,8 +1,9 @@
 use core::{mem, slice};
 
-use data::*;
-use error::*;
-use number::*;
+use crate::data::*;
+use crate::error::*;
+use crate::flag::*;
+use crate::number::*;
 
 pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
@@ -15,17 +16,23 @@ pub trait Scheme {
             SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
-            SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
+            SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
             SYS_FCHMOD => self.fchmod(packet.b, packet.c as u16),
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
-            SYS_FEVENT => self.fevent(packet.b, packet.c),
+            SYS_FEVENT => self.fevent(packet.b, EventFlags::from_bits_truncate(packet.c)).map(|f| f.bits()),
+            SYS_FMAP_OLD => if packet.d >= mem::size_of::<OldMap>() {
+                self.fmap_old(packet.b, unsafe { &*(packet.c as *const OldMap) })
+            } else {
+                Err(Error::new(EFAULT))
+            },
             SYS_FMAP => if packet.d >= mem::size_of::<Map>() {
                 self.fmap(packet.b, unsafe { &*(packet.c as *const Map) })
             } else {
                 Err(Error::new(EFAULT))
             },
-            SYS_FUNMAP => self.funmap(packet.b),
+            SYS_FUNMAP_OLD => self.funmap_old(packet.b),
+            SYS_FUNMAP => self.funmap(packet.b, packet.c),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
@@ -91,7 +98,7 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
-    fn seek(&self, id: usize, pos: usize, whence: usize) -> Result<usize> {
+    fn seek(&self, id: usize, pos: isize, whence: usize) -> Result<isize> {
         Err(Error::new(EBADF))
     }
 
@@ -111,18 +118,34 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
-    fn fevent(&self, id: usize, flags: usize) -> Result<usize> {
+    fn fevent(&self, id: usize, flags: EventFlags) -> Result<EventFlags> {
         Err(Error::new(EBADF))
     }
 
+    #[allow(unused_variables)]
+    fn fmap_old(&self, id: usize, map: &OldMap) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
     #[allow(unused_variables)]
     fn fmap(&self, id: usize, map: &Map) -> Result<usize> {
-        Err(Error::new(EBADF))
+        if map.flags.contains(MapFlags::MAP_FIXED) {
+            return Err(Error::new(EINVAL));
+        }
+        self.fmap_old(id, &OldMap {
+            offset: map.offset,
+            size: map.size,
+            flags: map.flags,
+        })
     }
 
     #[allow(unused_variables)]
-    fn funmap(&self, address: usize) -> Result<usize> {
-        Err(Error::new(EBADF))
+    fn funmap_old(&self, address: usize) -> Result<usize> {
+        Ok(0)
+    }
+
+    #[allow(unused_variables)]
+    fn funmap(&self, address: usize, length: usize) -> Result<usize> {
+        Ok(0)
     }
 
     #[allow(unused_variables)]

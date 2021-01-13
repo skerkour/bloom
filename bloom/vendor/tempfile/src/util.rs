@@ -33,7 +33,11 @@ pub fn create_helper<F, R>(
 where
     F: Fn(PathBuf) -> io::Result<R>,
 {
-    let num_retries = if random_len != 0 { crate::NUM_RETRIES } else { 1 };
+    let num_retries = if random_len != 0 {
+        crate::NUM_RETRIES
+    } else {
+        1
+    };
 
     for _ in 0..num_retries {
         let path = base.join(tmpname(prefix, suffix, random_len));

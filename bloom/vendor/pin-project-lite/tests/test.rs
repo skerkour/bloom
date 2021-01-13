@@ -4,7 +4,10 @@
 #[macro_use]
 mod auxiliary;
 
-use core::{marker::PhantomPinned, pin::Pin};
+use core::{
+    marker::{PhantomData, PhantomPinned},
+    pin::Pin,
+};
 use pin_project_lite::pin_project;
 
 #[test]
@@ -12,6 +15,8 @@ fn projection() {
     pin_project! {
         #[project = StructProj]
         #[project_ref = StructProjRef]
+        #[project_replace = StructProjReplace]
+        #[derive(Default)]
         struct Struct<T, U> {
             #[pin]
             f1: T,
@@ -44,9 +49,19 @@ fn projection() {
         let _: &i32 = f2;
     }
 
+    {
+        let StructProjReplace { f1: PhantomData, f2 } =
+            s.as_mut().project_replace(Default::default());
+        assert_eq!(f2, 2);
+        let StructProj { f1, f2 } = s.project();
+        assert_eq!(*f1, 0);
+        assert_eq!(*f2, 0);
+    }
+
     pin_project! {
         #[project = EnumProj]
         #[project_ref = EnumProjRef]
+        #[project_replace = EnumProjReplace]
         #[derive(Eq, PartialEq, Debug)]
         enum Enum<C, D> {
             Struct {
@@ -78,6 +93,11 @@ fn projection() {
         assert_eq!(*f1, 1);
         let _: &mut i32 = f2;
         assert_eq!(*f2, 2);
+    }
+
+    if let EnumProjReplace::Struct { f1: PhantomData, f2 } = e.as_mut().project_replace(Enum::Unit)
+    {
+        assert_eq!(f2, 2);
     }
 }
 

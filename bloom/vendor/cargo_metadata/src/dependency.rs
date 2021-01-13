@@ -2,9 +2,8 @@
 
 use semver::VersionReq;
 use serde::{Deserialize, Deserializer, Serialize};
-use std::fmt;
 
-#[derive(PartialEq, Clone, Debug, Copy, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Debug, Copy, Hash, Serialize, Deserialize)]
 /// Dependencies can come in three kinds
 pub enum DependencyKind {
     #[serde(rename = "normal")]
@@ -57,7 +56,7 @@ pub struct Dependency {
     ///
     /// Use the [`Display`] trait to access the contents.
     ///
-    /// [`Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
+    /// [`Display`]: std::fmt::Display
     pub target: Option<Platform>,
     /// If the dependency is renamed, this is the new name for the dependency
     /// as a string.  None if it is not renamed.
@@ -71,16 +70,4 @@ pub struct Dependency {
     __do_not_match_exhaustively: (),
 }
 
-/// A target platform.
-#[derive(Clone, Serialize, Deserialize, Debug)]
-#[serde(transparent)]
-pub struct Platform {
-    /// The underlying string representation of a platform.
-    pub repr: String,
-}
-
-impl fmt::Display for Platform {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&self.repr, f)
-    }
-}
+pub use cargo_platform::Platform;

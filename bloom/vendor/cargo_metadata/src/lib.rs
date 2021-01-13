@@ -51,7 +51,7 @@
 //! use cargo_metadata::Message;
 //!
 //! let mut command = Command::new("cargo")
-//!     .args(&["build", "--message-format=json"])
+//!     .args(&["build", "--message-format=json-render-diagnostics"])
 //!     .stdout(Stdio::piped())
 //!     .spawn()
 //!     .unwrap();
@@ -239,7 +239,7 @@ pub struct DepKindInfo {
     /// graph. Use Cargo's `--filter-platform` flag if you only want to
     /// include dependencies for a specific platform.
     ///
-    /// [`Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
+    /// [`Display`]: std::fmt::Display
     pub target: Option<dependency::Platform>,
     #[doc(hidden)]
     #[serde(skip)]
@@ -247,7 +247,10 @@ pub struct DepKindInfo {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-/// A crate
+/// One or more crates described by a single `Cargo.toml`
+///
+/// Each [`target`][Package::targets] of a `Package` will be built as a crate.
+/// For more information, see <https://doc.rust-lang.org/book/ch07-01-packages-and-crates.html>.
 pub struct Package {
     /// Name as given in the `Cargo.toml`
     pub name: String,
@@ -298,7 +301,7 @@ pub struct Package {
     /// Default Rust edition for the package
     ///
     /// Beware that individual targets may specify their own edition in
-    /// [`Target::edition`](struct.Target.html#structfield.edition).
+    /// [`Target::edition`].
     #[serde(default = "edition_default")]
     pub edition: String,
     /// Contents of the free form package.metadata section
@@ -547,7 +550,7 @@ impl MetadataCommand {
 
     /// Builds a command for `cargo metadata`.  This is the first
     /// part of the work of `exec`.
-    pub fn cargo_command(&self) -> Result<Command> {
+    pub fn cargo_command(&self) -> Command {
         let cargo = self
             .cargo_path
             .clone()
@@ -579,7 +582,7 @@ impl MetadataCommand {
         }
         cmd.args(&self.other_options);
 
-        Ok(cmd)
+        cmd
     }
 
     /// Parses `cargo metadata` output.  `data` must have been
@@ -591,8 +594,7 @@ impl MetadataCommand {
 
     /// Runs configured `cargo metadata` and returns parsed `Metadata`.
     pub fn exec(&self) -> Result<Metadata> {
-        let mut cmd = self.cargo_command()?;
-        let output = cmd.output()?;
+        let output = self.cargo_command().output()?;
         if !output.status.success() {
             return Err(Error::CargoMetadata {
                 stderr: String::from_utf8(output.stderr)?,
