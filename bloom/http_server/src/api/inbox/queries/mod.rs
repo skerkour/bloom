@@ -1,1 +1,12 @@
-
+mod contact;
+pub use contact::contact;
+mod contacts;
+pub use contacts::contacts;
+mod newsletter_list;
+pub use newsletter_list::newsletter_list;
+mod newsletter_lists;
+pub use newsletter_lists::newsletter_lists;
+mod newsletter_message;
+pub use newsletter_message::newsletter_message;
+mod newsletter_messages;
+pub use newsletter_messages::newsletter_messages;
