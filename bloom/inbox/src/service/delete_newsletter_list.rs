@@ -1,5 +1,5 @@
 use super::DeleteNewsletterListInput;
-use crate::{Service};
+use crate::Service;
 use kernel::Actor;
 
 impl Service {

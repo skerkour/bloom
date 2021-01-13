@@ -8,8 +8,18 @@ mod create_newsletter_message;
 mod delete_contact;
 mod delete_newsletter_list;
 mod delete_newsletter_message;
+mod find_contact;
+mod find_contacts;
+mod find_newsletter_list;
+mod find_newsletter_lists;
+mod find_newsletter_message;
+mod find_newsletter_messages;
 mod import_contacts;
 mod send_newsletter_message;
+mod send_test_newsletter_message;
+mod update_contact;
+mod update_newsletter_list;
+mod update_newsletter_message;
 
 #[derive(Debug)]
 pub struct Service {
@@ -74,6 +84,11 @@ pub struct SendNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct SendTestNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct UpdateContactInput {
     // TODO
 }
 
