@@ -18,6 +18,12 @@ pub struct Message {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub received_at: DateTime<Utc>,
+
+    // Body     string `db:"body"`
+    pub body_html: String,
+    // AuthorID       *uuid.UUID `db:"author_id"`
+    // ConversationID uuid.UUID  `db:"conversation_id"`
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
