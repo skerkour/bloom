@@ -9,6 +9,7 @@ mod delete_contact;
 mod delete_newsletter_list;
 mod delete_newsletter_message;
 mod import_contacts;
+mod send_newsletter_message;
 
 #[derive(Debug)]
 pub struct Service {
