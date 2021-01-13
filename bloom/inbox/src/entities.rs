@@ -45,6 +45,11 @@ pub struct NewsletterList {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+
+    pub name: String,
+    pub description: String,
+
+    pub namespace_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
