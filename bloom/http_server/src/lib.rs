@@ -197,6 +197,60 @@ pub async fn run(
                                 web::resource("/analytics").route(web::post().to(api::analytics::queries::analytics)),
                             )),
                     )
+                    // inbox
+                    .service(
+                        web::scope("/inbox").service(
+                            web::scope("/commands")
+                                .service(
+                                    web::resource("/create_contact")
+                                        .route(web::post().to(api::inbox::commands::create_contact)),
+                                )
+                                .service(
+                                    web::resource("/create_newsletter_list")
+                                        .route(web::post().to(api::inbox::commands::create_newsletter_list)),
+                                )
+                                .service(
+                                    web::resource("/create_newsletter_message")
+                                        .route(web::post().to(api::inbox::commands::create_newsletter_message)),
+                                )
+                                .service(
+                                    web::resource("/delete_contact")
+                                        .route(web::post().to(api::inbox::commands::delete_contact)),
+                                )
+                                .service(
+                                    web::resource("/delete_newsletter_list")
+                                        .route(web::post().to(api::inbox::commands::delete_newsletter_list)),
+                                )
+                                .service(
+                                    web::resource("/delete_newsletter_message")
+                                        .route(web::post().to(api::inbox::commands::delete_newsletter_message)),
+                                )
+                                .service(
+                                    web::resource("/import_contacts")
+                                        .route(web::post().to(api::inbox::commands::import_contacts)),
+                                )
+                                .service(
+                                    web::resource("/send_newsletter_message")
+                                        .route(web::post().to(api::inbox::commands::send_newsletter_message)),
+                                )
+                                .service(
+                                    web::resource("/send_test_newsletter_message")
+                                        .route(web::post().to(api::inbox::commands::send_test_newsletter_message)),
+                                )
+                                .service(
+                                    web::resource("/update_contact")
+                                        .route(web::post().to(api::inbox::commands::update_contact)),
+                                )
+                                .service(
+                                    web::resource("/update_newsletter_list")
+                                        .route(web::post().to(api::inbox::commands::update_newsletter_list)),
+                                )
+                                .service(
+                                    web::resource("/update_newsletter_message")
+                                        .route(web::post().to(api::inbox::commands::update_newsletter_message)),
+                                ),
+                        ),
+                    )
                     .default_service(
                         // 404 for GET request
                         web::resource("").to(api::p404),

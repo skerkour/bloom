@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 pub mod analytics;
 pub mod files;
+pub mod inbox;
 pub mod kernel;
 pub mod scalars;
 
