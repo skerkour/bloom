@@ -4,6 +4,15 @@ use stdx::{
     uuid::Uuid,
 };
 
+#[derive(sqlx::Type, Debug, Clone, Eq, PartialEq, Copy)]
+#[sqlx(rename_all = "snake_case")]
+pub enum NewsletterMessageStatus {
+    Saved,
+    Scheduled,
+    Sending,
+    Sent,
+}
+
 #[derive(sqlx::FromRow, Debug, Clone)]
 pub struct Message {
     pub id: Uuid,
@@ -57,4 +66,18 @@ pub struct NewsletterMessage {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+
+    pub name: String,
+    pub from_address: String,
+    pub from_name: String,
+    pub subject: String,
+    pub body: String,
+    pub body_html: String,
+    pub status: NewsletterMessageStatus,
+    pub send_at: Option<DateTime<Utc>>,
+    pub last_sent_at: Option<DateTime<Utc>>,
+    pub sent_count: i64,
+    pub error_count: i64,
+
+    pub namespace_id: Uuid,
 }
