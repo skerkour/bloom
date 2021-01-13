@@ -3,14 +3,19 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use inbox::service::UpdateContactInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn update_contact(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::UpdateContact>,
-    _actor: Actor,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::UpdateContact>,
+    actor: Actor,
 ) -> Result<api::Response<model::Contact>, kernel::Error> {
-    todo!();
+    let input = input.into_inner();
+    let service_input = UpdateContactInput {};
+    let contact = ctx.inbox_service.update_contact(actor, service_input).await?;
+
+    Ok(api::Response::ok(contact.into()))
 }
