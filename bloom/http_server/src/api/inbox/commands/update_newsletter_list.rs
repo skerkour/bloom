@@ -3,14 +3,19 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use inbox::service::UpdateNewsletterListInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn update_newsletter_list(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::UpdateNewsletterList>,
-    _actor: Actor,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::UpdateNewsletterList>,
+    actor: Actor,
 ) -> Result<api::Response<model::NewsletterList>, kernel::Error> {
-    todo!();
+    let input = input.into_inner();
+    let service_input = UpdateNewsletterListInput {};
+    let list = ctx.inbox_service.update_newsletter_list(actor, service_input).await?;
+
+    Ok(api::Response::ok(list.into()))
 }
