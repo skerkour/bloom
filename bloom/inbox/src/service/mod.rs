@@ -3,6 +3,8 @@ use kernel::{db::DB, drivers};
 use std::sync::Arc;
 
 mod create_contact;
+mod create_newsletter_list;
+mod create_newsletter_message;
 
 #[derive(Debug)]
 pub struct Service {
