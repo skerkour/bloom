@@ -5,6 +5,10 @@ use std::sync::Arc;
 mod create_contact;
 mod create_newsletter_list;
 mod create_newsletter_message;
+mod delete_contact;
+mod delete_newsletter_list;
+mod delete_newsletter_message;
+mod import_contacts;
 
 #[derive(Debug)]
 pub struct Service {
