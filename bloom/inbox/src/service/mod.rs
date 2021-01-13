@@ -22,3 +22,58 @@ impl Service {
         }
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct CreateContactInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct CreateNewsletterListInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct CreateNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct DeleteContactInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct DeleteNewsletterListInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct DeleteNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct ImportContactsInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct SendNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct SendTestNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct UpdateNewsletterListInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct UpdateNewsletterMessageInput {
+    // TODO
+}
