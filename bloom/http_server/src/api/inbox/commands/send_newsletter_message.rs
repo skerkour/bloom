@@ -3,14 +3,19 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
+use inbox::service::SendNewsletterMessageInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
 pub async fn send_newsletter_message(
-    _ctx: web::Data<Arc<ServerContext>>,
-    _input: Json<input::SendNewsletterMessage>,
-    _actor: Actor,
+    ctx: web::Data<Arc<ServerContext>>,
+    input: Json<input::SendNewsletterMessage>,
+    actor: Actor,
 ) -> Result<api::Response<model::NewsletterMessage>, kernel::Error> {
-    todo!();
+    let input = input.into_inner();
+    let service_input = SendNewsletterMessageInput {};
+    let message = ctx.inbox_service.send_newsletter_message(actor, service_input).await?;
+
+    Ok(api::Response::ok(message.into()))
 }
