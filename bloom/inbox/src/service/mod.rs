@@ -2,6 +2,8 @@ use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 
+mod create_contact;
+
 #[derive(Debug)]
 pub struct Service {
     repo: Repository,
@@ -75,5 +77,35 @@ pub struct UpdateNewsletterListInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindContactInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindContactsInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindNewsletterListInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindNewsletterListsInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindNewsletterMessageInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct FindNewsletterMessagesInput {
     // TODO
 }
