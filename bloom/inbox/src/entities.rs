@@ -101,3 +101,18 @@ pub struct NewsletterMessage {
 
     pub namespace_id: Uuid,
 }
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct ChatboxPreferences {
+    pub id: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+
+    pub color: String,
+    pub name: String,
+    pub avatar_storage_key: Option<String>,
+    pub bloom_branding: bool,
+    pub welcome_message: String,
+
+    pub namespace_id: Uuid,
+}
