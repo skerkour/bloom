@@ -26,7 +26,7 @@ pub struct Conversation {
     pub description: String,
 
     pub namespace_id: Uuid,
-    // 	ContactID uuid.UUID `db:"contact_id"`
+    // pub contact_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
@@ -91,8 +91,6 @@ pub struct NewsletterMessage {
     pub updated_at: DateTime<Utc>,
 
     pub name: String,
-    pub from_address: String,
-    pub from_name: String,
     pub subject: String,
     pub body: String,
     pub body_html: String,
@@ -114,7 +112,7 @@ pub struct ChatboxPreferences {
     pub color: String,
     pub name: String,
     pub avatar_storage_key: Option<String>,
-    pub bloom_branding: bool,
+    pub show_branding: bool,
     pub welcome_message: String,
 
     pub namespace_id: Uuid,

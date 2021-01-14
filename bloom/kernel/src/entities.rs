@@ -33,7 +33,7 @@ pub struct User {
 
     pub name: String,
     pub description: String,
-    pub avatar: Option<String>,
+    pub avatar_storage_key: Option<String>,
 
     pub namespace_id: uuid::Uuid,
 }
@@ -46,7 +46,7 @@ pub struct Group {
 
     pub name: String,
     pub description: String,
-    pub avatar: Option<String>,
+    pub avatar_storage_key: Option<String>,
     pub path: String,
 
     pub namespace_id: uuid::Uuid,

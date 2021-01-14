@@ -48,7 +48,7 @@ CREATE TABLE kernel_users (
   -- namespace fields
   name TEXT NOT NULL,
   description TEXT NOT NULL,
-  avatar TEXT,
+  avatar_storage_key TEXT,
 
   namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE
 );
@@ -117,7 +117,7 @@ CREATE TABLE kernel_groups (
   -- namespace fields
   name TEXT NOT NULL,
   description TEXT NOT NULL,
-  avatar TEXT,
+  avatar_storage_key TEXT,
 
   namespace_id UUID NOT NULL REFERENCES kernel_namespaces(id) ON DELETE CASCADE
 );
@@ -287,3 +287,83 @@ CREATE TABLE inbox_messages (
   conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_messages_on_conversation_id ON inbox_messages (conversation_id);
+
+
+CREATE TABLE inbox_contacts (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  birthday TIMESTAMP WITH TIME ZONE,
+  email TEXT NOT NULL,
+  pgp_key TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  address TEXT NOT NULL,
+  website TEXT NOT NULL,
+  twitter TEXT NOT NULL,
+  instagram TEXT NOT NULL,
+  facebook TEXT NOT NULL,
+  linkedin TEXT NOT NULL,
+  skype TEXT NOT NULL,
+  telegram TEXT NOT NULL,
+  bloom TEXT NOT NULL,
+  notes TEXT NOT NULL,
+  country TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  plan TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_contacts_on_namespace_id ON inbox_contacts (namespace_id);
+CREATE INDEX index_inbox_contacts_on_email ON inbox_contacts (email);
+
+
+CREATE TABLE inbox_newsletter_lists (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_newsletter_lists_on_namespace_id ON inbox_newsletter_lists (namespace_id);
+
+
+CREATE TABLE inbox_newsletter_messages (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  body_html TEXT NOT NULL,
+  status TEXT NOT NULL,
+  send_at TIMESTAMP WITH TIME ZONE,
+  last_sent_at TIMESTAMP WITH TIME ZONE
+  sent_count BIGINT NOT NULL,
+  error_count BIGINT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
+
+
+CREATE TABLE inbox_chatbox_preferences (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  color TEXT NOT NULL,
+  avatar_storage_key TEXT,
+  show_branding BOOLEAN NOT NULL,
+  welcome_message TEXT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_chatbox_preferences_on_namespace_id ON inbox_chatbox_preferences (namespace_id);

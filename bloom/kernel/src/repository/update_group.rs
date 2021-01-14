@@ -6,7 +6,7 @@ use stdx::sqlx;
 impl Repository {
     pub async fn update_group<'c, C: db::Queryer<'c>>(&self, db: C, group: &entities::Group) -> Result<(), Error> {
         const QUERY: &str = "UPDATE kernel_groups SET
-		updated_at = $1, path = $2, name = $3, description = $4, avatar = $5
+		updated_at = $1, path = $2, name = $3, description = $4, avatar_storage_key = $5
 		WHERE id = $6";
 
         match sqlx::query(QUERY)
@@ -14,7 +14,7 @@ impl Repository {
             .bind(&group.path)
             .bind(&group.name)
             .bind(&group.description)
-            .bind(&group.avatar)
+            .bind(&group.avatar_storage_key)
             .bind(group.id)
             .execute(db)
             .await

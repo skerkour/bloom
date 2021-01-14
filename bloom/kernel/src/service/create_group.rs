@@ -41,7 +41,7 @@ impl Service {
             updated_at: now,
             name,
             description,
-            avatar: None,
+            avatar_storage_key: None,
             namespace_id: namespace.id,
             path,
         };
