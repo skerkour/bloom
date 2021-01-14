@@ -14,6 +14,19 @@ pub enum NewsletterMessageStatus {
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
+pub struct Conversation {
+    pub id: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+
+    pub archived_at: Option<DateTime<Utc>>,
+    pub last_message_received_at: DateTime<Utc>,
+
+    pub namespace_id: Uuid,
+    // 	ContactID uuid.UUID `db:"contact_id"`
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
 pub struct Message {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
@@ -22,8 +35,9 @@ pub struct Message {
 
     // Body     string `db:"body"`
     pub body_html: String,
+
+    pub conversation_id: Uuid,
     // AuthorID       *uuid.UUID `db:"author_id"`
-    // ConversationID uuid.UUID  `db:"conversation_id"`
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
