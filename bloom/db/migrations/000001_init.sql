@@ -137,7 +137,7 @@ CREATE INDEX index_kernel_groups_members_on_user_id ON groups_members (user_id);
 
 
 CREATE TABLE kernel_group_invitations (
-  id UUID NOT NULL,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
@@ -153,7 +153,7 @@ CREATE INDEX index_kernel_group_invitations_on_invitee_id ON kernel_group_invita
 -- Files
 -- #################################################################################################
 CREATE TABLE files (
-  id UUID NOT NULL,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
@@ -164,9 +164,7 @@ CREATE TABLE files (
   trashed_at TIMESTAMP WITH TIME ZONE,
 
   namespace_id UUID REFERENCES kernel_namespaces (id), -- no on delete cascade, because need to be removed from storage
-  parent_id UUID REFERENCES files (id),
-
-  PRIMARY KEY(id)
+  parent_id UUID REFERENCES files (id)
 );
 CREATE INDEX index_files_on_namespace_id ON files (namespace_id);
 CREATE INDEX index_files_on_parent_id ON files (parent_id);
@@ -179,23 +177,21 @@ CREATE INDEX index_files_on_explicitly_trashed ON files (explicitly_trashed);
 -- Analytics
 -- #################################################################################################
 CREATE TABLE analytics_visitors (
-  id UUID NOT NULL,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
   anonymous_id UUID NOT NULL,
 
   -- contact_id UUID REFERENCES contacts (id) ON DELETE CASCADE,
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-
-  PRIMARY KEY(id)
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_analytics_visitors_on_anonymous_id ON analytics_visitors (anonymous_id);
 CREATE INDEX index_analytics_visitors_on_namespace_id ON analytics_visitors (namespace_id);
 
 
 CREATE TABLE analytics_page_events (
-  id UUID NOT NULL,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   sent_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -217,9 +213,7 @@ CREATE TABLE analytics_page_events (
   screen_height BIGINT NOT NULL,
 
   visitor_id UUID NOT NULL REFERENCES analytics_visitors (id) ON DELETE CASCADE,
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-
-  PRIMARY KEY(id)
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_analytics_page_events_on_namespace_id ON analytics_page_events (namespace_id);
 CREATE INDEX index_analytics_page_events_on_visitor_id ON analytics_page_events (visitor_id);
@@ -227,7 +221,7 @@ CREATE INDEX index_analytics_page_events_on_timestamp ON analytics_page_events (
 
 
 CREATE TABLE analytics_track_events (
-  id UUID NOT NULL,
+  id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   sent_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -252,9 +246,7 @@ CREATE TABLE analytics_track_events (
   screen_height BIGINT NOT NULL,
 
   visitor_id UUID NOT NULL REFERENCES analytics_visitors (id) ON DELETE CASCADE,
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-
-  PRIMARY KEY(id)
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_analytics_track_events_on_namespace_id ON analytics_track_events (namespace_id);
 CREATE INDEX index_analytics_track_events_on_visitor_id ON analytics_track_events (visitor_id);
@@ -265,3 +257,33 @@ CREATE INDEX index_analytics_track_events_on_timestamp ON analytics_track_events
 -- #################################################################################################
 -- Inbox
 -- #################################################################################################
+CREATE TABLE inbox_conversations (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  archived_at TIMESTAMP WITH TIME ZONE,
+  last_message_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  is_spam BOOLEAN NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_conversations_on_namespace_id ON inbox_conversations (namespace_id);
+CREATE INDEX index_inbox_conversations_on_last_message_at ON inbox_conversations (last_message_at);
+CREATE INDEX index_inbox_conversations_on_archived_at ON inbox_conversations (archived_at);
+CREATE INDEX index_inbox_conversations_on_is_spam ON inbox_conversations (is_spam);
+
+
+CREATE TABLE inbox_messages (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  received_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  body_html TEXT NOT NULL,
+
+  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_messages_on_conversation_id ON inbox_messages (conversation_id);

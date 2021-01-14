@@ -20,7 +20,10 @@ pub struct Conversation {
     pub updated_at: DateTime<Utc>,
 
     pub archived_at: Option<DateTime<Utc>>,
-    pub last_message_received_at: DateTime<Utc>,
+    pub last_message_at: DateTime<Utc>,
+    pub is_spam: bool,
+    pub name: String,
+    pub description: String,
 
     pub namespace_id: Uuid,
     // 	ContactID uuid.UUID `db:"contact_id"`
@@ -31,8 +34,8 @@ pub struct Message {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub received_at: DateTime<Utc>,
 
+    pub received_at: DateTime<Utc>,
     // Body     string `db:"body"`
     pub body_html: String,
 
