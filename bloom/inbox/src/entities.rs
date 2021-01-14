@@ -117,3 +117,10 @@ pub struct ChatboxPreferences {
 
     pub namespace_id: Uuid,
 }
+
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct ConversationContact {
+    pub contact_id: Uuid,
+    pub conversation_id: Uuid,
+}

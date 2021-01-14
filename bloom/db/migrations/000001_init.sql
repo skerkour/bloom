@@ -367,3 +367,11 @@ CREATE TABLE inbox_chatbox_preferences (
   namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_chatbox_preferences_on_namespace_id ON inbox_chatbox_preferences (namespace_id);
+
+
+CREATE TABLE inbox_conversations_contacts (
+  contact_id UUID REFERENCES inbox_contacts (id) ON DELETE CASCADE,
+  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_conversations_contacts_on_contact_id ON inbox_conversatios_contacts (contact_id);
+CREATE INDEX index_inbox_conversations_contacts_on_conversation_id ON inbox_conversatios_contacts (conversation_id);
