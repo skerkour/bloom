@@ -4,6 +4,9 @@ pub enum Error {
     // Contacts
     ContactNotFound,
 
+    // Chatbox
+    UpgradePlanToRemoveChatboxBranding,
+
     // Other
     Internal,
     PermissionDenied,
@@ -23,6 +26,11 @@ impl std::convert::From<Error> for kernel::Error {
         match err {
             // Contacts
             Error::ContactNotFound => kernel::Error::NotFound(String::from("Contact not found.")),
+
+            // Chatbox
+            Error::UpgradePlanToRemoveChatboxBranding => {
+                kernel::Error::InvalidArgument(String::from("Please upgrade your plan to remove chatbox's branding"))
+            }
 
             // Other
             Error::Internal => kernel::Error::Internal,

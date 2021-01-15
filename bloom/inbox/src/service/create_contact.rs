@@ -90,6 +90,7 @@ impl Service {
             country: String::new(),
             country_code: String::new(),
             namespace_id: input.namespace_id,
+            avatar_storage_key: None,
         };
         self.repo.create_contact(&self.db, &contact).await?;
 

@@ -215,7 +215,11 @@ pub struct SendChatboxMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateChatboxPreferencesInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub color: String,
+    pub name: String,
+    pub show_branding: bool,
+    pub welcome_message: String,
 }
 
 #[derive(Debug, Clone)]

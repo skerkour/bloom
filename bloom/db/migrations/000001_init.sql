@@ -313,6 +313,8 @@ CREATE TABLE inbox_contacts (
   country_code TEXT NOT NULL,
   plan TEXT NOT NULL,
   user_id TEXT NOT NULL,
+  avatar_storage_key TEXT,
+
 
   namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );

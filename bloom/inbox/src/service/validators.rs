@@ -90,4 +90,16 @@ impl Service {
     pub fn validate_newsletter_message_scheduled_for(&self, scheduled_for: Option<DateTime<Utc>>) -> Result<(), Error> {
         todo!();
     }
+
+    pub fn validate_chatbox_name(&self, name: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_color(&self, color: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_welcome_message(&self, welcome_message: &str) -> Result<(), Error> {
+        todo!();
+    }
 }

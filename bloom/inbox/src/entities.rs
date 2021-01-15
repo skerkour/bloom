@@ -68,6 +68,7 @@ pub struct Contact {
     pub country_code: String,
     pub plan: String,
     pub user_id: String,
+    pub avatar_storage_key: Option<String>,
 
     pub namespace_id: Uuid,
 }
