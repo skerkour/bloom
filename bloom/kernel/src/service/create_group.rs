@@ -32,6 +32,7 @@ impl Service {
         let create_namespace_input = CreateNamespaceInput {
             path: path.clone(),
             namespace_type: NamespaceType::Group,
+            name: name.clone(),
         };
         let namespace = self.create_namespace(&mut tx, create_namespace_input).await?;
 

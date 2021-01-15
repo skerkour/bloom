@@ -56,7 +56,7 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
             queue.clone(),
         ));
         let inbox_service = Arc::new(inbox::Service::new(kernel_service.clone(), db, queue.clone()));
-        kernel_service.inject_missing_dependencies(files_service.clone());
+        kernel_service.inject_missing_dependencies(files_service.clone(), inbox_service.clone());
 
         if worker_flag {
             let kernel_service = kernel_service.clone();

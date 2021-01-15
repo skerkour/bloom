@@ -5,4 +5,5 @@
 //! we need to find a way to avoid cyclic dependencies between the kernel, the domain and the error types.
 pub mod analytics;
 pub mod files;
+pub mod inbox;
 pub mod messages;

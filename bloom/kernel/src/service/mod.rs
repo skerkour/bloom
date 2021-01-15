@@ -3,7 +3,7 @@ use crate::{
     consts::NamespaceType,
     consts::{self, BillingPlan, TwoFaMethod},
     db::DB,
-    domain::files,
+    domain::{files, inbox},
     drivers,
     entities::{Session, User},
     notifications::PAYMENT_ACTION_REQUIRED_EMAIL_TEMPLATE_ID,
@@ -67,6 +67,7 @@ pub struct Service {
     invalid_namespaces: HashSet<String>,
     valid_namespace_alphabet: HashSet<char>,
     files_service: Option<Arc<dyn files::Service>>,
+    inbox_service: Option<Arc<dyn inbox::Service>>,
 }
 
 impl Service {
@@ -125,6 +126,7 @@ impl Service {
             invalid_namespaces,
             valid_namespace_alphabet,
             files_service: None,
+            inbox_service: None,
         }
     }
 
@@ -238,6 +240,7 @@ pub struct DeleteGroupInput {
 pub struct CreateNamespaceInput {
     pub path: String,
     pub namespace_type: NamespaceType,
+    pub name: String,
 }
 
 #[derive(Debug, Clone)]

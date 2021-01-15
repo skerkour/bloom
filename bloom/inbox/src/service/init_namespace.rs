@@ -1,9 +1,13 @@
 use super::InitNamespaceInput;
 use crate::Service;
-use kernel::Actor;
+use kernel::db::Queryer;
 
 impl Service {
-    pub async fn init_namespace(&self, _actor: Actor, _input: InitNamespaceInput) -> Result<(), kernel::Error> {
+    pub async fn init_namespace<'c, C: Queryer<'c>>(
+        &self,
+        _db: C,
+        _input: InitNamespaceInput,
+    ) -> Result<(), kernel::Error> {
         todo!();
     }
 }

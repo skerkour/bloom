@@ -1436,6 +1436,7 @@ dependencies = [
 name = "inbox"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "kernel",
  "stdx",
 ]

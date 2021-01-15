@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 kernel = { path = "../kernel" }
 stdx = { path = "../stdx" }
+
+async-trait = "0.1"

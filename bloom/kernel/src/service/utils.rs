@@ -1,6 +1,6 @@
 use super::{DecodedSessionToken, Service};
 use crate::{
-    domain::files,
+    domain::{files, inbox},
     entities::{Session, User},
     errors::kernel::Error,
     Actor,
@@ -35,10 +35,15 @@ impl Service {
         self.config.self_hosted
     }
 
-    pub fn inject_missing_dependencies(&self, files_service: Arc<dyn files::Service>) -> () {
+    pub fn inject_missing_dependencies(
+        &self,
+        files_service: Arc<dyn files::Service>,
+        inbox_service: Arc<dyn inbox::Service>,
+    ) -> () {
         // this unsafe block is safe because as this method is called only when setting up services
         // the method is never called concurrently
         let selff = unsafe { &mut *(self as *const Service as *mut Service) };
         selff.files_service = Some(files_service);
+        selff.inbox_service = Some(inbox_service);
     }
 }

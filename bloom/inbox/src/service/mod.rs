@@ -1,6 +1,7 @@
 use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
+use stdx::sqlx::{Postgres, Transaction};
 
 mod create_contact;
 mod create_newsletter_list;
@@ -49,6 +50,20 @@ impl Service {
             kernel_service,
             queue,
         }
+    }
+}
+
+#[async_trait::async_trait]
+impl kernel::domain::inbox::Service for Service {
+    async fn init_namespace<'c>(
+        &self,
+        tx: &mut Transaction<'c, Postgres>,
+        input: kernel::domain::inbox::InitNamespaceInput,
+    ) -> Result<(), kernel::Error> {
+        let input = InitNamespaceInput {
+            // TODO
+        };
+        self.init_namespace(tx, input).await
     }
 }
 

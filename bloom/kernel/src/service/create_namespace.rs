@@ -1,5 +1,5 @@
 use super::{CreateNamespaceInput, Service};
-use crate::{consts::BillingPlan, entities::Namespace};
+use crate::{consts::BillingPlan, domain::inbox, entities::Namespace};
 use stdx::{
     chrono::Utc,
     sqlx::{Postgres, Transaction},
@@ -36,6 +36,15 @@ impl Service {
             .as_ref()
             .expect("kernel.create_namespace: unwrapping files_service")
             .init_namespace(tx, namespace.id)
+            .await?;
+        let inbox_service_input = inbox::InitNamespaceInput {
+            namespace_id: namespace.id,
+            name: input.name,
+        };
+        self.inbox_service
+            .as_ref()
+            .expect("kernel.create_namespace: unwrapping inbox_service")
+            .init_namespace(tx, inbox_service_input)
             .await?;
 
         Ok(namespace)

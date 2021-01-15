@@ -69,6 +69,7 @@ impl Service {
         let create_namespace_input = CreateNamespaceInput {
             path: pending_user.username.clone(),
             namespace_type: NamespaceType::User,
+            name: pending_user.username.clone(),
         };
         let namespace = self.create_namespace(&mut tx, create_namespace_input).await?;
 
