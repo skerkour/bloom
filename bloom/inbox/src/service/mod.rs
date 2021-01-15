@@ -130,7 +130,7 @@ pub struct DeleteNewsletterMessageInput {
 pub struct ImportContactsInput {
     pub namespace_id: Uuid,
     pub list_id: Option<Uuid>,
-    pub conatcts_csv: String,
+    pub contacts_csv: String,
 }
 
 #[derive(Debug, Clone)]

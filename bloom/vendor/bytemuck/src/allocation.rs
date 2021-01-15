@@ -9,8 +9,10 @@ use super::*;
 use alloc::{
   alloc::{alloc_zeroed, Layout},
   boxed::Box,
+  vec,
   vec::Vec,
 };
+use core::convert::TryInto;
 
 /// As [`try_cast_box`](try_cast_box), but unwraps for you.
 #[inline]
@@ -55,7 +57,20 @@ pub fn try_cast_box<A: Pod, B: Pod>(
 #[inline]
 pub fn try_zeroed_box<T: Zeroable>() -> Result<Box<T>, ()> {
   if size_of::<T>() == 0 {
-    return Ok(Box::new(T::zeroed()));
+    // This will not allocate but simple create a dangling slice pointer.
+    // NB: We go the way via a push to `Vec<T>` to ensure the compiler
+    // does not allocate space for T on the stack even if the branch
+    // would not be taken.
+    let mut vec = Vec::with_capacity(1);
+    vec.resize_with(1, || T::zeroed());
+    let ptr: Box<[T; 1]> = vec.into_boxed_slice().try_into().ok().unwrap();
+    debug_assert!(
+      align_of::<[T; 1]>() == align_of::<T>()
+        && size_of::<[T; 1]>() == size_of::<T>()
+    );
+    // NB: We basically do the same as in try_cast_box here:
+    let ptr: Box<T> = unsafe { Box::from_raw(Box::into_raw(ptr) as *mut _) };
+    return Ok(ptr);
   }
   let layout =
     Layout::from_size_align(size_of::<T>(), align_of::<T>()).unwrap();
@@ -98,7 +113,8 @@ pub fn try_zeroed_slice_box<T: Zeroable>(
     // This will also not allocate.
     return Ok(Vec::new().into_boxed_slice());
   }
-  // For Pod types, the layout of the array/slice is equivalent to repeating the type.
+  // For Pod types, the layout of the array/slice is equivalent to repeating the
+  // type.
   let layout_length = size_of::<T>().checked_mul(length).ok_or(())?;
   assert!(layout_length != 0);
   let layout =
@@ -163,4 +179,34 @@ pub fn try_cast_vec<A: Pod, B: Pod>(
     let ptr: *mut B = vec_ptr as *mut B;
     Ok(unsafe { Vec::from_raw_parts(ptr, length, capacity) })
   }
+}
+
+/// This "collects" a slice of pod data into a vec of a different pod type.
+///
+/// Unlike with [`cast_slice`] and [`cast_slice_mut`], this will always work.
+///
+/// The output vec will be of a minimal size/capacity to hold the slice given.
+///
+/// ```rust
+/// # use bytemuck::*;
+/// let halfwords: [u16; 4] = [5, 6, 7, 8];
+/// let vec_of_words: Vec<u32> = pod_collect_to_vec(&halfwords);
+/// if cfg!(target_endian = "little") {
+///   assert_eq!(&vec_of_words[..], &[0x0006_0005, 0x0008_0007][..])
+/// } else {
+///   assert_eq!(&vec_of_words[..], &[0x0005_0006, 0x0007_0008][..])
+/// }
+/// ```
+pub fn pod_collect_to_vec<A: Pod, B: Pod>(src: &[A]) -> Vec<B> {
+  let src_size = size_of_val(src);
+  // Note(Lokathor): dst_count is rounded up so that the dest will always be at
+  // least as many bytes as the src.
+  let dst_count = src_size / size_of::<B>()
+    + if src_size % size_of::<B>() != 0 { 1 } else { 0 };
+  let mut dst = vec![B::zeroed(); dst_count];
+
+  let src_bytes: &[u8] = cast_slice(src);
+  let dst_bytes: &mut [u8] = cast_slice_mut(&mut dst[..]);
+  dst_bytes[..src_size].copy_from_slice(src_bytes);
+  dst
 }

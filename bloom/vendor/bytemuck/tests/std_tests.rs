@@ -27,3 +27,19 @@ fn test_transparent_vtabled() {
   let s = format!("{}", v_mut);
   assert_eq!(s, "100");
 }
+
+#[test]
+#[cfg(feature = "extern_crate_alloc")]
+fn test_large_box_alloc() {
+  type SuperPage = [[u8; 4096]; 4096];
+  let _: Box<SuperPage> = try_zeroed_box().unwrap();
+}
+
+#[test]
+#[cfg(feature = "extern_crate_alloc")]
+fn test_zero_sized_box_alloc() {
+  #[repr(align(4096))]
+  struct Empty;
+  unsafe impl Zeroable for Empty {}
+  let _: Box<Empty> = try_zeroed_box().unwrap();
+}

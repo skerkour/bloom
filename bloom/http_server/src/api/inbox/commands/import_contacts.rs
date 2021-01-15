@@ -17,7 +17,7 @@ pub async fn import_contacts(
     let service_input = ImportContactsInput {
         namespace_id: input.namespace_id,
         list_id: input.list_id,
-        conatcts_csv: input.conatcts_csv,
+        contacts_csv: input.contacts_csv,
     };
     let contacts = ctx.inbox_service.import_contacts(actor, service_input).await?;
 

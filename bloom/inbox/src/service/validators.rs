@@ -3,11 +3,11 @@ use stdx::chrono::{DateTime, Utc};
 use crate::{Error, Service};
 
 impl Service {
-    pub fn validate_conatct_name(&self, name: &str) -> Result<(), Error> {
+    pub fn validate_contact_name(&self, name: &str) -> Result<(), Error> {
         todo!();
     }
 
-    pub fn validate_conatct_birthday(&self, birthday: Option<DateTime<Utc>>) -> Result<(), Error> {
+    pub fn validate_contact_birthday(&self, birthday: Option<DateTime<Utc>>) -> Result<(), Error> {
         todo!();
     }
 

@@ -1,8 +1,15 @@
 use super::ImportContactsInput;
-use crate::{consts, entities::Contact, Error, Service};
+use crate::{
+    consts,
+    entities::{Contact, ImportedContact},
+    Error, Service,
+};
 use kernel::Actor;
+use std::collections::HashMap;
+use stdx::{chrono::Utc, csv, ulid::Ulid};
 
 impl Service {
+    // TODO: list/contact relation
     pub async fn import_contacts(
         &self,
         actor: Actor,
@@ -29,123 +36,94 @@ impl Service {
             }
         }
 
-        if input.conatcts_csv.len() > consts::MAX_IMPORT_CONTACTS_CSV_LENGTH {
+        if input.contacts_csv.len() > consts::MAX_IMPORT_CONTACTS_CSV_LENGTH {
             return Err(Error::ContactsCsvTooLarge.into());
         }
 
-        // csvReader := csv.NewReader(strings.NewReader(input.Contacts))
-        // contactsRecords, err := csvReader.ReadAll()
-        // if err != nil {
-        //     const errMessage = "growth.ImportContacts: parsing contacts CSV"
-        //     logger.Warn(errMessage, log.Err("error", err), log.UUID("project.id", project.ID))
-        //     err = growth.ErrContactsMalformed
-        //     return
-        // }
+        let mut imported_contacts: Vec<ImportedContact> = Vec::with_capacity(500);
+        let mut csv_reader = csv::Reader::from_reader(input.contacts_csv.as_bytes());
+        for record in csv_reader.deserialize() {
+            let imported_contact: ImportedContact = record?;
+            imported_contacts.push(imported_contact);
+        }
 
-        // if len(contactsRecords) == 0 {
-        //     return
-        // }
+        // dedup
+        let unique_contacts: HashMap<String, ImportedContact> = imported_contacts
+            .into_iter()
+            .map(|contact| ImportedContact {
+                name: contact.name.trim().to_string(),
+                email: contact.email.trim().to_lowercase(),
+            })
+            .map(|contact| (contact.email.clone(), contact))
+            .collect();
+        let unique_contacts: Vec<ImportedContact> = unique_contacts
+            .into_iter()
+            .map(|entry| entry.1)
+            .filter(|contact| !contact.email.is_empty())
+            .collect();
 
-        // csvColumnsCount := len(contactsRecords[0])
-        // if csvColumnsCount != 1 && csvColumnsCount != 2 {
-        //     err = growth.ErrContactsMalformed
-        //     return
-        // }
+        for contact in &unique_contacts {
+            self.kernel_service.validate_email(&contact.email, false)?;
+            self.validate_contact_name(&contact.name)?;
+        }
 
-        // // dedup
-        // contactsMap := make(map[string]string, 0)
-        // for _, row := range contactsRecords {
-        //     if len(row) != csvColumnsCount {
-        //         err = growth.ErrContactsMalformed
-        //         return
-        //     }
+        let mut contacts: Vec<Contact> = Vec::with_capacity(unique_contacts.len());
+        let now = Utc::now();
 
-        //     if csvColumnsCount == 1 {
-        //         email := strings.ToLower(strings.TrimSpace(row[0]))
-        //         contactsMap[email] = ""
-        //     } else {
-        //         // csvColumnsCount == 2: name,email
-        //         email := strings.ToLower(strings.TrimSpace(row[1]))
-        //         name := strings.TrimSpace(row[0])
-        //         contactsMap[email] = name
-        //     }
-        // }
+        let mut tx = self.db.begin().await?;
 
-        // for contactToImportEmail, contactToImportName := range contactsMap {
-        //     err = service.kernelService.ValidateEmail(contactToImportEmail, false)
-        //     if err != nil {
-        //         return
-        //     }
+        for contact in unique_contacts {
+            let res = self.repo.find_contact_by_email(&mut tx, &contact.email).await;
+            let contact = match res {
+                Ok(mut existing_contact) => {
+                    // update contact, maybe
+                    if !contact.name.is_empty() && contact.name != existing_contact.name {
+                        existing_contact.updated_at = now;
+                        existing_contact.name = contact.name;
+                        self.repo.update_contact(&mut tx, &existing_contact).await?;
+                    }
 
-        //     err = service.ValidateContactName(contactToImportName)
-        //     if err != nil {
-        //         return
-        //     }
-        // }
+                    Ok(existing_contact)
+                }
+                Err(Error::ContactNotFound) => {
+                    // create contact
+                    let new_contact = Contact {
+                        id: Ulid::new().into(),
+                        created_at: now,
+                        updated_at: now,
+                        name: contact.name,
+                        birthday: None,
+                        email: contact.email,
+                        pgp_key: String::new(),
+                        phone: String::new(),
+                        address: String::new(),
+                        website: String::new(),
+                        twitter: String::new(),
+                        instagram: String::new(),
+                        facebook: String::new(),
+                        linkedin: String::new(),
+                        skype: String::new(),
+                        telegram: String::new(),
+                        bloom: String::new(),
+                        notes: String::new(),
+                        plan: String::new(),
+                        user_id: String::new(),
+                        country: String::new(),
+                        country_code: String::new(),
+                        namespace_id,
+                        avatar_storage_key: None,
+                    };
+                    self.repo.create_contact(&self.db, &new_contact).await?;
 
-        // defaultList, err := service.growthRepo.FindDefaultListForProject(ctx, service.db, project.ID)
-        // if err != nil {
-        //     return
-        // }
+                    Ok(new_contact)
+                }
+                Err(err) => Err(err),
+            }?;
+            contacts.push(contact);
+        }
 
-        // err = service.db.Transaction(ctx, func(tx db.Queryer) (err error) {
-        //     for contactToImportEmail, contactToImportName := range contactsMap {
-        //         var contact growth.Contact
-        //         now := time.Now().UTC()
+        tx.commit().await?;
 
-        //         contact, err = service.growthRepo.FindContactByEmail(ctx, tx, project.ID, contactToImportEmail)
-        //         if err != nil {
-        //             if errors.Is(err, growth.ErrContactNotFound) {
-        //                 // create contact
-        //                 err = nil
-        //                 contact = growth.Contact{
-        //                     ID:        uuid.New(),
-        //                     CreatedAt: now,
-        //                     UpdatedAt: now,
-        //                     Name:      contactToImportName,
-        //                     Email:     contactToImportEmail,
-        //                     Country:   "",
-        //                     Plan:      "",
-        //                     UserID:    "",
-
-        //                     ProjectID: project.ID,
-        //                 }
-        //                 err = service.growthRepo.CreateContact(ctx, tx, contact)
-        //                 if err != nil {
-        //                     return
-        //                 }
-
-        //                 relation := growth.ListContactRelation{
-        //                     ContactID: contact.ID,
-        //                     ListID:    defaultList.ID,
-        //                 }
-        //                 err = service.growthRepo.CreateListContactRelation(ctx, tx, relation)
-        //                 if err != nil {
-        //                     return
-        //                 }
-
-        //                 contacts = append(contacts, contact)
-
-        //             } else {
-        //                 // other than not found error, return
-        //                 return
-        //             }
-        //         } else if contactToImportName != "" && contactToImportName != contact.Name {
-        //             // if contact exists and contactToImportName != ""
-        //             contact.Name = contactToImportName
-        //             err = service.growthRepo.UpdateContact(ctx, tx, contact)
-        //             if err != nil {
-        //                 return
-        //             }
-        //             contacts = append(contacts, contact)
-        //         }
-        //     }
-
-        //     return
-        // })
-        // if err != nil {
-        //     return
-        // }
-        todo!();
+        Ok(contacts)
     }
 }

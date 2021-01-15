@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use stdx::{
     chrono::{DateTime, Utc},
     sqlx,
@@ -124,4 +125,10 @@ pub struct ChatboxPreferences {
 pub struct ConversationContact {
     pub contact_id: Uuid,
     pub conversation_id: Uuid,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ImportedContact {
+    pub name: String,
+    pub email: String,
 }

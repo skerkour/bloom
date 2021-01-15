@@ -1,7 +1,7 @@
 use std::env;
 use std::fs;
 use std::iter;
-use std::path::Path;
+use std::path::{self, Path};
 
 /*
 #[doc(hidden)]
@@ -27,7 +27,9 @@ fn main() {
         content += &format!("    ({}) => {{ proc_macro_call_{}!() }};\n", bangs, i);
     }
     content += "    ($(!)+) => {\n";
-    content += "        compile_error! { \"this macro does not support >64 nested macro invocations\" }\n";
+    content += "        compile_error! {\n";
+    content += "            \"this macro does not support >64 nested macro invocations\"\n";
+    content += "        }\n";
     content += "    };\n";
     content += "}\n";
 
@@ -43,4 +45,6 @@ fn main() {
     {
         fs::write(dest_path, content).unwrap();
     }
+
+    println!("cargo:rustc-env=PATH_SEPARATOR={}", path::MAIN_SEPARATOR);
 }

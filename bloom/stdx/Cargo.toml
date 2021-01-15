@@ -12,6 +12,7 @@ atomic = "0.5"
 base64 = "0.13"
 chrono = { version  = "0.4", features = ["serde"] }
 cron = "0.7"
+csv = "1"
 dotenv = "0.15"
 env_logger = "0.8"
 futures = "0.3"

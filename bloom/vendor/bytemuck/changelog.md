@@ -1,5 +1,22 @@
 # `bytemuck` changelog
 
+## 1.5
+
+* Added `pod_collect_to_vec`, which will gather a slice into a vec,
+allowing you to change the pod type while also safely ignoring alignment.
+[PR 50](https://github.com/Lokathor/bytemuck/pull/50)
+
+## 1.4.2
+
+* [Kimundi](https://github.com/Kimundi) fixed an issue that could make `try_zeroed_box`
+stack overflow for large values at low optimization levels.
+[PR 43](https://github.com/Lokathor/bytemuck/pull/43)
+
+## 1.4.1
+
+* [thomcc](https://github.com/thomcc) fixed up the CI and patched over a soundness hole in `offset_of!`.
+[PR 38](https://github.com/Lokathor/bytemuck/pull/38)
+
 ## 1.4
 
 * [icewind1991](https://github.com/icewind1991) has contributed the proc-macros

@@ -2,6 +2,7 @@
 
 use semver::VersionReq;
 use serde::{Deserialize, Deserializer, Serialize};
+use std::path::PathBuf;
 
 #[derive(Eq, PartialEq, Clone, Debug, Copy, Hash, Serialize, Deserialize)]
 /// Dependencies can come in three kinds
@@ -65,6 +66,10 @@ pub struct Dependency {
     ///
     /// If None, the dependency is from crates.io.
     pub registry: Option<String>,
+    /// The file system path for a local path dependency.
+    ///
+    /// Only produced on cargo 1.51+
+    pub path: Option<PathBuf>,
     #[doc(hidden)]
     #[serde(skip)]
     __do_not_match_exhaustively: (),

@@ -17,10 +17,10 @@ impl Service {
         self.kernel_service.validate_email(&email, false)?;
 
         let name = input.name.trim().to_string();
-        self.validate_conatct_name(&name)?;
+        self.validate_contact_name(&name)?;
 
         let birthday = input.birthday;
-        self.validate_conatct_birthday(birthday)?;
+        self.validate_contact_birthday(birthday)?;
 
         let phone = input.phone.trim().to_string();
         self.validate_contact_phone(&phone)?;

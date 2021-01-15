@@ -100,3 +100,9 @@ impl std::convert::From<stdx::image::error::ImageError> for Error {
         Error::Internal
     }
 }
+
+impl std::convert::From<stdx::csv::Error> for Error {
+    fn from(_err: stdx::csv::Error) -> Self {
+        Error::Internal
+    }
+}

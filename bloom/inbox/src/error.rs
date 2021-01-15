@@ -31,7 +31,7 @@ impl std::convert::From<Error> for kernel::Error {
         match err {
             // Contacts
             Error::ContactNotFound => kernel::Error::NotFound(String::from("Contact not found.")),
-            Error::ContactsCsvTooLarge => kernel::Error::InvalidArgument(String::from("Conatcts CSV too large.")),
+            Error::ContactsCsvTooLarge => kernel::Error::InvalidArgument(String::from("contacts CSV too large.")),
 
             // Chatbox
             Error::UpgradePlanToRemoveChatboxBranding => {

@@ -40,7 +40,7 @@
 
 #![no_std]
 
-include!(concat!(env!("OUT_DIR"), "/count.rs"));
+include!(concat!(env!("OUT_DIR"), env!("PATH_SEPARATOR"), "count.rs"));
 
 #[doc(hidden)]
 #[macro_export]

@@ -35,10 +35,14 @@ pin_project! {
 /// unfold.send(5).await?;
 /// # Ok::<(), futures::never::Never>(()) }).unwrap();
 /// ```
-pub fn unfold<T, F, R>(init: T, function: F) -> Unfold<T, F, R> {
+pub fn unfold<T, F, R, Item, E>(init: T, function: F) -> Unfold<T, F, R>
+where
+    F: FnMut(T, Item) -> R,
+    R: Future<Output = Result<T, E>>,
+{
     Unfold {
         function,
-        state: UnfoldState::Value(init),
+        state: UnfoldState::Value { value: init },
     }
 }
 
@@ -59,7 +63,7 @@ where
             Some(value) => (this.function)(value, item),
             None => panic!("start_send called without poll_ready being called first"),
         };
-        this.state.set(UnfoldState::Future(future));
+        this.state.set(UnfoldState::Future { future });
         Ok(())
     }
 
@@ -68,7 +72,7 @@ where
         Poll::Ready(if let Some(future) = this.state.as_mut().project_future() {
             match ready!(future.poll(cx)) {
                 Ok(state) => {
-                    this.state.set(UnfoldState::Value(state));
+                    this.state.set(UnfoldState::Value { value: state });
                     Ok(())
                 }
                 Err(err) => Err(err),

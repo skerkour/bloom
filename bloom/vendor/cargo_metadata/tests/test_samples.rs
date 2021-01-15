@@ -169,6 +169,7 @@ fn all_the_fields() {
         // test added in 1.47
         // homepage added in 1.49
         // documentation added in 1.49
+        // path added in 1.51
         eprintln!("Skipping all_the_fields test, cargo {} is too old.", ver);
         return;
     }
@@ -224,6 +225,12 @@ fn all_the_fields() {
     assert_eq!(path_dep.source, None);
     assert_eq!(path_dep.kind, DependencyKind::Normal);
     assert_eq!(path_dep.req, semver::VersionReq::parse("*").unwrap());
+    if ver >= semver::Version::parse("1.51.0").unwrap() {
+        assert_eq!(
+            path_dep.path.as_ref().map(|p| p.ends_with("path-dep")),
+            Some(true),
+        );
+    }
 
     all.dependencies
         .iter()

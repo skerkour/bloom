@@ -11,6 +11,7 @@ pub mod validator;
 
 pub use base64;
 pub use chrono;
+pub use csv;
 pub use dotenv;
 pub use env_logger;
 pub use futures;
