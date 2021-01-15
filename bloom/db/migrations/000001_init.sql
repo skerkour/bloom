@@ -319,6 +319,7 @@ CREATE TABLE inbox_contacts (
 );
 CREATE INDEX index_inbox_contacts_on_namespace_id ON inbox_contacts (namespace_id);
 CREATE INDEX index_inbox_contacts_on_email ON inbox_contacts (email);
+CREATE INDEX index_inbox_contacts_on_name ON inbox_contacts (name);
 
 
 CREATE TABLE inbox_newsletter_lists (
