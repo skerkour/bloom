@@ -123,7 +123,7 @@ pub struct DeleteNewsletterListInput {
 
 #[derive(Debug, Clone)]
 pub struct DeleteNewsletterMessageInput {
-    // TODO
+    pub message_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
