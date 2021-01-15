@@ -253,6 +253,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/send_message")
                                             .route(web::post().to(api::inbox::commands::send_message)),
+                                    )
+                                    .service(
+                                        web::resource("/send_chatbox_message")
+                                            .route(web::post().to(api::inbox::commands::send_chatbox_message)),
                                     ),
                             )
                             .service(
