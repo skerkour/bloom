@@ -9,7 +9,7 @@ impl Repository {
             (id, created_at, updated_at, name, birthday, email, pgp_key, phone, address, website, twitter, instagram, facebook,
                 linkedin, skype, telegram, bloom, notes, country, country_code, plan, user_id, avatar_storage_key, namespace_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
-                $19, $20, $21, $22, $23)";
+                $19, $20, $21, $22, $23, $24)";
 
         match sqlx::query(QUERY)
             .bind(contact.id)
