@@ -1,3 +1,4 @@
+mod create_chatbox_preferences;
 mod create_contact;
 mod create_newsletter_list;
 mod create_newsletter_message;
