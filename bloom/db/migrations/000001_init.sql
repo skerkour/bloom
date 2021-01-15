@@ -263,6 +263,7 @@ CREATE TABLE inbox_conversations (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
   archived_at TIMESTAMP WITH TIME ZONE,
+  trashed_at TIMESTAMP WITH TIME ZONE,
   last_message_at TIMESTAMP WITH TIME ZONE NOT NULL,
   is_spam BOOLEAN NOT NULL,
   name TEXT NOT NULL,
@@ -274,6 +275,7 @@ CREATE INDEX index_inbox_conversations_on_namespace_id ON inbox_conversations (n
 CREATE INDEX index_inbox_conversations_on_last_message_at ON inbox_conversations (last_message_at);
 CREATE INDEX index_inbox_conversations_on_archived_at ON inbox_conversations (archived_at);
 CREATE INDEX index_inbox_conversations_on_is_spam ON inbox_conversations (is_spam);
+CREATE INDEX index_inbox_conversations_on_trashed_at ON inbox_conversations (trashed_at);
 
 
 CREATE TABLE inbox_messages (

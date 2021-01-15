@@ -10,11 +10,12 @@ impl Repository {
         namespace_id: Uuid,
     ) -> Result<Vec<entities::Conversation>, Error> {
         const QUERY: &str = "SELECT * FROM inbox_conversations
-            WHERE namespace_id = $1 AND archived_at IS NOT NULL
-            ORDER BY id DESC";
+            WHERE namespace_id = $1 AND archived_at IS NOT NULL AND trashed_at IS NULL AND is_spam = $2
+            ORDER BY last_message_at DESC";
 
         match sqlx::query_as::<_, entities::Conversation>(QUERY)
             .bind(namespace_id)
+            .bind(false)
             .fetch_all(db)
             .await
         {

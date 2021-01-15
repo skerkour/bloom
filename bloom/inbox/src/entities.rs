@@ -21,6 +21,7 @@ pub struct Conversation {
     pub updated_at: DateTime<Utc>,
 
     pub archived_at: Option<DateTime<Utc>>,
+    pub trashed_at: Option<DateTime<Utc>>,
     pub last_message_at: DateTime<Utc>,
     pub is_spam: bool,
     pub name: String,
