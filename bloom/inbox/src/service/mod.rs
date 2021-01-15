@@ -143,7 +143,24 @@ pub struct SendTestNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateContactInput {
-    // TODO
+    pub contact_id: Uuid,
+    pub name: String,
+    pub birthday: Option<DateTime<Utc>>,
+    pub email: String,
+    pub pgp_key: String,
+    pub phone: String,
+    pub address: String,
+    pub website: String,
+    pub twitter: String,
+    pub instagram: String,
+    pub facebook: String,
+    pub linkedin: String,
+    pub skype: String,
+    pub telegram: String,
+    pub bloom: String,
+    pub notes: String,
+    pub plan: String,
+    pub user_id: String,
 }
 
 #[derive(Debug, Clone)]

@@ -14,6 +14,7 @@ mod find_newsletter_list_by_id;
 mod find_newsletter_message_by_id;
 mod find_spam_conversations;
 mod find_trashed_conversations;
+mod update_contact;
 
 #[derive(Debug)]
 pub struct Repository {}
