@@ -11,7 +11,6 @@ impl Service {
     ) -> Result<NewsletterList, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
 
-        // check namespace membership
         self.kernel_service
             .check_namespace_membership(&self.db, actor.id, input.namespace_id)
             .await?;
