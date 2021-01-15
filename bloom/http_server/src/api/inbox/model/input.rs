@@ -1,9 +1,26 @@
-use crate::api::scalars::Id;
+use crate::api::scalars::{Id, Time};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateContact {
-    // TODO
+    pub namespace_id: Id,
+    pub name: String,
+    pub birthday: Option<Time>,
+    pub email: String,
+    pub pgp_key: String,
+    pub phone: String,
+    pub address: String,
+    pub website: String,
+    pub twitter: String,
+    pub instagram: String,
+    pub facebook: String,
+    pub linkedin: String,
+    pub skype: String,
+    pub telegram: String,
+    pub bloom: String,
+    pub notes: String,
+    pub plan: String,
+    pub user_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

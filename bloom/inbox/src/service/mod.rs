@@ -1,7 +1,11 @@
 use crate::repository::Repository;
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
-use stdx::sqlx::{Postgres, Transaction};
+use stdx::{
+    chrono::{DateTime, Utc},
+    sqlx::{Postgres, Transaction},
+    uuid::Uuid,
+};
 
 mod create_contact;
 mod create_newsletter_list;
@@ -31,6 +35,7 @@ mod update_chatbox_preferences;
 mod update_contact;
 mod update_newsletter_list;
 mod update_newsletter_message;
+mod validators;
 
 #[derive(Debug)]
 pub struct Service {
@@ -61,7 +66,8 @@ impl kernel::domain::inbox::Service for Service {
         input: kernel::domain::inbox::InitNamespaceInput,
     ) -> Result<(), kernel::Error> {
         let input = InitNamespaceInput {
-            // TODO
+            namespace_id: input.namespace_id,
+            name: input.name,
         };
         self.init_namespace(tx, input).await
     }
@@ -69,7 +75,24 @@ impl kernel::domain::inbox::Service for Service {
 
 #[derive(Debug, Clone)]
 pub struct CreateContactInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub name: String,
+    pub birthday: Option<DateTime<Utc>>,
+    pub email: String,
+    pub pgp_key: String,
+    pub phone: String,
+    pub address: String,
+    pub website: String,
+    pub twitter: String,
+    pub instagram: String,
+    pub facebook: String,
+    pub linkedin: String,
+    pub skype: String,
+    pub telegram: String,
+    pub bloom: String,
+    pub notes: String,
+    pub plan: String,
+    pub user_id: String,
 }
 
 #[derive(Debug, Clone)]
@@ -184,7 +207,8 @@ pub struct FindChatboxMessagesInput {
 
 #[derive(Debug, Clone)]
 pub struct InitNamespaceInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub name: String,
 }
 
 #[derive(Debug, Clone)]

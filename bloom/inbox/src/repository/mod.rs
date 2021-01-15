@@ -1,3 +1,5 @@
+mod create_contact;
+
 #[derive(Debug)]
 pub struct Repository {}
 
