@@ -3,7 +3,7 @@ use crate::{
     ServerContext,
 };
 use actix_web::web;
-use inbox::service::SendMessageInput;
+use inbox::service::SendChatboxMessageInput;
 use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
