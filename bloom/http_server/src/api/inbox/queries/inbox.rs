@@ -14,7 +14,9 @@ pub async fn inbox(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::Conversation>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindInboxInput {};
+    let service_input = FindInboxInput {
+        namespace_id: input.namespace_id,
+    };
     let conversations = ctx.inbox_service.find_inbox(actor, service_input).await?;
 
     Ok(api::Response::ok(conversations.into_iter().map(Into::into).collect()))

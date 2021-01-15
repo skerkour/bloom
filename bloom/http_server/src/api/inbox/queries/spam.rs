@@ -14,7 +14,9 @@ pub async fn spam(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::Conversation>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindSpamInput {};
+    let service_input = FindSpamInput {
+        namespace_id: input.namespace_id,
+    };
     let conversations = ctx.inbox_service.find_spam(actor, service_input).await?;
 
     Ok(api::Response::ok(conversations.into_iter().map(Into::into).collect()))

@@ -141,20 +141,20 @@ pub struct GetChatboxMessages {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetInbox {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetTrash {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetArchive {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetSpam {
-    // TODO
+    pub namespace_id: Id,
 }
