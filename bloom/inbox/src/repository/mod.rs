@@ -18,6 +18,8 @@ mod find_spam_conversations;
 mod find_trashed_conversations;
 mod update_chatbox_preferences;
 mod update_contact;
+mod update_newsletter_list;
+mod update_newsletter_message;
 
 #[derive(Debug)]
 pub struct Repository {}

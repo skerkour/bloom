@@ -165,7 +165,9 @@ pub struct UpdateContactInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateNewsletterListInput {
-    // TODO
+    pub list_id: Uuid,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone)]

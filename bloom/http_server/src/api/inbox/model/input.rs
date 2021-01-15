@@ -93,7 +93,9 @@ pub struct UpdateContact {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateNewsletterList {
-    // TODO
+    pub list_id: Id,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
