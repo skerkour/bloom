@@ -3,12 +3,12 @@ use crate::{entities::Conversation, Service};
 use kernel::Actor;
 
 impl Service {
-    // TODO: messages
     pub async fn find_archive(
         &self,
         actor: Actor,
         input: FindArchiveInput,
     ) -> Result<Vec<Conversation>, kernel::Error> {
+        // TODO: messages
         let actor = self.kernel_service.current_user(actor)?;
 
         self.kernel_service

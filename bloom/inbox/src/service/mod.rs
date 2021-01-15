@@ -219,12 +219,12 @@ pub struct InitNamespaceInput {
 
 #[derive(Debug, Clone)]
 pub struct FindInboxInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindTrashInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
@@ -234,5 +234,5 @@ pub struct FindArchiveInput {
 
 #[derive(Debug, Clone)]
 pub struct FindSpamInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
