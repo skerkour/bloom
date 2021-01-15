@@ -249,6 +249,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/update_newsletter_message")
                                             .route(web::post().to(api::inbox::commands::update_newsletter_message)),
+                                    )
+                                    .service(
+                                        web::resource("/send_message")
+                                            .route(web::post().to(api::inbox::commands::send_message)),
                                     ),
                             )
                             .service(

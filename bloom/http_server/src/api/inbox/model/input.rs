@@ -90,3 +90,48 @@ pub struct GetNewsletterMessage {
 pub struct GetNewsletterMessages {
     // TODO
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SendMessage {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SendChatboxMessage {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateChatboxPreferences {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindChatboxPreferences {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindChatboxMessages {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindInbox {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindTrash {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindArchive {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindSpam {
+    // TODO
+}

@@ -45,3 +45,36 @@ impl From<inbox::entities::NewsletterMessage> for NewsletterMessage {
         todo!();
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChatboxMessage {
+    // TODO
+}
+
+impl From<inbox::entities::Message> for ChatboxMessage {
+    fn from(_item: inbox::entities::Message) -> Self {
+        todo!();
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Conversation {
+    // TODO
+}
+
+impl From<inbox::entities::Conversation> for Conversation {
+    fn from(_item: inbox::entities::Conversation) -> Self {
+        todo!();
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChatboxPreferences {
+    // TODO
+}
+
+impl From<inbox::entities::ChatboxPreferences> for ChatboxPreferences {
+    fn from(_item: inbox::entities::ChatboxPreferences) -> Self {
+        todo!();
+    }
+}
