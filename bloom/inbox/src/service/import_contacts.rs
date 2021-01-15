@@ -73,7 +73,10 @@ impl Service {
         let mut tx = self.db.begin().await?;
 
         for contact in unique_contacts {
-            let res = self.repo.find_contact_by_email(&mut tx, &contact.email).await;
+            let res = self
+                .repo
+                .find_contact_by_email(&mut tx, namespace_id, &contact.email)
+                .await;
             let contact = match res {
                 Ok(mut existing_contact) => {
                     // update contact, maybe
