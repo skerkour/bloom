@@ -9,6 +9,22 @@ impl Repository {
         db: C,
         namespace_id: Uuid,
     ) -> Result<Vec<entities::NewsletterMessage>, Error> {
-        todo!();
+        const QUERY: &str = "SELECT * FROM inbox_newsletter_messages
+            WHERE namespace_id = $1 ORDER BY updated_at";
+
+        match sqlx::query_as::<_, entities::NewsletterMessage>(QUERY)
+            .bind(namespace_id)
+            .fetch_all(db)
+            .await
+        {
+            Err(err) => {
+                error!(
+                    "inbox.find_newsletter_messages_for_namespace: Finding messages: {}",
+                    &err
+                );
+                Err(err.into())
+            }
+            Ok(messages) => Ok(messages),
+        }
     }
 }
