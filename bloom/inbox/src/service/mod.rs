@@ -113,7 +113,7 @@ pub struct CreateNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct DeleteContactInput {
-    // TODO
+    pub contact_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
