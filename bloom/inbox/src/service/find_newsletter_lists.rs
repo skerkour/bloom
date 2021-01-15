@@ -5,9 +5,20 @@ use kernel::Actor;
 impl Service {
     pub async fn find_newsletter_lists(
         &self,
-        _actor: Actor,
-        _input: FindNewsletterListsInput,
+        actor: Actor,
+        input: FindNewsletterListsInput,
     ) -> Result<Vec<NewsletterList>, kernel::Error> {
-        todo!();
+        let actor = self.kernel_service.current_user(actor)?;
+
+        let lists = self
+            .repo
+            .find_newsletter_lists_for_namespace(&self.db, input.namespace_id)
+            .await?;
+
+        self.kernel_service
+            .check_namespace_membership(&self.db, actor.id, input.namespace_id)
+            .await?;
+
+        Ok(lists)
     }
 }
