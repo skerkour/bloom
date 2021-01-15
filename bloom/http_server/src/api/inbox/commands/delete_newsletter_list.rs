@@ -14,7 +14,7 @@ pub async fn delete_newsletter_list(
     actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = DeleteNewsletterListInput {};
+    let service_input = DeleteNewsletterListInput { list_id: input.list_id };
     ctx.inbox_service.delete_newsletter_list(actor, service_input).await?;
 
     Ok(api::Response::ok(true.into()))

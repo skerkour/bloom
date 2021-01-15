@@ -46,7 +46,7 @@ pub struct DeleteContact {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteNewsletterList {
-    // TODO
+    pub list_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
