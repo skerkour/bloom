@@ -25,7 +25,9 @@ pub struct CreateContact {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateNewsletterList {
-    // TODO
+    pub namespace_id: Id,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -66,4 +66,12 @@ impl Service {
     pub fn validate_contact_user_id(&self, user_id: &str) -> Result<(), Error> {
         todo!();
     }
+
+    pub fn validate_newsletter_list_name(&self, name: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_newsletter_list_description(&self, description: &str) -> Result<(), Error> {
+        todo!();
+    }
 }

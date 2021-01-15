@@ -6,6 +6,7 @@ use stdx::{chrono::Utc, ulid::Ulid};
 impl Service {
     pub async fn create_contact(&self, actor: Actor, input: CreateContactInput) -> Result<Contact, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
+
         // check namespace membership
         self.kernel_service
             .check_namespace_membership(&self.db, actor.id, input.namespace_id)

@@ -97,7 +97,9 @@ pub struct CreateContactInput {
 
 #[derive(Debug, Clone)]
 pub struct CreateNewsletterListInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone)]

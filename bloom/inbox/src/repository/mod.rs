@@ -1,4 +1,5 @@
 mod create_contact;
+mod create_newsletter_list;
 
 #[derive(Debug)]
 pub struct Repository {}
