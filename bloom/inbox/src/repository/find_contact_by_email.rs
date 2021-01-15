@@ -11,7 +11,7 @@ impl Repository {
         email: &str,
     ) -> Result<entities::Contact, Error> {
         const QUERY: &str = "SELECT * FROM inbox_contacts
-        WHERE namespace_id = $1 AND email = $2";
+            WHERE namespace_id = $1 AND email = $2";
 
         match sqlx::query_as::<_, entities::Contact>(QUERY)
             .bind(namespace_id)

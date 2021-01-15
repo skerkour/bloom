@@ -9,6 +9,20 @@ impl Repository {
         db: C,
         contact_id: Uuid,
     ) -> Result<entities::Contact, Error> {
-        todo!();
+        const QUERY: &str = "SELECT * FROM inbox_contacts
+            WHERE id = $1";
+
+        match sqlx::query_as::<_, entities::Contact>(QUERY)
+            .bind(contact_id)
+            .fetch_optional(db)
+            .await
+        {
+            Err(err) => {
+                error!("inbox.find_contact_by_id: finding contact: {}", &err);
+                Err(err.into())
+            }
+            Ok(None) => Err(Error::ContactNotFound),
+            Ok(Some(res)) => Ok(res),
+        }
     }
 }
