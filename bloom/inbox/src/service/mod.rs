@@ -203,7 +203,7 @@ pub struct UpdateChatboxPreferencesInput {
 
 #[derive(Debug, Clone)]
 pub struct FindChatboxPreferencesInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

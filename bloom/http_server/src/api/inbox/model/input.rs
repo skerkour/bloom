@@ -131,7 +131,7 @@ pub struct UpdateChatboxPreferences {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetChatboxPreferences {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
