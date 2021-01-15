@@ -229,7 +229,7 @@ pub struct FindTrashInput {
 
 #[derive(Debug, Clone)]
 pub struct FindArchiveInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
