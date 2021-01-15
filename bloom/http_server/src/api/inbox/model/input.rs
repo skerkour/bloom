@@ -36,7 +36,6 @@ pub struct CreateNewsletterMessage {
     pub name: String,
     pub subject: String,
     pub body: String,
-    pub scheduled_for: Option<Time>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -100,7 +99,11 @@ pub struct UpdateNewsletterList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateNewsletterMessage {
-    // TODO
+    pub message_id: Id,
+    pub list_id: Id,
+    pub name: String,
+    pub subject: String,
+    pub body: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

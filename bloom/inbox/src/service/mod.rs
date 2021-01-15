@@ -172,7 +172,12 @@ pub struct UpdateNewsletterListInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateNewsletterMessageInput {
-    // TODO
+    pub message_id: Uuid,
+    pub list_id: Uuid,
+    pub name: String,
+    pub subject: String,
+    pub body: String,
+    pub scheduled_for: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Clone)]

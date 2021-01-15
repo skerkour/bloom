@@ -36,11 +36,7 @@ impl Service {
         let scheduled_for = input.scheduled_for;
         self.validate_newsletter_message_scheduled_for(scheduled_for)?;
 
-        let status = if scheduled_for.is_some() {
-            NewsletterMessageStatus::Scheduled
-        } else {
-            NewsletterMessageStatus::Saved
-        };
+        let status = NewsletterMessageStatus::Saved;
 
         let now = Utc::now();
         let message = NewsletterMessage {

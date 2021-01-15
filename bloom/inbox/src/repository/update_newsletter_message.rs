@@ -7,7 +7,7 @@ impl Repository {
     pub async fn update_newsletter_message<'c, C: Queryer<'c>>(
         &self,
         db: C,
-        list: &NewsletterMessage,
+        message: &NewsletterMessage,
     ) -> Result<(), Error> {
         todo!();
     }

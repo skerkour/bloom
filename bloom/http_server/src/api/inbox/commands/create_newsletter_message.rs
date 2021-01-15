@@ -19,7 +19,7 @@ pub async fn create_newsletter_message(
         name: input.name,
         subject: input.subject,
         body: input.body,
-        scheduled_for: input.scheduled_for,
+        scheduled_for: None,
     };
     let message = ctx
         .inbox_service
