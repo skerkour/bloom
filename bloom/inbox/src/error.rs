@@ -3,6 +3,7 @@ use stdx::sqlx;
 pub enum Error {
     // Contacts
     ContactNotFound,
+    ContactsCsvTooLarge,
 
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
@@ -30,6 +31,7 @@ impl std::convert::From<Error> for kernel::Error {
         match err {
             // Contacts
             Error::ContactNotFound => kernel::Error::NotFound(String::from("Contact not found.")),
+            Error::ContactsCsvTooLarge => kernel::Error::InvalidArgument(String::from("Conatcts CSV too large.")),
 
             // Chatbox
             Error::UpgradePlanToRemoveChatboxBranding => {

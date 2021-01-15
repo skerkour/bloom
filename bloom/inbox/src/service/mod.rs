@@ -128,7 +128,9 @@ pub struct DeleteNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct ImportContactsInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub list_id: Option<Uuid>,
+    pub conatcts_csv: String,
 }
 
 #[derive(Debug, Clone)]

@@ -14,7 +14,11 @@ pub async fn import_contacts(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::Contact>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = ImportContactsInput {};
+    let service_input = ImportContactsInput {
+        namespace_id: input.namespace_id,
+        list_id: input.list_id,
+        conatcts_csv: input.conatcts_csv,
+    };
     let contacts = ctx.inbox_service.import_contacts(actor, service_input).await?;
 
     Ok(api::Response::ok(contacts.into_iter().map(Into::into).collect()))

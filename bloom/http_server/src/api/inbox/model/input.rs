@@ -55,7 +55,9 @@ pub struct DeleteNewsletterMessage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImportContacts {
-    // TODO
+    pub namespace_id: Id,
+    pub list_id: Option<Id>,
+    pub conatcts_csv: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
