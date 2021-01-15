@@ -1,1 +1,1 @@
-pub const CHATBOX_DEFAULT_COLOR: &str = "#ff0000";
+pub const DEFAULT_CHATBOX_COLOR: &str = "#ff0000";
