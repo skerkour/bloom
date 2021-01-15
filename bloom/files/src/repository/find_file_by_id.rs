@@ -6,7 +6,7 @@ use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
     pub async fn find_file_by_id<'c, C: Queryer<'c>>(&self, db: C, file_id: Uuid) -> Result<entities::File, Error> {
-        const QUERY: &str = "SELECT * FROM files_files
+        const QUERY: &str = "SELECT * FROM files
             WHERE id = $1";
 
         match sqlx::query_as::<_, entities::File>(QUERY)

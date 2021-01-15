@@ -7,6 +7,7 @@ pub enum Error {
 
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
+    ChatboxPreferencesNotFound,
 
     // Newsletter
     NewsletterListNotFound,
@@ -37,6 +38,7 @@ impl std::convert::From<Error> for kernel::Error {
             Error::UpgradePlanToRemoveChatboxBranding => {
                 kernel::Error::InvalidArgument(String::from("Please upgrade your plan to remove chatbox's branding"))
             }
+            Error::ChatboxPreferencesNotFound => kernel::Error::NotFound(String::from("Chatbox not found.")),
 
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
