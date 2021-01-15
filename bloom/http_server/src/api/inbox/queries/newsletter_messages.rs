@@ -14,7 +14,9 @@ pub async fn newsletter_messages(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::NewsletterMessage>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindNewsletterMessagesInput {};
+    let service_input = FindNewsletterMessagesInput {
+        namespace_id: input.namespace_id,
+    };
     let messages = ctx.inbox_service.find_newsletter_messages(actor, service_input).await?;
 
     Ok(api::Response::ok(messages.into_iter().map(Into::into).collect()))

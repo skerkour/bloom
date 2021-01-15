@@ -185,22 +185,22 @@ pub struct FindContactsInput {
 
 #[derive(Debug, Clone)]
 pub struct FindNewsletterListInput {
-    // TODO
+    pub list_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindNewsletterListsInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindNewsletterMessageInput {
-    // TODO
+    pub message_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindNewsletterMessagesInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

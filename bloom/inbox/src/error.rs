@@ -7,6 +7,10 @@ pub enum Error {
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
 
+    // Newsletter
+    NewsletterListNotFound,
+    NewsletterMessageNotFound,
+
     // Other
     Internal,
     PermissionDenied,
@@ -31,6 +35,10 @@ impl std::convert::From<Error> for kernel::Error {
             Error::UpgradePlanToRemoveChatboxBranding => {
                 kernel::Error::InvalidArgument(String::from("Please upgrade your plan to remove chatbox's branding"))
             }
+
+            // Newsletter
+            Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
+            Error::NewsletterMessageNotFound => kernel::Error::NotFound(String::from("Message not found")),
 
             // Other
             Error::Internal => kernel::Error::Internal,

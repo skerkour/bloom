@@ -113,22 +113,22 @@ pub struct GetContacts {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetNewsletterList {
-    // TODO
+    pub list_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetNewsletterLists {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetNewsletterMessage {
-    // TODO
+    pub message_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetNewsletterMessages {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
