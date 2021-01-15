@@ -9,6 +9,7 @@ mod delete_contact;
 mod delete_newsletter_list;
 mod delete_newsletter_message;
 mod find_archive;
+mod find_chatbox_messages;
 mod find_chatbox_preferences;
 mod find_contact;
 mod find_contacts;
