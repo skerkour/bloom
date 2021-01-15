@@ -13,6 +13,7 @@ mod find_inbox_conversations;
 mod find_newsletter_list_by_id;
 mod find_newsletter_lists_for_namespace;
 mod find_newsletter_message_by_id;
+mod find_newsletter_messages_for_namespace;
 mod find_spam_conversations;
 mod find_trashed_conversations;
 mod update_chatbox_preferences;

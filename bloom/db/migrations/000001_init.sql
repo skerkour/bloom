@@ -315,7 +315,6 @@ CREATE TABLE inbox_contacts (
   user_id TEXT NOT NULL,
   avatar_storage_key TEXT,
 
-
   namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_contacts_on_namespace_id ON inbox_contacts (namespace_id);
@@ -350,9 +349,11 @@ CREATE TABLE inbox_newsletter_messages (
   sent_count BIGINT NOT NULL,
   error_count BIGINT NOT NULL,
 
-  list_id UUID REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE
+  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+  list_id UUID REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
 );
 CREATE INDEX index_inbox_newsletter_messages_on_list_id ON inbox_newsletter_messages (list_id);
+CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
 
 
 CREATE TABLE inbox_chatbox_preferences (

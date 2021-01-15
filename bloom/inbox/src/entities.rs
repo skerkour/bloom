@@ -102,6 +102,7 @@ pub struct NewsletterMessage {
     pub error_count: i64,
 
     pub list_id: Uuid,
+    pub namespace_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]

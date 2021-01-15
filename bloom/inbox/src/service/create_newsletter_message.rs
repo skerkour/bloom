@@ -16,9 +16,9 @@ impl Service {
 
         let list = self.repo.find_newsletter_list_by_id(&self.db, input.list_id).await?;
 
-        // check namespace membership
-        self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, list.namespace_id)
+        let (namespace, _) = self
+            .kernel_service
+            .find_namespace_and_membership(&self.db, actor.id, list.namespace_id)
             .await?;
 
         // clean and validate input
@@ -57,6 +57,7 @@ impl Service {
             sent_count: 0,
             error_count: 0,
             list_id: input.list_id,
+            namespace_id: namespace.id,
         };
         self.repo.create_newsletter_message(&self.db, &message).await?;
 
