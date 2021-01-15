@@ -290,7 +290,12 @@ pub async fn run(
                                     .service(
                                         web::resource("/chatbox_preferences")
                                             .route(web::post().to(api::inbox::queries::chatbox_preferences)),
-                                    ),
+                                    )
+                                    .service(
+                                        web::resource("/chatbox_messages")
+                                            .route(web::post().to(api::inbox::queries::chatbox_messages)),
+                                    )
+                                    .service(web::resource("/inbox").route(web::post().to(api::inbox::queries::inbox))),
                             ),
                     )
                     .default_service(

@@ -14,3 +14,5 @@ mod chatbox_preferences;
 pub use chatbox_preferences::chatbox_preferences;
 mod chatbox_messages;
 pub use chatbox_messages::chatbox_messages;
+mod inbox;
+pub use self::inbox::inbox;
