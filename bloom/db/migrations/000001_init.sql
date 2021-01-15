@@ -334,6 +334,14 @@ CREATE TABLE inbox_newsletter_lists (
 CREATE INDEX index_inbox_newsletter_lists_on_namespace_id ON inbox_newsletter_lists (namespace_id);
 
 
+CREATE TABLE inbox_newsletter_lists_contacts (
+  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
+  contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_newsletter_lists_contacts_on_list_id ON inbox_newsletter_lists_contacts (list_id);
+CREATE INDEX index_inbox_newsletter_lists_contacts_on_contact_id ON v (contact_id);
+
+
 CREATE TABLE inbox_newsletter_messages (
   id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,

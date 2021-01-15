@@ -122,9 +122,15 @@ pub struct ChatboxPreferences {
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
-pub struct ConversationContact {
+pub struct ConversationContactRelation {
     pub contact_id: Uuid,
     pub conversation_id: Uuid,
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct NewsletterListContactRelation {
+    pub contact_id: Uuid,
+    pub list_id: Uuid,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

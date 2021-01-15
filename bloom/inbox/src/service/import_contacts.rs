@@ -1,7 +1,7 @@
 use super::ImportContactsInput;
 use crate::{
     consts,
-    entities::{Contact, ImportedContact},
+    entities::{Contact, ImportedContact, NewsletterListContactRelation},
     Error, Service,
 };
 use kernel::Actor;
@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use stdx::{chrono::Utc, csv, ulid::Ulid};
 
 impl Service {
-    // TODO: list/contact relation
+    // TODO: check if list/contact relation exists
     pub async fn import_contacts(
         &self,
         actor: Actor,
@@ -113,12 +113,23 @@ impl Service {
                         namespace_id,
                         avatar_storage_key: None,
                     };
-                    self.repo.create_contact(&self.db, &new_contact).await?;
+                    self.repo.create_contact(&mut tx, &new_contact).await?;
 
                     Ok(new_contact)
                 }
                 Err(err) => Err(err),
             }?;
+
+            if let Some(ref list) = list {
+                let list_contact_relation = NewsletterListContactRelation {
+                    list_id: list.id,
+                    contact_id: contact.id,
+                };
+                self.repo
+                    .create_newsletter_list_contact_relation(&mut tx, &list_contact_relation)
+                    .await?;
+            }
+
             contacts.push(contact);
         }
 
