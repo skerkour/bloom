@@ -9,6 +9,24 @@ impl Repository {
         db: C,
         list: &NewsletterListContactRelation,
     ) -> Result<(), Error> {
-        todo!();
+        const QUERY: &str = "INSERT INTO inbox_newsletter_lists_contacts
+            (list_id, contact_id)
+            VALUES ($1, $2)";
+
+        match sqlx::query(QUERY)
+            .bind(list.list_id)
+            .bind(list.contact_id)
+            .execute(db)
+            .await
+        {
+            Err(err) => {
+                error!(
+                    "inbox.create_newsletter_list_contact_relation: Inserting relation: {}",
+                    &err
+                );
+                Err(err.into())
+            }
+            Ok(_) => Ok(()),
+        }
     }
 }
