@@ -158,7 +158,7 @@ pub struct UpdateNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct FindContactInput {
-    // TODO
+    pub contact_id: Uuid,
 }
 
 #[derive(Debug, Clone)]
