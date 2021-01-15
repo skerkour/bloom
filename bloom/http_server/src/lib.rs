@@ -295,7 +295,12 @@ pub async fn run(
                                         web::resource("/chatbox_messages")
                                             .route(web::post().to(api::inbox::queries::chatbox_messages)),
                                     )
-                                    .service(web::resource("/inbox").route(web::post().to(api::inbox::queries::inbox))),
+                                    .service(web::resource("/inbox").route(web::post().to(api::inbox::queries::inbox)))
+                                    .service(web::resource("/trash").route(web::post().to(api::inbox::queries::trash)))
+                                    .service(
+                                        web::resource("/archive").route(web::post().to(api::inbox::queries::archive)),
+                                    )
+                                    .service(web::resource("/spam").route(web::post().to(api::inbox::queries::spam))),
                             ),
                     )
                     .default_service(
