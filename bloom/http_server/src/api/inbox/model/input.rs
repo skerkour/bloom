@@ -107,31 +107,31 @@ pub struct UpdateChatboxPreferences {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindChatboxPreferences {
+pub struct GetChatboxPreferences {
     // TODO
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindChatboxMessages {
+pub struct GetChatboxMessages {
     // TODO
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindInbox {
+pub struct GetInbox {
     // TODO
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindTrash {
+pub struct GetTrash {
     // TODO
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindArchive {
+pub struct GetArchive {
     // TODO
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindSpam {
+pub struct GetSpam {
     // TODO
 }

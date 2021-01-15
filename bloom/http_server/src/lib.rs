@@ -261,7 +261,7 @@ pub async fn run(
                                     .service(
                                         web::resource("/update_chatbox_preferences")
                                             .route(web::post().to(api::inbox::commands::update_chatbox_preferences)),
-                                    )
+                                    ),
                             )
                             .service(
                                 web::scope("/queries")
@@ -286,6 +286,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/newsletter_messages")
                                             .route(web::post().to(api::inbox::queries::newsletter_messages)),
+                                    )
+                                    .service(
+                                        web::resource("/chatbox_preferences")
+                                            .route(web::post().to(api::inbox::queries::chatbox_preferences)),
                                     ),
                             ),
                     )

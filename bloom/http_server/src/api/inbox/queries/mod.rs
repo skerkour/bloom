@@ -10,3 +10,5 @@ mod newsletter_message;
 pub use newsletter_message::newsletter_message;
 mod newsletter_messages;
 pub use newsletter_messages::newsletter_messages;
+mod chatbox_preferences;
+pub use chatbox_preferences::chatbox_preferences;
