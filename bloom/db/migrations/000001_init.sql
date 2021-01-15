@@ -343,14 +343,14 @@ CREATE TABLE inbox_newsletter_messages (
   body TEXT NOT NULL,
   body_html TEXT NOT NULL,
   status TEXT NOT NULL,
-  send_at TIMESTAMP WITH TIME ZONE,
+  scheduled_for TIMESTAMP WITH TIME ZONE,
   last_sent_at TIMESTAMP WITH TIME ZONE
   sent_count BIGINT NOT NULL,
   error_count BIGINT NOT NULL,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+  list_id UUID REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE
 );
-CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
+CREATE INDEX index_inbox_newsletter_messages_on_list_id ON inbox_newsletter_messages (list_id);
 
 
 CREATE TABLE inbox_chatbox_preferences (

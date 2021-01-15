@@ -46,4 +46,8 @@ impl Service {
         selff.files_service = Some(files_service);
         selff.inbox_service = Some(inbox_service);
     }
+
+    pub async fn render_markdown(&self, markdown: &str) -> Result<String, crate::Error> {
+        todo!();
+    }
 }

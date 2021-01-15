@@ -74,4 +74,20 @@ impl Service {
     pub fn validate_newsletter_list_description(&self, description: &str) -> Result<(), Error> {
         todo!();
     }
+
+    pub fn validate_newsletter_message_name(&self, name: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_newsletter_message_subject(&self, subject: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_newsletter_message_body(&self, body: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_newsletter_message_scheduled_for(&self, scheduled_for: Option<DateTime<Utc>>) -> Result<(), Error> {
+        todo!();
+    }
 }

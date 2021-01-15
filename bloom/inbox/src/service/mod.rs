@@ -104,7 +104,11 @@ pub struct CreateNewsletterListInput {
 
 #[derive(Debug, Clone)]
 pub struct CreateNewsletterMessageInput {
-    // TODO
+    pub list_id: Uuid,
+    pub name: String,
+    pub subject: String,
+    pub body: String,
+    pub scheduled_for: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Clone)]

@@ -95,12 +95,12 @@ pub struct NewsletterMessage {
     pub body: String,
     pub body_html: String,
     pub status: NewsletterMessageStatus,
-    pub send_at: Option<DateTime<Utc>>,
+    pub scheduled_for: Option<DateTime<Utc>>,
     pub last_sent_at: Option<DateTime<Utc>>,
     pub sent_count: i64,
     pub error_count: i64,
 
-    pub namespace_id: Uuid,
+    pub list_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
