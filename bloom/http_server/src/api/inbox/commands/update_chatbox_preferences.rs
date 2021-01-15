@@ -14,7 +14,13 @@ pub async fn update_chatbox_preferences(
     actor: Actor,
 ) -> Result<api::Response<model::ChatboxPreferences>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = UpdateChatboxPreferencesInput {};
+    let service_input = UpdateChatboxPreferencesInput {
+        namespace_id: input.namespace_id,
+        color: input.color,
+        name: input.name,
+        show_branding: input.show_branding,
+        welcome_message: input.welcome_message,
+    };
     let chatbox_preferences = ctx
         .inbox_service
         .update_chatbox_preferences(actor, service_input)

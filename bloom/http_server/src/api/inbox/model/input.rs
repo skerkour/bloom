@@ -143,7 +143,11 @@ pub struct SendChatboxMessage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateChatboxPreferences {
-    // TODO
+    pub namespace_id: Id,
+    pub color: String,
+    pub name: String,
+    pub show_branding: bool,
+    pub welcome_message: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
