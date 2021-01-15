@@ -7,15 +7,15 @@ impl Repository {
     pub async fn create_newsletter_list_contact_relation<'c, C: Queryer<'c>>(
         &self,
         db: C,
-        list: &NewsletterListContactRelation,
+        relation: &NewsletterListContactRelation,
     ) -> Result<(), Error> {
         const QUERY: &str = "INSERT INTO inbox_newsletter_lists_contacts
             (list_id, contact_id)
             VALUES ($1, $2)";
 
         match sqlx::query(QUERY)
-            .bind(list.list_id)
-            .bind(list.contact_id)
+            .bind(relation.list_id)
+            .bind(relation.contact_id)
             .execute(db)
             .await
         {
