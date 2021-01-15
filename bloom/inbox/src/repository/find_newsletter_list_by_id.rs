@@ -10,6 +10,20 @@ impl Repository {
         db: C,
         list_id: Uuid,
     ) -> Result<entities::NewsletterList, Error> {
-        todo!();
+        const QUERY: &str = "SELECT * FROM inbox_newsletter_lists
+            WHERE id = $1";
+
+        match sqlx::query_as::<_, entities::NewsletterList>(QUERY)
+            .bind(list_id)
+            .fetch_optional(db)
+            .await
+        {
+            Err(err) => {
+                error!("inbox.find_newsletter_list_by_id: finding list: {}", &err);
+                Err(err.into())
+            }
+            Ok(None) => Err(Error::NewsletterListNotFound),
+            Ok(Some(res)) => Ok(res),
+        }
     }
 }
