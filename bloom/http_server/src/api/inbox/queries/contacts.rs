@@ -14,7 +14,9 @@ pub async fn contacts(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::Contact>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindContactsInput {};
+    let service_input = FindContactsInput {
+        namespace_id: input.namespace_id,
+    };
     let contacts = ctx.inbox_service.find_contacts(actor, service_input).await?;
 
     Ok(api::Response::ok(contacts.into_iter().map(Into::into).collect()))

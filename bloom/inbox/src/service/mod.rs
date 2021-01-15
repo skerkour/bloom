@@ -163,7 +163,7 @@ pub struct FindContactInput {
 
 #[derive(Debug, Clone)]
 pub struct FindContactsInput {
-    // TODO
+    pub namespace_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

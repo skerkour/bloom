@@ -91,7 +91,7 @@ pub struct GetContact {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetContacts {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
