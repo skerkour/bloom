@@ -39,7 +39,7 @@
     "@vue/cli-service": "^4.5.10",
     "@vue/eslint-config-airbnb": "^5.3.0",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^7.17.0",
+    "eslint": "^7.18.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-vue": "^7.4.1",
     "sass": "^1.32.4",
