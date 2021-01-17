@@ -14,7 +14,9 @@ pub async fn send_newsletter_message(
     actor: Actor,
 ) -> Result<api::Response<model::NewsletterMessage>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = SendNewsletterMessageInput {};
+    let service_input = SendNewsletterMessageInput {
+        message_id: input.message_id,
+    };
     let message = ctx.inbox_service.send_newsletter_message(actor, service_input).await?;
 
     Ok(api::Response::ok(message.into()))

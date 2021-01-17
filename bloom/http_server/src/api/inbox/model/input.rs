@@ -62,12 +62,12 @@ pub struct ImportContacts {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendNewsletterMessage {
-    // TODO
+    pub message_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendTestNewsletterMessage {
-    // TODO
+    pub message_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

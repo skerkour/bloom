@@ -47,6 +47,7 @@ pub enum Error {
     NewsletterMessageSubjectIsTooShort,
     NewsletterMessageSubjectIsNotValid,
     NewsletterMessageScheduledForCantBeInThePast,
+    UpgradePlanToSendNewsletterMessage,
 
     // Other
     Internal,
@@ -132,6 +133,9 @@ impl std::convert::From<Error> for kernel::Error {
             }
             Error::NewsletterMessageScheduledForCantBeInThePast => {
                 kernel::Error::InvalidArgument(String::from("Message can't be scheduled in the past."))
+            }
+            Error::UpgradePlanToSendNewsletterMessage => {
+                kernel::Error::InvalidArgument(String::from("Please upgrade your plan to send newsletter"))
             }
 
             // Other

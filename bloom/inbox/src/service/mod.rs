@@ -137,7 +137,7 @@ pub struct ImportContactsInput {
 
 #[derive(Debug, Clone)]
 pub struct SendNewsletterMessageInput {
-    // TODO
+    pub message_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

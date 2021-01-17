@@ -42,4 +42,7 @@ pub enum Message {
         to: mail::Address,
         is_test: bool,
     },
+    InboxDispatchSendNewsletterMessage {
+        message_id: Uuid,
+    },
 }
