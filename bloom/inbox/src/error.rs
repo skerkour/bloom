@@ -27,6 +27,9 @@ pub enum Error {
     ChatboxPreferencesNotFound,
     ChatboxWelcomeMessageIsTooLong,
     ChatboxColorIsNotValid,
+    ChatboxNameIsTooLong,
+    ChatboxNameIsTooShort,
+    ChatboxNameIsNotValid,
 
     // Newsletter
     NewsletterListNotFound,
@@ -36,6 +39,14 @@ pub enum Error {
     NewsletterListNameIsTooShort,
     NewsletterListNameIsNotValid,
     NewsletterListDescriptionIsTooLong,
+    NewsletterMessageNameIsTooLong,
+    NewsletterMessageNameIsTooShort,
+    NewsletterMessageNameIsNotValid,
+    NewsletterMessageBodyIsTooLong,
+    NewsletterMessageSubjectIsTooLong,
+    NewsletterMessageSubjectIsTooShort,
+    NewsletterMessageSubjectIsNotValid,
+    NewsletterMessageScheduledForCantBeInThePast,
 
     // Other
     Internal,
@@ -88,6 +99,9 @@ impl std::convert::From<Error> for kernel::Error {
                 kernel::Error::InvalidArgument(String::from("Welcome message is too long."))
             }
             Error::ChatboxColorIsNotValid => kernel::Error::InvalidArgument(String::from("Color is not valid.")),
+            Error::ChatboxNameIsTooLong => kernel::Error::InvalidArgument(String::from("Name is too long.")),
+            Error::ChatboxNameIsTooShort => kernel::Error::InvalidArgument(String::from("Name is too short.")),
+            Error::ChatboxNameIsNotValid => kernel::Error::InvalidArgument(String::from("Name is not valid.")),
 
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
@@ -99,6 +113,26 @@ impl std::convert::From<Error> for kernel::Error {
                 kernel::Error::InvalidArgument(String::from("Description is too long."))
             }
             Error::NewsletterListNameIsNotValid => kernel::Error::InvalidArgument(String::from("Name is not valid.")),
+            Error::NewsletterMessageNameIsTooLong => kernel::Error::InvalidArgument(String::from("Name is too long.")),
+            Error::NewsletterMessageNameIsTooShort => {
+                kernel::Error::InvalidArgument(String::from("Name is too short."))
+            }
+            Error::NewsletterMessageNameIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Name is not valid."))
+            }
+            Error::NewsletterMessageBodyIsTooLong => kernel::Error::InvalidArgument(String::from("Body is too long.")),
+            Error::NewsletterMessageSubjectIsTooLong => {
+                kernel::Error::InvalidArgument(String::from("Subject is too long."))
+            }
+            Error::NewsletterMessageSubjectIsTooShort => {
+                kernel::Error::InvalidArgument(String::from("Subject is too short."))
+            }
+            Error::NewsletterMessageSubjectIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Subject is not valid."))
+            }
+            Error::NewsletterMessageScheduledForCantBeInThePast => {
+                kernel::Error::InvalidArgument(String::from("Message can't be scheduled in the past."))
+            }
 
             // Other
             Error::Internal => kernel::Error::Internal,

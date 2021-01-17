@@ -1,6 +1,8 @@
 // Chatbox
 pub const DEFAULT_CHATBOX_COLOR: &str = "#ff0000";
 pub const CHATBOX_WELCOME_MESSAGE_MAX_LENGTH: usize = 1024;
+pub const CHATBOX_NAME_MAX_LENGTH: usize = 128;
+pub const CHATBOX_NAME_MIN_LENGTH: usize = 1;
 
 // Contacts
 pub const CONTACT_NAME_MAX_LENGTH: usize = 128;
@@ -16,3 +18,8 @@ pub const MAX_IMPORT_CONTACTS_CSV_LENGTH: usize = 512_000;
 pub const LIST_NAME_MAX_LENGTH: usize = 128;
 pub const LIST_NAME_MIN_LENGTH: usize = 1;
 pub const LIST_DESCRIPTION_MAX_LENGTH: usize = 1024;
+pub const NEWSLETTER_MESSAGE_NAME_MAX_LENGTH: usize = 128;
+pub const NEWSLETTER_MESSAGE_NAME_MIN_LENGTH: usize = 1;
+pub const NEWSLETTER_MESSAGE_BODY_MAX_LENGTH: usize = 64_000;
+pub const NEWSLETTER_MESSAGE_SUBJECT_MIN_LENGTH: usize = 1;
+pub const NEWSLETTER_MESSAGE_SUBJECT_MAX_LENGTH: usize = 142;

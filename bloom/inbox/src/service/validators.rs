@@ -194,23 +194,76 @@ impl Service {
     }
 
     pub fn validate_newsletter_message_name(&self, name: &str) -> Result<(), Error> {
-        todo!();
+        if name.len() < consts::NEWSLETTER_MESSAGE_NAME_MIN_LENGTH {
+            return Err(Error::NewsletterMessageNameIsTooShort);
+        }
+
+        if name.len() > consts::NEWSLETTER_MESSAGE_NAME_MAX_LENGTH {
+            return Err(Error::NewsletterMessageNameIsTooLong);
+        }
+
+        if name.contains('\n') {
+            return Err(Error::NewsletterMessageNameIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_message_subject(&self, subject: &str) -> Result<(), Error> {
-        todo!();
+        if subject.len() < consts::NEWSLETTER_MESSAGE_SUBJECT_MIN_LENGTH {
+            return Err(Error::NewsletterMessageSubjectIsTooShort);
+        }
+
+        if subject.len() > consts::NEWSLETTER_MESSAGE_SUBJECT_MAX_LENGTH {
+            return Err(Error::NewsletterMessageSubjectIsTooLong);
+        }
+
+        if subject.contains('\n') {
+            return Err(Error::NewsletterMessageSubjectIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_message_body(&self, body: &str) -> Result<(), Error> {
-        todo!();
+        if body.len() > consts::NEWSLETTER_MESSAGE_BODY_MAX_LENGTH {
+            return Err(Error::NewsletterMessageBodyIsTooLong);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_message_scheduled_for(&self, scheduled_for: Option<DateTime<Utc>>) -> Result<(), Error> {
-        todo!();
+        if scheduled_for.is_none() {
+            return Ok(());
+        }
+
+        let scheduled_for = scheduled_for.unwrap();
+        let now = Utc::now();
+        if scheduled_for < now {
+            return Err(Error::NewsletterMessageScheduledForCantBeInThePast);
+        }
+
+        Ok(())
     }
 
     pub fn validate_chatbox_name(&self, name: &str) -> Result<(), Error> {
-        todo!();
+        if name.len() > consts::CHATBOX_NAME_MAX_LENGTH {
+            return Err(Error::ChatboxNameIsTooLong);
+        }
+
+        if name.len() < consts::CHATBOX_NAME_MIN_LENGTH {
+            return Err(Error::ChatboxNameIsTooShort);
+        }
+
+        if !name
+            .chars()
+            .all(|c| c.is_alphabetic() || c.is_numeric() || "-_. '".contains(c))
+        {
+            return Err(Error::ChatboxNameIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_chatbox_color(&self, color: &str) -> Result<(), Error> {
