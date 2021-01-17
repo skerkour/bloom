@@ -1,5 +1,6 @@
 use stdx::{
     chrono::{DateTime, Utc},
+    encoding::hex,
     url::Url,
 };
 
@@ -213,7 +214,17 @@ impl Service {
     }
 
     pub fn validate_chatbox_color(&self, color: &str) -> Result<(), Error> {
-        todo!();
+        if color.len() != 7 {
+            return Err(Error::ChatboxColorIsNotValid);
+        }
+
+        if color.as_bytes()[0] != b'#' {
+            return Err(Error::ChatboxColorIsNotValid);
+        }
+
+        hex::decode(&color[1..]).map_err(|_| Error::ChatboxColorIsNotValid)?;
+
+        Ok(())
     }
 
     pub fn validate_chatbox_welcome_message(&self, welcome_message: &str) -> Result<(), Error> {

@@ -26,6 +26,7 @@ pub enum Error {
     UpgradePlanToRemoveChatboxBranding,
     ChatboxPreferencesNotFound,
     ChatboxWelcomeMessageIsTooLong,
+    ChatboxColorIsNotValid,
 
     // Newsletter
     NewsletterListNotFound,
@@ -86,6 +87,7 @@ impl std::convert::From<Error> for kernel::Error {
             Error::ChatboxWelcomeMessageIsTooLong => {
                 kernel::Error::InvalidArgument(String::from("Welcome message is too long."))
             }
+            Error::ChatboxColorIsNotValid => kernel::Error::InvalidArgument(String::from("Color is not valid.")),
 
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
