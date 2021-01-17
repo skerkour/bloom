@@ -131,23 +131,23 @@ impl Service {
     }
 
     // TODO
-    pub async fn send_register_email(&self) -> Result<(), Error> {
+    pub async fn send_register_email(&self, input: SendRegisterEmailInput) -> Result<(), Error> {
         unimplemented!(); // TODO
     }
 
-    pub async fn send_sign_in_email(&self) -> Result<(), Error> {
+    pub async fn send_sign_in_email(&self, input: SendSignInEmailInput) -> Result<(), Error> {
         unimplemented!(); // TODO
     }
 
-    pub async fn send_email_changed_email(&self) -> Result<(), Error> {
+    pub async fn send_email_changed_email(&self, input: SendEmailChangedEmailInput) -> Result<(), Error> {
         unimplemented!(); // TODO
     }
 
-    pub async fn send_verify_email_email(&self) -> Result<(), Error> {
+    pub async fn send_verify_email_email(&self, input: SendVerifyEmailEmailInput) -> Result<(), Error> {
         unimplemented!(); // TODO
     }
 
-    pub async fn send_group_invitation_email(&self) -> Result<(), Error> {
+    pub async fn send_group_invitation_email(&self, input: SendGroupInvitationEmailInput) -> Result<(), Error> {
         unimplemented!(); // TODO
     }
 
@@ -387,6 +387,39 @@ pub struct DecodedSessionToken {
 pub struct SignedStorageUrl {
     pub url: String,
     pub upload_id: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendGroupInvitationEmailInput {
+    pub invitation_id: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendRegisterEmailInput {
+    pub email: String,
+    pub username: String,
+    pub code: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendSignInEmailInput {
+    pub email: String,
+    pub name: String,
+    pub code: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendEmailChangedEmailInput {
+    pub email: String,
+    pub name: String,
+    pub new_email: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendVerifyEmailEmailInput {
+    pub email: String,
+    pub name: String,
+    pub code: String,
 }
 
 // type NamespaceAndCustomer struct {

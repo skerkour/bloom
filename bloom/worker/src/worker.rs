@@ -1,4 +1,10 @@
-use kernel::domain::messages::Message;
+use kernel::{
+    domain::messages::Message,
+    service::{
+        SendEmailChangedEmailInput, SendGroupInvitationEmailInput, SendRegisterEmailInput, SendSignInEmailInput,
+        SendVerifyEmailEmailInput,
+    },
+};
 use kernel::{drivers::queue::Job, Error};
 use std::sync::Arc;
 
@@ -18,17 +24,24 @@ impl Worker {
     pub async fn handle_job(&self, job: Job) -> Result<(), Error> {
         match job.message {
             Message::KenrnelSendRegisterEmail { email, username, code } => {
-                self.kernel_service.send_register_email().await
+                let input = SendRegisterEmailInput { email, username, code };
+                self.kernel_service.send_register_email(input).await
             }
-            Message::KernelSendSignInEmail { email, name, code } => self.kernel_service.send_sign_in_email().await,
+            Message::KernelSendSignInEmail { email, name, code } => {
+                let input = SendSignInEmailInput { email, name, code };
+                self.kernel_service.send_sign_in_email(input).await
+            }
             Message::KernelSendEmailChangedEmail { email, name, new_email } => {
-                self.kernel_service.send_email_changed_email().await
+                let input = SendEmailChangedEmailInput { email, name, new_email };
+                self.kernel_service.send_email_changed_email(input).await
             }
             Message::KernelSendVerifyEmailEmail { email, name, code } => {
-                self.kernel_service.send_verify_email_email().await
+                let input = SendVerifyEmailEmailInput { email, name, code };
+                self.kernel_service.send_verify_email_email(input).await
             }
             Message::KernelSendGroupInvitationEmail { invitation_id } => {
-                self.kernel_service.send_group_invitation_email().await
+                let input = SendGroupInvitationEmailInput { invitation_id };
+                self.kernel_service.send_group_invitation_email(input).await
             }
             Message::AnalyticsPageEvent(event) => self.analytics_service.process_page_event(event).await,
             Message::AnalyticsTrackEvent(event) => self.analytics_service.process_track_event(event).await,
