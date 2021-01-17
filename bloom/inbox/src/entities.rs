@@ -129,7 +129,11 @@ pub struct ConversationContactRelation {
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
-pub struct NewsletterListContactRelation {
+pub struct NewsletterListSubscription {
+    pub id: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+
     pub contact_id: Uuid,
     pub list_id: Uuid,
 }

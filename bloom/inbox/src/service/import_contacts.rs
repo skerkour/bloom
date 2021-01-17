@@ -1,7 +1,7 @@
 use super::ImportContactsInput;
 use crate::{
     consts,
-    entities::{Contact, ImportedContact, NewsletterListContactRelation},
+    entities::{Contact, ImportedContact, NewsletterListSubscription},
     Error, Service,
 };
 use kernel::Actor;
@@ -124,12 +124,15 @@ impl Service {
             }?;
 
             if let Some(ref list) = list {
-                let list_contact_relation = NewsletterListContactRelation {
+                let subscription = NewsletterListSubscription {
+                    id: Ulid::new().into(),
+                    created_at: now,
+                    updated_at: now,
                     list_id: list.id,
                     contact_id: contact.id,
                 };
                 self.repo
-                    .create_newsletter_list_contact_relation(&mut tx, &list_contact_relation)
+                    .create_newsletter_list_subscription(&mut tx, &subscription)
                     .await?;
             }
 

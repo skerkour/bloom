@@ -189,7 +189,9 @@ pub struct GetSpam {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubscribeToList {
-    // TODO
+    pub name: Option<String>,
+    pub email: String,
+    pub list_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

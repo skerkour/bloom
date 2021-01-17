@@ -271,7 +271,9 @@ pub struct FindSpamInput {
 
 #[derive(Debug, Clone)]
 pub struct SubscribeToListInput {
-    // TODO
+    pub name: Option<String>,
+    pub email: String,
+    pub list_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

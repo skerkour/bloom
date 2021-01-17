@@ -1,7 +1,7 @@
 mod create_chatbox_preferences;
 mod create_contact;
 mod create_newsletter_list;
-mod create_newsletter_list_contact_relation;
+mod create_newsletter_list_subscription;
 mod create_newsletter_message;
 mod delete_contact;
 mod delete_newsletter_list;
