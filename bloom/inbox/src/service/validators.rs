@@ -1,38 +1,101 @@
-use stdx::chrono::{DateTime, Utc};
+use stdx::{
+    chrono::{DateTime, Utc},
+    url::Url,
+};
 
-use crate::{Error, Service};
+use crate::{consts, Error, Service};
 
 impl Service {
     pub fn validate_contact_name(&self, name: &str) -> Result<(), Error> {
-        todo!();
+        if name.len() > consts::CONTACT_NAME_MAX_LENGTH {
+            return Err(Error::ContactNameIsTooLong);
+        }
+
+        if name.contains('\n') {
+            return Err(Error::ContactNameIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_birthday(&self, birthday: Option<DateTime<Utc>>) -> Result<(), Error> {
-        todo!();
+        if birthday.is_none() {
+            return Ok(());
+        }
+
+        let birthday = birthday.unwrap();
+        let now = Utc::now();
+
+        if birthday > now {
+            return Err(Error::ContactBirthdayCantBeInTheFuture);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_phone(&self, phone: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if phone.len() > consts::CONTACT_PHONE_MAX_LENGTH {
+            return Err(Error::ContactPhoneIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_pgp_key(&self, pgp_key: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if pgp_key.len() > consts::CONTACT_PGP_KEY_MAX_LENGTH {
+            return Err(Error::ContactPgpKeyIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_website(&self, website: &str) -> Result<(), Error> {
-        todo!();
+        if website.is_empty() {
+            return Ok(());
+        }
+
+        if website.len() > consts::CONTACT_WEBSITE_MAX_LENGTH {
+            return Err(Error::ContactWebsiteIsNotValid);
+        }
+
+        let url = Url::parse(website).map_err(|_| Error::ContactWebsiteIsNotValid)?;
+
+        let scheme = url.scheme();
+        let host = url.host().ok_or(Error::ContactWebsiteIsNotValid)?;
+        if (scheme != "http" && scheme != "https") || host.to_string().is_empty() {
+            return Err(Error::ContactWebsiteIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_twitter(&self, twitter: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if twitter.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactTwitterIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_instagram(&self, instagram: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if instagram.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactInstagramIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_facebook(&self, facebook: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if facebook.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactFacebookIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_bloom(&self, bloom: &str) -> Result<(), Error> {
@@ -52,7 +115,11 @@ impl Service {
     }
 
     pub fn validate_contact_notes(&self, notes: &str) -> Result<(), Error> {
-        todo!();
+        if notes.len() > consts::CONTACT_NOTES_MAX_LENGTH {
+            return Err(Error::ContactNotesAreTooLong);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_address(&self, address: &str) -> Result<(), Error> {
