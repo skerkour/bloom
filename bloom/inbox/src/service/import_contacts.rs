@@ -6,7 +6,7 @@ use crate::{
 };
 use kernel::Actor;
 use std::collections::HashMap;
-use stdx::{chrono::Utc, csv, ulid::Ulid};
+use stdx::{chrono::Utc, csv, ulid::Ulid, uuid::Uuid};
 
 impl Service {
     // TODO: check if list/contact relation exists
@@ -123,9 +123,10 @@ impl Service {
                 Err(err) => Err(err),
             }?;
 
+            // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
             if let Some(ref list) = list {
                 let subscription = NewsletterListSubscription {
-                    id: Ulid::new().into(),
+                    id: Uuid::new_v4(),
                     created_at: now,
                     updated_at: now,
                     list_id: list.id,

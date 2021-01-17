@@ -12,6 +12,7 @@ pub enum Error {
     // Newsletter
     NewsletterListNotFound,
     NewsletterMessageNotFound,
+    NewsletterSubscriptionNotFound,
 
     // Other
     Internal,
@@ -43,6 +44,7 @@ impl std::convert::From<Error> for kernel::Error {
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
             Error::NewsletterMessageNotFound => kernel::Error::NotFound(String::from("Message not found")),
+            Error::NewsletterSubscriptionNotFound => kernel::Error::NotFound(String::from("Subscription not found")),
 
             // Other
             Error::Internal => kernel::Error::Internal,

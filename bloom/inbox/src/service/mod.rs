@@ -278,5 +278,5 @@ pub struct SubscribeToListInput {
 
 #[derive(Debug, Clone)]
 pub struct UnsubscribeFromListInput {
-    // TODO
+    pub subscription_id: Uuid,
 }

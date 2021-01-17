@@ -196,5 +196,5 @@ pub struct SubscribeToList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnsubscribeFromList {
-    // TODO
+    pub subscription_id: Id,
 }

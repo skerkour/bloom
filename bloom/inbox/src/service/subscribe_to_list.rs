@@ -4,7 +4,7 @@ use crate::{
     Error, Service,
 };
 use kernel::Actor;
-use stdx::{chrono::Utc, ulid::Ulid};
+use stdx::{chrono::Utc, ulid::Ulid, uuid::Uuid};
 
 impl Service {
     // authentication not required
@@ -62,8 +62,9 @@ impl Service {
             Err(err) => Err(err),
         }?;
 
+        // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
         let subscription = NewsletterListSubscription {
-            id: Ulid::new().into(),
+            id: Uuid::new_v4(),
             created_at: now,
             updated_at: now,
             list_id: list.id,

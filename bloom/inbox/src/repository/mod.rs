@@ -5,6 +5,7 @@ mod create_newsletter_list_subscription;
 mod create_newsletter_message;
 mod delete_contact;
 mod delete_newsletter_list;
+mod delete_newsletter_list_subscription;
 mod delete_newsletter_message;
 mod find_archived_conversations;
 mod find_chatbox_preferences_for_namespace;

@@ -345,8 +345,8 @@ CREATE TABLE inbox_newsletter_lists_subscriptions (
   list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
   contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
 );
-CREATE INDEX index_inbox_newsletter_lists_contacts_on_list_id ON inbox_newsletter_lists_contacts (list_id);
-CREATE INDEX index_inbox_newsletter_lists_contacts_on_contact_id ON v (contact_id);
+CREATE INDEX index_inbox_newsletter_lists_subscriptions_on_list_id ON inbox_newsletter_lists_subscriptions (list_id);
+CREATE INDEX index_inbox_newsletter_lists_subscriptions_on_contact_id ON inbox_newsletter_lists_subscriptions (contact_id);
 
 
 CREATE TABLE inbox_newsletter_messages (
