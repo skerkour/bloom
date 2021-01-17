@@ -99,19 +99,39 @@ impl Service {
     }
 
     pub fn validate_contact_bloom(&self, bloom: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if bloom.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactBloomIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_linkedin(&self, linkedin: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if linkedin.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactLinkedinIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_skype(&self, skype: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if skype.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactSkypeIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_telegram(&self, telegram: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if telegram.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactTelegramIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_notes(&self, notes: &str) -> Result<(), Error> {
@@ -123,23 +143,53 @@ impl Service {
     }
 
     pub fn validate_contact_address(&self, address: &str) -> Result<(), Error> {
-        todo!();
+        if address.len() > consts::CONTACT_ADDRESS_MAX_LENGTH {
+            return Err(Error::ContactAddressIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_plan(&self, plan: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if plan.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactPlanIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_contact_user_id(&self, user_id: &str) -> Result<(), Error> {
-        todo!();
+        // TODO
+        if user_id.len() > consts::CONTACT_MISC_MAX_LENGTH {
+            return Err(Error::ContactUserIdIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_list_name(&self, name: &str) -> Result<(), Error> {
-        todo!();
+        if name.len() < consts::LIST_NAME_MIN_LENGTH {
+            return Err(Error::NewsletterListNameIsTooShort);
+        }
+
+        if name.len() > consts::LIST_NAME_MAX_LENGTH {
+            return Err(Error::NewsletterListNameIsTooLong);
+        }
+
+        if name.contains('\n') {
+            return Err(Error::NewsletterListNameIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_list_description(&self, description: &str) -> Result<(), Error> {
-        todo!();
+        if description.len() > consts::LIST_DESCRIPTION_MAX_LENGTH {
+            return Err(Error::NewsletterListDescriptionIsTooLong);
+        }
+
+        Ok(())
     }
 
     pub fn validate_newsletter_message_name(&self, name: &str) -> Result<(), Error> {
@@ -167,6 +217,10 @@ impl Service {
     }
 
     pub fn validate_chatbox_welcome_message(&self, welcome_message: &str) -> Result<(), Error> {
-        todo!();
+        if welcome_message.len() > consts::CHATBOX_WELCOME_MESSAGE_MAX_LENGTH {
+            return Err(Error::ChatboxWelcomeMessageIsTooLong);
+        }
+
+        Ok(())
     }
 }

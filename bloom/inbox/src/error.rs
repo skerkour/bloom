@@ -14,15 +14,27 @@ pub enum Error {
     ContactTwitterIsNotValid,
     ContactInstagramIsNotValid,
     ContactFacebookIsNotValid,
+    ContactBloomIsNotValid,
+    ContactLinkedinIsNotValid,
+    ContactSkypeIsNotValid,
+    ContactTelegramIsNotValid,
+    ContactAddressIsNotValid,
+    ContactPlanIsNotValid,
+    ContactUserIdIsNotValid,
 
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
     ChatboxPreferencesNotFound,
+    ChatboxWelcomeMessageIsTooLong,
 
     // Newsletter
     NewsletterListNotFound,
     NewsletterMessageNotFound,
     NewsletterSubscriptionNotFound,
+    NewsletterListNameIsTooLong,
+    NewsletterListNameIsTooShort,
+    NewsletterListNameIsNotValid,
+    NewsletterListDescriptionIsTooLong,
 
     // Other
     Internal,
@@ -58,17 +70,33 @@ impl std::convert::From<Error> for kernel::Error {
                 kernel::Error::InvalidArgument(String::from("Instagram is not valid."))
             }
             Error::ContactFacebookIsNotValid => kernel::Error::InvalidArgument(String::from("Facebook is not valid.")),
+            Error::ContactBloomIsNotValid => kernel::Error::InvalidArgument(String::from("Bloom is not valid.")),
+            Error::ContactLinkedinIsNotValid => kernel::Error::InvalidArgument(String::from("LinkedIn is not valid.")),
+            Error::ContactSkypeIsNotValid => kernel::Error::InvalidArgument(String::from("Skype is not valid.")),
+            Error::ContactTelegramIsNotValid => kernel::Error::InvalidArgument(String::from("Telegram is not valid.")),
+            Error::ContactAddressIsNotValid => kernel::Error::InvalidArgument(String::from("Address is not valid.")),
+            Error::ContactPlanIsNotValid => kernel::Error::InvalidArgument(String::from("Plan is not valid.")),
+            Error::ContactUserIdIsNotValid => kernel::Error::InvalidArgument(String::from("User ID is not valid.")),
 
             // Chatbox
             Error::UpgradePlanToRemoveChatboxBranding => {
                 kernel::Error::InvalidArgument(String::from("Please upgrade your plan to remove chatbox's branding"))
             }
             Error::ChatboxPreferencesNotFound => kernel::Error::NotFound(String::from("Chatbox not found.")),
+            Error::ChatboxWelcomeMessageIsTooLong => {
+                kernel::Error::InvalidArgument(String::from("Welcome message is too long."))
+            }
 
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
             Error::NewsletterMessageNotFound => kernel::Error::NotFound(String::from("Message not found")),
             Error::NewsletterSubscriptionNotFound => kernel::Error::NotFound(String::from("Subscription not found")),
+            Error::NewsletterListNameIsTooLong => kernel::Error::InvalidArgument(String::from("Name is too long.")),
+            Error::NewsletterListNameIsTooShort => kernel::Error::InvalidArgument(String::from("Name is too short.")),
+            Error::NewsletterListDescriptionIsTooLong => {
+                kernel::Error::InvalidArgument(String::from("Description is too long."))
+            }
+            Error::NewsletterListNameIsNotValid => kernel::Error::InvalidArgument(String::from("Name is not valid.")),
 
             // Other
             Error::Internal => kernel::Error::Internal,

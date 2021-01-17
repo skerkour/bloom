@@ -16,10 +16,10 @@ impl Service {
             .await?;
 
         // clean and validate input
-        let name = input.name.trim().to_lowercase();
+        let name = input.name.trim().to_string();
         self.validate_newsletter_list_name(&name)?;
 
-        let description = input.description.trim().to_lowercase();
+        let description = input.description.trim().to_string();
         self.validate_newsletter_list_description(&description)?;
 
         let now = Utc::now();
