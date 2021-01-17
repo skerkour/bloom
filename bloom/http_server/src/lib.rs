@@ -261,6 +261,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/update_chatbox_preferences")
                                             .route(web::post().to(api::inbox::commands::update_chatbox_preferences)),
+                                    )
+                                    .service(
+                                        web::resource("/subscribe_to_list")
+                                            .route(web::post().to(api::inbox::commands::subscribe_to_list)),
                                     ),
                             )
                             .service(

@@ -31,6 +31,8 @@ mod send_chatbox_message;
 mod send_message;
 mod send_newsletter_message;
 mod send_test_newsletter_message;
+mod subscribe_to_list;
+mod unsubscribe_from_list;
 mod update_chatbox_preferences;
 mod update_contact;
 mod update_newsletter_list;
@@ -265,4 +267,14 @@ pub struct FindArchiveInput {
 #[derive(Debug, Clone)]
 pub struct FindSpamInput {
     pub namespace_id: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct SubscribeToListInput {
+    // TODO
+}
+
+#[derive(Debug, Clone)]
+pub struct UnsubscribeFromListInput {
+    // TODO
 }

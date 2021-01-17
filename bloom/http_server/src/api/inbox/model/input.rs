@@ -186,3 +186,13 @@ pub struct GetArchive {
 pub struct GetSpam {
     pub namespace_id: Id,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubscribeToList {
+    // TODO
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UnsubscribeFromList {
+    // TODO
+}

@@ -28,3 +28,5 @@ mod send_chatbox_message;
 pub use send_chatbox_message::send_chatbox_message;
 mod update_chatbox_preferences;
 pub use update_chatbox_preferences::update_chatbox_preferences;
+mod subscribe_to_list;
+pub use subscribe_to_list::subscribe_to_list;
