@@ -65,7 +65,7 @@ impl Service {
 
         tx.commit().await?;
 
-        let job = crate::domain::messages::Message::KenrnelSendRegisterEmail {
+        let job = crate::domain::messages::Message::KernelSendRegisterEmail {
             email: pending_user.email.clone(),
             username: pending_user.username.clone(),
             code,

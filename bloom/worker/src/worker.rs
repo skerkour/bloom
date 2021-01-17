@@ -23,7 +23,7 @@ impl Worker {
 
     pub async fn handle_job(&self, job: Job) -> Result<(), Error> {
         match job.message {
-            Message::KenrnelSendRegisterEmail { email, username, code } => {
+            Message::KernelSendRegisterEmail { email, username, code } => {
                 let input = SendRegisterEmailInput { email, username, code };
                 self.kernel_service.send_register_email(input).await
             }

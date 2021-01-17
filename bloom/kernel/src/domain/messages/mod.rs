@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use stdx::uuid::Uuid;
+use stdx::{mail, uuid::Uuid};
 
 use super::analytics;
 
@@ -8,7 +8,7 @@ use super::analytics;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Message {
     // kernel
-    KenrnelSendRegisterEmail {
+    KernelSendRegisterEmail {
         email: String,
         username: String,
         code: String,
@@ -35,4 +35,11 @@ pub enum Message {
     // Analytics
     AnalyticsPageEvent(analytics::events::PageEvent),   // TODO
     AnalyticsTrackEvent(analytics::events::TrackEvent), // TODO
+
+    // Inbox
+    InboxSendNewsletterMessage {
+        message_id: Uuid,
+        to: mail::Address,
+        is_test: bool,
+    },
 }

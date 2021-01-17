@@ -142,7 +142,7 @@ pub struct SendNewsletterMessageInput {
 
 #[derive(Debug, Clone)]
 pub struct SendTestNewsletterMessageInput {
-    // TODO
+    pub message_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

@@ -8,13 +8,13 @@ impl Repository {
     pub async fn find_newsletter_message_by_id<'c, C: Queryer<'c>>(
         &self,
         db: C,
-        list_id: Uuid,
+        message_id: Uuid,
     ) -> Result<entities::NewsletterMessage, Error> {
         const QUERY: &str = "SELECT * FROM inbox_newsletter_messages
             WHERE id = $1";
 
         match sqlx::query_as::<_, entities::NewsletterMessage>(QUERY)
-            .bind(list_id)
+            .bind(message_id)
             .fetch_optional(db)
             .await
         {
