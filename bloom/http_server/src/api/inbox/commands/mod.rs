@@ -30,3 +30,5 @@ mod update_chatbox_preferences;
 pub use update_chatbox_preferences::update_chatbox_preferences;
 mod subscribe_to_list;
 pub use subscribe_to_list::subscribe_to_list;
+mod unsubscribe_from_list;
+pub use unsubscribe_from_list::unsubscribe_from_list;
