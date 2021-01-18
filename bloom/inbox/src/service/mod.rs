@@ -45,10 +45,16 @@ pub struct Service {
     db: DB,
     kernel_service: Arc<kernel::Service>,
     queue: Arc<dyn drivers::Queue>,
+    xss: Arc<dyn drivers::XssSanitizer>,
 }
 
 impl Service {
-    pub fn new(kernel_service: Arc<kernel::Service>, db: DB, queue: Arc<dyn drivers::Queue>) -> Service {
+    pub fn new(
+        kernel_service: Arc<kernel::Service>,
+        db: DB,
+        queue: Arc<dyn drivers::Queue>,
+        xss: Arc<dyn drivers::XssSanitizer>,
+    ) -> Service {
         let repo = Repository::new();
 
         Service {
@@ -56,6 +62,7 @@ impl Service {
             repo,
             kernel_service,
             queue,
+            xss,
         }
     }
 }

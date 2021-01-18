@@ -18,16 +18,17 @@ impl Service {
             .await
             .map_err(|_| Error::ConversationNotFound)?;
 
-        // // contact, err := service.growthRepo.FindContactByConversationID(ctx, service.db, input.ConversationID)
-        // // if err != nil {
-        // // 	return
-        // // }
-
         let body = input.body.trim().to_string();
         self.validate_message_body(&body)?;
 
-        let body_html = body; // TODO
-                              // bodyHTML := service.xssSanitizer.Sanitize(service.xssSanitizer.Escape(input.Body))
+        let body_html = self.xss.escape(&body)?;
+        // remove repeated newlines
+        let body_html = body_html
+            .split("\n")
+            .map(|part| part.trim())
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<&str>>()
+            .join(" <br /> \n");
 
         let message = Message {
             id: Ulid::new().into(),
