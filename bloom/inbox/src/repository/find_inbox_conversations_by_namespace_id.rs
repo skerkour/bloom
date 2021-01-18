@@ -4,7 +4,7 @@ use kernel::db::Queryer;
 use stdx::{log::error, sqlx, uuid::Uuid};
 
 impl Repository {
-    pub async fn find_inbox_conversations<'c, C: Queryer<'c>>(
+    pub async fn find_inbox_conversations_by_namespace_id<'c, C: Queryer<'c>>(
         &self,
         db: C,
         namespace_id: Uuid,
@@ -20,7 +20,10 @@ impl Repository {
             .await
         {
             Err(err) => {
-                error!("inbox.find_inbox_conversations: Finding conversations: {}", &err);
+                error!(
+                    "inbox.find_inbox_conversations_by_namespace_id: Finding conversations: {}",
+                    &err
+                );
                 Err(err.into())
             }
             Ok(conversations) => Ok(conversations),

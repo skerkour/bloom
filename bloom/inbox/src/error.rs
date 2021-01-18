@@ -22,6 +22,9 @@ pub enum Error {
     ContactPlanIsNotValid,
     ContactUserIdIsNotValid,
 
+    // Conversations
+    ConversationNotFound,
+
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
     ChatboxPreferencesNotFound,
@@ -90,6 +93,9 @@ impl std::convert::From<Error> for kernel::Error {
             Error::ContactAddressIsNotValid => kernel::Error::InvalidArgument(String::from("Address is not valid.")),
             Error::ContactPlanIsNotValid => kernel::Error::InvalidArgument(String::from("Plan is not valid.")),
             Error::ContactUserIdIsNotValid => kernel::Error::InvalidArgument(String::from("User ID is not valid.")),
+
+            // Conversations
+            Error::ConversationNotFound => kernel::Error::NotFound(String::from("Conversation not found.")),
 
             // Chatbox
             Error::UpgradePlanToRemoveChatboxBranding => {

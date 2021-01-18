@@ -1,5 +1,5 @@
 use super::FindChatboxMessagesInput;
-use crate::{entities::Message, Service};
+use crate::{entities::Message, Error, Service};
 use kernel::Actor;
 
 impl Service {
@@ -10,28 +10,22 @@ impl Service {
     ) -> Result<Vec<Message>, kernel::Error> {
         let anonymous_id = self.kernel_service.current_anonymous_id(actor)?;
 
-        // findVisitorInput := growth.FindOrCreateVisitorInput{
-        //     AnonymousID: anonymousID,
-        //     ProjectID:   input.ProjectID,
-        // }
-        // visitor, err := service.growthService.FindOrCreateVisitor(ctx, service.db, findVisitorInput)
-        // if err != nil {
-        //     return
-        // }
+        let conversation_res = self
+            .repo
+            .find_inbox_conversation_for_anonymous_id(&self.db, anonymous_id, input.namespace_id)
+            .await;
 
-        // conversation, err := service.supportRepo.FindConversationByVisitorID(ctx, service.db, visitor.ID)
-        // if err != nil {
-        //     if errors.Is(err, support.ErrConversationNotFound) {
-        //         messages = []support.MessageWithAuthor{}
-        //         err = nil
-        //     }
-        //     return
-        // }
+        let conversation = match conversation_res {
+            Ok(conversation) => Ok(conversation),
+            Err(Error::ConversationNotFound) => return Ok(Vec::new()),
+            Err(err) => Err(err),
+        }?;
 
-        // messages, err = service.supportRepo.FindMessagesForConversation(ctx, service.db, conversation.ID)
-        // if err != nil {
-        //     return
-        // }
-        todo!();
+        let messages = self
+            .repo
+            .find_inbox_messages_for_conversation(&self.db, conversation.id)
+            .await?;
+
+        Ok(messages)
     }
 }

@@ -11,7 +11,10 @@ impl Service {
             .check_namespace_membership(&self.db, actor.id, input.namespace_id)
             .await?;
 
-        let conversations = self.repo.find_inbox_conversations(&self.db, input.namespace_id).await?;
+        let conversations = self
+            .repo
+            .find_inbox_conversations_by_namespace_id(&self.db, input.namespace_id)
+            .await?;
         Ok(conversations)
     }
 }

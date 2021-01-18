@@ -393,3 +393,13 @@ CREATE TABLE inbox_conversations_contacts (
 );
 CREATE INDEX index_inbox_conversations_contacts_on_contact_id ON inbox_conversatios_contacts (contact_id);
 CREATE INDEX index_inbox_conversations_contacts_on_conversation_id ON inbox_conversatios_contacts (conversation_id);
+-- TODO: unique?
+
+
+CREATE TABLE inbox_conversations_anonymous_ids (
+  anonymous_id UUID PRIMARY KEY,
+  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+);
+CREATE INDEX index_inbox_conversations_anonymous_ids_on_anonymous_id ON inbox_conversations_anonymous_ids (anonymous_id);
+CREATE INDEX index_inbox_conversations_anonymous_ids_on_conversation_id ON inbox_conversations_anonymous_ids (conversation_id);
+-- TODO: unique?
