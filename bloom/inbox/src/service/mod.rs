@@ -216,12 +216,14 @@ pub struct FindNewsletterMessagesInput {
 
 #[derive(Debug, Clone)]
 pub struct SendMessageInput {
-    // TODO
+    pub conversation_id: Uuid,
+    pub body: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct SendChatboxMessageInput {
-    // TODO
+    pub namespace_id: Uuid,
+    pub body: String,
 }
 
 #[derive(Debug, Clone)]

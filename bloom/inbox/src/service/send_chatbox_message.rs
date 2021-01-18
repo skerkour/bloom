@@ -8,6 +8,69 @@ impl Service {
         _actor: Actor,
         _input: SendChatboxMessageInput,
     ) -> Result<Message, kernel::Error> {
+        // httpCtx := httputil.HTTPCtxFromCtx(ctx)
+        // if httpCtx.AnonymousID == nil {
+        //     err = support.ErrInvalidAnonymousUser
+        //     return
+        // }
+        // now := time.Now().UTC()
+        // anonymousID := *httpCtx.AnonymousID
+
+        // findVisitorInput := growth.FindOrCreateVisitorInput{
+        //     AnonymousID: anonymousID,
+        //     ProjectID:   input.ProjectID,
+        // }
+        // visitor, err := service.growthService.FindOrCreateVisitor(ctx, service.db, findVisitorInput)
+        // if err != nil {
+        //     return
+        // }
+
+        // contact, visitor, err := service.growthService.FindOrCreateContactByVisitor(ctx, service.db, visitor)
+        // if err != nil {
+        //     return
+        // }
+
+        // if contact.ProjectID != input.ProjectID {
+        //     err = kernel.ErrPermissionDenied
+        //     return
+        // }
+
+        // findOrCreateConversationInput := support.FindOrCreateConversationInput{
+        //     ContactID: contact.ID,
+        //     ProjectID: input.ProjectID,
+        // }
+        // conversation, err := service.FindOrCreateConversation(ctx, service.db, findOrCreateConversationInput)
+        // if err != nil {
+        //     return
+        // }
+
+        // // we can ignore error as it's not important
+        // conversation.LastMessageReceivedAt = now
+        // _ = service.supportRepo.UpdateConversation(ctx, service.db, conversation)
+
+        // err = service.ValidateMessage(input.Body)
+        // if err != nil {
+        //     return
+        // }
+
+        // bodyHTML := service.xssSanitizer.Sanitize(service.xssSanitizer.Escape(input.Body))
+
+        // message = support.MessageWithAuthor{
+        //     Message: support.Message{
+        //         ID:             uuid.New(),
+        //         CreatedAt:      now,
+        //         UpdatedAt:      now,
+        //         Body:           input.Body,
+        //         BodyHTML:       bodyHTML,
+        //         AuthorID:       nil,
+        //         ConversationID: conversation.ID,
+        //     },
+        // }
+        // err = service.supportRepo.CreateMessage(ctx, service.db, message.Message)
+        // if err != nil {
+        //     return
+        // }
+        // return
         todo!();
     }
 }

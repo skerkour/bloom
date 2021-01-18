@@ -12,6 +12,7 @@ mod find_chatbox_preferences_for_namespace;
 mod find_contact_by_email;
 mod find_contact_by_id;
 mod find_contacts_for_namespace;
+mod find_conversation_by_id;
 mod find_inbox_conversation_for_anonymous_id;
 mod find_inbox_conversations_by_namespace_id;
 mod find_inbox_messages_for_conversation;
