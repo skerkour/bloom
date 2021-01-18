@@ -1,5 +1,6 @@
 mod create_chatbox_preferences;
 mod create_contact;
+mod create_inbox_message;
 mod create_newsletter_list;
 mod create_newsletter_list_subscription;
 mod create_newsletter_message;
@@ -25,6 +26,7 @@ mod find_spam_conversations;
 mod find_trashed_conversations;
 mod update_chatbox_preferences;
 mod update_contact;
+mod update_conversation;
 mod update_newsletter_list;
 mod update_newsletter_message;
 

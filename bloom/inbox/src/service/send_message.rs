@@ -1,12 +1,14 @@
 use super::SendMessageInput;
 use crate::{entities::Message, Error, Service};
 use kernel::Actor;
+use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
     pub async fn send_message(&self, actor: Actor, input: SendMessageInput) -> Result<Message, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
+        let now = Utc::now();
 
-        let conversation = self
+        let mut conversation = self
             .repo
             .find_conversation_by_id(&self.db, input.conversation_id)
             .await?;
@@ -21,38 +23,27 @@ impl Service {
         // // 	return
         // // }
 
-        // // we can ignore error as it's not important
-        // conversation.LastMessageReceivedAt = now
-        // _ = service.supportRepo.UpdateConversation(ctx, service.db, conversation)
+        let body = input.body.trim().to_string();
+        self.validate_message_body(&body)?;
 
-        // err = service.ValidateMessage(input.Body)
-        // if err != nil {
-        //     return
-        // }
+        let body_html = body; // TODO
+                              // bodyHTML := service.xssSanitizer.Sanitize(service.xssSanitizer.Escape(input.Body))
 
-        // bodyHTML := service.xssSanitizer.Sanitize(service.xssSanitizer.Escape(input.Body))
+        let message = Message {
+            id: Ulid::new().into(),
+            created_at: now,
+            updated_at: now,
+            received_at: now,
+            body_html,
+            conversation_id: conversation.id,
+        };
+        self.repo.create_inbox_message(&self.db, &message).await?;
 
-        // message = support.MessageWithAuthor{
-        //     Message: support.Message{
-        //         ID:             uuid.New(),
-        //         CreatedAt:      now,
-        //         UpdatedAt:      now,
-        //         Body:           input.Body,
-        //         BodyHTML:       bodyHTML,
-        //         AuthorID:       &me.ID,
-        //         ConversationID: conversation.ID,
-        //     },
-        //     MessageAuthor: support.MessageAuthor{
-        //         Name:     &me.Name,
-        //         Avatar:   me.Avatar,
-        //         Username: &me.Username,
-        //     },
-        // }
-        // err = service.supportRepo.CreateMessage(ctx, service.db, message.Message)
-        // if err != nil {
-        //     return
-        // }
-        // return
-        todo!();
+        // we can ignore error as it's not important
+        conversation.updated_at = now;
+        conversation.last_message_at = now;
+        let _ = self.repo.update_conversation(&self.db, &conversation).await;
+
+        Ok(message)
     }
 }
