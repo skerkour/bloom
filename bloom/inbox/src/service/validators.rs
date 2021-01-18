@@ -288,7 +288,7 @@ impl Service {
         Ok(())
     }
 
-    pub fn validate_message_body(&self, body: &str) -> Result<(), Error> {
+    pub fn validate_inbox_message_body(&self, body: &str) -> Result<(), Error> {
         todo!();
     }
 }

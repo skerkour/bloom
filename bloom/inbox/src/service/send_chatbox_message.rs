@@ -5,17 +5,10 @@ use kernel::Actor;
 impl Service {
     pub async fn send_chatbox_message(
         &self,
-        _actor: Actor,
-        _input: SendChatboxMessageInput,
+        actor: Actor,
+        input: SendChatboxMessageInput,
     ) -> Result<Message, kernel::Error> {
-        // httpCtx := httputil.HTTPCtxFromCtx(ctx)
-        // if httpCtx.AnonymousID == nil {
-        //     err = support.ErrInvalidAnonymousUser
-        //     return
-        // }
-        // now := time.Now().UTC()
-        // anonymousID := *httpCtx.AnonymousID
-
+        let anonymous_id = self.kernel_service.current_anonymous_id(actor)?;
         // findVisitorInput := growth.FindOrCreateVisitorInput{
         //     AnonymousID: anonymousID,
         //     ProjectID:   input.ProjectID,

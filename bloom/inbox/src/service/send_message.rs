@@ -19,7 +19,7 @@ impl Service {
             .map_err(|_| Error::ConversationNotFound)?;
 
         let body = input.body.trim().to_string();
-        self.validate_message_body(&body)?;
+        self.validate_inbox_message_body(&body)?;
 
         let body_html = self.xss.escape(&body)?;
         // remove repeated newlines
