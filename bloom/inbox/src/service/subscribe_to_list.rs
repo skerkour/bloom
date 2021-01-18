@@ -68,9 +68,9 @@ impl Service {
             .await;
         match subscription_res {
             Ok(_) => return Ok(()),
-            Err(Error::ContactNotFound) => Ok(()),
-            Err(err) => Err(err),
-        }?;
+            Err(Error::ContactNotFound) => {}
+            Err(err) => return Err(err.into()),
+        };
 
         // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
         let subscription = NewsletterListSubscription {

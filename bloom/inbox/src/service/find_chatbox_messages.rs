@@ -5,16 +5,10 @@ use kernel::Actor;
 impl Service {
     pub async fn find_chatbox_messages(
         &self,
-        _actor: Actor,
-        _input: FindChatboxMessagesInput,
+        actor: Actor,
+        input: FindChatboxMessagesInput,
     ) -> Result<Vec<Message>, kernel::Error> {
-        todo!();
-        // httpCtx := httputil.HTTPCtxFromCtx(ctx)
-        // if httpCtx.AnonymousID == nil {
-        //     err = support.ErrInvalidAnonymousUser
-        //     return
-        // }
-        // anonymousID := *httpCtx.AnonymousID
+        let anonymous_id = self.kernel_service.current_anonymous_id(actor)?;
 
         // findVisitorInput := growth.FindOrCreateVisitorInput{
         //     AnonymousID: anonymousID,
@@ -38,5 +32,6 @@ impl Service {
         // if err != nil {
         //     return
         // }
+        todo!();
     }
 }
