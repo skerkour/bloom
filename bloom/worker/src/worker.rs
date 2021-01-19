@@ -23,24 +23,60 @@ impl Worker {
 
     pub async fn handle_job(&self, job: Job) -> Result<(), Error> {
         match job.message {
-            Message::KernelSendRegisterEmail { email, username, code } => {
-                let input = SendRegisterEmailInput { email, username, code };
+            Message::KernelSendRegisterEmail {
+                email,
+                username,
+                code,
+            } => {
+                let input = SendRegisterEmailInput {
+                    email,
+                    username,
+                    code,
+                };
                 self.kernel_service.send_register_email(input).await
             }
-            Message::KernelSendSignInEmail { email, name, code } => {
-                let input = SendSignInEmailInput { email, name, code };
+            Message::KernelSendSignInEmail {
+                email,
+                name,
+                code,
+            } => {
+                let input = SendSignInEmailInput {
+                    email,
+                    name,
+                    code,
+                };
                 self.kernel_service.send_sign_in_email(input).await
             }
-            Message::KernelSendEmailChangedEmail { email, name, new_email } => {
-                let input = SendEmailChangedEmailInput { email, name, new_email };
+            Message::KernelSendEmailChangedEmail {
+                email,
+                name,
+                new_email,
+            } => {
+                let input = SendEmailChangedEmailInput {
+                    email,
+                    name,
+                    new_email,
+                };
                 self.kernel_service.send_email_changed_email(input).await
             }
-            Message::KernelSendVerifyEmailEmail { email, name, code } => {
-                let input = SendVerifyEmailEmailInput { email, name, code };
+            Message::KernelSendVerifyEmailEmail {
+                email,
+                name,
+                code,
+            } => {
+                let input = SendVerifyEmailEmailInput {
+                    email,
+                    name,
+                    code,
+                };
                 self.kernel_service.send_verify_email_email(input).await
             }
-            Message::KernelSendGroupInvitationEmail { invitation_id } => {
-                let input = SendGroupInvitationEmailInput { invitation_id };
+            Message::KernelSendGroupInvitationEmail {
+                invitation_id,
+            } => {
+                let input = SendGroupInvitationEmailInput {
+                    invitation_id,
+                };
                 self.kernel_service.send_group_invitation_email(input).await
             }
             Message::AnalyticsPageEvent(event) => self.analytics_service.process_page_event(event).await,

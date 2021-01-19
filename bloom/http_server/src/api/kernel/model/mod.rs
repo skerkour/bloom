@@ -58,7 +58,10 @@ impl From<kernel::consts::TwoFaMethod> for TwoFaMethod {
 impl From<kernel::service::SignedIn> for SignedIn {
     fn from(item: kernel::service::SignedIn) -> Self {
         match item {
-            kernel::service::SignedIn::Success { session, user } => SignedIn {
+            kernel::service::SignedIn::Success {
+                session,
+                user,
+            } => SignedIn {
                 session: Some(session.into()),
                 me: Some(user.into()),
                 two_fa_method: None,
@@ -92,7 +95,9 @@ pub struct Success {
 
 impl From<bool> for Success {
     fn from(item: bool) -> Self {
-        Success { success: item }
+        Success {
+            success: item,
+        }
     }
 }
 

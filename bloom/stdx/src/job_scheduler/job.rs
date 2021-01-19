@@ -135,7 +135,9 @@ impl Job {
 
         self.set_running(false).await?;
 
-        run_result.map_err(|err| SchedulerError::JobExecutionError { cause: err })
+        run_result.map_err(|err| SchedulerError::JobExecutionError {
+            cause: err,
+        })
     }
 
     async fn exec(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -277,7 +279,9 @@ pub mod test {
                 let count = *lock;
                 *lock = count + 1;
                 println!("job - count {}", count);
-                Err(SchedulerError::JobLockError { message: "".to_owned() })?
+                Err(SchedulerError::JobLockError {
+                    message: "".to_owned(),
+                })?
             })
         });
 
@@ -311,7 +315,9 @@ pub mod test {
                 if count == succeed_at {
                     Ok(())
                 } else {
-                    Err(SchedulerError::JobLockError { message: "".to_owned() })?
+                    Err(SchedulerError::JobLockError {
+                        message: "".to_owned(),
+                    })?
                 }
             })
         });

@@ -13,7 +13,9 @@ pub async fn setup_two_fa(
     actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = service::EnableTwoFaInput { code: input.code };
+    let service_input = service::EnableTwoFaInput {
+        code: input.code,
+    };
     ctx.kernel_service.setup_two_fa(actor, service_input).await?;
 
     Ok(api::Response::ok(true.into()))

@@ -430,7 +430,9 @@ impl Config {
         // ses
         let ses_region = std::env::var(ENV_SES_REGION).unwrap_or(aws.default_region.clone());
 
-        let ses = Ses { region: ses_region };
+        let ses = Ses {
+            region: ses_region,
+        };
 
         // s3
         let s3_region = std::env::var(ENV_S3_REGION).unwrap_or(aws.default_region.clone());

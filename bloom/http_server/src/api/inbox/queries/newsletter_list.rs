@@ -14,7 +14,9 @@ pub async fn newsletter_list(
     actor: Actor,
 ) -> Result<api::Response<model::NewsletterList>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindNewsletterListInput { list_id: input.list_id };
+    let service_input = FindNewsletterListInput {
+        list_id: input.list_id,
+    };
     let list = ctx.inbox_service.find_newsletter_list(actor, service_input).await?;
 
     Ok(api::Response::ok(list.into()))

@@ -200,7 +200,9 @@ pub mod test {
     fn should_build_an_interval_schedule_from_duration() {
         let schedule = Duration::new(1, 1).to_scheduler().unwrap();
         match schedule {
-            Scheduler::Interval { .. } => assert!(true),
+            Scheduler::Interval {
+                ..
+            } => assert!(true),
             _ => assert!(false),
         }
     }
@@ -242,7 +244,9 @@ pub mod test {
                     _ => assert!(false),
                 };
                 match inner[1] {
-                    Scheduler::Interval { .. } => assert!(true),
+                    Scheduler::Interval {
+                        ..
+                    } => assert!(true),
                     _ => assert!(false),
                 };
             }

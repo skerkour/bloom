@@ -64,7 +64,9 @@ where
 
 impl SecurityHeadersMiddleware {
     pub fn new(config: Arc<Config>) -> Self {
-        SecurityHeadersMiddleware { config }
+        SecurityHeadersMiddleware {
+            config,
+        }
     }
 }
 

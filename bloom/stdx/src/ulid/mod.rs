@@ -351,7 +351,9 @@ impl Generator {
     /// assert!(ulid1 < ulid2);
     /// ```
     pub fn new() -> Generator {
-        Generator { previous: Ulid::nil() }
+        Generator {
+            previous: Ulid::nil(),
+        }
     }
 
     /// Generate a new Ulid. Each call is guaranteed to provide a Ulid with a larger value than the

@@ -27,7 +27,9 @@ impl Service {
             }
         }
 
-        let job = kernel::domain::messages::Message::InboxDispatchSendNewsletterMessage { message_id: message.id };
+        let job = kernel::domain::messages::Message::InboxDispatchSendNewsletterMessage {
+            message_id: message.id,
+        };
         self.queue.push(job, None).await?;
 
         Ok(message)

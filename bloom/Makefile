@@ -59,7 +59,7 @@ check:
 
 .PHONY: fmt
 fmt:
-	cargo fmt
+	cargo +nightly fmt
 
 
 .PHONY: lint

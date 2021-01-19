@@ -101,6 +101,9 @@ impl Service {
 
         tx.commit().await?;
 
-        Ok(SignedIn::Success { session, user })
+        Ok(SignedIn::Success {
+            session,
+            user,
+        })
     }
 }

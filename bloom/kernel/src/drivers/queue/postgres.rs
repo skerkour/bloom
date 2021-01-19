@@ -49,7 +49,10 @@ impl From<PostgresJob> for Job {
 
 impl PostgresQueue {
     pub fn new(db: DB) -> PostgresQueue {
-        let queue = PostgresQueue { db, max_attempts: 5 };
+        let queue = PostgresQueue {
+            db,
+            max_attempts: 5,
+        };
 
         let loop_queue = queue.clone();
         stdx::tokio::spawn(async move { loop_queue.watch_loop().await });

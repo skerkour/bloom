@@ -14,7 +14,9 @@ pub async fn restore_files_from_trash(
     actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = service::RestoreFilesFromTrashInput { files: input.files };
+    let service_input = service::RestoreFilesFromTrashInput {
+        files: input.files,
+    };
     ctx.files_service.restore_files_from_trash(actor, service_input).await?;
 
     Ok(api::Response::ok(true.into()))

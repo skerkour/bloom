@@ -32,7 +32,9 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(CacheHeadersMiddleware2 { service })
+        ok(CacheHeadersMiddleware2 {
+            service,
+        })
     }
 }
 

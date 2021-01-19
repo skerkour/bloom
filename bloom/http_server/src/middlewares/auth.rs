@@ -120,7 +120,9 @@ pub struct AuthMiddleware {
 
 impl AuthMiddleware {
     pub fn new(kernel_service: Arc<kernel::Service>) -> Self {
-        AuthMiddleware { kernel_service }
+        AuthMiddleware {
+            kernel_service,
+        }
     }
 }
 

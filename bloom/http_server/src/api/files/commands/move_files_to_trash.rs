@@ -14,7 +14,9 @@ pub async fn move_files_to_trash(
     actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = service::MoveFilesToTrashInput { files: input.files };
+    let service_input = service::MoveFilesToTrashInput {
+        files: input.files,
+    };
     ctx.files_service.move_files_to_trash(actor, service_input).await?;
 
     Ok(api::Response::ok(true.into()))
