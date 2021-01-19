@@ -6,18 +6,20 @@ use const_random::const_random;
 use core::fmt;
 use core::hash::BuildHasher;
 use core::hash::Hasher;
+
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+#[cfg(feature = "std")]
+extern crate std as alloc;
+
 #[cfg(all(feature = "runtime-rng", not(all(feature = "compile-time-rng", test))))]
-use lazy_static::*;
+use once_cell::race::OnceBox;
+#[cfg(all(feature = "runtime-rng", not(all(feature = "compile-time-rng", test))))]
+use alloc::boxed::Box;
 use core::sync::atomic::{AtomicUsize, Ordering};
 
 #[cfg(all(feature = "runtime-rng", not(all(feature = "compile-time-rng", test))))]
-lazy_static! {
-    static ref SEEDS: [[u64; 4]; 2] = {
-        let mut result: [u8; 64] = [0; 64];
-        getrandom::getrandom(&mut result).expect("getrandom::getrandom() failed.");
-        result.convert()
-    };
-}
+static SEEDS: OnceBox<[[u64; 4]; 2]> = OnceBox::new();
 
 static COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -39,11 +41,17 @@ const PI2: [u64; 4] = [
 #[inline]
 pub(crate) fn seeds() -> [u64; 4] {
     #[cfg(all(feature = "runtime-rng", not(all(feature = "compile-time-rng", test))))]
-    { SEEDS[1] }
+        {
+            SEEDS.get_or_init(|| {
+                let mut result: [u8; 64] = [0; 64];
+                getrandom::getrandom(&mut result).expect("getrandom::getrandom() failed.");
+                Box::new(result.convert())
+            })[1]
+        }
     #[cfg(all(feature = "compile-time-rng", any(not(feature = "runtime-rng"), test)))]
-    { [const_random!(u64), const_random!(u64), const_random!(u64), const_random!(u64)] }
+        { [const_random!(u64), const_random!(u64), const_random!(u64), const_random!(u64)] }
     #[cfg(all(not(feature = "runtime-rng"), not(feature = "compile-time-rng")))]
-    { PI }
+        { PI }
 }
 
 
@@ -74,7 +82,11 @@ impl RandomState {
     pub fn new() -> RandomState {
         #[cfg(all(feature = "runtime-rng", not(all(feature = "compile-time-rng", test))))]
         {
-            let seeds = *SEEDS;
+            let seeds = SEEDS.get_or_init(|| {
+                let mut result: [u8; 64] = [0; 64];
+                getrandom::getrandom(&mut result).expect("getrandom::getrandom() failed.");
+                Box::new(result.convert())
+            });
             RandomState::from_keys(seeds[0], seeds[1])
         }
         #[cfg(all(feature = "compile-time-rng", any(not(feature = "runtime-rng"), test)))]

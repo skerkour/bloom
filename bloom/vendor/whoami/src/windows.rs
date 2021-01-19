@@ -1,5 +1,5 @@
 // WhoAmI
-// Copyright © 2017-2020 Jeron Aldaron Lau.
+// Copyright © 2017-2021 Jeron Aldaron Lau.
 //
 // Licensed under any of:
 //  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
@@ -10,15 +10,11 @@
 
 use crate::{DesktopEnv, Platform};
 
-use std::{
-    convert::TryInto,
-    ffi::OsString,
-    os::{
-        raw::{c_char, c_int, c_uchar, c_ulong, c_ushort},
-        windows::ffi::OsStringExt,
-    },
-    ptr,
-};
+use std::convert::TryInto;
+use std::ffi::OsString;
+use std::os::raw::{c_char, c_int, c_uchar, c_ulong, c_ushort};
+use std::os::windows::ffi::OsStringExt;
+use std::ptr;
 
 #[repr(C)]
 struct OsVersionInfoEx {
@@ -85,6 +81,16 @@ extern "system" {
 #[link(name = "ntdll")]
 extern "system" {
     fn RtlGetVersion(a: *mut OsVersionInfoEx) -> u32;
+}
+
+#[link(name = "kernel32")]
+extern "system" {
+    fn GetUserPreferredUILanguages(
+        dw_flags: c_ulong,
+        pul_num_languages: *mut c_ulong,
+        pwsz_languages_buffer: *mut u16,
+        pcch_languages_buffer: *mut c_ulong,
+    ) -> c_int;
 }
 
 // Convert an OsString into a String
@@ -311,4 +317,68 @@ pub const fn desktop_env() -> DesktopEnv {
 #[inline(always)]
 pub const fn platform() -> Platform {
     Platform::Windows
+}
+
+struct LangIter {
+    array: Vec<String>,
+    index: usize,
+}
+
+impl Iterator for LangIter {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(value) = self.array.get(self.index) {
+            self.index += 1;
+            Some(value.to_string())
+        } else {
+            None
+        }
+    }
+}
+
+#[inline(always)]
+pub fn lang() -> impl Iterator<Item = String> {
+    let mut num_languages = 0;
+    let mut buffer_size = 0;
+    let mut buffer;
+
+    unsafe {
+        assert_ne!(
+            GetUserPreferredUILanguages(
+                0x08, /* MUI_LANGUAGE_NAME */
+                &mut num_languages,
+                std::ptr::null_mut(), // List of languages.
+                &mut buffer_size,
+            ),
+            0
+        );
+
+        buffer = Vec::with_capacity(buffer_size as usize);
+
+        assert_ne!(
+            GetUserPreferredUILanguages(
+                0x08, /* MUI_LANGUAGE_NAME */
+                &mut num_languages,
+                buffer.as_mut_ptr(), // List of languages.
+                &mut buffer_size,
+            ),
+            0
+        );
+
+        buffer.set_len(buffer_size as usize);
+    }
+
+    // We know it ends in two null characters.
+    buffer.pop();
+    buffer.pop();
+
+    //
+    let array = String::from_utf16_lossy(&buffer)
+        .split('\0')
+        .map(|x| x.to_string())
+        .collect();
+    let index = 0;
+
+    LangIter { array, index }
 }

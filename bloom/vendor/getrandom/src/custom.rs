@@ -12,8 +12,6 @@ use core::num::NonZeroU32;
 
 /// Register a function to be invoked by `getrandom` on unsupported targets.
 ///
-/// *This API requires the `"custom"` Cargo feature to be activated*.
-///
 /// ## Writing a custom `getrandom` implementation
 ///
 /// The function to register must have the same signature as
@@ -75,6 +73,7 @@ use core::num::NonZeroU32;
 /// [top-level documentation](index.html#custom-implementations) this
 /// registration only has an effect on unsupported targets.
 #[macro_export]
+#[cfg_attr(docsrs, doc(cfg(feature = "custom")))]
 macro_rules! register_custom_getrandom {
     ($path:path) => {
         // We use an extern "C" function to get the guarantees of a stable ABI.

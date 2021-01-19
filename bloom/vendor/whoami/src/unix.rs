@@ -1,5 +1,5 @@
 // WhoAmI
-// Copyright © 2017-2020 Jeron Aldaron Lau.
+// Copyright © 2017-2021 Jeron Aldaron Lau.
 //
 // Licensed under any of:
 //  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
@@ -268,11 +268,8 @@ pub fn devicename() -> String {
         for i in distro.split('\n') {
             let mut j = i.split('=');
 
-            match j.next().unwrap() {
-                "PRETTY_HOSTNAME" => {
-                    return j.next().unwrap().trim_matches('"').to_string()
-                }
-                _ => {}
+            if j.next().unwrap() == "PRETTY_HOSTNAME" {
+                return j.next().unwrap().trim_matches('"').to_string();
             }
         }
     }
@@ -487,4 +484,42 @@ pub const fn platform() -> Platform {
 #[inline(always)]
 pub const fn platform() -> Platform {
     Platform::Bsd
+}
+
+struct LangIter {
+    array: String,
+    index: Option<bool>,
+}
+
+impl Iterator for LangIter {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index? {
+            self.index = Some(false);
+            let mut temp = self.array.split('-').next().unwrap().to_string();
+            std::mem::swap(&mut temp, &mut self.array);
+            Some(temp)
+        } else {
+            self.index = None;
+            let mut temp = String::new();
+            std::mem::swap(&mut temp, &mut self.array);
+            Some(temp)
+        }
+    }
+}
+
+#[inline(always)]
+pub fn lang() -> impl Iterator<Item = String> {
+    let array = std::env::var("LANG")
+        .unwrap_or_default()
+        .split('.')
+        .next()
+        .unwrap_or("en_US")
+        .to_string()
+        .replace("_", "-");
+    LangIter {
+        array,
+        index: Some(true),
+    }
 }

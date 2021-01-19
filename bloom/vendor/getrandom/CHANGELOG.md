@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2021-01-19
+### Changed
+- Forward `rustc-dep-of-std` to dependencies. [#198]
+- Highlight feature-dependend functionality in documentation using the `doc_cfg` feature. [#200]
+
+[#198]: https://github.com/rust-random/getrandom/pull/198
+[#200]: https://github.com/rust-random/getrandom/pull/200
+
 ## [0.2.1] - 2021-01-03
 ### Changed
 - Update `cfg-if` to v1.0. [#166]

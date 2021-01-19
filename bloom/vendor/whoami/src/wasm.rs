@@ -1,5 +1,5 @@
 // WhoAmI
-// Copyright © 2017-2020 Jeron Aldaron Lau.
+// Copyright © 2017-2021 Jeron Aldaron Lau.
 //
 // Licensed under any of:
 //  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
@@ -10,7 +10,7 @@
 
 use std::ffi::OsString;
 
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{JsCast, JsValue};
 use web_sys::{window, HtmlDocument};
 
 use crate::{DesktopEnv, Platform};
@@ -32,6 +32,32 @@ fn document_domain() -> String {
         .unwrap()
         .unchecked_into::<HtmlDocument>()
         .domain()
+}
+
+struct LangIter {
+    array: Vec<JsValue>,
+    index: usize,
+}
+
+impl Iterator for LangIter {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(value) = self.array.get(self.index) {
+            self.index += 1;
+            Some(value.as_string().unwrap())
+        } else {
+            None
+        }
+    }
+}
+
+#[inline(always)]
+pub fn lang() -> impl Iterator<Item = String> {
+    let array = window().unwrap().navigator().languages().to_vec();
+    let index = 0;
+
+    LangIter { array, index }
 }
 
 #[inline(always)]

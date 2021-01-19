@@ -142,12 +142,11 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://rust-random.github.io/rand/"
+    html_root_url = "https://docs.rs/getrandom/0.2.2"
 )]
 #![no_std]
 #![warn(rust_2018_idioms, unused_lifetimes, missing_docs)]
-// `matches!` macro was added only in Rust 1.42, which is bigger than our MSRV
-#![allow(clippy::match_like_matches_macro)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[macro_use]
 extern crate cfg_if;
@@ -235,8 +234,3 @@ pub fn getrandom(dest: &mut [u8]) -> Result<(), Error> {
     }
     imp::getrandom_inner(dest)
 }
-
-#[cfg(test)]
-mod test_common;
-#[cfg(test)]
-mod test_rdrand;

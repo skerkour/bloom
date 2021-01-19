@@ -1,5 +1,5 @@
 // WhoAmI
-// Copyright © 2017-2020 Jeron Aldaron Lau.
+// Copyright © 2017-2021 Jeron Aldaron Lau.
 //
 // Licensed under any of:
 //  - Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
@@ -15,8 +15,10 @@
 //! functions with no parameters that return [`String`](std::string::String)s or
 //! [`OsString`](std::ffi::OsString)s (with the exception of
 //! [`desktop_env()`](crate::desktop_env), and [`platform()`](crate::platform)
-//! which return enums).  The following example shows how to use all of the
-//! functions (except those that return [`OsString`](std::ffi::OsString)):
+//! which return enums, and [`lang()`](crate::lang) that returns an iterator of
+//! [`String`](std::string::String)s).  The following example shows how to use
+//! all of the functions (except those that return
+//! [`OsString`](std::ffi::OsString)):
 //!
 //! ```rust
 //! fn main() {
@@ -27,6 +29,10 @@
 //!     println!(
 //!         "User's Username        whoami::username():    {}",
 //!         whoami::username()
+//!     );
+//!     println!(
+//!         "User's Language        whoami::lang():        {:?}",
+//!         whoami::lang().collect::<Vec<String>>()
 //!     );
 //!     println!(
 //!         "Device's Pretty Name   whoami::devicename():  {}",
@@ -264,4 +270,14 @@ pub fn desktop_env() -> DesktopEnv {
 #[inline(always)]
 pub fn platform() -> Platform {
     native::platform()
+}
+
+/// Get the user's preferred language(s).
+///
+/// Returned as iterator of two letter language codes (lowercase), optionally
+/// followed by a dash (-) and a two letter region code (uppercase).  The most
+/// preferred language is returned first, followed by next preferred, and so on.
+#[inline(always)]
+pub fn lang() -> impl Iterator<Item = String> {
+    native::lang()
 }

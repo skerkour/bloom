@@ -13,9 +13,9 @@
 [package]
 edition = "2018"
 name = "getrandom"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["The Rand Project Developers"]
-exclude = ["utils/*", ".*", "appveyor.yml"]
+exclude = [".*"]
 description = "A small cross-platform library for retrieving random data from system source"
 documentation = "https://docs.rs/getrandom"
 categories = ["os", "no-std"]
@@ -23,6 +23,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-random/getrandom"
 [package.metadata.docs.rs]
 features = ["std", "custom"]
+rustdoc-args = ["--cfg", "docsrs"]
 [dependencies.cfg-if]
 version = "1"
 
@@ -39,7 +40,7 @@ package = "rustc-std-workspace-core"
 custom = []
 js = ["wasm-bindgen", "js-sys"]
 rdrand = []
-rustc-dep-of-std = ["compiler_builtins", "core"]
+rustc-dep-of-std = ["compiler_builtins", "core", "libc/rustc-dep-of-std", "wasi/rustc-dep-of-std"]
 std = []
 test-in-browser = []
 [target."cfg(all(target_arch = \"wasm32\", target_os = \"unknown\"))".dependencies.js-sys]
@@ -57,8 +58,3 @@ version = "0.10"
 [target."cfg(unix)".dependencies.libc]
 version = "0.2.64"
 default-features = false
-[badges.appveyor]
-repository = "rust-random/getrandom"
-
-[badges.travis-ci]
-repository = "rust-random/getrandom"
