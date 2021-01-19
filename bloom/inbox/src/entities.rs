@@ -5,8 +5,9 @@ use stdx::{
     uuid::Uuid,
 };
 
-#[derive(sqlx::Type, Debug, Clone, Eq, PartialEq, Copy)]
+#[derive(sqlx::Type, Debug, Clone, Eq, PartialEq, Copy, Deserialize, Serialize)]
 #[sqlx(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum NewsletterMessageStatus {
     Saved,
     Scheduled,
@@ -127,12 +128,6 @@ pub struct ChatboxPreferences {
 pub struct ConversationContactRelation {
     pub contact_id: Uuid,
     pub conversation_id: Uuid,
-}
-
-#[derive(sqlx::FromRow, Debug, Clone)]
-pub struct ConversationAnonymousIdRelation {
-    pub contact_id: Uuid,
-    pub anonymous_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
