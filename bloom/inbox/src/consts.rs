@@ -26,3 +26,6 @@ pub const NEWSLETTER_MESSAGE_NAME_MIN_LENGTH: usize = 1;
 pub const NEWSLETTER_MESSAGE_BODY_MAX_LENGTH: usize = 64_000;
 pub const NEWSLETTER_MESSAGE_SUBJECT_MIN_LENGTH: usize = 1;
 pub const NEWSLETTER_MESSAGE_SUBJECT_MAX_LENGTH: usize = 142;
+
+// Other
+pub const VISITOR: &str = "Visitor";

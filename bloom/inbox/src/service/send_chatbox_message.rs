@@ -1,5 +1,6 @@
 use super::SendChatboxMessageInput;
 use crate::{
+    consts,
     entities::{Conversation, Message},
     Error, Service,
 };
@@ -32,7 +33,7 @@ impl Service {
                     trashed_at: None,
                     last_message_at: now,
                     is_spam: false,
-                    name: String::from("Visitor"),
+                    name: String::from(consts::VISITOR),
                     description: String::new(),
                     namespace_id,
                     anonymous_id: Some(anonymous_id),

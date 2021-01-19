@@ -1,5 +1,6 @@
 use super::LinkChatboxContactInput;
 use crate::{
+    consts,
     entities::{Contact, ContactAnonymousIdRelation, ConversationContactRelation},
     Error, Service,
 };
@@ -16,14 +17,21 @@ impl Service {
         let now = Utc::now();
         let namespace_id = input.namespace_id;
         let email = input.email.trim().to_lowercase();
+
         self.kernel_service.validate_email(&email, false)?;
 
-        let conversation = self
+        let mut conversation = self
             .repo
             .find_inbox_conversation_for_anonymous_id(&self.db, anonymous_id, namespace_id)
             .await?;
 
         let mut tx = self.db.begin().await?;
+
+        let email_parts: Vec<String> = email.split('@').map(|part| part.to_string()).collect();
+        let name = email_parts
+            .get(0)
+            .map(|name| name.to_owned())
+            .unwrap_or(conversation.name.clone());
 
         let contact = match self
             .repo
@@ -34,6 +42,9 @@ impl Service {
                 if email != contact.email {
                     contact.updated_at = now;
                     contact.email = email;
+                    if contact.name == consts::VISITOR && name != consts::VISITOR {
+                        contact.name = name.clone();
+                    }
                     self.repo.update_contact(&mut tx, &contact).await?;
                 }
 
@@ -45,7 +56,7 @@ impl Service {
                     id: Ulid::new().into(),
                     created_at: now,
                     updated_at: now,
-                    name: conversation.name.clone(),
+                    name: name.clone(),
                     birthday: None,
                     email: email,
                     pgp_key: String::new(),
@@ -89,6 +100,10 @@ impl Service {
         self.repo
             .create_conversation_contact_relation(&mut tx, &conversation_relation)
             .await?;
+
+        conversation.updated_at = now;
+        conversation.name = name;
+        self.repo.update_conversation(&mut tx, &conversation).await?;
 
         tx.commit().await?;
 
