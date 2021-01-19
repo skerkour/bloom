@@ -25,6 +25,10 @@ pub enum Error {
     // Conversations
     ConversationNotFound,
 
+    // Messages
+    MessageIsEmpty,
+    MessageIsTooLong,
+
     // Chatbox
     UpgradePlanToRemoveChatboxBranding,
     ChatboxPreferencesNotFound,
@@ -97,6 +101,9 @@ impl std::convert::From<Error> for kernel::Error {
             // Conversations
             Error::ConversationNotFound => kernel::Error::NotFound(String::from("Conversation not found.")),
 
+            // Messages
+            Error::MessageIsEmpty => kernel::Error::NotFound(String::from("Message is empty.")),
+            Error::MessageIsTooLong => kernel::Error::NotFound(String::from("Message is too long.")),
             // Chatbox
             Error::UpgradePlanToRemoveChatboxBranding => {
                 kernel::Error::InvalidArgument(String::from("Please upgrade your plan to remove chatbox's branding"))

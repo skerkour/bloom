@@ -289,6 +289,14 @@ impl Service {
     }
 
     pub fn validate_inbox_message_body(&self, body: &str) -> Result<(), Error> {
-        todo!();
+        if body.is_empty() {
+            return Err(Error::MessageIsEmpty);
+        }
+
+        if body.len() > consts::MESSAGE_MAX_LENGTH {
+            return Err(Error::MessageIsTooLong);
+        }
+
+        return Ok(());
     }
 }

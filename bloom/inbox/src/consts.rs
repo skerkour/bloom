@@ -4,6 +4,9 @@ pub const CHATBOX_WELCOME_MESSAGE_MAX_LENGTH: usize = 1024;
 pub const CHATBOX_NAME_MAX_LENGTH: usize = 128;
 pub const CHATBOX_NAME_MIN_LENGTH: usize = 1;
 
+// Messages
+pub const MESSAGE_MAX_LENGTH: usize = 4096;
+
 // Contacts
 pub const CONTACT_NAME_MAX_LENGTH: usize = 128;
 pub const CONTACT_NOTES_MAX_LENGTH: usize = 64000;
