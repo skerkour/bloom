@@ -4,16 +4,6 @@
 
       <v-col cols="12" sm="8">
         <v-text-field
-          label="Beta invitation code"
-          type="text"
-          v-model="betaCode"
-          :disabled="loading"
-          @keyup="uppercaseBetaCode"
-        />
-      </v-col>
-
-      <v-col cols="12" sm="8">
-        <v-text-field
           label="Email"
           type="email"
           v-model="email"
@@ -77,17 +67,11 @@ export default VueApp.extend({
       ],
       loading: false,
       isValid: false,
-      betaCode: '',
       error: '',
     };
   },
   methods: {
     async register(): Promise<void> {
-      if (this.betaCode !== 'BLOOMBETA2020') {
-        this.error = 'Invite code is not valid';
-        return;
-      }
-
       this.loading = true;
       this.error = '';
       const input: RegisterInput = {
@@ -108,9 +92,6 @@ export default VueApp.extend({
     },
     lowercaseUsername(): void {
       this.username = this.username.toLowerCase();
-    },
-    uppercaseBetaCode(): void {
-      this.betaCode = this.betaCode.toUpperCase();
     },
   },
 });
