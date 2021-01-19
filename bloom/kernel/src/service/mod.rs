@@ -132,35 +132,35 @@ impl Service {
 
     // TODO
     pub async fn send_register_email(&self, input: SendRegisterEmailInput) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn send_sign_in_email(&self, input: SendSignInEmailInput) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn send_email_changed_email(&self, input: SendEmailChangedEmailInput) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn send_verify_email_email(&self, input: SendVerifyEmailEmailInput) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn send_group_invitation_email(&self, input: SendGroupInvitationEmailInput) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn decode_and_validate_session_token(&self, _token: String) -> Result<User, Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn decode_and_validate_anonymous_token(&self, _token: String) -> Result<Uuid, Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub async fn dispatch_delete_old_data(&self) -> Result<(), Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     // create an entity that can be retrieved later with the size, the user and the tmp_key
@@ -169,7 +169,7 @@ impl Service {
         _actor: Actor,
         _input: GetSignedStorageUploadUrlInput,
     ) -> Result<SignedStorageUrl, Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
 

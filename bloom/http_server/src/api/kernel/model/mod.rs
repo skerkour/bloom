@@ -12,7 +12,7 @@ pub struct User {
 
 impl From<kernel::entities::User> for User {
     fn from(_item: kernel::entities::User) -> Self {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
 
@@ -30,7 +30,7 @@ pub struct Session {
 
 impl From<kernel::entities::Session> for Session {
     fn from(_item: kernel::entities::Session) -> Self {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
 
@@ -116,7 +116,7 @@ pub struct Group {
 
 impl From<kernel::entities::Group> for Group {
     fn from(_item: kernel::entities::Group) -> Self {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
 
@@ -127,7 +127,7 @@ pub struct GroupInvitation {
 
 impl From<kernel::entities::GroupInvitation> for GroupInvitation {
     fn from(_item: kernel::entities::GroupInvitation) -> Self {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
 

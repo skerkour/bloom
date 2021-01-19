@@ -13,6 +13,6 @@ impl SesMailer {
 #[async_trait::async_trait]
 impl Mailer for SesMailer {
     async fn send(&self, _email: Email) -> Result<(), Error> {
-        unimplemented!("not implemented"); // TODO
+        todo!("not implemented"); // TODO
     }
 }

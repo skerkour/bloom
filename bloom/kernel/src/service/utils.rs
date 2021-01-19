@@ -10,7 +10,7 @@ use stdx::uuid::Uuid;
 
 impl Service {
     pub async fn new_session(&self, _user_id: Uuid) -> Result<Session, crate::Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub fn current_user(&self, actor: Actor) -> Result<User, crate::Error> {
@@ -28,7 +28,7 @@ impl Service {
     }
 
     pub fn decode_session_token(&self, _token: String) -> Result<DecodedSessionToken, crate::Error> {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub fn self_hosted(&self) -> bool {

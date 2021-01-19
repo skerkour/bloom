@@ -12,6 +12,6 @@ impl Service {
         _user_id: Uuid,
         _group_id: Uuid,
     ) -> Result<(Group, GroupMembership), crate::Error> {
-        unimplemented!();
+        todo!();
     }
 }

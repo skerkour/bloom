@@ -1,7 +1,7 @@
 pub fn validate(_code: &str, _secret: &str) -> bool {
-    unimplemented!(); // TODO
+    todo!(); // TODO
 }
 
 pub fn generate() -> super::Key {
-    unimplemented!(); // TODO
+    todo!(); // TODO
 }

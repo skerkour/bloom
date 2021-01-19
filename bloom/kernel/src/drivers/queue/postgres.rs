@@ -152,7 +152,7 @@ impl PostgresQueue {
     async fn watch_loop(&self) {
         loop {
             delay_for(Duration::from_secs(5)).await;
-            // unimplemented!() // TODO
+            // todo!() // TODO
         }
     }
 }

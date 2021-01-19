@@ -7,10 +7,10 @@ pub struct Key {
 
 impl Key {
     pub fn secret(&self) -> String {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 
     pub fn image(&self, _width: u32, _height: u32) -> image::DynamicImage {
-        unimplemented!(); // TODO
+        todo!(); // TODO
     }
 }
