@@ -14,7 +14,10 @@ pub async fn send_message(
     actor: Actor,
 ) -> Result<api::Response<model::Message>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = SendMessageInput {};
+    let service_input = SendMessageInput {
+        conversation_id: input.conversation_id,
+        body: input.body,
+    };
     let message = ctx.inbox_service.send_message(actor, service_input).await?;
 
     Ok(api::Response::ok(message.into()))

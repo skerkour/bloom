@@ -140,12 +140,14 @@ pub struct GetNewsletterMessages {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendMessage {
-    // TODO
+    pub conversation_id: Id,
+    pub body: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendChatboxMessage {
-    // TODO
+    pub namespace_id: Id,
+    pub body: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -197,4 +199,10 @@ pub struct SubscribeToList {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnsubscribeFromList {
     pub subscription_id: Id,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LinkChatboxContact {
+    pub namespace_id: Uuid,
+    pub email: String,
 }

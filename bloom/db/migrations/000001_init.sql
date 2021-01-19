@@ -268,14 +268,16 @@ CREATE TABLE inbox_conversations (
   is_spam BOOLEAN NOT NULL,
   name TEXT NOT NULL,
   description TEXT NOT NULL,
+  anonymous_id UUID,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_conversations_on_namespace_id ON inbox_conversations (namespace_id);
 CREATE INDEX index_inbox_conversations_on_last_message_at ON inbox_conversations (last_message_at);
 CREATE INDEX index_inbox_conversations_on_archived_at ON inbox_conversations (archived_at);
 CREATE INDEX index_inbox_conversations_on_is_spam ON inbox_conversations (is_spam);
 CREATE INDEX index_inbox_conversations_on_trashed_at ON inbox_conversations (trashed_at);
+CREATE INDEX index_inbox_conversations_on_anonymous_id ON inbox_conversations (anonymous_id);
 
 
 CREATE TABLE inbox_messages (
@@ -286,7 +288,7 @@ CREATE TABLE inbox_messages (
   received_at TIMESTAMP WITH TIME ZONE NOT NULL,
   body_html TEXT NOT NULL,
 
-  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+  conversation_id UUID NOT NULL REFERENCES inbox_conversations (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_messages_on_conversation_id ON inbox_messages (conversation_id);
 
@@ -317,7 +319,7 @@ CREATE TABLE inbox_contacts (
   user_id TEXT NOT NULL,
   avatar_storage_key TEXT,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_contacts_on_namespace_id ON inbox_contacts (namespace_id);
 CREATE INDEX index_inbox_contacts_on_email ON inbox_contacts (email);
@@ -332,7 +334,7 @@ CREATE TABLE inbox_newsletter_lists (
   name TEXT NOT NULL,
   description TEXT NOT NULL,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_newsletter_lists_on_namespace_id ON inbox_newsletter_lists (namespace_id);
 
@@ -364,8 +366,8 @@ CREATE TABLE inbox_newsletter_messages (
   sent_count BIGINT NOT NULL,
   error_count BIGINT NOT NULL,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-  list_id UUID REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
 );
 CREATE INDEX index_inbox_newsletter_messages_on_list_id ON inbox_newsletter_messages (list_id);
 CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
@@ -382,24 +384,22 @@ CREATE TABLE inbox_chatbox_preferences (
   show_branding BOOLEAN NOT NULL,
   welcome_message TEXT NOT NULL,
 
-  namespace_id UUID REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_chatbox_preferences_on_namespace_id ON inbox_chatbox_preferences (namespace_id);
 
 
 CREATE TABLE inbox_conversations_contacts (
-  contact_id UUID REFERENCES inbox_contacts (id) ON DELETE CASCADE,
-  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+  contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE,
+  conversation_id UUID NOT NULL REFERENCES inbox_conversations (id) ON DELETE CASCADE,
+
+  PRIMARY KEY (contact_id, conversation_id)
 );
 CREATE INDEX index_inbox_conversations_contacts_on_contact_id ON inbox_conversatios_contacts (contact_id);
 CREATE INDEX index_inbox_conversations_contacts_on_conversation_id ON inbox_conversatios_contacts (conversation_id);
--- TODO: unique?
 
 
-CREATE TABLE inbox_conversations_anonymous_ids (
+CREATE TABLE inbox_contacts_anonymous_ids (
   anonymous_id UUID PRIMARY KEY,
-  conversation_id UUID REFERENCES inbox_conversations (id) ON DELETE CASCADE
+  contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
 );
-CREATE INDEX index_inbox_conversations_anonymous_ids_on_anonymous_id ON inbox_conversations_anonymous_ids (anonymous_id);
-CREATE INDEX index_inbox_conversations_anonymous_ids_on_conversation_id ON inbox_conversations_anonymous_ids (conversation_id);
--- TODO: unique?

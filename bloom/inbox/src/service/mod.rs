@@ -27,6 +27,7 @@ mod find_spam;
 mod find_trash;
 mod import_contacts;
 mod init_namespace;
+mod link_chatbox_contact;
 mod send_chatbox_message;
 mod send_message;
 mod send_newsletter_message;
@@ -250,6 +251,12 @@ pub struct FindChatboxPreferencesInput {
 #[derive(Debug, Clone)]
 pub struct FindChatboxMessagesInput {
     pub namespace_id: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct LinkChatboxContactInput {
+    pub namespace_id: Uuid,
+    pub email: String,
 }
 
 #[derive(Debug, Clone)]

@@ -32,3 +32,5 @@ mod subscribe_to_list;
 pub use subscribe_to_list::subscribe_to_list;
 mod unsubscribe_from_list;
 pub use unsubscribe_from_list::unsubscribe_from_list;
+mod link_chatbox_contact;
+pub use link_chatbox_contact::link_chatbox_contact;

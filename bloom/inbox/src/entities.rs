@@ -26,6 +26,7 @@ pub struct Conversation {
     pub is_spam: bool,
     pub name: String,
     pub description: String,
+    pub anonymous_id: Option<Uuid>,
 
     pub namespace_id: Uuid,
     // pub contact_id: Uuid,
@@ -126,6 +127,18 @@ pub struct ChatboxPreferences {
 pub struct ConversationContactRelation {
     pub contact_id: Uuid,
     pub conversation_id: Uuid,
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct ConversationAnonymousIdRelation {
+    pub contact_id: Uuid,
+    pub anonymous_id: Uuid,
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct ContactAnonymousIdRelation {
+    pub contact_id: Uuid,
+    pub anonymous_id: Uuid,
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]

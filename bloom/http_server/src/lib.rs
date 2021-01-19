@@ -269,6 +269,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/unsubscribe_from_list")
                                             .route(web::post().to(api::inbox::commands::unsubscribe_from_list)),
+                                    )
+                                    .service(
+                                        web::resource("/link_chatbox_contact")
+                                            .route(web::post().to(api::inbox::commands::link_chatbox_contact)),
                                     ),
                             )
                             .service(

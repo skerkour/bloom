@@ -1,6 +1,10 @@
 use super::SendChatboxMessageInput;
-use crate::{entities::Message, Service};
+use crate::{
+    entities::{Conversation, Message},
+    Error, Service,
+};
 use kernel::Actor;
+use stdx::{chrono::Utc, ulid::Ulid};
 
 impl Service {
     pub async fn send_chatbox_message(
@@ -9,61 +13,62 @@ impl Service {
         input: SendChatboxMessageInput,
     ) -> Result<Message, kernel::Error> {
         let anonymous_id = self.kernel_service.current_anonymous_id(actor)?;
-        // findVisitorInput := growth.FindOrCreateVisitorInput{
-        //     AnonymousID: anonymousID,
-        //     ProjectID:   input.ProjectID,
-        // }
-        // visitor, err := service.growthService.FindOrCreateVisitor(ctx, service.db, findVisitorInput)
-        // if err != nil {
-        //     return
-        // }
+        let now = Utc::now();
+        let namespace_id = input.namespace_id;
 
-        // contact, visitor, err := service.growthService.FindOrCreateContactByVisitor(ctx, service.db, visitor)
-        // if err != nil {
-        //     return
-        // }
+        let conversation = match self
+            .repo
+            .find_inbox_conversation_for_anonymous_id(&self.db, anonymous_id, namespace_id)
+            .await
+        {
+            Ok(conversation) => Ok(conversation),
+            Err(Error::ConversationNotFound) => {
+                // create conversation
+                let new_conversation = Conversation {
+                    id: Ulid::new().into(),
+                    created_at: now,
+                    updated_at: now,
+                    archived_at: None,
+                    trashed_at: None,
+                    last_message_at: now,
+                    is_spam: false,
+                    name: String::from("Visitor"),
+                    description: String::new(),
+                    namespace_id,
+                    anonymous_id: Some(anonymous_id),
+                };
+                self.repo.create_conversation(&self.db, &new_conversation).await?;
+                Ok(new_conversation)
+            }
+            Err(err) => Err(err),
+        }?;
 
-        // if contact.ProjectID != input.ProjectID {
-        //     err = kernel.ErrPermissionDenied
-        //     return
-        // }
+        if conversation.anonymous_id != Some(anonymous_id) {
+            return Err(Error::PermissionDenied.into());
+        }
 
-        // findOrCreateConversationInput := support.FindOrCreateConversationInput{
-        //     ContactID: contact.ID,
-        //     ProjectID: input.ProjectID,
-        // }
-        // conversation, err := service.FindOrCreateConversation(ctx, service.db, findOrCreateConversationInput)
-        // if err != nil {
-        //     return
-        // }
+        let body = input.body.trim().to_string();
+        self.validate_inbox_message_body(&body)?;
 
-        // // we can ignore error as it's not important
-        // conversation.LastMessageReceivedAt = now
-        // _ = service.supportRepo.UpdateConversation(ctx, service.db, conversation)
+        let body_html = self.xss.escape(&body)?;
+        // remove repeated newlines
+        let body_html = body_html
+            .split("\n")
+            .map(|part| part.trim())
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<&str>>()
+            .join(" <br /> \n");
 
-        // err = service.ValidateMessage(input.Body)
-        // if err != nil {
-        //     return
-        // }
+        let message = Message {
+            id: Ulid::new().into(),
+            created_at: now,
+            updated_at: now,
+            received_at: now,
+            body_html,
+            conversation_id: conversation.id,
+        };
+        self.repo.create_inbox_message(&self.db, &message).await?;
 
-        // bodyHTML := service.xssSanitizer.Sanitize(service.xssSanitizer.Escape(input.Body))
-
-        // message = support.MessageWithAuthor{
-        //     Message: support.Message{
-        //         ID:             uuid.New(),
-        //         CreatedAt:      now,
-        //         UpdatedAt:      now,
-        //         Body:           input.Body,
-        //         BodyHTML:       bodyHTML,
-        //         AuthorID:       nil,
-        //         ConversationID: conversation.ID,
-        //     },
-        // }
-        // err = service.supportRepo.CreateMessage(ctx, service.db, message.Message)
-        // if err != nil {
-        //     return
-        // }
-        // return
-        todo!();
+        Ok(message)
     }
 }

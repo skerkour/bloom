@@ -11,13 +11,11 @@ impl Repository {
         namespace_id: Uuid,
     ) -> Result<entities::Conversation, Error> {
         const QUERY: &str = "SELECT * FROM inbox_conversations
-            INNER JOIN inbox_conversations_anonymous_ids ON inbox_conversations_anonymous_ids.conversation_id = inbox_conversations.id
-            WHERE inbox_conversations_anonymous_ids.anonymous_id = $1
-                AND inbox_conversations.namespace_id = $2";
+            WHERE namespace_id = $1 AND anonymous_id = $2";
 
         match sqlx::query_as::<_, entities::Conversation>(QUERY)
-            .bind(anonymous_id)
             .bind(namespace_id)
+            .bind(anonymous_id)
             .fetch_optional(db)
             .await
         {

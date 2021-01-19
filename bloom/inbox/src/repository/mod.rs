@@ -1,5 +1,8 @@
 mod create_chatbox_preferences;
 mod create_contact;
+mod create_contact_anonymous_id_relation;
+mod create_conversation;
+mod create_conversation_contact_relation;
 mod create_inbox_message;
 mod create_newsletter_list;
 mod create_newsletter_list_subscription;
@@ -10,6 +13,7 @@ mod delete_newsletter_list_subscription;
 mod delete_newsletter_message;
 mod find_archived_conversations;
 mod find_chatbox_preferences_for_namespace;
+mod find_contact_by_anonymous_id;
 mod find_contact_by_email;
 mod find_contact_by_id;
 mod find_contacts_for_namespace;
