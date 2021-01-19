@@ -3,6 +3,7 @@ module.exports = {
   env: {
     node: true,
   },
+  ignorePatterns: ['_old/**'],
   extends: [
     'plugin:vue/essential',
     '@vue/airbnb',

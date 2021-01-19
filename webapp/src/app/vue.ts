@@ -11,7 +11,6 @@ import { GrowthService } from '@/domain/growth/service';
 import { OperationsService } from '@/domain/operations/service';
 import { ToolsService } from '@/domain/tools/service';
 import { KernelService } from '@/domain/kernel/service';
-import { BotsService } from '@/domain/bots/service';
 
 // export abstract class VueApp extends Vue {
 //   public $store!: Store<AppState>;
@@ -32,6 +31,5 @@ abstract class VueAppClass extends Vue {
   public $growthService!: GrowthService;
   public $operationsService!: OperationsService;
   public $toolsService!: ToolsService;
-  public $botsService!: BotsService;
 }
 export const VueApp = Vue as VueConstructor<VueAppClass>;

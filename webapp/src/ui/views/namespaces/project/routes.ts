@@ -32,14 +32,6 @@ const NewMonitor = () => import(/* webpackChunkName: "chunk-projects-operations"
 const Monitor = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/monitor.vue');
 
 
-const Bots = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/bots/bots.vue');
-const NewBot = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/bots/new.vue');
-const Bot = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/bots/bot.vue');
-const BotsHistory = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/history.vue');
-const BotsConnections = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/connections/connections.vue');
-const BotsConnection = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/connections/connection.vue');
-const BotsNewConnection = () => import(/* webpackChunkName: "chunk-projects-bots" */ './bots/connections/new.vue');
-
 const Milestones = () => import(/* webpackChunkName: "chunk-projects" */ './milestones/milestones.vue');
 const NewMilestone = () => import(/* webpackChunkName: "chunk-projects" */ './milestones/new.vue');
 const Milestone = () => import(/* webpackChunkName: "chunk-projects" */ './milestones/milestone.vue');
@@ -52,56 +44,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath',
     redirect: (to: Route) => `/${to.params.namespacePath}/${to.params.projectPath}/-/inbox`,
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/bots',
-    component: Bots,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/new',
-    component: NewBot,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/history',
-    component: BotsHistory,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/connections',
-    component: BotsConnections,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/connections/new',
-    component: BotsNewConnection,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/connections/:connectionId',
-    component: BotsConnection,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/bots/:botId',
-    component: Bot,
-    meta: {
-      projectDrawer: true,
-    },
   },
 
   {

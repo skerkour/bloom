@@ -22,7 +22,6 @@ import { GrowthService, GrowthServiceInjector } from './domain/growth/service';
 import { OperationsService, OperationsServiceInjector } from './domain/operations/service';
 import { ToolsService, ToolsServiceInjector } from './domain/tools/service';
 import { KernelService, KernelServiceInjector } from './domain/kernel/service';
-import { BotsService, BotsServiceInjector } from './domain/bots/service';
 
 
 const config = new Config();
@@ -41,7 +40,6 @@ const collaborationService = new CollaborationService(apiClient, router);
 const growthService = new GrowthService(apiClient, router);
 const operationsService = new OperationsService(apiClient, router);
 const toolsService = new ToolsService(apiClient);
-const botsService = new BotsService(apiClient, router);
 
 
 if (config.env === 'production') {
@@ -73,7 +71,6 @@ Vue.use(CollaborationServiceInjector, collaborationService);
 Vue.use(GrowthServiceInjector, growthService);
 Vue.use(OperationsServiceInjector, operationsService);
 Vue.use(ToolsServiceInjector, toolsService);
-Vue.use(BotsServiceInjector, botsService);
 
 new Vue({
   router,
