@@ -277,7 +277,8 @@ CREATE INDEX index_inbox_conversations_on_last_message_at ON inbox_conversations
 CREATE INDEX index_inbox_conversations_on_archived_at ON inbox_conversations (archived_at);
 CREATE INDEX index_inbox_conversations_on_is_spam ON inbox_conversations (is_spam);
 CREATE INDEX index_inbox_conversations_on_trashed_at ON inbox_conversations (trashed_at);
-CREATE INDEX index_inbox_conversations_on_anonymous_id ON inbox_conversations (anonymous_id);
+CREATE UNIQUE INDEX index_inbox_conversations_on_anonymous_id ON inbox_conversations (anonymous_id);
+
 
 
 CREATE TABLE inbox_messages (

@@ -81,6 +81,18 @@ impl Worker {
             }
             Message::AnalyticsPageEvent(event) => self.analytics_service.process_page_event(event).await,
             Message::AnalyticsTrackEvent(event) => self.analytics_service.process_track_event(event).await,
+            Message::InboxSendNewsletterMessage {
+                message_id,
+                to,
+                is_test,
+            } => {
+                todo!();
+            }
+            Message::InboxDispatchSendNewsletterMessage {
+                message_id,
+            } => {
+                todo!();
+            }
         }
     }
 }

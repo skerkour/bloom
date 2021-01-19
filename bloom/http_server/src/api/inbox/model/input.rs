@@ -166,7 +166,7 @@ pub struct GetChatboxPreferences {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetChatboxMessages {
-    // TODO
+    pub namespace_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -203,6 +203,6 @@ pub struct UnsubscribeFromList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LinkChatboxContact {
-    pub namespace_id: Uuid,
+    pub namespace_id: Id,
     pub email: String,
 }

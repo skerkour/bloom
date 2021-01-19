@@ -14,7 +14,9 @@ pub async fn chatbox_messages(
     actor: Actor,
 ) -> Result<api::Response<Vec<model::ChatboxMessage>>, kernel::Error> {
     let input = input.into_inner();
-    let service_input = FindChatboxMessagesInput {};
+    let service_input = FindChatboxMessagesInput {
+        namespace_id: input.namespace_id,
+    };
     let messages = ctx.inbox_service.find_chatbox_messages(actor, service_input).await?;
 
     Ok(api::Response::ok(messages.into_iter().map(Into::into).collect()))
