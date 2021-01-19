@@ -1,16 +1,16 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-len */
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   Bot, BotApp, BotConnection, CreateBotConnectionInput, CreateBotInput, DeleteBotConnectionInput, DeleteBotInput, Project, UpdateBotConnectionInput, UpdateBotInput,
 } from '@/api/graphql/model';
 import Router from '@/app/router';
 
 export class BotsService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private router: Router;
 
-  constructor(apiClient: APIClient, router: Router) {
+  constructor(apiClient: ApiClient, router: Router) {
     this.apiClient = apiClient;
     this.router = router;
   }

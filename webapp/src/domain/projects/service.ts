@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   CreateProjectInput, Project, DeleteProjectInput, UpdateProjectInput,
 } from '@/api/graphql/model';
@@ -12,11 +12,11 @@ export type ProjectWithNamespace = {
 }
 
 export class ProjectsService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private router: Router;
   private kernelService: KernelService;
 
-  constructor(apiClient: APIClient, router: Router, kernelService: KernelService) {
+  constructor(apiClient: ApiClient, router: Router, kernelService: KernelService) {
     this.apiClient = apiClient;
     this.router = router;
     this.kernelService = kernelService;

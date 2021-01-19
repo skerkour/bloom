@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-len */
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   DeleteMyAccountInput,
   DisableTwoFaInput,
@@ -15,10 +15,10 @@ export type StorageSignedUploadUrlInput = {
 }
 
 export class KernelService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private store: Store<AppState>;
 
-  constructor(apiClient: APIClient, store: Store<AppState>) {
+  constructor(apiClient: ApiClient, store: Store<AppState>) {
     this.apiClient = apiClient;
     this.store = store;
   }

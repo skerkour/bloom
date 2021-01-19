@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   Project, CreateLabelInput, UpdateLabelInput, Label, DeleteLabelInput, CreateTicketInput,
   Ticket, UpdateTicketInput, CloseTicketInput, CommentTicketInput, TicketComment, ReopenTicketInput,
@@ -74,11 +74,11 @@ export type UploadingFile = {
 };
 
 export class CollaborationService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private router: Router;
   fileTypeFolder: string;
 
-  constructor(apiClient: APIClient, router: Router) {
+  constructor(apiClient: ApiClient, router: Router) {
     this.apiClient = apiClient;
     this.router = router;
     this.fileTypeFolder = 'application/com.bloom42.folder';

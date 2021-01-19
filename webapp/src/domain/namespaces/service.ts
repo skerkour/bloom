@@ -1,12 +1,12 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import { Store } from 'vuex';
 import { AppState, Mutation } from '@/app/store';
 
 export class NamespacesService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private store: Store<AppState>;
 
-  constructor(apiClient: APIClient, store: Store<AppState>) {
+  constructor(apiClient: ApiClient, store: Store<AppState>) {
     this.apiClient = apiClient;
     this.store = store;
   }

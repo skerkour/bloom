@@ -12,7 +12,7 @@ import { newStore } from '@/app/store';
 import vuetify from '@/plugins/vuetify';
 import Vuetify from 'vuetify/lib';
 import { UsersService, UsersServiceInjector } from '@/domain/users/service';
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import { GroupsService, GroupsServiceInjector } from './domain/groups/service';
 import { ProjectsService, ProjectsServiceInjector } from './domain/projects/service';
 import { NamespacesService, NamespacesServiceInjector } from './domain/namespaces/service';
@@ -28,7 +28,7 @@ const config = new Config();
 const storage = new Storage();
 const store = newStore(storage);
 const router = new Router(config, routes, store);
-const apiClient = new APIClient(config, store, router);
+const apiClient = new ApiClient(config, store, router);
 
 const kernelService = new KernelService(apiClient, store);
 const usersService = new UsersService(apiClient, store, router);

@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import Router from '@/app/router';
 import {
   Project, OutboundMessage, CreateOutboundMessageInput, UpdateOutboundMessageInput,
@@ -20,9 +20,9 @@ type ContactAndProject = {
 
 
 export class GrowthService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
 
-  constructor(apiClient: APIClient, private router: Router) {
+  constructor(apiClient: ApiClient, private router: Router) {
     this.apiClient = apiClient;
   }
 

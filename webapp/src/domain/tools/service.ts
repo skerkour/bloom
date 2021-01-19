@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import moment from 'moment';
 
 export type Timestamp = {
@@ -8,9 +8,9 @@ export type Timestamp = {
 };
 
 export class ToolsService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
 
-  constructor(apiClient: APIClient) {
+  constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
   }
 

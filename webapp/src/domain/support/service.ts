@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   Project, SendMessageToConversationInput, UpdateChatboxPreferencesInput,
   ChatboxPreferences, InboxConversation, InboxMessage,
@@ -27,10 +27,10 @@ export type ProjectAndBaseUrl = {
 
 
 export class SupportService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private messagesTimeout: number;
 
-  constructor(apiClient: APIClient, private store: Store<AppState>, private router: Router) {
+  constructor(apiClient: ApiClient, private store: Store<AppState>, private router: Router) {
     this.apiClient = apiClient;
     this.messagesTimeout = DEFAULT_MESSAGES_TIMEOUT;
   }

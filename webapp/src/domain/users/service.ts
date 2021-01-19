@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import {
@@ -14,11 +14,11 @@ import {
 import Router from '@/app/router';
 
 export class UsersService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private store: Store<AppState>;
   private router: Router;
 
-  constructor(apiClient: APIClient, store: Store<AppState>, router: Router) {
+  constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;

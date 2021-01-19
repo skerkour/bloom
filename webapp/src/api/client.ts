@@ -15,7 +15,7 @@ type GraphqlResponse = {
   errors: GraphqlError[];
 }
 
-export default class APIClient {
+export default class ApiClient {
   private http: AxiosInstance;
   private apiBaseURL: string;
   private store: Store<AppState>;

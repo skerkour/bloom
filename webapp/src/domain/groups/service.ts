@@ -1,4 +1,4 @@
-import APIClient from '@/api/client';
+import ApiClient from '@/api/client';
 import {
   CreateGroupInput,
   Group,
@@ -34,11 +34,11 @@ export type GroupeAndMe = {
 };
 
 export class GroupsService {
-  private apiClient: APIClient;
+  private apiClient: ApiClient;
   private router: Router;
   private config: Config;
 
-  constructor(apiClient: APIClient, router: Router, config: Config) {
+  constructor(apiClient: ApiClient, router: Router, config: Config) {
     this.apiClient = apiClient;
     this.router = router;
     this.config = config;
