@@ -179,6 +179,12 @@ pub enum SignedIn {
     TwoFa(TwoFaMethod),
 }
 
+#[derive(Debug, Clone)]
+pub struct Registered {
+    pub session: Session,
+    pub user: User,
+}
+
 /// RegisterInput are the data required to start to register to bloom
 #[derive(Debug, Clone)]
 pub struct RegisterInput {

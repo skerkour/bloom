@@ -35,6 +35,21 @@ impl From<kernel::entities::Session> for Session {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Registered {
+    pub session: Session,
+    pub me: User,
+}
+
+impl From<kernel::service::Registered> for Registered {
+    fn from(item: kernel::service::Registered) -> Self {
+        Registered {
+            session: item.session.into(),
+            me: item.user.into(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SignedIn {
     pub session: Option<Session>,
     pub me: Option<User>,

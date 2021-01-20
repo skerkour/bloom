@@ -1,4 +1,4 @@
-use super::{CompleteRegistrationInput, CreateNamespaceInput, Service, SignedIn};
+use super::{CompleteRegistrationInput, CreateNamespaceInput, Registered, Service};
 use crate::{consts, entities, errors::kernel::Error, Actor};
 use consts::NamespaceType;
 use stdx::tokio::time::delay_for;
@@ -15,7 +15,7 @@ impl Service {
         &self,
         actor: Actor,
         input: CompleteRegistrationInput,
-    ) -> Result<SignedIn, crate::Error> {
+    ) -> Result<Registered, crate::Error> {
         if actor.is_some() {
             return Err(Error::MustNotBeAuthenticated.into());
         }
@@ -101,7 +101,7 @@ impl Service {
 
         tx.commit().await?;
 
-        Ok(SignedIn::Success {
+        Ok(Registered {
             session,
             user,
         })

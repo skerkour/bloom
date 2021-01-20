@@ -1,7 +1,4 @@
-use crate::{
-    api::kernel::model::{input, SignedIn},
-    ServerContext,
-};
+use crate::{ServerContext, api::kernel::model::{Registered, input}};
 use actix_web::web;
 use kernel::{http::api, service, Actor};
 use std::sync::Arc;
@@ -11,7 +8,7 @@ pub async fn complete_registration(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::CompleteRegistration>,
     actor: Actor,
-) -> Result<api::Response<SignedIn>, kernel::Error> {
+) -> Result<api::Response<Registered>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::CompleteRegistrationInput {
         pending_user_id: input.pending_user_id,
