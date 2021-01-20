@@ -30,7 +30,7 @@ const store = newStore(storage);
 const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
-const kernelService = new KernelService(apiClient, store);
+const kernelService = new KernelService(apiClient, store, router);
 const usersService = new UsersService(apiClient, store, router);
 const groupsService = new GroupsService(apiClient, router, config);
 const projectsService = new ProjectsService(apiClient, router, kernelService);
