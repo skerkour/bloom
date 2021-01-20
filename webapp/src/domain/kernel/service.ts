@@ -9,6 +9,7 @@ import {
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
+import { model, routes } from './api';
 
 export type StorageSignedUploadUrlInput = {
   size: number;
@@ -21,6 +22,11 @@ export class KernelService {
   constructor(apiClient: ApiClient, store: Store<AppState>) {
     this.apiClient = apiClient;
     this.store = store;
+  }
+
+  async register(input: model.input.Register): Promise<model.RegistrationStarted> {
+    const res: model.RegistrationStarted = await this.apiClient.query(routes.Commands.register, input);
+    return res;
   }
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {
