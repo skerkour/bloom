@@ -1,0 +1,6 @@
+# Storage organization
+
+```
+/avatars
+/files
+```
