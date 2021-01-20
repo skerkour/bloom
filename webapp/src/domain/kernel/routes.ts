@@ -5,5 +5,5 @@ const queries = 'queries';
 
 export const Commands = {
   register: `/${prefix}/${commands}/register`,
-  complete_registration: `/${prefix}/${commands}/complete_registration`,
+  completeRegistration: `/${prefix}/${commands}/complete_registration`,
 }

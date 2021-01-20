@@ -11,7 +11,9 @@ import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands } from './routes';
-import { Register, RegistrationStarted } from './model';
+import {
+  CompleteRegistration, Register, RegistrationStarted, SignedIn,
+} from './model';
 
 export type StorageSignedUploadUrlInput = {
   size: number;
@@ -32,6 +34,12 @@ export class KernelService {
     const res: RegistrationStarted = await this.apiClient.query(Commands.register, input);
     this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
     this.router.push({ path: '/register/complete' });
+  }
+
+  async completeRegistration(input: CompleteRegistration): Promise<void> {
+    const res: SignedIn = await this.apiClient.query(Commands.completeRegistration, input);
+    this.store.commit(Mutation.SIGN_IN, res);
+    this.router.push({ path: '/' });
   }
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {

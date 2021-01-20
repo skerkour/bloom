@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
-import { User, Session, SignedIn } from '@/api/graphql/model';
 import { Storage } from '@/app/storage';
+import { SignedIn, User, Session } from '@/domain/kernel/model';
 
 Vue.use(Vuex);
 
@@ -63,8 +63,8 @@ export function newStore(storage: Storage): Store<AppState> {
     state: baseAppState,
     mutations: {
       [Mutation.SIGN_IN](state: AppState, params: SignedIn) {
-        state.session = params.session!;
-        state.me = params.me!;
+        state.session = params.session;
+        state.me = params.me.user;
         storage.set(storage.keyMe, state.me);
         storage.set(storage.keySession, state.session);
         state.pendingSessionId = null;
@@ -90,7 +90,7 @@ export function newStore(storage: Storage): Store<AppState> {
       [Mutation.UPDATE_MY_PROFILE](state: AppState, me: User) {
         state.me!.username = me.username ?? state.me?.username;
         state.me!.name = me.name ?? state.me?.name;
-        state.me!.avatarUrl = me.avatarUrl ?? state.me?.avatarUrl;
+        state.me!.avatar_url = me.avatar_url ?? state.me?.avatar_url;
         storage.set(storage.keyMe, state.me);
       },
       [Mutation.SET_DRAWER](state: AppState, value: boolean) {

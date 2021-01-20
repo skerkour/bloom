@@ -39,34 +39,6 @@ export class UsersService {
     this.router.push({ path: '/login/complete' });
   }
 
-  async completeRegistration(input: CompleteRegistrationInput): Promise<void> {
-    const query = `
-      mutation($input: CompleteRegistrationInput!) {
-        completeRegistration(input: $input) {
-          me {
-            id
-            createdAt
-            username
-            email
-            name
-            description
-            isAdmin
-            avatarUrl
-          }
-          session {
-            id
-            createdAt
-            token
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { completeRegistration: SignedIn } = await this.apiClient.query(query, variables);
-    this.store.commit(Mutation.SIGN_IN, res.completeRegistration);
-    this.router.push({ path: '/' });
-  }
 
   async completeSignIn(input: CompleteSignInInput): Promise<void> {
     const query = `

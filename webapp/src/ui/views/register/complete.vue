@@ -39,7 +39,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { mask } from 'vue-the-mask';
-import { CompleteRegistrationInput } from '@/api/graphql/model';
+import { CompleteRegistration } from '@/domain/kernel/model';
 
 const CODE_LENGTH = 14;
 
@@ -80,13 +80,13 @@ export default VueApp.extend({
     async completeRegistration() {
       this.loading = true;
       this.error = '';
-      const input: CompleteRegistrationInput = {
-        pendingUserId: this.pendingUserId,
+      const input: CompleteRegistration = {
+        pending_user_id: this.pendingUserId,
         code: this.code,
       };
 
       try {
-        await this.$usersService.completeRegistration(input);
+        await this.$kernelService.completeRegistration(input);
       } catch (err) {
         this.error = err.message;
       } finally {
