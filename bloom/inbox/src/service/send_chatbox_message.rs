@@ -51,7 +51,7 @@ impl Service {
         let body = input.body.trim().to_string();
         self.validate_inbox_message_body(&body)?;
 
-        let body_html = self.xss.escape(&body)?;
+        let body_html = self.xss.escape(&body);
         // remove repeated newlines
         let body_html = body_html
             .split("\n")

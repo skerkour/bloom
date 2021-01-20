@@ -10,8 +10,8 @@ impl StdxXssSanitizer {
 }
 
 impl super::XssSanitizer for StdxXssSanitizer {
-    fn sanitize(&self, input: &str) -> Result<String, Error> {
-        todo!();
+    fn sanitize(&self, input: &str) -> String {
+        stdx::html::sanitize_xss(input)
     }
 
     fn escape(&self, input: &str) -> String {

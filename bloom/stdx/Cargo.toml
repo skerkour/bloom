@@ -8,6 +8,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+ammonia = "3"
 atomic = "0.5"
 askama_escape = "0.10"
 base64 = "0.13"
