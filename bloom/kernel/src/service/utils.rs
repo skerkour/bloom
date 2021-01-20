@@ -48,6 +48,8 @@ impl Service {
     }
 
     pub async fn render_markdown(&self, markdown: &str) -> Result<String, crate::Error> {
-        Ok(stdx::markdown::render_markdown(markdown))
+        let unsafe_html = stdx::markdown::render_markdown(markdown);
+        let safe_html = self.xss.sanitize(&unsafe_html);
+        Ok(safe_html)
     }
 }

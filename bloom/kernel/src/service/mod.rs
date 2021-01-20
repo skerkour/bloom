@@ -68,6 +68,7 @@ pub struct Service {
     valid_namespace_alphabet: HashSet<char>,
     files_service: Option<Arc<dyn files::Service>>,
     inbox_service: Option<Arc<dyn inbox::Service>>,
+    xss: Arc<dyn drivers::XssSanitizer>,
 }
 
 impl Service {
@@ -77,6 +78,7 @@ impl Service {
         queue: Arc<dyn drivers::Queue>,
         mailer: Arc<dyn drivers::Mailer>,
         storage: Arc<dyn drivers::Storage>,
+        xss: Arc<dyn drivers::XssSanitizer>,
     ) -> Service {
         let mut templates = tera::Tera::default();
         templates
@@ -127,6 +129,7 @@ impl Service {
             valid_namespace_alphabet,
             files_service: None,
             inbox_service: None,
+            xss,
         }
     }
 

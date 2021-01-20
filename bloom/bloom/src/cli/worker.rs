@@ -37,6 +37,7 @@ pub fn run() -> Result<(), Error> {
             queue.clone(),
             mailer,
             storage.clone(),
+            stdx_xss_sanitizer.clone(),
         ));
         let files_service = Arc::new(files::Service::new(kernel_service.clone(), db.clone(), storage));
         let analytics_service = Arc::new(analytics::Service::new(
