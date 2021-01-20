@@ -3,5 +3,5 @@ pub fn escape(input: &str) -> String {
 }
 
 pub fn sanitize_xss(input: &str) -> String {
-    ammonia::clean(input, askama_escape::Html)
+    ammonia::clean(input)
 }

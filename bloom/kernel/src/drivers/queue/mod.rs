@@ -24,10 +24,3 @@ pub trait Queue: Send + Sync + Debug {
     async fn fail_job(&self, job_id: String) -> Result<(), crate::Error>;
     async fn clear(&self) -> Result<(), crate::Error>;
 }
-
-// // Queue interface represents more a queue borker than an individual queue
-// type Queue interface {
-// 	Register(ctx context.Context, queueName string, worker QueueWorker, concurrency uint64)
-// 	// remove all messages from queue
-// 	Stop(ctx context.Context) (err error)
-// }
