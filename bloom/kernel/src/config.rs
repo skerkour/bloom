@@ -9,7 +9,7 @@ use crate::Error;
 use rusoto_core::Region;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use stdx::{dotenv, encoding::base64};
+use stdx::{crypto, dotenv, encoding::base64, url::Url};
 
 const ENV_APP_ENV: &str = "APP_ENV";
 const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
@@ -44,6 +44,8 @@ const ENV_WORKER_CONCURRENCY: &str = "WORKER_CONCURRENCY";
 const ENV_SENTRY_SECURITY_REPORT_URI: &str = "SENTRY_SECURITY_REPORT_URI";
 const ENV_SENTRY_INGEST_DOMAIN: &str = "SENTRY_INGEST_DOMAIN";
 const ENV_SENTRY_DSN: &str = "SENTRY_DSN";
+
+const POSTGRES_SCHEME: &str = "postgres";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -322,13 +324,6 @@ impl Config {
             .map_or(Ok(DEFAULT_ACCESS_LOGS), |env_val| env_val.parse::<bool>())?;
         let http_public_directory =
             std::env::var(ENV_HTTP_PUBLIC_DIRECTORY).unwrap_or(String::from(DEFAULT_HTTP_PUBLIC_DIRECTORY));
-        // let https_certs_directory =
-        //     std::env::var(ENV_HTTPS_CERTS_DIRECTORY).unwrap_or(String::from(DEFAULT_HTTPS_CERT_DIRECTORY));
-        // let https_certs_email = std::env::var(ENV_HTTPS_CERTS_EMAIL).unwrap_or(String::new());
-        // let https_domain = std::env::var(ENV_HTTPS_DOMAIN).unwrap_or(String::new());
-        // let https_port = std::env::var(ENV_HTTPS_PORT)
-        //     .ok()
-        //     .map_or(Ok(0), |env_val| env_val.parse::<u16>())?;
 
         let http = Http {
             port: http_port,
@@ -498,7 +493,28 @@ impl Config {
     }
 
     fn clean_and_validate(&mut self) -> Result<(), Error> {
-        // TODO
+        // app
+        if self.master_key.len() != crypto::AEAD_KEY_SIZE {
+            return Err(Error::InvalidArgument(format!("config: master_key is not valid. Required size is: {} bytes", crypto::AEAD_KEY_SIZE)))
+        }
+
+
+        if let Some(ref old_master_key) = self.old_master_key {
+            if old_master_key.len() != crypto::AEAD_KEY_SIZE {
+                return Err(Error::InvalidArgument(format!("config: old_master_key is not valid. Required size is: {} bytes", crypto::AEAD_KEY_SIZE)))
+            }
+        }
+
+        // Database
+        let database_url = Url::parse(&self.database.url)?;
+        if database_url.scheme() != POSTGRES_SCHEME {
+            return Err(Error::InvalidArgument(String::from("config: database_url is not a valid postgres URL")));
+        }
+
+        	// Stripe
+
+
+
         Ok(())
     }
 }

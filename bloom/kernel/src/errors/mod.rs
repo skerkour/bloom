@@ -121,3 +121,10 @@ impl std::convert::From<rusoto_core::region::ParseRegionError> for Error {
         Error::InvalidArgument(format!("{}", err))
     }
 }
+
+
+impl std::convert::From<stdx::url::ParseError> for Error {
+    fn from(err: stdx::url::ParseError) -> Self {
+        Error::InvalidArgument(format!("url is not valid: {}", err))
+    }
+}

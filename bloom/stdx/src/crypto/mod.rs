@@ -1,5 +1,7 @@
 pub mod rand;
 
+pub const AEAD_KEY_SIZE: usize = 32;
+
 pub fn hash_password(_password: &str) -> String {
     todo!(); // TODO
 }
