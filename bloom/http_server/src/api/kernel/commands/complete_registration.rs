@@ -1,4 +1,7 @@
-use crate::{ServerContext, api::kernel::model::{Registered, input}};
+use crate::{
+    api::kernel::model::{input, Registered},
+    ServerContext,
+};
 use actix_web::web;
 use kernel::{http::api, service, Actor};
 use std::sync::Arc;

@@ -9,6 +9,7 @@ edition = "2018"
 
 [dependencies]
 atomic = "0.5"
+askama_escape = "0.10"
 base64 = "0.13"
 chrono = { version  = "0.4", features = ["serde"] }
 cron = "0.7"
