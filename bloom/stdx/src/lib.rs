@@ -5,6 +5,7 @@ pub mod encoding;
 pub mod finance;
 pub mod job_scheduler;
 pub mod mail;
+pub mod markdown;
 pub mod otp;
 pub mod sync;
 pub mod ulid;

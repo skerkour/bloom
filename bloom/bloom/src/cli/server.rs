@@ -69,7 +69,10 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
         if worker_flag {
             let kernel_service = kernel_service.clone();
             let analytics_service = analytics_service.clone();
-            stdx::tokio::spawn(async move { worker::run(kernel_service, analytics_service, queue).await });
+            let inbox_service = inbox_service.clone();
+            stdx::tokio::spawn(
+                async move { worker::run(kernel_service, analytics_service, inbox_service, queue).await },
+            );
             // TODO: handle error?
         }
 

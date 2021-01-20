@@ -48,6 +48,6 @@ impl Service {
     }
 
     pub async fn render_markdown(&self, markdown: &str) -> Result<String, crate::Error> {
-        todo!();
+        Ok(stdx::markdown::render_markdown(markdown))
     }
 }

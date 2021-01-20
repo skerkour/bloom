@@ -173,13 +173,6 @@ impl Service {
     }
 }
 
-// #[async_trait::async_trait]
-// impl crate::Service for Service {
-//     async fn register(&self, actor: Option<&User>, input: RegisterInput) -> Result<PendingUser, Error> {
-//         self._register(actor, input).await
-//     }
-// }
-
 #[derive(Debug, Clone)]
 pub enum SignedIn {
     Success { session: Session, user: User },
@@ -224,17 +217,6 @@ pub struct CreateGroupInput {
 pub struct DeleteGroupInput {
     pub group_id: Uuid,
 }
-
-// type GroupNamespace struct {
-// 	Group     Group
-// 	Namespace Namespace
-// }
-
-// type GroupUserNamespace struct {
-// 	Group     Group
-// 	User      User
-// 	Namespace Namespace
-// }
 
 #[derive(Debug, Clone)]
 pub struct CreateNamespaceInput {

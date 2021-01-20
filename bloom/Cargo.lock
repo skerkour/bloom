@@ -3573,6 +3573,7 @@ name = "worker"
 version = "0.1.0"
 dependencies = [
  "analytics",
+ "inbox",
  "kernel",
  "reqwest",
  "stdx",

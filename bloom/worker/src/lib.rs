@@ -10,6 +10,7 @@ mod worker;
 pub async fn run(
     kernel_service: Arc<kernel::Service>,
     analytics_service: Arc<analytics::Service>,
+    inbox_service: Arc<inbox::Service>,
     queue: Arc<dyn Queue>,
 ) -> Result<(), Error> {
     let ten_ms = Duration::from_millis(10);
@@ -17,7 +18,7 @@ pub async fn run(
 
     let config = kernel_service.config();
     let concurrency = config.worker.concurrency;
-    let worker = Worker::new(kernel_service, analytics_service);
+    let worker = Worker::new(kernel_service, analytics_service, inbox_service);
     let (mut tx, rx) = mpsc::channel(concurrency);
     let queue_tx = queue.clone();
 

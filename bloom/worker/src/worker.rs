@@ -11,13 +11,19 @@ use std::sync::Arc;
 pub struct Worker {
     kernel_service: Arc<kernel::Service>,
     analytics_service: Arc<analytics::Service>,
+    inbox_service: Arc<inbox::Service>,
 }
 
 impl Worker {
-    pub fn new(kernel_service: Arc<kernel::Service>, analytics_service: Arc<analytics::Service>) -> Self {
+    pub fn new(
+        kernel_service: Arc<kernel::Service>,
+        analytics_service: Arc<analytics::Service>,
+        inbox_service: Arc<inbox::Service>,
+    ) -> Self {
         Worker {
             kernel_service,
             analytics_service,
+            inbox_service,
         }
     }
 
@@ -86,12 +92,19 @@ impl Worker {
                 to,
                 is_test,
             } => {
-                todo!();
+                let input = inbox::service::SendNewsletterMessageJobInput {
+                    message_id,
+                    to,
+                    is_test,
+                };
+                self.inbox_service.job_send_newsletter_message(input).await
             }
             Message::InboxDispatchSendNewsletterMessage {
                 message_id,
             } => {
-                todo!();
+                self.inbox_service
+                    .job_dispatch_send_newsletter_message(message_id)
+                    .await
             }
         }
     }

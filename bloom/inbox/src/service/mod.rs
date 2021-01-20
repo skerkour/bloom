@@ -3,6 +3,7 @@ use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::{
     chrono::{DateTime, Utc},
+    mail,
     sqlx::{Postgres, Transaction},
     uuid::Uuid,
 };
@@ -27,6 +28,8 @@ mod find_spam;
 mod find_trash;
 mod import_contacts;
 mod init_namespace;
+mod job_dispatch_send_newsletter_message;
+mod job_send_newsletter_message;
 mod link_chatbox_contact;
 mod send_chatbox_message;
 mod send_message;
@@ -295,4 +298,11 @@ pub struct SubscribeToListInput {
 #[derive(Debug, Clone)]
 pub struct UnsubscribeFromListInput {
     pub subscription_id: Uuid,
+}
+
+#[derive(Debug, Clone)]
+pub struct SendNewsletterMessageJobInput {
+    pub message_id: Uuid,
+    pub to: mail::Address,
+    pub is_test: bool,
 }
