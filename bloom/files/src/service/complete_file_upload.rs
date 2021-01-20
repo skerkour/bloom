@@ -50,7 +50,7 @@ impl Service {
 
         let upload = self.kernel_service.find_upload(&self.db, input.upload_id).await?;
 
-        let size = self.storage.get_file_size(&upload.tmp_key).await?;
+        let size = self.storage.get_object_size(&upload.tmp_key).await?;
 
         if size != upload.size {
             return Err(Error::PermissionDenied.into());

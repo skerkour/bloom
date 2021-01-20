@@ -106,3 +106,18 @@ impl std::convert::From<stdx::csv::Error> for Error {
         Error::Internal
     }
 }
+
+impl<S> std::convert::From<rusoto_core::RusotoError<S>> for Error {
+    fn from(err: rusoto_core::RusotoError<S>) -> Self {
+        match err {
+            rusoto_core::RusotoError::ParseError(err_str) => Error::InvalidArgument(err_str),
+            _ => Error::Internal,
+        }
+    }
+}
+
+impl std::convert::From<rusoto_core::region::ParseRegionError> for Error {
+    fn from(err: rusoto_core::region::ParseRegionError) -> Self {
+        Error::InvalidArgument(format!("{}", err))
+    }
+}

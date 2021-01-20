@@ -6,6 +6,7 @@ use std::{
 };
 
 use crate::Error;
+use rusoto_core::Region;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use stdx::{dotenv, encoding::base64};
@@ -252,6 +253,7 @@ pub struct Aws {
     pub secret_access_key: Option<String>,
     pub access_key_id: Option<String>,
     pub default_region: String,
+    pub default_region_rusoto: Region,
 }
 const DEFAULT_AWS_REGION: &str = "eu-west-1"; // Ireland
 
@@ -267,12 +269,14 @@ pub struct Smtp {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ses {
     pub region: String,
+    pub region_rusoto: Region,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct S3 {
     pub region: String,
-    pub bucket: Option<String>,
+    pub bucket: String,
+    pub region_rusoto: Region,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -420,27 +424,33 @@ impl Config {
         let aws_secret_access_key = std::env::var(ENV_AWS_SECRET_ACCESS_KEY).ok();
         let aws_access_key_id = std::env::var(ENV_AWS_ACCESS_KEY_ID).ok();
         let aws_default_region = std::env::var(ENV_AWS_DEFAULT_REGION).unwrap_or(String::from(DEFAULT_AWS_REGION));
+        let aws_default_region_rusoto = Region::from_str(&aws_default_region)?;
 
         let aws = Aws {
             secret_access_key: aws_secret_access_key,
             access_key_id: aws_access_key_id,
             default_region: aws_default_region,
+            default_region_rusoto: aws_default_region_rusoto,
         };
 
         // ses
         let ses_region = std::env::var(ENV_SES_REGION).unwrap_or(aws.default_region.clone());
+        let ses_region_rusoto = Region::from_str(&ses_region)?;
 
         let ses = Ses {
             region: ses_region,
+            region_rusoto: ses_region_rusoto,
         };
 
         // s3
         let s3_region = std::env::var(ENV_S3_REGION).unwrap_or(aws.default_region.clone());
-        let s3_bucket = std::env::var(ENV_S3_BUCKET).ok();
+        let s3_bucket = std::env::var(ENV_S3_BUCKET).map_err(|_| env_not_found(ENV_S3_BUCKET))?;
+        let s3_region_rusoto = Region::from_str(&s3_region)?;
 
         let s3 = S3 {
             region: s3_region,
             bucket: s3_bucket,
+            region_rusoto: s3_region_rusoto,
         };
 
         // worker
