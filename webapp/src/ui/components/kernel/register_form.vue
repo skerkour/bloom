@@ -49,7 +49,7 @@
 
 
 <script lang="ts">
-import { RegisterInput } from '@/api/graphql/model';
+import { Register } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 
 export default VueApp.extend({
@@ -74,13 +74,13 @@ export default VueApp.extend({
     async register(): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: RegisterInput = {
+      const input: Register = {
         username: this.username,
         email: this.email,
       };
 
       try {
-        await this.$usersService.register(input);
+        await this.$kernelService.register(input);
       } catch (err) {
         this.error = err.message;
       } finally {

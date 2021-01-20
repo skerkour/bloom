@@ -33,7 +33,7 @@
 <script lang="ts">
 import { Session, User } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
-import BSessionsList from '@/ui/components/users/sessions_list.vue';
+import BSessionsList from '@/ui/components/kernel/sessions_list.vue';
 
 export default VueApp.extend({
   name: 'MSessionsView',

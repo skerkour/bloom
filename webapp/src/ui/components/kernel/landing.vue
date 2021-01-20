@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import BRegisterForm from '@/ui/components/users/register_form.vue';
+import BRegisterForm from '@/ui/components/kernel/register_form.vue';
 import { VueApp } from '@/app/vue';
 import BFooter from '@/ui/components/kernel/footer.vue';
 

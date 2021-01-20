@@ -2,7 +2,7 @@ import ApiClient from '@/api/client';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import {
-  RegisterInput, SignInInput, SignInStarted, RegistrationStarted, CompleteRegistrationInput,
+  SignInInput, SignInStarted, CompleteRegistrationInput,
   CompleteSignInInput,
   SignedIn,
   RevokeSessionInput,
@@ -22,21 +22,6 @@ export class UsersService {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;
-  }
-
-  async register(input: RegisterInput): Promise<void> {
-    const query = `
-      mutation($input: RegisterInput!) {
-        register(input: $input) {
-          pendingUserId
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { register: RegistrationStarted } = await this.apiClient.query(query, variables);
-    this.store.commit(Mutation.SET_PENDING_USER_ID, res.register.pendingUserId);
-    this.router.push({ path: '/register/complete' });
   }
 
   async signIn(input: SignInInput): Promise<void> {

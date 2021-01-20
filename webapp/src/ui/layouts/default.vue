@@ -116,7 +116,7 @@
 import { VueApp } from '@/app/vue';
 import BProjectDrawer from '@/ui/components/projects/drawer.vue';
 import BGroupDrawer from '@/ui/components/groups/drawer.vue';
-import BUserPreferencesDrawer from '@/ui/components/users/preferences_drawer.vue';
+import BUserPreferencesDrawer from '@/ui/components/kernel/preferences_drawer.vue';
 import BFooter from '@/ui/components/kernel/footer.vue';
 import BToolsDrawer from '@/ui/components/tools/drawer.vue';
 import BAdminDrawer from '@/ui/components/admin/drawer.vue';

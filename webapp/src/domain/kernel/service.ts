@@ -9,7 +9,9 @@ import {
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
-import { model, routes } from './api';
+import Router from '@/app/router';
+import { Commands } from './routes';
+import { Register, RegistrationStarted } from './model';
 
 export type StorageSignedUploadUrlInput = {
   size: number;
@@ -18,15 +20,18 @@ export type StorageSignedUploadUrlInput = {
 export class KernelService {
   private apiClient: ApiClient;
   private store: Store<AppState>;
+  private router: Router;
 
-  constructor(apiClient: ApiClient, store: Store<AppState>) {
+  constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
+    this.router = router;
   }
 
-  async register(input: model.input.Register): Promise<model.RegistrationStarted> {
-    const res: model.RegistrationStarted = await this.apiClient.query(routes.Commands.register, input);
-    return res;
+  async register(input: Register): Promise<void> {
+    const res: RegistrationStarted = await this.apiClient.query(Commands.register, input);
+    this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
+    this.router.push({ path: '/register/complete' });
   }
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {
