@@ -50,6 +50,10 @@ impl Service {
 
         let upload = self.kernel_service.find_upload(&self.db, input.upload_id).await?;
 
+        if upload.namespace_id != parent.namespace_id.unwrap() {
+            return Err(Error::PermissionDenied.into());
+        }
+
         let size = self.storage.get_object_size(&upload.tmp_key).await?;
 
         if size != upload.size {

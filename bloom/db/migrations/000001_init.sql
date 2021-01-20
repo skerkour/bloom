@@ -149,6 +149,17 @@ CREATE INDEX index_kernel_group_invitations_on_group_id ON kernel_group_invitati
 CREATE INDEX index_kernel_group_invitations_on_invitee_id ON kernel_group_invitations (invitee_id);
 
 
+CREATE TABLE kernel_uploads (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  size BIGINT NOT NULL,
+  tmp_key TEXT NOT NULL,
+
+  namespace_id UUID REFERENCES kernel_namespaces(id)
+);
+
 -- #################################################################################################
 -- Files
 -- #################################################################################################

@@ -8,6 +8,7 @@ pub enum Error {
     SoftLimitReached,
     Internal,
     EmailIsInvalid,
+    UploadNotFound,
 
     // User
     UserNotFound,
@@ -159,6 +160,7 @@ impl std::convert::From<Error> for crate::Error {
             }
             Error::Internal => crate::Error::Internal,
             Error::EmailIsInvalid => crate::Error::InvalidArgument(String::from("Email is not valid.")),
+            Error::UploadNotFound => crate::Error::NotFound(String::from("Upload not found.")),
         }
     }
 }
