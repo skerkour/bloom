@@ -41,8 +41,8 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
 
         let db = kernel::db::connect(&config.database).await?;
         let queue = Arc::new(PostgresQueue::new(db.clone()));
-        let mailer = Arc::new(SesMailer::new());
-        let storage = Arc::new(S3Storage::new());
+        let mailer = Arc::new(SesMailer::new(&config));
+        let storage = Arc::new(S3Storage::new(&config));
         let stdx_xss_sanitizer = Arc::new(StdxXssSanitizer::new());
 
         let kernel_service = Arc::new(kernel::Service::new(

@@ -1,7 +1,8 @@
-use super::{Email, Mailer};
+use super::Mailer;
 use crate::{config::Config, Error};
-use rusoto_ses::SesClient;
-use std::fmt;
+use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
+use std::{fmt, time::Duration};
+use stdx::{mail::Email, retry};
 
 #[derive(Clone)]
 pub struct SesMailer {
@@ -26,7 +27,21 @@ impl SesMailer {
 
 #[async_trait::async_trait]
 impl Mailer for SesMailer {
-    async fn send(&self, _email: Email) -> Result<(), Error> {
-        todo!("not implemented"); // TODO
+    async fn send(&self, email: Email) -> Result<(), Error> {
+        let raw_email = email.bytes();
+
+        let ses_request = SendRawEmailRequest {
+            raw_message: RawMessage {
+                data: raw_email.into(),
+            },
+            ..Default::default()
+        };
+
+        retry::retry_fn(|| self.ses_client.send_raw_email(ses_request.clone()))
+            .retries(10)
+            .exponential_backoff(Duration::from_secs(1))
+            .max_delay(Duration::from_secs(10))
+            .await?;
+        Ok(())
     }
 }
