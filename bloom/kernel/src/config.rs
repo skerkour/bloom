@@ -495,25 +495,30 @@ impl Config {
     fn clean_and_validate(&mut self) -> Result<(), Error> {
         // app
         if self.master_key.len() != crypto::AEAD_KEY_SIZE {
-            return Err(Error::InvalidArgument(format!("config: master_key is not valid. Required size is: {} bytes", crypto::AEAD_KEY_SIZE)))
+            return Err(Error::InvalidArgument(format!(
+                "config: master_key is not valid. Required size is: {} bytes",
+                crypto::AEAD_KEY_SIZE
+            )));
         }
-
 
         if let Some(ref old_master_key) = self.old_master_key {
             if old_master_key.len() != crypto::AEAD_KEY_SIZE {
-                return Err(Error::InvalidArgument(format!("config: old_master_key is not valid. Required size is: {} bytes", crypto::AEAD_KEY_SIZE)))
+                return Err(Error::InvalidArgument(format!(
+                    "config: old_master_key is not valid. Required size is: {} bytes",
+                    crypto::AEAD_KEY_SIZE
+                )));
             }
         }
 
         // Database
         let database_url = Url::parse(&self.database.url)?;
         if database_url.scheme() != POSTGRES_SCHEME {
-            return Err(Error::InvalidArgument(String::from("config: database_url is not a valid postgres URL")));
+            return Err(Error::InvalidArgument(String::from(
+                "config: database_url is not a valid postgres URL",
+            )));
         }
 
-        	// Stripe
-
-
+        // Stripe
 
         Ok(())
     }
