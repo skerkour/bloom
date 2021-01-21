@@ -1,4 +1,4 @@
-use crate::consts::{BillingPlan, GroupRole, NamespaceType, TaxIdType, TwoFaMethod};
+use crate::consts::{self, BillingPlan, GroupRole, NamespaceType, TaxIdType, TwoFaMethod};
 use stdx::sqlx;
 use stdx::{chrono, uuid};
 
@@ -190,8 +190,17 @@ pub struct Upload {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 
     pub size: i64,
-    pub tmp_key: String,
     pub namespace_id: uuid::Uuid,
+}
+
+impl Upload {
+    pub fn tmp_storage_key(&self) -> String {
+        format!(
+            "{}/{}",
+            consts::UPLOAD_TMP_STORAGE_KEY_FODLER,
+            self.id.to_hyphenated().to_string()
+        )
+    }
 }
 
 // type NamespaceAndCustomer struct {

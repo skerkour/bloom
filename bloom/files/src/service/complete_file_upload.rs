@@ -54,7 +54,8 @@ impl Service {
             return Err(Error::PermissionDenied.into());
         }
 
-        let size = self.storage.get_object_size(&upload.tmp_key).await?;
+        let upload_storage_key = upload.tmp_storage_key();
+        let size = self.storage.get_object_size(&upload_storage_key).await?;
 
         if size != upload.size {
             return Err(Error::PermissionDenied.into());
@@ -91,13 +92,17 @@ impl Service {
             parent_id: Some(parent.id),
         };
 
-        self.storage.copy_object(&upload.tmp_key, &file.storage_key()).await?;
+        self.storage
+            .copy_object(&upload_storage_key, &file.storage_key())
+            .await?;
 
         let mut tx = self.db.begin().await?;
 
         self.repo.create_file(&mut tx, &file).await?;
 
         self.kernel_service.update_namespace(&mut tx, &namespace).await?;
+
+        self.kernel_service.delete_upload(&mut tx, upload.id).await?;
 
         tx.commit().await?;
 

@@ -14,6 +14,7 @@ pub async fn signed_storage_url(
 ) -> Result<api::Response<SignedStorageUrl>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::GetSignedStorageUploadUrlInput {
+        namespace_id: input.namespace_id,
         filesize: input.filesize,
     };
     let signed_url = ctx.kernel_service.get_signed_storage_url(actor, service_input).await?;

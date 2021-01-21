@@ -106,6 +106,9 @@ impl Worker {
                     .job_dispatch_send_newsletter_message(message_id)
                     .await
             }
+            Message::KernelDeleteOldData => {
+                todo!();
+            }
         }
     }
 }

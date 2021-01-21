@@ -119,5 +119,6 @@ pub struct RemoveMemberFromGroup {
 
 #[derive(Serialize, Deserialize)]
 pub struct SignedStorageUrl {
+    pub namespace_id: Id,
     pub filesize: u64,
 }

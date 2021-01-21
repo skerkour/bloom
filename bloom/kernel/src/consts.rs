@@ -79,6 +79,7 @@ pub const STORAGE_ULTRA: i64 = 4_000_000_000_000; // 4TB
 pub const SLEEP_MIN: Duration = Duration::from_millis(200);
 pub const SLEEP_MAX: Duration = Duration::from_millis(500);
 pub const DEFAULT_AVATAR: &str = "/assets/imgs/profile.jpg";
+pub const UPLOAD_TMP_STORAGE_KEY_FODLER: &str = "/uploads/tmp";
 
 // Namespace
 pub const NAMESPACE_MIN_LENGTH: usize = 4;

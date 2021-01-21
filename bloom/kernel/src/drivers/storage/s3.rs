@@ -32,4 +32,8 @@ impl super::Storage for S3Storage {
     async fn copy_object(&self, from: &str, to: &str) -> Result<(), Error> {
         todo!();
     }
+
+    async fn get_presigned_uplaod_url(&self, key: &str, size: u64) -> Result<String, Error> {
+        todo!();
+    }
 }

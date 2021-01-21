@@ -37,11 +37,13 @@ mod create_namespace;
 mod decline_group_invitation;
 mod delete_group;
 mod delete_my_account;
+mod delete_upload;
 mod disable_two_fa;
 mod dispatch_delete_old_data;
 mod find_group_and_membership;
 mod find_namespace_and_membership;
 mod find_upload;
+mod get_signed_storage_url;
 mod invite_people_in_group;
 mod quit_group;
 mod register;
@@ -146,15 +148,6 @@ impl Service {
     }
 
     pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, Error> {
-        todo!(); // TODO
-    }
-
-    // create an entity that can be retrieved later with the size, the user and the tmp_key
-    pub async fn get_signed_storage_url(
-        &self,
-        actor: Actor,
-        input: GetSignedStorageUploadUrlInput,
-    ) -> Result<SignedStorageUrl, Error> {
         todo!(); // TODO
     }
 }
@@ -311,6 +304,7 @@ pub struct QuitGroupInput {
 
 #[derive(Debug, Clone)]
 pub struct GetSignedStorageUploadUrlInput {
+    pub namespace_id: Uuid,
     pub filesize: u64,
 }
 
