@@ -126,7 +126,15 @@ impl Service {
         Ok(())
     }
 
-    pub fn validate_uplado_size(&self, size: u64) -> Result<(), Error> {
-        todo!();
+    pub fn validate_upload_size(&self, size: u64) -> Result<(), Error> {
+        if size < 0 {
+            return Err(Error::FileIsTooLarge);
+        }
+
+        if size > consts::UPLOAD_MAX_SIZE {
+            return Err(Error::FileIsTooLarge);
+        }
+
+        Ok(())
     }
 }

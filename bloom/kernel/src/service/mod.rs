@@ -18,7 +18,6 @@ use crate::{
         VERIFY_EMAIL_EMAIL_TEMPLATE, VERIFY_EMAIL_EMAIL_TEMPLATE_ID,
     },
     repository::Repository,
-    Actor, Error,
 };
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
 use stdx::uuid::Uuid;
@@ -141,14 +140,6 @@ impl Service {
             inbox_service: None,
             xss,
         }
-    }
-
-    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, Error> {
-        todo!(); // TODO
-    }
-
-    pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, Error> {
-        todo!(); // TODO
     }
 }
 

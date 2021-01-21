@@ -11,7 +11,7 @@ impl Service {
     ) -> Result<SignedStorageUrl, Error> {
         let actor = self.current_user(actor)?;
 
-        self.validate_uplado_size(input.filesize)?;
+        self.validate_upload_size(input.filesize)?;
 
         // check namespace membership
         self.check_namespace_membership(&self.db, actor.id, input.namespace_id)

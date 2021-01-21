@@ -98,4 +98,12 @@ impl Service {
     pub fn group_invitations_url(&self) -> String {
         format!("{}/preferences/invitations", &self.config.base_url)
     }
+
+    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, Error> {
+        todo!(); // TODO
+    }
+
+    pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, Error> {
+        todo!(); // TODO
+    }
 }

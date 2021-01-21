@@ -80,6 +80,7 @@ pub const SLEEP_MIN: Duration = Duration::from_millis(200);
 pub const SLEEP_MAX: Duration = Duration::from_millis(500);
 pub const DEFAULT_AVATAR: &str = "/assets/imgs/profile.jpg";
 pub const UPLOAD_TMP_STORAGE_KEY_FODLER: &str = "/uploads/tmp";
+pub const UPLOAD_MAX_SIZE: u64 = 8_000_000_000; // 8GB
 
 // Namespace
 pub const NAMESPACE_MIN_LENGTH: usize = 4;
