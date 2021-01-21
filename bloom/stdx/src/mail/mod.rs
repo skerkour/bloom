@@ -31,7 +31,15 @@ pub struct Address {
 
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name = self.name.clone();
+        let name = self
+            .name
+            .chars()
+            .into_iter()
+            .filter(|c| c.is_alphanumeric() || *c == ' ')
+            .collect::<String>()
+            .trim()
+            .to_string();
+
         let address = self.address.clone();
         write!(f, "{} <{}>", name, address)
     }

@@ -33,7 +33,6 @@ pub enum Error {
     TwoFaIsNotEnabled,
     TwoFaAlreadyEnabled,
     SomeUsersNotFound,
-    SessionNotFound,
     UserDescriptionIsTooLong,
     UserNameIsTooLong,
     UserNameIsTooShort,
@@ -50,6 +49,10 @@ pub enum Error {
     GroupNameIsTooLong,
     GroupNameIsTooShort,
     InvalidGroupName,
+
+    // Session
+    SessionNotFound,
+    InvalidSession,
 
     // Namespace
     NamespaceNotFound,
@@ -113,7 +116,6 @@ impl std::convert::From<Error> for crate::Error {
             Error::TwoFaIsNotEnabled => crate::Error::InvalidArgument(String::from("2FA is not setup.")),
             Error::TwoFaAlreadyEnabled => crate::Error::InvalidArgument(String::from("2FA already enabled.")),
             Error::SomeUsersNotFound => crate::Error::NotFound(String::from("Some users were not found")),
-            Error::SessionNotFound => crate::Error::NotFound(String::from("Session not found.")),
             Error::UserDescriptionIsTooLong => crate::Error::InvalidArgument(String::from("Description is too long.")),
             Error::UserNameIsTooLong => crate::Error::InvalidArgument(String::from("Name is too short.")),
             Error::UserNameIsTooShort => crate::Error::InvalidArgument(String::from("Name is too long.")),
@@ -136,6 +138,10 @@ impl std::convert::From<Error> for crate::Error {
             Error::GroupNameIsTooLong => crate::Error::InvalidArgument(String::from("Group name is too short.")),
             Error::GroupNameIsTooShort => crate::Error::InvalidArgument(String::from("Group name is too long.")),
             Error::InvalidGroupName => crate::Error::InvalidArgument(String::from("Group name is not valid.")),
+
+            // Session
+            Error::SessionNotFound => crate::Error::NotFound(String::from("Session not found.")),
+            Error::InvalidSession => crate::Error::InvalidArgument(String::from("Session is not valid.")),
 
             // Namespace
             Error::NamespaceNotFound => crate::Error::NotFound(String::from("Namespace not found.")),

@@ -6,7 +6,7 @@ use crate::{
     Actor,
 };
 use std::sync::Arc;
-use stdx::uuid::Uuid;
+use stdx::{crypto, sync::threadpool::spawn_blocking, uuid::Uuid};
 
 impl Service {
     pub async fn new_session(&self, _user_id: Uuid) -> Result<Session, crate::Error> {
@@ -99,11 +99,27 @@ impl Service {
         format!("{}/preferences/invitations", &self.config.base_url)
     }
 
-    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, crate::Error> {
-        todo!(); // TODO
+    pub async fn verify_session_secret(&self, session: &Session, secret: Vec<u8>) -> Result<(), crate::Error> {
+        let hash = self.hash_session(session.id, secret).await?;
+
+        if !crypto::constant_time_compare(&hash, &session.secret_hash) {
+            return Err(Error::InvalidSession.into());
+        }
+
+        Ok(())
+    }
+
+    pub async fn hash_session(&self, session_id: Uuid, secret: Vec<u8>) -> Result<Vec<u8>, crate::Error> {
+        let hash =
+            spawn_blocking(move || crypto::derive_key_from_key(&secret, session_id.as_bytes(), crypto::KEY_SIZE_512))
+                .await?
+                .map_err(|_| crate::Error::Internal)?;
+
+        Ok(hash)
     }
 
     pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, crate::Error> {
-        todo!(); // TODO
+        let anonymous_id = Uuid::parse_str(&token)?;
+        Ok(anonymous_id)
     }
 }

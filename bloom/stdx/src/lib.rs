@@ -10,6 +10,7 @@ pub mod markdown;
 pub mod otp;
 pub mod sync;
 pub mod ulid;
+pub mod uuid;
 pub mod validator;
 
 pub use base64;
@@ -28,4 +29,3 @@ pub use sqlx;
 pub use tokio;
 pub use tryhard as retry;
 pub use url;
-pub use uuid;

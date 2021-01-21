@@ -34,6 +34,7 @@ mod config;
 mod create_group;
 mod create_namespace;
 mod decline_group_invitation;
+mod decode_and_validate_session_token;
 mod delete_group;
 mod delete_my_account;
 mod delete_old_data;
