@@ -135,7 +135,7 @@ impl std::convert::From<stdx::mail::Error> for Error {
 }
 
 impl std::convert::From<stdx::uuid::Error> for Error {
-    fn from(err: stdx::uuid::Error) -> Self {
+    fn from(_: stdx::uuid::Error) -> Self {
         Error::InvalidArgument(String::from("Parsing UUID"))
     }
 }

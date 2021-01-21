@@ -16,7 +16,6 @@ const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
 const ENV_APP_MASTER_KEY: &str = "APP_MASTER_KEY";
 const ENV_APP_OLD_MASTER_KEY: &str = "APP_OLD_MASTER_KEY";
 const ENV_APP_SELF_HOSTED: &str = "APP_SELF_HOSTED";
-const ENV_APP_COUNTRIES_DATA: &str = "APP_COUNTRIES_DATA";
 const ENV_DATABASE_URL: &str = "DATABASE_URL";
 const ENV_DATABASE_POOL_SIZE: &str = "DATABASE_POOL_SIZE";
 const ENV_HTTP_PORT: &str = "PORT";
@@ -327,9 +326,8 @@ impl Config {
         let self_hosted = std::env::var(ENV_APP_SELF_HOSTED)
             .ok()
             .map_or(Ok(DEFAULT_APP_SELF_HOSTED), |env_val| env_val.parse::<bool>())?;
-        let countries_data_json =
-            std::env::var(ENV_APP_COUNTRIES_DATA).map_err(|_| env_not_found(ENV_APP_COUNTRIES_DATA))?;
-        let countries_vec: Vec<Country> = serde_json::from_str(&countries_data_json)?;
+        let countries_data_json = include_str!("../../countries.json");
+        let countries_vec: Vec<Country> = serde_json::from_str(countries_data_json)?;
         let countries: HashMap<String, String> = countries_vec
             .into_iter()
             .map(|country| (country.code, country.name))
