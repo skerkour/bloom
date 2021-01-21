@@ -60,4 +60,8 @@ impl Service {
     pub fn format_code_html(&self, code: String) -> String {
         todo!();
     }
+
+    pub fn contact_url(&self) -> String {
+        format!("{}/contact", &self.config.base_url)
+    }
 }
