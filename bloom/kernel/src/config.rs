@@ -582,7 +582,7 @@ impl Config {
                 return Err(Error::InvalidArgument(String::from("config: stripe tax not valid")));
             }
 
-            if !self.countries.contains_key(tax) {
+            if !self.countries.contains_key(tax.0) {
                 return Err(Error::InvalidArgument(format!(
                     "config: country code not found for stripe tax: {}",
                     tax.0
