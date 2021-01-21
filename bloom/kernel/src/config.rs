@@ -16,6 +16,7 @@ const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
 const ENV_APP_MASTER_KEY: &str = "APP_MASTER_KEY";
 const ENV_APP_OLD_MASTER_KEY: &str = "APP_OLD_MASTER_KEY";
 const ENV_APP_SELF_HOSTED: &str = "APP_SELF_HOSTED";
+const ENV_APP_COUNTRIES_DATA: &str = "APP_COUNTRIES_DATA";
 const ENV_DATABASE_URL: &str = "DATABASE_URL";
 const ENV_DATABASE_POOL_SIZE: &str = "DATABASE_POOL_SIZE";
 const ENV_HTTP_PORT: &str = "PORT";
@@ -60,7 +61,7 @@ pub struct Config {
     pub master_key: Vec<u8>,
     pub old_master_key: Option<Vec<u8>>, // used for key rotation
     pub self_hosted: bool,
-    // CountriesDataFile string `env:"APP_COUNTRIES_DATA" envDefault:"countries.json"`
+    pub countries: HashMap<String, String>,
     pub http: Http,
     pub database: Database,
     pub smtp: Smtp,
@@ -113,6 +114,12 @@ impl fmt::Display for Env {
             Env::Production => write!(f, "{}", APP_ENV_PRODUCTION),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Country {
+    pub name: String,
+    pub code: String,
 }
 
 /// Database contains the data necessary to connect to a database
@@ -320,6 +327,13 @@ impl Config {
         let self_hosted = std::env::var(ENV_APP_SELF_HOSTED)
             .ok()
             .map_or(Ok(DEFAULT_APP_SELF_HOSTED), |env_val| env_val.parse::<bool>())?;
+        let countries_data_json =
+            std::env::var(ENV_APP_COUNTRIES_DATA).map_err(|_| env_not_found(ENV_APP_COUNTRIES_DATA))?;
+        let countries_vec: Vec<Country> = serde_json::from_str(&countries_data_json)?;
+        let countries: HashMap<String, String> = countries_vec
+            .into_iter()
+            .map(|country| (country.code, country.name))
+            .collect();
 
         // http
         let http_port = std::env::var(ENV_HTTP_PORT)
@@ -407,11 +421,16 @@ impl Config {
         let stripe_private_key =
             std::env::var(ENV_STRIPE_SECRET_KEY).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
         let stripe_public_key =
-            std::env::var(ENV_STRIPE_PUBLIC_KEY).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
+            std::env::var(ENV_STRIPE_PUBLIC_KEY).map_err(|_| env_not_found(ENV_STRIPE_PUBLIC_KEY))?;
         let stripe_webhook_secret =
-            std::env::var(ENV_STRIPE_WEBHOOK_SECRET).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
-        let stripe_data_json = std::env::var(ENV_STRIPE_DATA).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
-        let stripe_data: StripeData = serde_json::from_str(&stripe_data_json)?;
+            std::env::var(ENV_STRIPE_WEBHOOK_SECRET).map_err(|_| env_not_found(ENV_STRIPE_WEBHOOK_SECRET))?;
+        let stripe_data_json = std::env::var(ENV_STRIPE_DATA).map_err(|_| env_not_found(ENV_STRIPE_DATA))?;
+        let mut stripe_data: StripeData = serde_json::from_str(&stripe_data_json)?;
+        stripe_data.taxes = stripe_data
+            .taxes
+            .into_iter()
+            .map(|tax| (tax.0.trim().to_string(), tax.1.trim().to_string()))
+            .collect();
 
         let stripe = Stripe {
             secret_key: stripe_private_key,
@@ -480,6 +499,7 @@ impl Config {
             master_key,
             old_master_key,
             self_hosted,
+            countries,
             http,
             database,
             smtp,
@@ -560,6 +580,13 @@ impl Config {
         for tax in &self.stripe.data.taxes {
             if !tax.1.starts_with(STRIPE_TAX_PREFIX) {
                 return Err(Error::InvalidArgument(String::from("config: stripe tax not valid")));
+            }
+
+            if !self.countries.contains_key(tax) {
+                return Err(Error::InvalidArgument(format!(
+                    "config: country code not found for stripe tax: {}",
+                    tax.0
+                )));
             }
         }
 
