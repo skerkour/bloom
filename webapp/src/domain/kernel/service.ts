@@ -12,7 +12,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands } from './routes';
 import {
-  CompleteRegistration, Register, RegistrationStarted, SignedIn,
+  CompleteRegistration, Register, RegistrationStarted, Session, SignedIn,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -40,6 +40,11 @@ export class KernelService {
     const res: SignedIn = await this.apiClient.query(Commands.completeRegistration, input);
     this.store.commit(Mutation.SIGN_IN, res);
     this.router.push({ path: '/' });
+  }
+
+  async fetchMySessions(): Promise<Session[]> {
+    // TODO
+    return [];
   }
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {

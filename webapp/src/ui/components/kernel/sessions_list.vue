@@ -15,7 +15,7 @@
     <template v-slot:item="{ item }" class="text-left">
       <tr>
         <td>
-          {{ calendar(item.createdAt) }}
+          {{ calendar(item.created_at) }}
         </td>
         <td>
           <v-btn depressed color="error" @click="revoke(item)" :disabled="loading"
@@ -62,7 +62,7 @@ export default VueApp.extend({
           text: 'Signed in',
           align: 'start',
           sortable: true,
-          value: 'createdAt',
+          value: 'created_at',
         },
         {
           text: 'Actions',

@@ -8,7 +8,7 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" class="text-center" v-if="loading && !user">
+    <v-row justify="center" class="text-center" v-if="loading && !loaded">
       <v-col cols="12" sm="10" md="8" xl="6">
         <v-progress-circular
           :size="50"
@@ -18,7 +18,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="user" class="mx-4">
+    <v-row v-if="loaded" class="mx-4">
       <v-col cols="12" md="6" xl="4">
         <b-sessions-list
           :sessions="sessions" :currentSession="currentSession" :loading="loading"
@@ -31,7 +31,7 @@
 
 
 <script lang="ts">
-import { Session, User } from '@/api/graphql/model';
+import { Session } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import BSessionsList from '@/ui/components/kernel/sessions_list.vue';
 
@@ -42,15 +42,13 @@ export default VueApp.extend({
   },
   data() {
     return {
-      user: null as User | null,
+      sessions: [] as Session[],
       loading: false,
+      loaded: false,
       error: '',
     };
   },
   computed: {
-    sessions(): Session[] {
-      return this.user ? this.user.sessions : [];
-    },
     currentSession(): Session {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.$store.state.session!;
@@ -65,7 +63,8 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.user = await this.$usersService.fetchMySessions();
+        this.sessions = await this.$kernelService.fetchMySessions();
+        this.loaded = true;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -86,8 +85,7 @@ export default VueApp.extend({
 
       try {
         await this.$usersService.revokeSession(session.id);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.user!.sessions = this.user!.sessions.filter((s: Session) => s.id !== session.id);
+        this.sessions = this.sessions.filter((s: Session) => s.id !== session.id);
       } catch (err) {
         this.error = err.message;
       } finally {

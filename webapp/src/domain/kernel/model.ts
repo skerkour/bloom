@@ -29,6 +29,7 @@ export type User = {
 export type Session = {
   // TODO
   id: string,
+  created_at: string,
   token: string | null,
 }
 
