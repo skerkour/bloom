@@ -99,11 +99,11 @@ impl Service {
         format!("{}/preferences/invitations", &self.config.base_url)
     }
 
-    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, Error> {
+    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, crate::Error> {
         todo!(); // TODO
     }
 
-    pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, Error> {
+    pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, crate::Error> {
         todo!(); // TODO
     }
 }
