@@ -63,18 +63,12 @@ Best regards, <br />
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VerifyEmailEmailParams {
-    pub link: String,
+    pub code: String,
 }
 
 pub const VERIFY_EMAIL_EMAIL_TEMPLATE_ID: &str = "VERIFY_EMAIL_EMAIL_TEMPLATE";
 pub const VERIFY_EMAIL_EMAIL_TEMPLATE: &str = "
-Hi, <br />
- Please click on the following link to verify your new email address: <br />
-
-<a href=\"{{ link }}\">{{ link }}</a> <br />
-
-Best regards, <br />
-The Bloom team
+<h1> {{ code }} </h1>
 ";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

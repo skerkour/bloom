@@ -49,6 +49,7 @@ mod revoke_session;
 mod send_email_changed_email;
 mod send_register_email;
 mod send_sign_in_email;
+mod send_verify_email_email;
 mod setup_two_fa;
 mod sign_in;
 mod update_group_profile;
@@ -136,10 +137,6 @@ impl Service {
             inbox_service: None,
             xss,
         }
-    }
-
-    pub async fn send_verify_email_email(&self, input: SendVerifyEmailEmailInput) -> Result<(), Error> {
-        todo!(); // TODO
     }
 
     pub async fn send_group_invitation_email(&self, input: SendGroupInvitationEmailInput) -> Result<(), Error> {

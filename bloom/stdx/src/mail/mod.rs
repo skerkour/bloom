@@ -44,15 +44,23 @@ impl FromStr for Address {
     fn from_str(input: &str) -> Result<Address, Error> {
         let mut parts: Vec<String> = input.split(' ').map(|part| part.to_string()).collect();
 
-        if parts.len() != 2 {
+        if parts.len() < 2 {
             return Err(Error::ParseAddressError);
         }
 
-        let name = parts.remove(0);
         let address = parts
-            .remove(0)
+            .remove(parts.len() - 1)
             .trim_start_matches("<")
             .trim_end_matches(">")
+            .to_string();
+
+        let name = parts
+            .join(" ")
+            .chars()
+            .into_iter()
+            .filter(|c| c.is_alphanumeric() || *c == ' ')
+            .collect::<String>()
+            .trim()
             .to_string();
 
         Ok(Address {

@@ -1,6 +1,6 @@
 use super::SendSignInEmailInput;
 use crate::{notifications, Error, Service};
-use stdx::mail;
+use stdx::{log::error, mail};
 
 impl Service {
     pub async fn send_sign_in_email(&self, input: SendSignInEmailInput) -> Result<(), Error> {
@@ -15,12 +15,18 @@ impl Service {
         let email_data = tera::Context::from_serialize(notifications::SingInEmailParams {
             code,
         })
-        .map_err(|_| Error::Internal)?;
+        .map_err(|err| {
+            error!("kernel.send_sign_in_email: building template context: {}", err);
+            Error::Internal
+        })?;
 
         let html = self
             .templates
             .render(notifications::SIGN_IN_EMAIL_TEMPLATE_ID, &email_data)
-            .map_err(|_| Error::Internal)?;
+            .map_err(|err| {
+                error!("kernel.send_sign_in_email: rendering tempplate: {}", err);
+                Error::Internal
+            })?;
 
         let email = mail::Email {
             from: self.config.mail.notify_address.clone(),

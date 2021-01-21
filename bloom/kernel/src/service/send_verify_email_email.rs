@@ -1,11 +1,11 @@
-use super::SendRegisterEmailInput;
+use super::SendVerifyEmailEmailInput;
 use crate::{notifications, Error, Service};
 use stdx::{log::error, mail};
 
 impl Service {
-    pub async fn send_register_email(&self, input: SendRegisterEmailInput) -> Result<(), Error> {
+    pub async fn send_verify_email_email(&self, input: SendVerifyEmailEmailInput) -> Result<(), Error> {
         let to = mail::Address {
-            name: input.username,
+            name: input.name,
             address: input.email,
         };
         let code = self.format_code_hyphen(input.code);
@@ -16,7 +16,7 @@ impl Service {
             code,
         })
         .map_err(|err| {
-            error!("kernel.send_register_email: building template context: {}", err);
+            error!("kernel.send_verify_email_email: building template context: {}", err);
             Error::Internal
         })?;
 
@@ -24,7 +24,7 @@ impl Service {
             .templates
             .render(notifications::REGISTRATION_EMAIL_TEMPLATE_ID, &email_data)
             .map_err(|err| {
-                error!("kernel.send_register_email: rendering tempplate: {}", err);
+                error!("kernel.send_verify_email_email: rendering tempplate: {}", err);
                 Error::Internal
             })?;
 

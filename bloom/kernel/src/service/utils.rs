@@ -54,11 +54,37 @@ impl Service {
     }
 
     pub fn format_code_hyphen(&self, code: String) -> String {
-        todo!();
+        let mut ret = String::with_capacity(code.len() + 4);
+
+        for (i, c) in code.chars().into_iter().enumerate() {
+            if i != 0 && i % 4 == 0 {
+                ret.push('-');
+            }
+            ret.push(c)
+        }
+
+        ret
     }
 
     pub fn format_code_html(&self, code: String) -> String {
-        todo!();
+        let mut ret = String::with_capacity(code.len() * 45 + 15);
+        ret.push_str("span");
+
+        for c in code.chars().into_iter() {
+            if c.is_alphabetic() || c == '-' {
+                ret.push(c);
+            } else if c.is_numeric() {
+                ret.push_str(r#"<span style="color: red">"#);
+                ret.push(c);
+                ret.push_str("</span>");
+            } else {
+                ret.push_str(r#"<span style="color: blue">"#);
+                ret.push(c);
+                ret.push_str("</span>");
+            }
+        }
+
+        ret
     }
 
     pub fn contact_url(&self) -> String {
