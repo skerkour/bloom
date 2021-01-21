@@ -46,6 +46,12 @@ const ENV_SENTRY_INGEST_DOMAIN: &str = "SENTRY_INGEST_DOMAIN";
 const ENV_SENTRY_DSN: &str = "SENTRY_DSN";
 
 const POSTGRES_SCHEME: &str = "postgres";
+const STRIPE_PRODUCT_PREFIX: &str = "prod_";
+const STRIPE_PRICE_PREFIX: &str = "price_";
+const STRIPE_TAX_PREFIX: &str = "txr_";
+const STRIPE_EXPECTED_TAXES_NUMBER: usize = 28;
+const STRIPE_PUBLIC_KEY_PREFIX: &str = "pk_";
+const STRIPE_SECRET_KEY_PREFIX: &str = "sk_";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -519,6 +525,43 @@ impl Config {
         }
 
         // Stripe
+        if !self.stripe.public_key.starts_with(STRIPE_PUBLIC_KEY_PREFIX) {
+            return Err(Error::InvalidArgument(String::from(
+                "config: STRIPE_PUBLIC_KEY is not valid",
+            )));
+        }
+
+        if !self.stripe.secret_key.starts_with(STRIPE_SECRET_KEY_PREFIX) {
+            return Err(Error::InvalidArgument(String::from(
+                "config: STRIPE_SECRET_KEY is not valid",
+            )));
+        }
+
+        if !self.stripe.data.prices.starter.starts_with(STRIPE_PRICE_PREFIX)
+            || !self.stripe.data.prices.pro.starts_with(STRIPE_PRICE_PREFIX)
+            || !self.stripe.data.prices.ultra.starts_with(STRIPE_PRICE_PREFIX)
+        {
+            return Err(Error::InvalidArgument(String::from("config: invalid price")));
+        }
+
+        if !self.stripe.data.products.starter.starts_with(STRIPE_PRODUCT_PREFIX)
+            || !self.stripe.data.products.pro.starts_with(STRIPE_PRODUCT_PREFIX)
+            || !self.stripe.data.products.ultra.starts_with(STRIPE_PRODUCT_PREFIX)
+        {
+            return Err(Error::InvalidArgument(String::from("config: invalid product")));
+        }
+
+        if self.stripe.data.taxes.len() != STRIPE_EXPECTED_TAXES_NUMBER {
+            return Err(Error::InvalidArgument(String::from(
+                "config: invalid number of stripe taxes",
+            )));
+        }
+
+        for tax in &self.stripe.data.taxes {
+            if !tax.1.starts_with(STRIPE_TAX_PREFIX) {
+                return Err(Error::InvalidArgument(String::from("config: stripe tax not valid")));
+            }
+        }
 
         Ok(())
     }
