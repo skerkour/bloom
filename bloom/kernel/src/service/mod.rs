@@ -46,6 +46,7 @@ mod quit_group;
 mod register;
 mod remove_member_from_group;
 mod revoke_session;
+mod send_register_email;
 mod setup_two_fa;
 mod sign_in;
 mod update_group_profile;
@@ -81,6 +82,8 @@ impl Service {
         xss: Arc<dyn drivers::XssSanitizer>,
     ) -> Service {
         let mut templates = tera::Tera::default();
+        // don't escape input as it's provided by us
+        templates.autoescape_on(Vec::new());
         templates
             .add_raw_template(REGISTRATION_EMAIL_TEMPLATE_ID, REGISTRATION_EMAIL_TEMPLATE)
             .expect("kernel: parsing REGISTRATION_EMAIL_TEMPLATE");
@@ -131,11 +134,6 @@ impl Service {
             inbox_service: None,
             xss,
         }
-    }
-
-    // TODO
-    pub async fn send_register_email(&self, input: SendRegisterEmailInput) -> Result<(), Error> {
-        todo!(); // TODO
     }
 
     pub async fn send_sign_in_email(&self, input: SendSignInEmailInput) -> Result<(), Error> {

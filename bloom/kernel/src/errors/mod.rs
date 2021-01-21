@@ -127,3 +127,9 @@ impl std::convert::From<stdx::url::ParseError> for Error {
         Error::InvalidArgument(format!("url is not valid: {}", err))
     }
 }
+
+impl std::convert::From<stdx::mail::Error> for Error {
+    fn from(err: stdx::mail::Error) -> Self {
+        Error::InvalidArgument(format!("{}", err))
+    }
+}

@@ -9,7 +9,7 @@ use crate::Error;
 use rusoto_core::Region;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use stdx::{crypto, dotenv, encoding::base64, url::Url};
+use stdx::{crypto, dotenv, encoding::base64, mail, url::Url};
 
 const ENV_APP_ENV: &str = "APP_ENV";
 const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
@@ -153,7 +153,7 @@ const DEFAULT_HTTP_PUBLIC_DIRECTORY: &str = "public";
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mail {
     pub driver: MailDriver,
-    pub notify_address: String,
+    pub notify_address: mail::Address,
     pub domains_blocklist_file: String,
     pub domains_blocklist: HashSet<String>,
     // 	OutboundAddress  mail.Address `env:"MAIL_OUTBOUND_ADDRESS"`
@@ -383,8 +383,9 @@ impl Config {
         let mail_driver = std::env::var(ENV_MAIL_DRIVER)
             .ok()
             .map_or(Ok(DEFAULT_MAIL_DRIVER), |env_val| env_val.parse::<MailDriver>())?;
-        let mail_notify_address =
-            std::env::var(ENV_MAIL_NOTIFY_ADDRESS).map_err(|_| env_not_found(ENV_MAIL_NOTIFY_ADDRESS))?;
+        let mail_notify_address = std::env::var(ENV_MAIL_NOTIFY_ADDRESS)
+            .map_err(|_| env_not_found(ENV_MAIL_NOTIFY_ADDRESS))?
+            .parse::<mail::Address>()?;
         let mail_domains_blocklist_file =
             std::env::var(ENV_MAIL_BLOCKLIST).unwrap_or(String::from(DEFAULT_MAIL_BLOCKLIST_FILE));
 
@@ -543,6 +544,13 @@ impl Config {
                 "config: database_url is not a valid postgres URL",
             )));
         }
+        // force ssl if not explicitely disabled
+        // databaseURLQuery := databaseURL.Query()
+        // if len(databaseURLQuery["sslmode"]) == 0 {
+        //     databaseURLQuery.Set("sslmode", "require")
+        // }
+        // databaseURL.RawQuery = databaseURLQuery.Encode()
+        // config.Database.URL = databaseURL.String()
 
         // Stripe
         if !self.stripe.public_key.starts_with(STRIPE_PUBLIC_KEY_PREFIX) {

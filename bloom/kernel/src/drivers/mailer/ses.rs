@@ -28,7 +28,7 @@ impl SesMailer {
 #[async_trait::async_trait]
 impl Mailer for SesMailer {
     async fn send(&self, email: Email) -> Result<(), Error> {
-        let raw_email = email.bytes();
+        let raw_email = email.bytes().map_err(|_| Error::Internal)?;
 
         let ses_request = SendRawEmailRequest {
             raw_message: RawMessage {

@@ -52,4 +52,12 @@ impl Service {
         let safe_html = self.xss.sanitize(&unsafe_html);
         Ok(safe_html)
     }
+
+    pub fn format_code_hyphen(&self, code: String) -> String {
+        todo!();
+    }
+
+    pub fn format_code_html(&self, code: String) -> String {
+        todo!();
+    }
 }
