@@ -48,9 +48,13 @@ impl Service {
             Err(err) => return Err(err.into()),
         };
 
-        let upload = self.kernel_service.find_upload(&self.db, input.upload_id).await?;
+        let mut upload = self.kernel_service.find_upload(&self.db, input.upload_id).await?;
 
         if upload.namespace_id != parent.namespace_id.unwrap() {
+            return Err(Error::PermissionDenied.into());
+        }
+
+        if upload.completed {
             return Err(Error::PermissionDenied.into());
         }
 
@@ -64,6 +68,9 @@ impl Service {
         let now = Utc::now();
         namespace.updated_at = now;
         namespace.used_storage += size;
+
+        upload.updated_at = now;
+        upload.completed = true;
 
         if !self.kernel_service.self_hosted() {
             if (namespace.plan == BillingPlan::Free && namespace.used_storage > STORAGE_FREE)
@@ -102,7 +109,7 @@ impl Service {
 
         self.kernel_service.update_namespace(&mut tx, &namespace).await?;
 
-        self.kernel_service.delete_upload(&mut tx, upload.id).await?;
+        self.kernel_service.update_upload(&mut tx, &upload).await?;
 
         tx.commit().await?;
 

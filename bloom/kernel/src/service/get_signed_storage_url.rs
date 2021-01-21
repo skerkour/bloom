@@ -23,6 +23,7 @@ impl Service {
             created_at: now,
             updated_at: now,
             size: input.filesize as i64,
+            completed: true,
             namespace_id: input.namespace_id,
         };
         self.repo.create_upload(&self.db, &upload).await?;

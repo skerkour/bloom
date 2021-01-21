@@ -155,6 +155,7 @@ CREATE TABLE kernel_uploads (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
   size BIGINT NOT NULL,
+  completed BOOLEAN NOT NULL,
 
   namespace_id UUID REFERENCES kernel_namespaces(id)
 );

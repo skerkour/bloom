@@ -43,6 +43,7 @@ mod update_namespace;
 mod update_pending_email;
 mod update_pending_session;
 mod update_pending_user;
+mod update_upload;
 mod update_user;
 
 #[derive(Debug, Clone)]

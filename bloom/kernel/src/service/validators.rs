@@ -127,10 +127,6 @@ impl Service {
     }
 
     pub fn validate_upload_size(&self, size: u64) -> Result<(), Error> {
-        if size < 0 {
-            return Err(Error::FileIsTooLarge);
-        }
-
         if size > consts::UPLOAD_MAX_SIZE {
             return Err(Error::FileIsTooLarge);
         }

@@ -190,6 +190,8 @@ pub struct Upload {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 
     pub size: i64,
+    pub completed: bool,
+
     pub namespace_id: uuid::Uuid,
 }
 
