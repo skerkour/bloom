@@ -31,6 +31,7 @@ pub enum Message {
     KernelSendGroupInvitationEmail {
         invitation_id: Uuid,
     },
+    KernelDeleteOldData,
 
     // Analytics
     AnalyticsPageEvent(analytics::events::PageEvent),   // TODO

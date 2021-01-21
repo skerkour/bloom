@@ -38,6 +38,7 @@ mod decline_group_invitation;
 mod delete_group;
 mod delete_my_account;
 mod disable_two_fa;
+mod dispatch_delete_old_data;
 mod find_group_and_membership;
 mod find_namespace_and_membership;
 mod find_upload;
@@ -140,23 +141,19 @@ impl Service {
         }
     }
 
-    pub async fn decode_and_validate_session_token(&self, _token: String) -> Result<User, Error> {
+    pub async fn decode_and_validate_session_token(&self, token: String) -> Result<User, Error> {
         todo!(); // TODO
     }
 
-    pub async fn decode_and_validate_anonymous_token(&self, _token: String) -> Result<Uuid, Error> {
-        todo!(); // TODO
-    }
-
-    pub async fn dispatch_delete_old_data(&self) -> Result<(), Error> {
+    pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, Error> {
         todo!(); // TODO
     }
 
     // create an entity that can be retrieved later with the size, the user and the tmp_key
     pub async fn get_signed_storage_url(
         &self,
-        _actor: Actor,
-        _input: GetSignedStorageUploadUrlInput,
+        actor: Actor,
+        input: GetSignedStorageUploadUrlInput,
     ) -> Result<SignedStorageUrl, Error> {
         todo!(); // TODO
     }
