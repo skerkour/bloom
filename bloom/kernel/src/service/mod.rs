@@ -47,6 +47,7 @@ mod register;
 mod remove_member_from_group;
 mod revoke_session;
 mod send_email_changed_email;
+mod send_group_invitation_email;
 mod send_register_email;
 mod send_sign_in_email;
 mod send_verify_email_email;
@@ -137,10 +138,6 @@ impl Service {
             inbox_service: None,
             xss,
         }
-    }
-
-    pub async fn send_group_invitation_email(&self, input: SendGroupInvitationEmailInput) -> Result<(), Error> {
-        todo!(); // TODO
     }
 
     pub async fn decode_and_validate_session_token(&self, _token: String) -> Result<User, Error> {

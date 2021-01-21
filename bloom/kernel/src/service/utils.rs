@@ -90,4 +90,12 @@ impl Service {
     pub fn contact_url(&self) -> String {
         format!("{}/contact", &self.config.base_url)
     }
+
+    pub fn namespace_url(&self, namespace: &str) -> String {
+        format!("{}/{}", &self.config.base_url, namespace)
+    }
+
+    pub fn group_invitations_url(&self) -> String {
+        format!("{}/preferences/invitations", &self.config.base_url)
+    }
 }

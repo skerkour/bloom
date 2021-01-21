@@ -22,7 +22,7 @@ impl Service {
 
         let html = self
             .templates
-            .render(notifications::REGISTRATION_EMAIL_TEMPLATE_ID, &email_data)
+            .render(notifications::VERIFY_EMAIL_EMAIL_TEMPLATE_ID, &email_data)
             .map_err(|err| {
                 error!("kernel.send_verify_email_email: rendering tempplate: {}", err);
                 Error::Internal
