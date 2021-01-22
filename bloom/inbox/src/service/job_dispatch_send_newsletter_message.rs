@@ -29,7 +29,10 @@ impl Service {
                 name: contact.name,
                 address: contact.email,
             };
-            let subscription_id = subscriptions[&contact.id];
+            let subscription_id = match subscriptions.get(&contact.id) {
+                Some(sub_id) => *sub_id,
+                None => continue,
+            };
             let job = Message::InboxSendNewsletterMessage {
                 message_id,
                 from: from.clone(),
