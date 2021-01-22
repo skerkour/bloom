@@ -5,7 +5,10 @@ use crate::{
     Actor,
 };
 use std::io::BufWriter;
-use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, log::error, otp::totp};
+use stdx::{
+    base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, log::error, otp::totp,
+    sync::threadpool::spawn_blocking,
+};
 
 impl Service {
     pub async fn complete_two_fa_setup(&self, actor: Actor) -> Result<String, crate::Error> {
@@ -19,18 +22,17 @@ impl Service {
         let totp_key = totp::generate(consts::TOTP_ISSUER, &actor.username);
 
         // encrypt secret
-        let (encrypted_totp_secret, nonce) = crypto::aead_encrypt(
-            &self.config.master_key,
-            totp_key.secret().as_bytes(),
-            &actor.id.as_bytes()[..],
-        );
-        // TODO
-        // if err != nil {
-        //     errMessage := "kernel.SetupTwoFA: encrypting secret"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+        let master_key = self.config.master_key.clone();
+        let plaintext: Vec<u8> = totp_key.secret().as_bytes().into();
+        let ad: Vec<u8> = actor.id.as_bytes()[..].into();
+        let (encrypted_totp_secret, nonce) =
+            match spawn_blocking(move || crypto::aead_encrypt(&master_key, &plaintext, &ad)).await? {
+                Ok(res) => res,
+                Err(err) => {
+                    error!("kernel.complete_two_fa_setup: encrypting totp secret: {}", err);
+                    return Err(err.into());
+                }
+            };
 
         actor.encrypted_totp_secret = Some(encrypted_totp_secret);
         actor.totp_secret_nonce = Some(nonce);

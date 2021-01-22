@@ -15,6 +15,7 @@ base64 = "0.13"
 byteorder = "1.4"
 chrono = { version  = "0.4", features = ["serde"] }
 cron = "0.7"
+crypto42 = { git = "https://github.com/skerkour/crypto42-rs" }
 csv = "1"
 dotenv = "0.15"
 env_logger = "0.8"

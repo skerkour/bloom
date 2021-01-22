@@ -1,10 +1,10 @@
 use super::{RegisterInput, Service};
 use crate::{consts, entities::PendingUser, errors::kernel::Error, Actor};
-use stdx::tokio::time::delay_for;
 use stdx::{
     chrono, crypto,
     rand::{thread_rng, Rng},
 };
+use stdx::{log::error, tokio::time::delay_for};
 use stdx::{sync::threadpool::spawn_blocking, ulid::Ulid};
 
 impl Service {
@@ -41,16 +41,18 @@ impl Service {
         let now = chrono::Utc::now();
         let (code, code_hash) = spawn_blocking(|| {
             let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
-            // 	errMessage := "kernel.Register: generating code"
-            // 	logger.Error(errMessage, log.Err("error", err))
 
-            let code_hash = crypto::hash_password(&code);
-            // 	errMessage := "kernel.Register: hashing code"
-            // 	logger.Error(errMessage, log.Err("error", err))
+            let code_hash = match crypto::hash_password(&code) {
+                Ok(res) => res,
+                Err(err) => {
+                    error!("kernel.register: hashing code: {}", err);
+                    return Err(crate::Error::Internal);
+                }
+            };
 
-            (code, code_hash)
+            Ok((code, code_hash))
         })
-        .await?;
+        .await??;
 
         let pending_user = PendingUser {
             id: Ulid::new().into(),

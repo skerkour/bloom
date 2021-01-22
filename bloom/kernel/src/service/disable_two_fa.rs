@@ -1,4 +1,4 @@
-use stdx::{chrono::Utc, crypto, otp::totp};
+use stdx::{chrono::Utc, crypto, log::error, otp::totp, sync::threadpool::spawn_blocking};
 
 use super::{DisableTwoFaInput, Service};
 use crate::{errors::kernel::Error, Actor};
@@ -13,25 +13,27 @@ impl Service {
 
         let two_fa_code = input.code.trim().to_lowercase().replace("-", "");
 
-        let totp_secret = crypto::aead_decrypt(
-            &self.config.master_key,
-            &actor
-                .encrypted_totp_secret
-                .clone()
-                .expect("kernel/disable_two_fa: accessing actor.encrypted_totp_secret"),
-            &actor
-                .totp_secret_nonce
-                .clone()
-                .expect("kernel/disable_two_fa: accessing actor.totp_secret_nonce"),
-            &actor.id.as_bytes()[..],
-        );
-        // TODO
-        // if err != nil {
-        //     errMessage := "kernel.DisableTwoFA: decrypting TOTP secret"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+        let master_key = self.config.master_key.clone();
+        let encrypted_totp_secret = actor
+            .encrypted_totp_secret
+            .clone()
+            .expect("kernel.disable_two_fa: accessing actor.encrypted_totp_secret");
+        let totp_secret_nonce = actor
+            .totp_secret_nonce
+            .clone()
+            .expect("kernel.disable_two_fa: accessing actor.totp_secret_nonce");
+        let ad: Vec<u8> = actor.id.as_bytes()[..].into();
+        let totp_secret = match spawn_blocking(move || {
+            crypto::aead_decrypt(&master_key, &encrypted_totp_secret, &totp_secret_nonce, &ad)
+        })
+        .await?
+        {
+            Ok(res) => res,
+            Err(err) => {
+                error!("kernel.disable_two_fa: decrypting totp secret: {}", err);
+                return Err(err.into());
+            }
+        };
 
         let totp_secret = String::from_utf8(totp_secret)?;
 

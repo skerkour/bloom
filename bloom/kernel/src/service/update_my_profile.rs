@@ -1,4 +1,4 @@
-use stdx::{chrono::Utc, crypto, sync::threadpool::spawn_blocking, ulid::Ulid};
+use stdx::{chrono::Utc, crypto, log::error, sync::threadpool::spawn_blocking, ulid::Ulid};
 
 use super::{Service, UpdateMyProfileInput};
 use crate::{
@@ -57,16 +57,18 @@ impl Service {
 
                 let (code, code_hash) = spawn_blocking(|| {
                     let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
-                    // 	errMessage := "kernel.update_my_profile: generating code"
-                    // 	logger.Error(errMessage, log.Err("error", err))
 
-                    let code_hash = crypto::hash_password(&code);
-                    // 	errMessage := "kernel.update_my_profile: hashing code"
-                    // 	logger.Error(errMessage, log.Err("error", err))
+                    let code_hash = match crypto::hash_password(&code) {
+                        Ok(res) => res,
+                        Err(err) => {
+                            error!("kernel.update_my_profile: hashing code: {}", err);
+                            return Err(crate::Error::Internal);
+                        }
+                    };
 
-                    (code, code_hash)
+                    Ok((code, code_hash))
                 })
-                .await?;
+                .await??;
 
                 pending_email_code = code;
 

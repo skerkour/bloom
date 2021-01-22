@@ -145,3 +145,9 @@ impl std::convert::From<stdx::otp::Error> for Error {
         Error::Internal
     }
 }
+
+impl std::convert::From<stdx::crypto::Error> for Error {
+    fn from(_: stdx::crypto::Error) -> Self {
+        Error::Internal
+    }
+}

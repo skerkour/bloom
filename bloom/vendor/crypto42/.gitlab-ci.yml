@@ -1,0 +1,60 @@
+services:
+  - docker:dind
+
+stages:
+  - test
+  - build
+
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo_home
+  RUST_ENV: test
+  RUST_VERSION: nightly-2019-10-13
+  RUST_BACKTRACE: 1
+  CICD: 1
+
+
+cache:
+  paths:
+    - cargo_home/
+    - target/
+
+
+test:
+  stage: test
+  image: 'rust:stretch'
+  tags:
+    - docker
+  script:
+    - apt update && apt install -y gcc make git libsodium-dev libc6-dev
+    - rustup default $RUST_VERSION
+    - rustup component add rustfmt clippy
+    - make fmt_check
+    - make lint
+    - make test
+
+build:
+  stage: build
+  image: 'rust:stretch'
+  tags:
+    - docker
+  script:
+    - apt update && apt install -y gcc make git libsodium-dev libc6-dev
+    - rustup default $RUST_VERSION
+    - make build
+
+pages:
+  stage: build
+  image: 'rust:stretch'
+  only:
+    - "tags"
+  script:
+    - apt update && apt install -y gcc make git libsodium-dev libc6-dev
+    - make docs
+    - mv target/doc/ public
+    - echo '<meta http-equiv="refresh" content="0; url=crypto42">' > public/index.html
+  artifacts:
+    paths:
+    - public

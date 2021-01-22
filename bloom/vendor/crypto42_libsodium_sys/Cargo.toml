@@ -1,0 +1,33 @@
+[package]
+authors = ["z0mbie42 <sylvain@kerkour.fr>"]
+build = "build.rs"
+description = "FFI binding to libsodium"
+documentation = "https://sodiumoxide.github.io/sodiumoxide"
+keywords = ["libsodium", "NaCl", "crypto"]
+license = "Apache-2.0"
+links = "sodium"
+name = "crypto42_libsodium_sys"
+repository = "https://gitlab.com/bloom42/libs/crypto42-rs.git"
+categories = ["cryptography", "api-bindings"]
+version = "0.2.5"
+
+[build-dependencies]
+pkg-config = "0.3"
+tar = "0.4"
+libflate = "0.1"
+
+[target.'cfg(target_env = "msvc")'.build-dependencies]
+libc = { version = "0.2", default-features = false }
+vcpkg = "0.2"
+
+[target.'cfg(not(target_env = "msvc"))'.build-dependencies]
+cc = "1.0"
+
+[dependencies]
+libc = { version = "0.2", default-features = false }
+
+[lib]
+name = "libsodium_sys"
+
+[features]
+use_pkg_config = []

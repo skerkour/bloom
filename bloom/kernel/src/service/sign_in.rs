@@ -1,6 +1,5 @@
 use super::{Service, SignInInput};
 use crate::{consts, entities::PendingSession, errors::kernel::Error, Actor};
-use stdx::tokio::time::delay_for;
 use stdx::{
     chrono::Utc,
     crypto,
@@ -8,6 +7,7 @@ use stdx::{
     sync::threadpool::spawn_blocking,
     ulid::Ulid,
 };
+use stdx::{log::error, tokio::time::delay_for};
 
 impl Service {
     pub async fn sign_in(&self, actor: Actor, input: SignInInput) -> Result<PendingSession, crate::Error> {
@@ -33,16 +33,18 @@ impl Service {
 
         let (code, code_hash) = spawn_blocking(|| {
             let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::SIGN_IN_CODE_LENGTH);
-            // 	errMessage := "kernel.Register: generating code"
-            // 	logger.Error(errMessage, log.Err("error", err))
 
-            let code_hash = crypto::hash_password(&code);
-            // 	errMessage := "kernel.Register: hashing code"
-            // 	logger.Error(errMessage, log.Err("error", err))
+            let code_hash = match crypto::hash_password(&code) {
+                Ok(res) => res,
+                Err(err) => {
+                    error!("kernel.sign_in: hashing code: {}", err);
+                    return Err(crate::Error::Internal);
+                }
+            };
 
-            (code, code_hash)
+            Ok((code, code_hash))
         })
-        .await?;
+        .await??;
 
         let now = Utc::now();
         let pending_session = PendingSession {
