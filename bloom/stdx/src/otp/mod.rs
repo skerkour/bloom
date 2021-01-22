@@ -7,6 +7,17 @@ pub mod totp;
 pub enum Error {
     #[error("otp: GeneratingQRCode")]
     GeneratingQRCode,
+
+    #[error("otp: JoinError")]
+    JoinError,
+}
+
+impl std::convert::From<crate::sync::threadpool::Error> for Error {
+    fn from(err: crate::sync::threadpool::Error) -> Self {
+        match err {
+            _ => Error::JoinError,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

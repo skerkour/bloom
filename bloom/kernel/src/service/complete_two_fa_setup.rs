@@ -19,7 +19,7 @@ impl Service {
         }
 
         // generate secret
-        let totp_key = totp::generate(consts::TOTP_ISSUER, &actor.username);
+        let totp_key = totp::generate(consts::TOTP_ISSUER.to_string(), actor.username.clone()).await?;
 
         // encrypt secret
         let master_key = self.config.master_key.clone();

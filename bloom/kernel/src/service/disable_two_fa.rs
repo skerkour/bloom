@@ -37,7 +37,7 @@ impl Service {
 
         let totp_secret = String::from_utf8(totp_secret)?;
 
-        if !totp::validate(&two_fa_code, &totp_secret) {
+        if !(totp::validate(two_fa_code, totp_secret).await?) {
             return Err(Error::TwoFACodeIsNotValid.into());
         }
 

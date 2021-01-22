@@ -1,5 +1,6 @@
-use crate::base32;
+use super::Error;
 use crate::crypto;
+use crate::{base32, sync::threadpool::spawn_blocking};
 use byteorder::{BigEndian, ReadBytesExt};
 use chrono::Utc;
 use rand::{thread_rng, Rng};
@@ -12,42 +13,48 @@ const PERIOD: usize = 30;
 const ALGORITHM: &str = "SHA1";
 const DISCREPANCY: i64 = 1;
 
-pub fn validate(code: &str, secret: &str) -> bool {
-    if code.len() != DIGITS {
-        return false;
-    }
-
-    let curr_time_slice = Utc::now().timestamp() / 30;
-    let start_time = curr_time_slice.saturating_sub(DISCREPANCY) as u64;
-    let end_time = curr_time_slice.saturating_add(DISCREPANCY + 1) as u64;
-
-    for time_slice in start_time..end_time {
-        let valid_code = generate_code(secret.as_bytes(), time_slice);
-        if crypto::constant_time_compare(code.as_bytes(), valid_code.as_bytes()) {
-            return true;
+pub async fn validate(code: String, secret: String) -> Result<bool, Error> {
+    Ok(spawn_blocking(move || {
+        if code.len() != DIGITS {
+            return false;
         }
-    }
-    false
+
+        let curr_time_slice = Utc::now().timestamp() / 30;
+        let start_time = curr_time_slice.saturating_sub(DISCREPANCY) as u64;
+        let end_time = curr_time_slice.saturating_add(DISCREPANCY + 1) as u64;
+
+        for time_slice in start_time..end_time {
+            let valid_code = generate_code(secret.as_bytes(), time_slice);
+            if crypto::constant_time_compare(code.as_bytes(), valid_code.as_bytes()) {
+                return true;
+            }
+        }
+        false
+    })
+    .await?)
 }
 
 // url format: otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example
-pub fn generate(issuer: &str, account_name: &str) -> super::Key {
-    let mut secret = [0u8; SECRET_SIZE];
-    thread_rng().fill(&mut secret[..]);
+pub async fn generate(issuer: String, account_name: String) -> Result<super::Key, Error> {
+    Ok(spawn_blocking(move || {
+        let mut secret = [0u8; SECRET_SIZE];
+        thread_rng().fill(&mut secret[..]);
 
-    let secret_str = base32::encode(
-        base32::Alphabet::RFC4648 {
-            padding: false,
-        },
-        &secret,
-    );
+        let secret_str = base32::encode(
+            base32::Alphabet::RFC4648 {
+                padding: false,
+            },
+            &secret,
+        );
 
-    let url = format!(
-        "otpauth://totp/{}:{}?secret={}&issuer={}&period={}&algorithm={}&digits={}",
-        issuer, account_name, &secret_str, issuer, PERIOD, ALGORITHM, DIGITS
-    );
+        let url = format!(
+            "otpauth://totp/{}:{}?secret={}&issuer={}&period={}&algorithm={}&digits={}",
+            issuer, account_name, &secret_str, issuer, PERIOD, ALGORITHM, DIGITS
+        );
 
-    super::Key::new(secret_str, url)
+        super::Key::new(secret_str, url)
+    })
+    .await?)
 }
 
 // see https://github.com/bloom42/gobox/blob/c19cbcf2c3e55d27c59bce453056099e9eb58483/otp/hotp/hotp.go#L73
@@ -76,14 +83,16 @@ mod tests {
     const ISSUER: &str = "Bloom";
     const ACCOUNT_NAME: &str = "Sylvain";
 
-    #[test]
-    fn generate_and_valdiate() {
-        let key = generate(ISSUER, ACCOUNT_NAME);
+    #[tokio::test]
+    async fn generate_and_valdiate() {
+        let key = generate(ISSUER.to_string(), ACCOUNT_NAME.to_string()).await.unwrap();
         let secret = key.secret();
 
         let counter = (Utc::now().timestamp() / 30) as u64;
         let code = generate_code(secret.as_bytes(), counter);
 
-        assert_eq!(validate(&code, &secret), true);
+        let result = validate(code, secret).await.unwrap();
+
+        assert!(result);
     }
 }

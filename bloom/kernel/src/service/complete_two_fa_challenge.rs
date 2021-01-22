@@ -71,7 +71,7 @@ impl Service {
 
         let totp_secret = String::from_utf8(totp_secret)?;
 
-        if !totp::validate(&two_fa_code, &totp_secret) {
+        if !(totp::validate(two_fa_code, totp_secret).await?) {
             pending_session.failed_attempts += 1;
             let _ = self.repo.update_pending_session(&self.db, &pending_session).await;
             return Err(Error::TwoFACodeIsNotValid.into());
