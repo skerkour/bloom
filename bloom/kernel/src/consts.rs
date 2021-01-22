@@ -48,9 +48,9 @@ pub const TOTP_QR_CODE_SIZE: u32 = 300;
 pub const TOTP_QR_JPEG_QUALITY: u8 = 85;
 pub const CODE_ALPHABET: &str = "abcdefghijkmnpqrstuvwxyz234567890";
 /// The length in characters of the verification code sent for registration
-pub const REGISTER_CODE_LENGTH: u32 = 12;
+pub const REGISTER_CODE_LENGTH: usize = 12;
 /// The length in characters of the verification code sent for signing in
-pub const SIGN_IN_CODE_LENGTH: u32 = 12;
+pub const SIGN_IN_CODE_LENGTH: usize = 12;
 // The max number of invalid code an user can try to validate its account with
 pub const REGISTRATION_MAX_FAILED_ATTEMPTS: i64 = 5;
 // The max number of invalid codes an user can try to validate its account with

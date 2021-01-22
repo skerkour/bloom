@@ -3,7 +3,7 @@ use crate::{consts, entities::PendingSession, errors::kernel::Error, Actor};
 use stdx::{
     chrono::Utc,
     crypto,
-    rand::{thread_rng, Rng},
+    rand::{self, thread_rng, Rng},
     sync::threadpool::spawn_blocking,
     ulid::Ulid,
 };
@@ -32,7 +32,7 @@ impl Service {
         }
 
         let (code, code_hash) = spawn_blocking(|| {
-            let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::SIGN_IN_CODE_LENGTH);
+            let code = rand::alphabet(consts::CODE_ALPHABET, consts::SIGN_IN_CODE_LENGTH);
 
             let code_hash = match crypto::hash_password(&code) {
                 Ok(res) => res,

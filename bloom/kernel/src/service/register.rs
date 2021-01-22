@@ -2,7 +2,7 @@ use super::{RegisterInput, Service};
 use crate::{consts, entities::PendingUser, errors::kernel::Error, Actor};
 use stdx::{
     chrono, crypto,
-    rand::{thread_rng, Rng},
+    rand::{self, thread_rng, Rng},
 };
 use stdx::{log::error, tokio::time::delay_for};
 use stdx::{sync::threadpool::spawn_blocking, ulid::Ulid};
@@ -40,7 +40,7 @@ impl Service {
         // create new pending user
         let now = chrono::Utc::now();
         let (code, code_hash) = spawn_blocking(|| {
-            let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
+            let code = rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
 
             let code_hash = match crypto::hash_password(&code) {
                 Ok(res) => res,

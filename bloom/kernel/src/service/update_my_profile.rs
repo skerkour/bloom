@@ -1,4 +1,4 @@
-use stdx::{chrono::Utc, crypto, log::error, sync::threadpool::spawn_blocking, ulid::Ulid};
+use stdx::{chrono::Utc, crypto, log::error, rand, sync::threadpool::spawn_blocking, ulid::Ulid};
 
 use super::{Service, UpdateMyProfileInput};
 use crate::{
@@ -56,7 +56,7 @@ impl Service {
                 self.validate_email(&email, true)?;
 
                 let (code, code_hash) = spawn_blocking(|| {
-                    let code = crypto::rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
+                    let code = rand::alphabet(consts::CODE_ALPHABET, consts::REGISTER_CODE_LENGTH);
 
                     let code_hash = match crypto::hash_password(&code) {
                         Ok(res) => res,

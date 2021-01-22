@@ -1,7 +1,5 @@
 use crypto42::{aead::xchacha20poly1305_ietf, hash::blake2b, kdf::argon2id};
 
-pub mod rand;
-
 #[derive(thiserror::Error, Debug, Clone, Copy)]
 pub enum Error {
     #[error("crypto: Unknown")]
