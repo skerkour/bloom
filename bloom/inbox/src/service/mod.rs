@@ -305,5 +305,5 @@ pub struct SendNewsletterMessageJobInput {
     pub message_id: Uuid,
     pub to: mail::Address,
     pub from: mail::Address,
-    pub contact_id: Option<Uuid>,
+    pub subscription_id: Option<Uuid>,
 }

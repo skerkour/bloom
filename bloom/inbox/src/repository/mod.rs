@@ -28,6 +28,7 @@ mod find_newsletter_message_by_id;
 mod find_newsletter_messages_for_namespace;
 mod find_newsletter_subscription_by_contact_id_and_list_id;
 mod find_spam_conversations;
+mod find_subscriptions_for_list;
 mod find_trashed_conversations;
 mod update_chatbox_preferences;
 mod update_contact;

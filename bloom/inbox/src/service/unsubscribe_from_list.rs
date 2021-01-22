@@ -7,11 +7,7 @@ use stdx::{
 };
 
 impl Service {
-    pub async fn unsubscribe_from_list(
-        &self,
-        _actor: Actor,
-        input: UnsubscribeFromListInput,
-    ) -> Result<(), kernel::Error> {
+    pub async fn unsubscribe_from_list(&self, _: Actor, input: UnsubscribeFromListInput) -> Result<(), kernel::Error> {
         // authentication not required
         // sleep to prevent spam and bruteforce
         let sleep = thread_rng().gen_range(consts::SLEEP_MIN..consts::SLEEP_MAX);

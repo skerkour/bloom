@@ -91,12 +91,12 @@ impl Worker {
                 message_id,
                 to,
                 from,
-                contact_id,
+                subscription_id,
             } => {
                 let input = inbox::service::SendNewsletterMessageJobInput {
                     message_id,
                     to,
-                    contact_id,
+                    subscription_id,
                     from,
                 };
                 self.inbox_service.job_send_newsletter_message(input).await

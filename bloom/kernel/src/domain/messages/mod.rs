@@ -42,7 +42,7 @@ pub enum Message {
         message_id: Uuid,
         from: mail::Address,
         to: mail::Address,
-        contact_id: Option<Uuid>,
+        subscription_id: Option<Uuid>,
     },
     InboxDispatchSendNewsletterMessage {
         message_id: Uuid,
