@@ -21,11 +21,14 @@ impl Service {
             .await
             .map_err(|_| Error::NewsletterMessageNotFound)?;
 
+        // TODO: correct email of the sender
+        let from = self.kernel_service.config().mail.notify_address.clone();
         let to = mail::Address {
             name: actor.name,
             address: actor.email,
         };
         let job = kernel::domain::messages::Message::InboxSendNewsletterMessage {
+            from,
             message_id: message.id,
             to,
             is_test: true,
