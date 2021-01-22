@@ -10,7 +10,10 @@ pub struct File {
 }
 
 impl From<files::entities::File> for File {
-    fn from(_item: files::entities::File) -> Self {
-        todo!();
+    fn from(file: files::entities::File) -> Self {
+        File {
+            id: file.id,
+            created_at: file.created_at,
+        }
     }
 }

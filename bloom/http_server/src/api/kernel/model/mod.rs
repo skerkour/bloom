@@ -11,8 +11,12 @@ pub struct User {
 }
 
 impl From<kernel::entities::User> for User {
-    fn from(_item: kernel::entities::User) -> Self {
-        todo!(); // TODO
+    fn from(user: kernel::entities::User) -> Self {
+        User {
+            id: user.id,
+            created_at: user.created_at,
+            name: user.name,
+        }
     }
 }
 
@@ -149,12 +153,14 @@ impl From<kernel::entities::Group> for Group {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupInvitation {
-    // TODO
+    id: Id,
 }
 
 impl From<kernel::entities::GroupInvitation> for GroupInvitation {
-    fn from(_item: kernel::entities::GroupInvitation) -> Self {
-        todo!(); // TODO
+    fn from(invitation: kernel::entities::GroupInvitation) -> Self {
+        GroupInvitation {
+            id: invitation.id,
+        }
     }
 }
 

@@ -28,7 +28,9 @@ impl File {
     }
 
     pub fn storage_key(&self) -> String {
-        // TODO: improve
+        // TODO: is using folders really needed?
+        // for traditional FS -> yes
+        // for S3: seems not
         let id_str = self.id.to_hyphenated().to_string();
         format!("/files/{}/{}", &id_str[..4], &id_str)
     }
