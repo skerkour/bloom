@@ -36,4 +36,8 @@ impl super::Storage for S3Storage {
     async fn get_presigned_uplaod_url(&self, key: &str, size: u64) -> Result<String, Error> {
         todo!();
     }
+
+    async fn delete_object(&self, key: &str) -> Result<(), Error> {
+        todo!();
+    }
 }

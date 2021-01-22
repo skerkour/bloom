@@ -1,4 +1,6 @@
 use stdx::sqlx;
+
+#[derive(Debug)]
 pub enum Error {
     // Other
     FileSizeIsNegative,

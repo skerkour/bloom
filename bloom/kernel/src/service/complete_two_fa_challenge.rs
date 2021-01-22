@@ -74,20 +74,21 @@ impl Service {
             return Err(Error::TwoFACodeIsNotValid.into());
         }
 
-        let session = self.new_session(actor.id).await?;
+        let new_session = self.new_session(actor.id).await?;
 
         // create a new session and delete pending session
         let mut tx = self.db.begin().await?;
 
         self.repo.delete_pending_session(&mut tx, pending_session.id).await?;
 
-        self.repo.create_session(&mut tx, &session).await?;
+        self.repo.create_session(&mut tx, &new_session.session).await?;
 
         tx.commit().await?;
 
         Ok(SignedIn::Success {
-            session,
+            session: new_session.session,
             user: actor,
+            token: new_session.token,
         })
     }
 }

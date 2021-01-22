@@ -159,6 +159,8 @@ CREATE TABLE kernel_uploads (
 
   namespace_id UUID REFERENCES kernel_namespaces(id)
 );
+CREATE INDEX index_kernel_uploads_on_created_at ON kernel_uploads (created_at);
+
 
 -- #################################################################################################
 -- Files

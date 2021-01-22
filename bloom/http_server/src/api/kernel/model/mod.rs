@@ -25,12 +25,14 @@ pub struct RegistrationStarted {
 pub struct Session {
     pub id: Id,
     pub created_at: Time,
-    pub token: Option<String>,
 }
 
 impl From<kernel::entities::Session> for Session {
-    fn from(_item: kernel::entities::Session) -> Self {
-        todo!(); // TODO
+    fn from(session: kernel::entities::Session) -> Self {
+        Session {
+            id: session.id,
+            created_at: session.created_at,
+        }
     }
 }
 
@@ -38,6 +40,7 @@ impl From<kernel::entities::Session> for Session {
 pub struct Registered {
     pub session: Session,
     pub me: User,
+    pub token: String,
 }
 
 impl From<kernel::service::Registered> for Registered {
@@ -45,6 +48,7 @@ impl From<kernel::service::Registered> for Registered {
         Registered {
             session: item.session.into(),
             me: item.user.into(),
+            token: item.token,
         }
     }
 }
@@ -54,6 +58,7 @@ pub struct SignedIn {
     pub session: Option<Session>,
     pub me: Option<User>,
     pub two_fa_method: Option<TwoFaMethod>,
+    pub token: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, Eq, PartialEq)]
@@ -76,15 +81,18 @@ impl From<kernel::service::SignedIn> for SignedIn {
             kernel::service::SignedIn::Success {
                 session,
                 user,
+                token,
             } => SignedIn {
                 session: Some(session.into()),
                 me: Some(user.into()),
                 two_fa_method: None,
+                token: Some(token),
             },
             kernel::service::SignedIn::TwoFa(method) => SignedIn {
                 session: None,
                 me: None,
                 two_fa_method: Some(method.into()),
+                token: None,
             },
         }
     }
@@ -126,12 +134,16 @@ pub struct SetupTwoFa {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Group {
-    // TODO
+    pub id: Id,
+    pub created_at: Time,
 }
 
 impl From<kernel::entities::Group> for Group {
-    fn from(_item: kernel::entities::Group) -> Self {
-        todo!(); // TODO
+    fn from(group: kernel::entities::Group) -> Self {
+        Group {
+            id: group.id,
+            created_at: group.created_at,
+        }
     }
 }
 
