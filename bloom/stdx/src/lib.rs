@@ -8,6 +8,7 @@ pub mod job_scheduler;
 pub mod mail;
 pub mod markdown;
 pub mod otp;
+pub mod qrcode;
 pub mod sync;
 pub mod ulid;
 pub mod uuid;
