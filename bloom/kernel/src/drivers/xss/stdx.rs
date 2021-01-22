@@ -1,5 +1,3 @@
-use crate::Error;
-
 #[derive(Debug, Clone)]
 pub struct StdxXssSanitizer {}
 
