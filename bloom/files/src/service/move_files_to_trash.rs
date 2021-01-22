@@ -41,7 +41,7 @@ impl Service {
         }
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, namespace_id)
+            .check_namespace_membership(&self.db, &actor, namespace_id)
             .await?;
 
         let mut all_children = HashMap::<Uuid, Vec<File>>::with_capacity(files.len());

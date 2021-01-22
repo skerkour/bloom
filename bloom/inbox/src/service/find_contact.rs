@@ -9,7 +9,7 @@ impl Service {
         let contact = self.repo.find_contact_by_id(&self.db, input.contact_id).await?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, contact.namespace_id)
+            .check_namespace_membership(&self.db, &actor, contact.namespace_id)
             .await
             .map_err(|_| Error::ContactNotFound)?;
 

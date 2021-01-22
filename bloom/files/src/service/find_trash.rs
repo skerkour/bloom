@@ -8,7 +8,7 @@ impl Service {
         let actor = self.kernel_service.current_user(actor)?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, namespace_id)
+            .check_namespace_membership(&self.db, &actor, namespace_id)
             .await?;
 
         let trashed_files = self.repo.find_all_trashed_files(&self.db, namespace_id).await?;

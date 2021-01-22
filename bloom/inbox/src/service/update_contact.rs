@@ -11,7 +11,7 @@ impl Service {
 
         // check namespace membership
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, contact.namespace_id)
+            .check_namespace_membership(&self.db, &actor, contact.namespace_id)
             .await?;
 
         // clean and validate input

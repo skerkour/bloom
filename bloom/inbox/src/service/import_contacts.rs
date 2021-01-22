@@ -20,7 +20,7 @@ impl Service {
         let namespace_id = input.namespace_id;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, namespace_id)
+            .check_namespace_membership(&self.db, &actor, namespace_id)
             .await?;
 
         let list = if let Some(list_id) = input.list_id {

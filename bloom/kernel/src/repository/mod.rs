@@ -28,6 +28,7 @@ mod find_group_membership_by_username;
 mod find_groups_for_user;
 mod find_namespace_by_id;
 mod find_namespace_by_path;
+mod find_namespace_group_membership;
 mod find_old_uploads;
 mod find_pending_email_by_id;
 mod find_pending_session_by_id;

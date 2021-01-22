@@ -14,7 +14,7 @@ impl Service {
         }
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, parent.namespace_id.unwrap())
+            .check_namespace_membership(&self.db, &actor, parent.namespace_id.unwrap())
             .await?;
 
         // valdiate input

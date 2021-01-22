@@ -16,7 +16,7 @@ impl Service {
             .await?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, message.namespace_id)
+            .check_namespace_membership(&self.db, &actor, message.namespace_id)
             .await
             .map_err(|_| Error::NewsletterMessageNotFound)?;
 

@@ -14,7 +14,7 @@ impl Service {
             .await?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, conversation.namespace_id)
+            .check_namespace_membership(&self.db, &actor, conversation.namespace_id)
             .await
             .map_err(|_| Error::ConversationNotFound)?;
 

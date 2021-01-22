@@ -13,7 +13,7 @@ impl Service {
         let list = self.repo.find_newsletter_list_by_id(&self.db, input.list_id).await?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, list.namespace_id)
+            .check_namespace_membership(&self.db, &actor, list.namespace_id)
             .await
             .map_err(|_| Error::NewsletterListNotFound)?;
 

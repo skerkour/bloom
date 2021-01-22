@@ -30,7 +30,7 @@ impl Service {
         let namespace_id = namespace_id.unwrap();
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, namespace_id)
+            .check_namespace_membership(&self.db, &actor, namespace_id)
             .await?;
 
         for file in &files {

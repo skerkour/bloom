@@ -17,7 +17,7 @@ impl Service {
             .await?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, message.namespace_id)
+            .check_namespace_membership(&self.db, &actor, message.namespace_id)
             .await?;
 
         let list = self.repo.find_newsletter_list_by_id(&self.db, input.list_id).await?;

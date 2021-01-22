@@ -14,7 +14,7 @@ impl Service {
         self.validate_upload_size(input.filesize)?;
 
         // check namespace membership
-        self.check_namespace_membership(&self.db, actor.id, input.namespace_id)
+        self.check_namespace_membership(&self.db, &actor, input.namespace_id)
             .await?;
 
         let now = Utc::now();

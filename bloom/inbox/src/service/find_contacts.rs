@@ -7,7 +7,7 @@ impl Service {
         let actor = self.kernel_service.current_user(actor)?;
 
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, input.namespace_id)
+            .check_namespace_membership(&self.db, &actor, input.namespace_id)
             .await?;
 
         let contacts = self

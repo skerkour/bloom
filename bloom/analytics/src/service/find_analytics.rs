@@ -7,7 +7,7 @@ impl Service {
     pub async fn find_analytics(&self, actor: Actor, namespace_id: Uuid) -> Result<Analytics, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
         self.kernel_service
-            .check_namespace_membership(&self.db, actor.id, namespace_id)
+            .check_namespace_membership(&self.db, &actor, namespace_id)
             .await?;
 
         let visits = self.repo.find_visits(&self.db, namespace_id).await?;
