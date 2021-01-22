@@ -5,7 +5,7 @@ use crate::{
     Actor,
 };
 use std::io::BufWriter;
-use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, otp::totp};
+use stdx::{base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, log::error, otp::totp};
 
 impl Service {
     pub async fn complete_two_fa_setup(&self, actor: Actor) -> Result<String, crate::Error> {
@@ -38,13 +38,13 @@ impl Service {
         actor.updated_at = Utc::now();
         self.repo.update_user(&self.db, &actor).await?;
 
-        let qr_code_image = totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE)?;
-        // TODO
-        // if err != nil {
-        //     errMessage := "kernel.SetupTwoFA: generating TOTP QR code"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     return
-        // }
+        let qr_code_image = match totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE) {
+            Ok(res) => res,
+            Err(err) => {
+                error!("kernel.complete_two_fa_setup: generating TOTP QR code: {}", err);
+                return Err(err.into());
+            }
+        };
 
         let ref mut qr_code_buffer = BufWriter::new(Vec::new());
         let mut jpeg_encoder = JpegEncoder::new_with_quality(qr_code_buffer, consts::TOTP_QR_JPEG_QUALITY);
