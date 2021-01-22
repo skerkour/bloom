@@ -139,3 +139,9 @@ impl std::convert::From<stdx::uuid::Error> for Error {
         Error::InvalidArgument(String::from("Parsing UUID"))
     }
 }
+
+impl std::convert::From<stdx::otp::Error> for Error {
+    fn from(_: stdx::otp::Error) -> Self {
+        Error::Internal
+    }
+}

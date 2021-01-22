@@ -1,5 +1,6 @@
 //! The missing pieces of Rust's standard library
 
+pub mod base32;
 pub mod crypto;
 pub mod encoding;
 pub mod finance;
@@ -15,6 +16,7 @@ pub mod uuid;
 pub mod validator;
 
 pub use base64;
+pub use byteorder;
 pub use chrono;
 pub use csv;
 pub use dotenv;

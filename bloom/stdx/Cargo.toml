@@ -12,6 +12,7 @@ ammonia = "3"
 atomic = "0.5"
 askama_escape = "0.10"
 base64 = "0.13"
+byteorder = "1.4"
 chrono = { version  = "0.4", features = ["serde"] }
 cron = "0.7"
 csv = "1"
@@ -27,6 +28,7 @@ num_cpus = "1"
 pulldown-cmark = "0.8"
 rand = { version = "0.8" }
 regex = "1"
+ring = "0.16"
 serde = { version = "1", features = ["derive"] }
 sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }
 thiserror = "1"

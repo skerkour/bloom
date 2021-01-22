@@ -45,7 +45,7 @@ impl Service {
         actor.updated_at = Utc::now();
         self.repo.update_user(&self.db, &actor).await?;
 
-        let qr_code_image = totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE);
+        let qr_code_image = totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE)?;
         // TODO
         // if err != nil {
         //     errMessage := "kernel.SetupTwoFA: generating TOTP QR code"
