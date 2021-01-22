@@ -50,15 +50,40 @@ pub fn generate(issuer: &str, account_name: &str) -> super::Key {
     super::Key::new(secret_str, url)
 }
 
+// see https://github.com/bloom42/gobox/blob/c19cbcf2c3e55d27c59bce453056099e9eb58483/otp/hotp/hotp.go#L73
+// for a more correct implementation
 fn generate_code(secret: &[u8], counter: u64) -> String {
     let key = hmac::Key::new(hmac::HMAC_SHA1_FOR_LEGACY_USE_ONLY, secret);
-    let wtr = counter.to_be_bytes().to_vec();
-    let result = hmac::sign(&key, &wtr);
+    let counter_buffer = counter.to_be_bytes().to_vec();
+    let result = hmac::sign(&key, &counter_buffer);
     let digest = result.as_ref();
-    let ob = digest[19];
-    let pos = (ob & 15) as usize;
-    let mut cursor = Cursor::new(digest[pos..pos + 4].to_vec());
-    let base = cursor.read_u32::<BigEndian>().expect("otp.generate_code") & 0x7fff_ffff;
+    let last_byte = digest[19];
 
-    (base % 1_000_000).to_string()
+    // "Dynamic truncation" in RFC 4226
+    // http://tools.ietf.org/html/rfc4226#section-5.4
+    let offset = (last_byte & 0xf) as usize;
+    let mut cursor = Cursor::new(digest[offset..offset + 4].to_vec());
+    let value = cursor.read_u32::<BigEndian>().expect("otp.generate_code") & 0x7f_ff_ff_ff;
+
+    let value = value % 1_000_000;
+
+    format!("{:06}", value)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const ISSUER: &str = "Bloom";
+    const ACCOUNT_NAME: &str = "Sylvain";
+
+    #[test]
+    fn generate_and_valdiate() {
+        let key = generate(ISSUER, ACCOUNT_NAME);
+        let secret = key.secret();
+
+        let counter = (Utc::now().timestamp() / 30) as u64;
+        let code = generate_code(secret.as_bytes(), counter);
+
+        assert_eq!(validate(&code, &secret), true);
+    }
 }
