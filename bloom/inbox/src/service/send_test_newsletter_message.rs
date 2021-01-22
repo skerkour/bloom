@@ -31,7 +31,7 @@ impl Service {
             from,
             message_id: message.id,
             to,
-            is_test: true,
+            contact_id: None,
         };
         let _ = self.queue.push(job, None).await; // TODO: log error?
 

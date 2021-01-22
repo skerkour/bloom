@@ -304,6 +304,6 @@ pub struct UnsubscribeFromListInput {
 pub struct SendNewsletterMessageJobInput {
     pub message_id: Uuid,
     pub to: mail::Address,
-    pub is_test: bool,
-    pub subscription_id: Uuid,
+    pub from: mail::Address,
+    pub contact_id: Option<Uuid>,
 }

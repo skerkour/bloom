@@ -27,7 +27,7 @@ impl Service {
                 message_id,
                 from: from.clone(),
                 to,
-                is_test: false,
+                contact_id: Some(contact.id),
             };
             match self.queue.push(job, None).await {
                 Err(err) => {

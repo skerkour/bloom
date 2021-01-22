@@ -90,12 +90,14 @@ impl Worker {
             Message::InboxSendNewsletterMessage {
                 message_id,
                 to,
-                is_test,
+                from,
+                contact_id,
             } => {
                 let input = inbox::service::SendNewsletterMessageJobInput {
                     message_id,
                     to,
-                    is_test,
+                    contact_id,
+                    from,
                 };
                 self.inbox_service.job_send_newsletter_message(input).await
             }
