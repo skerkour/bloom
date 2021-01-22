@@ -15,15 +15,8 @@ impl Service {
             return Err(Error::TwoFaAlreadyEnabled.into());
         }
 
-        // generate secrete
-        let totp_key = totp::generate();
-        // TODO
-        // if err != nil {
-        //     errMessage := "kernel.SetupTwoFA: generating TOTP"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+        // generate secret
+        let totp_key = totp::generate(consts::TOTP_ISSUER, &actor.username);
 
         // encrypt secret
         let (encrypted_totp_secret, nonce) = crypto::aead_encrypt(
