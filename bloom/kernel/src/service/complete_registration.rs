@@ -94,16 +94,17 @@ impl Service {
             avatar_storage_key: None,
             namespace_id: namespace.id,
         };
-        let session = self.new_session(user.id).await?;
+        let new_session = self.new_session(user.id).await?;
 
         self.repo.create_user(&mut tx, &user).await?;
-        self.repo.create_session(&mut tx, &session).await?;
+        self.repo.create_session(&mut tx, &new_session.session).await?;
 
         tx.commit().await?;
 
         Ok(Registered {
-            session,
+            session: new_session.session,
             user,
+            token: new_session.token,
         })
     }
 }

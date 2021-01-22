@@ -6,13 +6,13 @@ use crate::{
     Actor,
 };
 use std::sync::Arc;
-use stdx::{crypto, sync::threadpool::spawn_blocking, uuid::Uuid};
+use stdx::{
+    base64, crypto,
+    sync::threadpool::spawn_blocking,
+    uuid::{self, Uuid},
+};
 
 impl Service {
-    pub async fn new_session(&self, _user_id: Uuid) -> Result<Session, crate::Error> {
-        todo!(); // TODO
-    }
-
     pub fn current_user(&self, actor: Actor) -> Result<User, crate::Error> {
         match actor {
             Actor::User(user) => Ok(user),
@@ -27,8 +27,25 @@ impl Service {
         }
     }
 
-    pub fn decode_session_token(&self, _token: String) -> Result<DecodedSessionToken, crate::Error> {
-        todo!(); // TODO
+    pub fn decode_session_token(&self, token: String) -> Result<DecodedSessionToken, crate::Error> {
+        if token.len() > 1024 {
+            return Err(Error::InvalidSession.into());
+        }
+
+        let token = base64::decode(token)?;
+
+        if token.len() != crypto::KEY_SIZE_512 + uuid::SIZE {
+            return Err(Error::InvalidSession.into());
+        }
+
+        let session_id_bytes = &token[..uuid::SIZE];
+        let secret: Vec<u8> = token[uuid::SIZE..].into();
+        let session_id = Uuid::from_slice(session_id_bytes).map_err(|_| Error::InvalidSession)?;
+
+        Ok(DecodedSessionToken {
+            session_id,
+            secret,
+        })
     }
 
     pub fn self_hosted(&self) -> bool {
@@ -121,5 +138,9 @@ impl Service {
     pub async fn decode_and_validate_anonymous_token(&self, token: String) -> Result<Uuid, crate::Error> {
         let anonymous_id = Uuid::parse_str(&token)?;
         Ok(anonymous_id)
+    }
+
+    pub fn encode_session_token(&self, session_id: Uuid, secret: Vec<u8>) -> Result<String, crate::Error> {
+        todo!();
     }
 }

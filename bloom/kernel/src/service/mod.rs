@@ -45,6 +45,7 @@ mod find_namespace_and_membership;
 mod find_upload;
 mod get_signed_storage_url;
 mod invite_people_in_group;
+mod new_session;
 mod quit_group;
 mod register;
 mod remove_member_from_group;
@@ -147,14 +148,25 @@ impl Service {
 
 #[derive(Debug, Clone)]
 pub enum SignedIn {
-    Success { session: Session, user: User },
+    Success {
+        session: Session,
+        user: User,
+        token: String,
+    },
     TwoFa(TwoFaMethod),
+}
+
+#[derive(Debug, Clone)]
+pub struct NewSession {
+    pub session: Session,
+    pub token: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Registered {
     pub session: Session,
     pub user: User,
+    pub token: String,
 }
 
 /// RegisterInput are the data required to start to register to bloom

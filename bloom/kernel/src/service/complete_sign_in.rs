@@ -60,20 +60,21 @@ impl Service {
         }
 
         // otherwise, we continue the normal login flow
-        let session = self.new_session(user.id).await?;
+        let new_session = self.new_session(user.id).await?;
 
         // create a new session and delete pending session
         let mut tx = self.db.begin().await?;
 
         self.repo.delete_pending_session(&mut tx, pending_session.id).await?;
 
-        self.repo.create_session(&mut tx, &session).await?;
+        self.repo.create_session(&mut tx, &new_session.session).await?;
 
         tx.commit().await?;
 
         Ok(SignedIn::Success {
-            session,
+            session: new_session.session,
             user,
+            token: new_session.token,
         })
     }
 }
