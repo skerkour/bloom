@@ -40,6 +40,7 @@ pub enum Message {
     // Inbox
     InboxSendNewsletterMessage {
         message_id: Uuid,
+        from: mail::Address,
         to: mail::Address,
         is_test: bool,
     },
