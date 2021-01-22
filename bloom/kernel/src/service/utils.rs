@@ -141,6 +141,9 @@ impl Service {
     }
 
     pub fn encode_session_token(&self, session_id: Uuid, secret: Vec<u8>) -> Result<String, crate::Error> {
-        todo!();
+        let session_id_bytes = session_id.as_bytes();
+        let mut token_bytes: Vec<u8> = session_id_bytes[..].into();
+        token_bytes.extend(secret);
+        Ok(base64::encode(token_bytes))
     }
 }
