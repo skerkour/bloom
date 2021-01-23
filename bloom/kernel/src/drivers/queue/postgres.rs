@@ -45,7 +45,7 @@ enum PostgresJobStatus {
 impl From<PostgresJob> for Job {
     fn from(item: PostgresJob) -> Self {
         Job {
-            id: item.id.to_string(),
+            id: item.id,
             message: item.message.0,
         }
     }
@@ -91,16 +91,14 @@ impl Queue for PostgresQueue {
         Ok(())
     }
 
-    async fn delete_job(&self, job_id: String) -> Result<(), crate::Error> {
+    async fn delete_job(&self, job_id: Uuid) -> Result<(), crate::Error> {
         let query = "DELETE FROM kernel_queue WHERE id = $1";
-        let job_id = job_id.parse::<i64>()?;
 
         sqlx::query(query).bind(job_id).execute(&self.db).await?;
         Ok(())
     }
 
-    async fn fail_job(&self, job_id: String) -> Result<(), crate::Error> {
-        let job_id = job_id.parse::<i64>()?;
+    async fn fail_job(&self, job_id: Uuid) -> Result<(), crate::Error> {
         let now = chrono::Utc::now();
         let query = "UPDATE kernel_queue
             SET status = $1, updated_at = $2, failed_attempts = failed_attempts + 1
@@ -123,7 +121,7 @@ impl Queue for PostgresQueue {
             WHERE id IN (
                 SELECT id
                 FROM kernel_queue
-                WHERE status = $3 AND scheduled_for >= $4 AND failed_attempts < $5
+                WHERE status = $3 AND scheduled_for <= $4 AND failed_attempts < $5
                 ORDER BY scheduled_for
                 FOR UPDATE SKIP LOCKED
                 LIMIT $6

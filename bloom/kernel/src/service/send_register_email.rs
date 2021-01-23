@@ -24,7 +24,7 @@ impl Service {
             .templates
             .render(notifications::REGISTRATION_EMAIL_TEMPLATE_ID, &email_data)
             .map_err(|err| {
-                error!("kernel.send_register_email: rendering tempplate: {}", err);
+                error!("kernel.send_register_email: rendering template: {}", err);
                 Error::Internal
             })?;
 
@@ -35,7 +35,10 @@ impl Service {
             subject,
             html,
         };
-        self.mailer.send(email).await?;
+        self.mailer.send(email).await.map_err(|err| {
+            error!("kernel.send_register_email: sending email: {}", err);
+            Error::Internal
+        })?;
 
         Ok(())
     }

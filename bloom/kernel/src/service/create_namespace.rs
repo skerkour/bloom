@@ -33,6 +33,7 @@ impl Service {
             .expect("kernel.create_namespace: unwrapping files_service")
             .init_namespace(tx, namespace.id)
             .await?;
+
         let inbox_service_input = inbox::InitNamespaceInput {
             namespace_id: namespace.id,
             name: input.name,

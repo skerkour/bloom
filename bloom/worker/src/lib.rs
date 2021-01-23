@@ -1,7 +1,7 @@
 use kernel::{drivers::Queue, Error};
 use std::{sync::Arc, time::Duration};
-use stdx::futures::stream::StreamExt;
 use stdx::log::{error, info};
+use stdx::{futures::stream::StreamExt, log::debug};
 use tokio::{sync::mpsc, time::delay_for};
 use worker::Worker;
 
@@ -13,7 +13,6 @@ pub async fn run(
     inbox_service: Arc<inbox::Service>,
     queue: Arc<dyn Queue>,
 ) -> Result<(), Error> {
-    let ten_ms = Duration::from_millis(10);
     let one_hundred_ms = Duration::from_millis(100);
 
     let config = kernel_service.config();
@@ -30,10 +29,15 @@ pub async fn run(
                 Ok(jobs) => jobs,
                 Err(err) => {
                     error!("worker.run: pulling jobs: {}", err);
-                    delay_for(one_hundred_ms).await;
+                    delay_for(one_hundred_ms * 3).await;
                     Vec::new()
                 }
             };
+
+            let number_of_jobs = jobs.len();
+            if number_of_jobs > 0 {
+                debug!("pulled {} jobs", jobs.len());
+            }
 
             for job in jobs {
                 let job_id = job.id.clone();
@@ -45,22 +49,29 @@ pub async fn run(
                     }
                 }
             }
-            delay_for(ten_ms).await;
+            delay_for(one_hundred_ms).await;
         }
         // drop(tx);
     });
 
     rx.for_each_concurrent(concurrency, |job| async {
-        let job_id = job.id.clone();
+        let job_id = job.id;
 
         // TODO: handle error?
-        let _ = match worker.handle_job(job).await {
+        let res = match worker.handle_job(job).await {
             Ok(_) => queue.delete_job(job_id).await,
             Err(err) => {
                 error!("worker.run: handling job: {}", &err);
                 queue.fail_job(job_id).await
             }
         };
+
+        match res {
+            Ok(_) => {}
+            Err(err) => {
+                error!("worker.run: deleting / failing job: {}", &err);
+            }
+        }
     })
     .await;
 
