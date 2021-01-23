@@ -519,7 +519,7 @@ macro_rules! fold_many1(
 ///  let b = b"abcdabcdefgh";
 ///  let c = b"abcdabcdabcdabcdabcdefgh";
 ///
-///  assert_eq!(multi(&a[..]), Err(Err::Error(error_position!(&a[..], ErrorKind::ManyMN))));
+///  assert_eq!(multi(&a[..]), Err(Err::Error(error_position!(&b"efgh"[..], ErrorKind::Tag))));
 ///  let res = vec![&b"abcd"[..], &b"abcd"[..]];
 ///  assert_eq!(multi(&b[..]),Ok((&b"efgh"[..], res)));
 ///  let res2 = vec![&b"abcd"[..], &b"abcd"[..], &b"abcd"[..], &b"abcd"[..]];
@@ -958,7 +958,7 @@ mod tests {
     fn fold_into_vec<T>(mut acc: Vec<T>, item: T) -> Vec<T> {
       acc.push(item);
       acc
-    };
+    }
     named!(tag_abcd, tag!("abcd"));
     named!(tag_empty, tag!(""));
     named!( multi<&[u8],Vec<&[u8]> >, fold_many0!(tag_abcd, Vec::new(), fold_into_vec) );
@@ -988,7 +988,7 @@ mod tests {
     fn fold_into_vec<T>(mut acc: Vec<T>, item: T) -> Vec<T> {
       acc.push(item);
       acc
-    };
+    }
     named!(multi<&[u8],Vec<&[u8]> >, fold_many1!(tag!("abcd"), Vec::new(), fold_into_vec));
 
     let a = &b"abcdef"[..];
@@ -1013,7 +1013,7 @@ mod tests {
     fn fold_into_vec<T>(mut acc: Vec<T>, item: T) -> Vec<T> {
       acc.push(item);
       acc
-    };
+    }
     named!(multi<&[u8],Vec<&[u8]> >, fold_many_m_n!(2, 4, tag!("Abcd"), Vec::new(), fold_into_vec));
 
     let a = &b"Abcdef"[..];
@@ -1024,7 +1024,7 @@ mod tests {
 
     assert_eq!(
       multi(a),
-      Err(Err::Error(error_position!(a, ErrorKind::ManyMN)))
+      Err(Err::Error(error_position!(&b"ef"[..], ErrorKind::Tag)))
     );
     let res1 = vec![&b"Abcd"[..], &b"Abcd"[..]];
     assert_eq!(multi(b), Ok((&b"efgh"[..], res1)));

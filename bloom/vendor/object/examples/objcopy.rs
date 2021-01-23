@@ -133,6 +133,7 @@ fn main() {
         let out_section = *out_sections.get(&in_section.index()).unwrap();
         for (offset, in_relocation) in in_section.relocations() {
             let symbol = match in_relocation.target() {
+                RelocationTarget::Absolute => unimplemented!(),
                 RelocationTarget::Symbol(symbol) => *out_symbols.get(&symbol).unwrap(),
                 RelocationTarget::Section(section) => {
                     out_object.section_symbol(*out_sections.get(&section).unwrap())

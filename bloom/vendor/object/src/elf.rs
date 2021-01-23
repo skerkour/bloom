@@ -130,6 +130,8 @@ pub struct Ident {
 pub const ELFMAG: [u8; 4] = [0x7f, b'E', b'L', b'F'];
 
 // Values for `Ident::class`.
+/// Invalid class.
+pub const ELFCLASSNONE: u8 = 0;
 /// 32-bit object.
 pub const ELFCLASS32: u8 = 1;
 /// 64-bit object.
@@ -998,14 +1000,14 @@ pub struct Rel32<E: Endian> {
 impl<E: Endian> Rel32<E> {
     /// Get the `r_sym` component of the `r_info` field.
     #[inline]
-    pub fn r_sym(self, endian: E) -> u32 {
+    pub fn r_sym(&self, endian: E) -> u32 {
         self.r_info.get(endian) >> 8
     }
 
     /// Get the `r_type` component of the `r_info` field.
     #[inline]
-    pub fn r_type(self, endian: E) -> u8 {
-        (self.r_info.get(endian) & 0xff) as u8
+    pub fn r_type(&self, endian: E) -> u32 {
+        self.r_info.get(endian) & 0xff
     }
 
     /// Calculate the `r_info` field given the `r_sym` and `r_type` components.
@@ -1240,15 +1242,11 @@ pub const PF_MASKOS: u32 = 0x0ff0_0000;
 pub const PF_MASKPROC: u32 = 0xf000_0000;
 
 /// Note name for core files.
-///
-/// May also appear without the terminator.
-pub static ELF_NOTE_CORE: &[u8] = b"CORE\0";
+pub static ELF_NOTE_CORE: &[u8] = b"CORE";
 /// Note name for linux core files.
 ///
-/// May also appear without the terminator.
-///
 /// Notes in linux core files may also use `ELF_NOTE_CORE`.
-pub static ELF_NOTE_LINUX: &[u8] = b"LINUX\0";
+pub static ELF_NOTE_LINUX: &[u8] = b"LINUX";
 
 // Values for `NoteHeader*::n_type` in core files.
 //
@@ -1392,7 +1390,7 @@ pub const NT_VERSION: u32 = 1;
 #[repr(C)]
 pub struct Dyn32<E: Endian> {
     /// Dynamic entry type.
-    pub d_tag: I32<E>,
+    pub d_tag: U32<E>,
     /// Value (integer or address).
     pub d_val: U32<E>,
 }
@@ -1402,7 +1400,7 @@ pub struct Dyn32<E: Endian> {
 #[repr(C)]
 pub struct Dyn64<E: Endian> {
     /// Dynamic entry type.
-    pub d_tag: I64<E>,
+    pub d_tag: U64<E>,
     /// Value (integer or address).
     pub d_val: U64<E>,
 }
@@ -1689,14 +1687,14 @@ pub struct NoteHeader64<E: Endian> {
 }
 
 /// Solaris entries in the note section have this name.
-pub static ELF_NOTE_SOLARIS: &[u8] = b"SUNW Solaris\0";
+pub static ELF_NOTE_SOLARIS: &[u8] = b"SUNW Solaris";
 
 // Values for `n_type` when the name is `ELF_NOTE_SOLARIS`.
 /// Desired pagesize for the binary.
 pub const NT_SOLARIS_PAGESIZE_HINT: u32 = 1;
 
 /// GNU entries in the note section have this name.
-pub static ELF_NOTE_GNU: &[u8] = b"GNU\0";
+pub static ELF_NOTE_GNU: &[u8] = b"GNU";
 
 // Note types for `ELF_NOTE_GNU`.
 
@@ -2309,21 +2307,13 @@ pub const SHF_MIPS_NODUPE: u32 = 0x0100_0000;
 // MIPS values for `Sym32::st_other`.
 
 #[allow(missing_docs)]
-pub const STO_MIPS_DEFAULT: u8 = 0x0;
-#[allow(missing_docs)]
-pub const STO_MIPS_INTERNAL: u8 = 0x1;
-#[allow(missing_docs)]
-pub const STO_MIPS_HIDDEN: u8 = 0x2;
-#[allow(missing_docs)]
-pub const STO_MIPS_PROTECTED: u8 = 0x3;
-#[allow(missing_docs)]
 pub const STO_MIPS_PLT: u8 = 0x8;
-#[allow(missing_docs)]
+/// Only valid for `STB_MIPS_SPLIT_COMMON`.
 pub const STO_MIPS_SC_ALIGN_UNUSED: u8 = 0xff;
 
 // MIPS values for `Sym32::st_info'.
 #[allow(missing_docs)]
-pub const STB_MIPS_SPLIT_COMMON: u32 = 13;
+pub const STB_MIPS_SPLIT_COMMON: u8 = 13;
 
 // Entries found in sections of type `SHT_MIPS_GPTAB`.
 

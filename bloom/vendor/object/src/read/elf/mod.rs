@@ -20,11 +20,14 @@ pub use symbol::*;
 mod relocation;
 pub use relocation::*;
 
+mod comdat;
+pub use comdat::*;
+
+mod dynamic;
+pub use dynamic::*;
+
 mod compression;
 pub use compression::*;
 
 mod note;
 pub use note::*;
-
-mod comdat;
-pub use comdat::*;

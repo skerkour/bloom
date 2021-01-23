@@ -332,7 +332,8 @@ impl Object {
                 | SectionKind::TlsVariables
                 | SectionKind::Note
                 | SectionKind::Unknown
-                | SectionKind::Metadata => {
+                | SectionKind::Metadata
+                | SectionKind::Elf(_) => {
                     return Err(Error(format!(
                         "unimplemented section `{}` kind {:?}",
                         section.name().unwrap_or(""),

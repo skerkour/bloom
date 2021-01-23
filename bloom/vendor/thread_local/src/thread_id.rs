@@ -5,11 +5,12 @@
 // http://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
+use crate::POINTER_WIDTH;
+use once_cell::sync::Lazy;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::sync::Mutex;
 use std::usize;
-use POINTER_WIDTH;
 
 /// Thread ID manager which allocates thread IDs. It attempts to aggressively
 /// reuse thread IDs where possible to avoid cases where a ThreadLocal grows
@@ -41,9 +42,8 @@ impl ThreadIdManager {
         self.free_list.push(Reverse(id));
     }
 }
-lazy_static! {
-    static ref THREAD_ID_MANAGER: Mutex<ThreadIdManager> = Mutex::new(ThreadIdManager::new());
-}
+static THREAD_ID_MANAGER: Lazy<Mutex<ThreadIdManager>> =
+    Lazy::new(|| Mutex::new(ThreadIdManager::new()));
 
 /// Data which is unique to the current thread while it is running.
 /// A thread ID may be reused after a thread exits.

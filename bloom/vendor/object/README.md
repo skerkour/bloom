@@ -11,7 +11,7 @@ For reading files, it provides multiple levels of support:
 * a higher level unified API for accessing common features of object files, such
   as sections and symbols
 
-Supported file formats: ELF, Mach-O, Windows PE/COFF, and Unix archive.
+Supported file formats: ELF, Mach-O, Windows PE/COFF, Wasm, and Unix archive.
 
 ## License
 
@@ -23,8 +23,6 @@ Licensed under either of
 at your option.
 
 ## Contribution
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for hacking.
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be

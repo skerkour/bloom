@@ -38,30 +38,24 @@ impl<'data, Elf: FileHeader> Default for SymbolTable<'data, Elf> {
 }
 
 impl<'data, Elf: FileHeader> SymbolTable<'data, Elf> {
-    /// Parse the symbol table of the given section type.
-    ///
-    /// Returns an empty symbol table if the symbol table does not exist.
+    /// Parse the given symbol table section.
     pub fn parse(
         endian: Elf::Endian,
         data: Bytes<'data>,
         sections: &SectionTable<Elf>,
-        sh_type: u32,
+        section_index: usize,
+        section: &Elf::SectionHeader,
     ) -> read::Result<SymbolTable<'data, Elf>> {
-        debug_assert!(sh_type == elf::SHT_DYNSYM || sh_type == elf::SHT_SYMTAB);
+        debug_assert!(
+            section.sh_type(endian) == elf::SHT_DYNSYM
+                || section.sh_type(endian) == elf::SHT_SYMTAB
+        );
 
-        let (section, symtab) = match sections
-            .iter()
-            .enumerate()
-            .find(|s| s.1.sh_type(endian) == sh_type)
-        {
-            Some(s) => s,
-            None => return Ok(SymbolTable::default()),
-        };
-        let symbols = symtab
+        let symbols = section
             .data_as_array(endian, data)
             .read_error("Invalid ELF symbol table data")?;
 
-        let strtab = sections.section(symtab.sh_link(endian) as usize)?;
+        let strtab = sections.section(section.sh_link(endian) as usize)?;
         let strtab_data = strtab
             .data(endian, data)
             .read_error("Invalid ELF string table data")?;
@@ -70,7 +64,8 @@ impl<'data, Elf: FileHeader> SymbolTable<'data, Elf> {
         let shndx = sections
             .iter()
             .find(|s| {
-                s.sh_type(endian) == elf::SHT_SYMTAB_SHNDX && s.sh_link(endian) as usize == section
+                s.sh_type(endian) == elf::SHT_SYMTAB_SHNDX
+                    && s.sh_link(endian) as usize == section_index
             })
             .map(|section| {
                 section
@@ -81,7 +76,7 @@ impl<'data, Elf: FileHeader> SymbolTable<'data, Elf> {
             .unwrap_or(&[]);
 
         Ok(SymbolTable {
-            section,
+            section: section_index,
             symbols,
             strings,
             shndx,
@@ -129,6 +124,15 @@ impl<'data, Elf: FileHeader> SymbolTable<'data, Elf> {
     #[inline]
     pub fn shndx(&self, index: usize) -> Option<u32> {
         self.shndx.get(index).cloned()
+    }
+
+    /// Return the symbol name for the given symbol.
+    pub fn symbol_name(
+        &self,
+        endian: Elf::Endian,
+        symbol: &'data Elf::Sym,
+    ) -> read::Result<&'data [u8]> {
+        symbol.name(endian, self.strings)
     }
 
     /// Construct a map from addresses to a user-defined map entry.
@@ -394,6 +398,12 @@ pub trait Sym: Debug + Pod {
         strings
             .get(self.st_name(endian))
             .read_error("Invalid ELF symbol name offset")
+    }
+
+    /// Return true if the symbol is undefined.
+    #[inline]
+    fn is_undefined(&self, endian: Self::Endian) -> bool {
+        self.st_shndx(endian) == elf::SHN_UNDEF
     }
 
     /// Return true if the symbol is a definition of a function or data object.

@@ -3,8 +3,12 @@
 //! This module should be replaced once rust provides safe transmutes.
 
 // This module provides functions for both read and write features.
-#![cfg_attr(not(all(feature = "read_core", feature = "write_core")), allow(dead_code))]
+#![cfg_attr(
+    not(all(feature = "read_core", feature = "write_core")),
+    allow(dead_code)
+)]
 
+use alloc::string::String;
 use alloc::vec::Vec;
 use core::{fmt, mem, result, slice};
 
@@ -331,6 +335,20 @@ struct DebugLen(usize);
 impl fmt::Debug for DebugLen {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(fmt, "...; {}", self.0)
+    }
+}
+
+/// A newtype for byte strings.
+///
+/// For byte slices that are strings of an unknown encoding.
+///
+/// Provides a `Debug` implementation that interprets the bytes as UTF-8.
+#[derive(Default, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ByteString<'data>(pub &'data [u8]);
+
+impl<'data> fmt::Debug for ByteString<'data> {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(fmt, "\"{}\"", String::from_utf8_lossy(self.0))
     }
 }
 

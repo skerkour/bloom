@@ -4,8 +4,6 @@
 </p>
 
 
-[![pipeline status](https://gitlab.com/bloom42/libs/crypto42/badges/dev/pipeline.svg)](https://gitlab.com/bloom42/libs/crypto42/commits/dev)
-
 --------
 
 1. [Primitives](#primitives)
@@ -17,6 +15,13 @@
 7. [Fuzzing](#fuzzing)
 
 --------
+
+## Project status
+
+This project is in maintenance mode: only bugs and security issues will be worked on.
+
+
+------------------------------------------------------------------
 
 
 `crypto42-rs` is cross-platform, secure, easy to use, and hard to misuse cryptographic library in Rust,

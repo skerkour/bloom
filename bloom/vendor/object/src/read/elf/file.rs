@@ -1,16 +1,18 @@
+use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::{mem, str};
 
 use crate::read::{
-    self, util, Architecture, Error, FileFlags, Object, ReadError, SectionIndex, StringTable,
-    SymbolIndex,
+    self, util, Architecture, Error, Export, FileFlags, Import, Object, ReadError, SectionIndex,
+    StringTable, SymbolIndex,
 };
-use crate::{elf, endian, Bytes, Endian, Endianness, Pod, U32};
+use crate::{elf, endian, ByteString, Bytes, Endian, Endianness, Pod, U32};
 
 use super::{
-    CompressionHeader, ElfComdat, ElfComdatIterator, ElfSection, ElfSectionIterator, ElfSegment,
-    ElfSegmentIterator, ElfSymbol, ElfSymbolIterator, ElfSymbolTable, NoteHeader, ProgramHeader,
-    Rela, RelocationSections, SectionHeader, SectionTable, Sym, SymbolTable,
+    CompressionHeader, Dyn, ElfComdat, ElfComdatIterator, ElfDynamicRelocationIterator, ElfSection,
+    ElfSectionIterator, ElfSegment, ElfSegmentIterator, ElfSymbol, ElfSymbolIterator,
+    ElfSymbolTable, NoteHeader, ProgramHeader, Rel, Rela, RelocationSections, SectionHeader,
+    SectionTable, Sym, SymbolTable,
 };
 
 /// A 32-bit ELF object file.
@@ -108,6 +110,7 @@ where
     type Symbol = ElfSymbol<'data, 'file, Elf>;
     type SymbolIterator = ElfSymbolIterator<'data, 'file, Elf>;
     type SymbolTable = ElfSymbolTable<'data, 'file, Elf>;
+    type DynamicRelocationIterator = ElfDynamicRelocationIterator<'data, 'file, Elf>;
 
     fn architecture(&self) -> Architecture {
         match self.header.e_machine(self.endian) {
@@ -220,6 +223,48 @@ where
         })
     }
 
+    fn dynamic_relocations(&'file self) -> Option<ElfDynamicRelocationIterator<'data, 'file, Elf>> {
+        Some(ElfDynamicRelocationIterator {
+            section_index: 1,
+            file: self,
+            relocations: None,
+        })
+    }
+
+    /// Get the imported symbols.
+    fn imports(&self) -> read::Result<Vec<Import<'data>>> {
+        let mut imports = Vec::new();
+        for symbol in self.dynamic_symbols.iter() {
+            if symbol.is_undefined(self.endian) {
+                let name = symbol.name(self.endian, self.dynamic_symbols.strings())?;
+                if !name.is_empty() {
+                    // TODO: use symbol versioning to determine library
+                    imports.push(Import {
+                        name: ByteString(name),
+                        library: ByteString(&[]),
+                    });
+                }
+            }
+        }
+        Ok(imports)
+    }
+
+    /// Get the exported symbols.
+    fn exports(&self) -> read::Result<Vec<Export<'data>>> {
+        let mut exports = Vec::new();
+        for symbol in self.dynamic_symbols.iter() {
+            if symbol.is_definition(self.endian) {
+                let name = symbol.name(self.endian, self.dynamic_symbols.strings())?;
+                let address = symbol.st_value(self.endian).into();
+                exports.push(Export {
+                    name: ByteString(name),
+                    address,
+                });
+            }
+        }
+        Ok(exports)
+    }
+
     fn has_debug_symbols(&self) -> bool {
         for section in self.sections.iter() {
             if let Ok(name) = self.sections.section_name(self.endian, section) {
@@ -300,13 +345,14 @@ pub trait FileHeader: Debug + Pod {
     type Word: Into<u64>;
     type Sword: Into<i64>;
     type Endian: endian::Endian;
-    type ProgramHeader: ProgramHeader<Endian = Self::Endian>;
-    type SectionHeader: SectionHeader<Endian = Self::Endian>;
-    type CompressionHeader: CompressionHeader<Endian = Self::Endian>;
+    type ProgramHeader: ProgramHeader<Elf = Self, Endian = Self::Endian, Word = Self::Word>;
+    type SectionHeader: SectionHeader<Elf = Self, Endian = Self::Endian, Word = Self::Word>;
+    type CompressionHeader: CompressionHeader<Endian = Self::Endian, Word = Self::Word>;
     type NoteHeader: NoteHeader<Endian = Self::Endian>;
-    type Sym: Sym<Endian = Self::Endian>;
-    type Rel: Clone + Pod;
-    type Rela: Rela<Endian = Self::Endian> + From<Self::Rel>;
+    type Dyn: Dyn<Endian = Self::Endian, Word = Self::Word>;
+    type Sym: Sym<Endian = Self::Endian, Word = Self::Word>;
+    type Rel: Rel<Endian = Self::Endian, Word = Self::Word>;
+    type Rela: Rela<Endian = Self::Endian, Word = Self::Word> + From<Self::Rel>;
 
     /// Return true if this type is a 64-bit header.
     ///
@@ -545,6 +591,7 @@ impl<Endian: endian::Endian> FileHeader for elf::FileHeader32<Endian> {
     type SectionHeader = elf::SectionHeader32<Endian>;
     type CompressionHeader = elf::CompressionHeader32<Endian>;
     type NoteHeader = elf::NoteHeader32<Endian>;
+    type Dyn = elf::Dyn32<Endian>;
     type Sym = elf::Sym32<Endian>;
     type Rel = elf::Rel32<Endian>;
     type Rela = elf::Rela32<Endian>;
@@ -633,6 +680,7 @@ impl<Endian: endian::Endian> FileHeader for elf::FileHeader64<Endian> {
     type SectionHeader = elf::SectionHeader64<Endian>;
     type CompressionHeader = elf::CompressionHeader64<Endian>;
     type NoteHeader = elf::NoteHeader32<Endian>;
+    type Dyn = elf::Dyn64<Endian>;
     type Sym = elf::Sym64<Endian>;
     type Rel = elf::Rel64<Endian>;
     type Rela = elf::Rela64<Endian>;

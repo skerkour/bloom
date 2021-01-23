@@ -3,10 +3,10 @@ use core::fmt::Debug;
 use core::{mem, str};
 
 use crate::read::{
-    self, Architecture, ComdatKind, Error, FileFlags, Object, ObjectComdat, ObjectMap,
-    ObjectSection, ReadError, Result, SectionIndex, SymbolIndex,
+    self, Architecture, ComdatKind, Error, Export, FileFlags, Import, NoDynamicRelocationIterator,
+    Object, ObjectComdat, ObjectMap, ObjectSection, ReadError, Result, SectionIndex, SymbolIndex,
 };
-use crate::{endian, macho, BigEndian, Bytes, Endian, Endianness, Pod};
+use crate::{endian, macho, BigEndian, ByteString, Bytes, Endian, Endianness, Pod};
 
 use super::{
     MachOLoadCommandIterator, MachOSection, MachOSectionInternal, MachOSectionIterator,
@@ -93,6 +93,7 @@ where
     type Symbol = MachOSymbol<'data, 'file, Mach>;
     type SymbolIterator = MachOSymbolIterator<'data, 'file, Mach>;
     type SymbolTable = MachOSymbolTable<'data, 'file, Mach>;
+    type DynamicRelocationIterator = NoDynamicRelocationIterator;
 
     fn architecture(&self) -> Architecture {
         match self.header.cputype(self.endian) {
@@ -201,6 +202,81 @@ where
 
     fn object_map(&'file self) -> ObjectMap<'data> {
         self.symbols.object_map(self.endian)
+    }
+
+    fn imports(&self) -> Result<Vec<Import<'data>>> {
+        let mut dysymtab = None;
+        let mut libraries = Vec::new();
+        let twolevel = self.header.flags(self.endian) & macho::MH_TWOLEVEL != 0;
+        if twolevel {
+            libraries.push(&[][..]);
+        }
+        let mut commands = self.header.load_commands(self.endian, self.data)?;
+        while let Some(command) = commands.next()? {
+            if let Some(command) = command.dysymtab()? {
+                dysymtab = Some(command);
+            }
+            if twolevel {
+                if let Some(dylib) = command.dylib()? {
+                    libraries.push(command.string(self.endian, dylib.name)?);
+                }
+            }
+        }
+
+        let mut imports = Vec::new();
+        if let Some(dysymtab) = dysymtab {
+            let index = dysymtab.iundefsym.get(self.endian) as usize;
+            let number = dysymtab.nundefsym.get(self.endian) as usize;
+            for i in index..(index.wrapping_add(number)) {
+                let symbol = self.symbols.symbol(i)?;
+                let name = symbol.name(self.endian, self.symbols.strings())?;
+                let library = if twolevel {
+                    libraries
+                        .get(symbol.library_ordinal(self.endian) as usize)
+                        .copied()
+                        .read_error("Invalid Mach-O symbol library ordinal")?
+                } else {
+                    &[]
+                };
+                imports.push(Import {
+                    name: ByteString(name),
+                    library: ByteString(library),
+                });
+            }
+        }
+        Ok(imports)
+    }
+
+    fn exports(&self) -> Result<Vec<Export<'data>>> {
+        let mut dysymtab = None;
+        let mut commands = self.header.load_commands(self.endian, self.data)?;
+        while let Some(command) = commands.next()? {
+            if let Some(command) = command.dysymtab()? {
+                dysymtab = Some(command);
+                break;
+            }
+        }
+
+        let mut exports = Vec::new();
+        if let Some(dysymtab) = dysymtab {
+            let index = dysymtab.iextdefsym.get(self.endian) as usize;
+            let number = dysymtab.nextdefsym.get(self.endian) as usize;
+            for i in index..(index.wrapping_add(number)) {
+                let symbol = self.symbols.symbol(i)?;
+                let name = symbol.name(self.endian, self.symbols.strings())?;
+                let address = symbol.n_value(self.endian).into();
+                exports.push(Export {
+                    name: ByteString(name),
+                    address,
+                });
+            }
+        }
+        Ok(exports)
+    }
+
+    #[inline]
+    fn dynamic_relocations(&'file self) -> Option<NoDynamicRelocationIterator> {
+        None
     }
 
     fn has_debug_symbols(&self) -> bool {

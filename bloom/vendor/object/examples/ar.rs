@@ -36,7 +36,6 @@ fn main() {
     };
     match op.chars().next().unwrap() {
         't' => {
-            println!("kind: {:?}", archive.kind());
             for member in archive.members() {
                 let member = member.unwrap();
                 println!("{}", String::from_utf8_lossy(member.name()));

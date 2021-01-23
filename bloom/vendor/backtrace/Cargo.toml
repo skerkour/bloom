@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "backtrace"
-version = "0.3.55"
+version = "0.3.56"
 authors = ["The Rust Project Developers"]
 autoexamples = true
 autotests = true
@@ -55,7 +55,7 @@ name = "concurrent-panics"
 harness = false
 required-features = ["std"]
 [dependencies.addr2line]
-version = "0.14.0"
+version = "0.14.1"
 optional = true
 default-features = false
 
@@ -73,7 +73,7 @@ optional = true
 default-features = false
 
 [dependencies.libc]
-version = "0.2.45"
+version = "0.2.81"
 default-features = false
 
 [dependencies.miniz_oxide]
@@ -82,7 +82,7 @@ optional = true
 default-features = false
 
 [dependencies.object]
-version = "0.22"
+version = "0.23"
 features = ["read_core", "elf", "macho", "pe", "unaligned", "archive"]
 optional = true
 default-features = false

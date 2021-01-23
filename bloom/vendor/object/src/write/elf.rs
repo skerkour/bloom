@@ -76,6 +76,7 @@ impl Object {
             Architecture::I386 => false,
             Architecture::X86_64 => true,
             Architecture::S390x => true,
+            Architecture::Mips => false,
             _ => {
                 return Err(Error(format!(
                     "unimplemented architecture {:?}",
@@ -241,7 +242,7 @@ impl Object {
             }
         }
         for (index, symbol) in self.symbols.iter().enumerate() {
-            if symbol.kind != SymbolKind::Section {
+            if symbol.kind != SymbolKind::Section && !symbol.name.is_empty() {
                 symbol_offsets[index].str_id = Some(strtab.add(&symbol.name));
             }
         }
@@ -347,6 +348,7 @@ impl Object {
             Architecture::I386 => elf::EM_386,
             Architecture::X86_64 => elf::EM_X86_64,
             Architecture::S390x => elf::EM_S390,
+            Architecture::Mips => elf::EM_MIPS,
             _ => {
                 return Err(Error(format!(
                     "unimplemented architecture {:?}",
@@ -670,6 +672,12 @@ impl Object {
                                 return Err(Error(format!("unimplemented relocation {:?}", reloc)));
                             }
                         },
+                        Architecture::Mips => match (reloc.kind, reloc.encoding, reloc.size) {
+                            (RelocationKind::Elf(x), _, _) => x,
+                            _ => {
+                                return Err(Error(format!("unimplemented relocation {:?}", reloc)));
+                            }
+                        },
                         _ => {
                             return Err(Error(format!(
                                 "unimplemented architecture {:?}",
@@ -748,6 +756,7 @@ impl Object {
             let sh_type = match section.kind {
                 SectionKind::UninitializedData | SectionKind::UninitializedTls => elf::SHT_NOBITS,
                 SectionKind::Note => elf::SHT_NOTE,
+                SectionKind::Elf(sh_type) => sh_type,
                 _ => elf::SHT_PROGBITS,
             };
             let sh_flags = if let SectionFlags::Elf { sh_flags } = section.flags {
@@ -768,7 +777,8 @@ impl Object {
                     | SectionKind::Debug
                     | SectionKind::Metadata
                     | SectionKind::Linker
-                    | SectionKind::Note => 0,
+                    | SectionKind::Note
+                    | SectionKind::Elf(_) => 0,
                     SectionKind::Unknown | SectionKind::Common | SectionKind::TlsVariables => {
                         return Err(Error(format!(
                             "unimplemented section `{}` kind {:?}",

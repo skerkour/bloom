@@ -1,3 +1,4 @@
+#![cfg(feature = "read")]
 use object::{File, Object};
 use std::{env, fs};
 

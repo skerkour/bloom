@@ -1,4 +1,6 @@
 use alloc::fmt;
+use alloc::vec::Vec;
+use core::marker::PhantomData;
 
 #[cfg(feature = "coff")]
 use crate::read::coff;
@@ -11,10 +13,10 @@ use crate::read::pe;
 #[cfg(feature = "wasm")]
 use crate::read::wasm;
 use crate::read::{
-    self, Architecture, BinaryFormat, ComdatKind, CompressedData, Error, FileFlags, Object,
-    ObjectComdat, ObjectMap, ObjectSection, ObjectSegment, ObjectSymbol, ObjectSymbolTable,
-    Relocation, Result, SectionFlags, SectionIndex, SectionKind, SymbolFlags, SymbolIndex,
-    SymbolKind, SymbolMap, SymbolMapName, SymbolScope, SymbolSection,
+    self, Architecture, BinaryFormat, ComdatKind, CompressedData, Error, Export, FileFlags,
+    FileKind, Import, Object, ObjectComdat, ObjectMap, ObjectSection, ObjectSegment, ObjectSymbol,
+    ObjectSymbolTable, Relocation, Result, SectionFlags, SectionIndex, SectionKind, SymbolFlags,
+    SymbolIndex, SymbolKind, SymbolMap, SymbolMapName, SymbolScope, SymbolSection,
 };
 
 /// Evaluate an expression on the contents of a file format enum.
@@ -170,49 +172,24 @@ enum FileInternal<'data> {
 impl<'data> File<'data> {
     /// Parse the raw file data.
     pub fn parse(data: &'data [u8]) -> Result<Self> {
-        if data.len() < 16 {
-            return Err(Error("File too short"));
-        }
-
-        let inner = match [data[0], data[1], data[2], data[3], data[4]] {
-            // 32-bit ELF
+        let inner = match FileKind::parse(data)? {
             #[cfg(feature = "elf")]
-            [0x7f, b'E', b'L', b'F', 1] => FileInternal::Elf32(elf::ElfFile32::parse(data)?),
-            // 64-bit ELF
+            FileKind::Elf32 => FileInternal::Elf32(elf::ElfFile32::parse(data)?),
             #[cfg(feature = "elf")]
-            [0x7f, b'E', b'L', b'F', 2] => FileInternal::Elf64(elf::ElfFile64::parse(data)?),
-            // 32-bit Mach-O
+            FileKind::Elf64 => FileInternal::Elf64(elf::ElfFile64::parse(data)?),
             #[cfg(feature = "macho")]
-            [0xfe, 0xed, 0xfa, 0xce, _]
-            | [0xce, 0xfa, 0xed, 0xfe, _] => FileInternal::MachO32(macho::MachOFile32::parse(data)?),
-            // 64-bit Mach-O
+            FileKind::MachO32 => FileInternal::MachO32(macho::MachOFile32::parse(data)?),
             #[cfg(feature = "macho")]
-            | [0xfe, 0xed, 0xfa, 0xcf, _]
-            | [0xcf, 0xfa, 0xed, 0xfe, _] => FileInternal::MachO64(macho::MachOFile64::parse(data)?),
-            // WASM
+            FileKind::MachO64 => FileInternal::MachO64(macho::MachOFile64::parse(data)?),
             #[cfg(feature = "wasm")]
-            [0x00, b'a', b's', b'm', _] => FileInternal::Wasm(wasm::WasmFile::parse(data)?),
-            // MS-DOS, assume stub for Windows PE32 or PE32+
+            FileKind::Wasm => FileInternal::Wasm(wasm::WasmFile::parse(data)?),
             #[cfg(feature = "pe")]
-            [b'M', b'Z', _, _, _] => {
-                // `optional_header_magic` doesn't care if it's `PeFile32` and `PeFile64`.
-                match pe::PeFile64::optional_header_magic(data) {
-                    Ok(crate::pe::IMAGE_NT_OPTIONAL_HDR32_MAGIC) => {
-                        FileInternal::Pe32(pe::PeFile32::parse(data)?)
-                    }
-                    Ok(crate::pe::IMAGE_NT_OPTIONAL_HDR64_MAGIC) => {
-                        FileInternal::Pe64(pe::PeFile64::parse(data)?)
-                    }
-                    _ => return Err(Error("Unknown MS-DOS file")),
-                }
-            }
-            // TODO: more COFF machines
+            FileKind::Pe32 => FileInternal::Pe32(pe::PeFile32::parse(data)?),
+            #[cfg(feature = "pe")]
+            FileKind::Pe64 => FileInternal::Pe64(pe::PeFile64::parse(data)?),
             #[cfg(feature = "coff")]
-            // COFF x86
-            [0x4c, 0x01, _, _, _]
-            // COFF x86-64
-            | [0x64, 0x86, _, _, _] => FileInternal::Coff(coff::CoffFile::parse(data)?),
-            _ => return Err(Error("Unknown file magic")),
+            FileKind::Coff => FileInternal::Coff(coff::CoffFile::parse(data)?),
+            _ => return Err(Error("Unsupported file format")),
         };
         Ok(File { inner })
     }
@@ -249,6 +226,7 @@ where
     type Symbol = Symbol<'data, 'file>;
     type SymbolIterator = SymbolIterator<'data, 'file>;
     type SymbolTable = SymbolTable<'data, 'file>;
+    type DynamicRelocationIterator = DynamicRelocationIterator<'data, 'file>;
 
     fn architecture(&self) -> Architecture {
         with_inner!(self.inner, FileInternal, |x| x.architecture())
@@ -327,12 +305,39 @@ where
         .map(|inner| SymbolTable { inner })
     }
 
+    #[cfg(feature = "elf")]
+    fn dynamic_relocations(&'file self) -> Option<DynamicRelocationIterator<'data, 'file>> {
+        let inner = match self.inner {
+            FileInternal::Elf32(ref elf) => {
+                DynamicRelocationIteratorInternal::Elf32(elf.dynamic_relocations()?)
+            }
+            FileInternal::Elf64(ref elf) => {
+                DynamicRelocationIteratorInternal::Elf64(elf.dynamic_relocations()?)
+            }
+            _ => return None,
+        };
+        Some(DynamicRelocationIterator { inner })
+    }
+
+    #[cfg(not(feature = "elf"))]
+    fn dynamic_relocations(&'file self) -> Option<DynamicRelocationIterator<'data, 'file>> {
+        None
+    }
+
     fn symbol_map(&self) -> SymbolMap<SymbolMapName<'data>> {
         with_inner!(self.inner, FileInternal, |x| x.symbol_map())
     }
 
     fn object_map(&self) -> ObjectMap<'data> {
         with_inner!(self.inner, FileInternal, |x| x.object_map())
+    }
+
+    fn imports(&self) -> Result<Vec<Import<'data>>> {
+        with_inner!(self.inner, FileInternal, |x| x.imports())
+    }
+
+    fn exports(&self) -> Result<Vec<Export<'data>>> {
+        with_inner!(self.inner, FileInternal, |x| x.exports())
     }
 
     fn has_debug_symbols(&self) -> bool {
@@ -584,7 +589,7 @@ impl<'data, 'file> fmt::Debug for Section<'data, 'file> {
 impl<'data, 'file> read::private::Sealed for Section<'data, 'file> {}
 
 impl<'data, 'file> ObjectSection<'data> for Section<'data, 'file> {
-    type RelocationIterator = RelocationIterator<'data, 'file>;
+    type RelocationIterator = SectionRelocationIterator<'data, 'file>;
 
     fn index(&self) -> SectionIndex {
         with_inner!(self.inner, SectionInternal, |x| x.index())
@@ -630,12 +635,12 @@ impl<'data, 'file> ObjectSection<'data> for Section<'data, 'file> {
         with_inner!(self.inner, SectionInternal, |x| x.kind())
     }
 
-    fn relocations(&self) -> RelocationIterator<'data, 'file> {
-        RelocationIterator {
+    fn relocations(&self) -> SectionRelocationIterator<'data, 'file> {
+        SectionRelocationIterator {
             inner: map_inner!(
                 self.inner,
                 SectionInternal,
-                RelocationIteratorInternal,
+                SectionRelocationIteratorInternal,
                 |x| x.relocations()
             ),
         }
@@ -998,26 +1003,63 @@ impl<'data, 'file> ObjectSymbol<'data> for Symbol<'data, 'file> {
     }
 }
 
-/// An iterator over relocation entries
+/// An iterator over dynamic relocation entries.
 #[derive(Debug)]
-pub struct RelocationIterator<'data, 'file>
+pub struct DynamicRelocationIterator<'data, 'file>
 where
     'data: 'file,
 {
-    inner: RelocationIteratorInternal<'data, 'file>,
+    inner: DynamicRelocationIteratorInternal<'data, 'file>,
 }
 
 #[derive(Debug)]
-enum RelocationIteratorInternal<'data, 'file>
+enum DynamicRelocationIteratorInternal<'data, 'file>
+where
+    'data: 'file,
+{
+    #[cfg(feature = "elf")]
+    Elf32(elf::ElfDynamicRelocationIterator32<'data, 'file>),
+    #[cfg(feature = "elf")]
+    Elf64(elf::ElfDynamicRelocationIterator64<'data, 'file>),
+    // We need to always use the lifetime parameters.
+    #[allow(unused)]
+    None(PhantomData<(&'data (), &'file ())>),
+}
+
+impl<'data, 'file> Iterator for DynamicRelocationIterator<'data, 'file> {
+    type Item = (u64, Relocation);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.inner {
+            #[cfg(feature = "elf")]
+            DynamicRelocationIteratorInternal::Elf32(ref mut elf) => elf.next(),
+            #[cfg(feature = "elf")]
+            DynamicRelocationIteratorInternal::Elf64(ref mut elf) => elf.next(),
+            DynamicRelocationIteratorInternal::None(_) => None,
+        }
+    }
+}
+
+/// An iterator over section relocation entries.
+#[derive(Debug)]
+pub struct SectionRelocationIterator<'data, 'file>
+where
+    'data: 'file,
+{
+    inner: SectionRelocationIteratorInternal<'data, 'file>,
+}
+
+#[derive(Debug)]
+enum SectionRelocationIteratorInternal<'data, 'file>
 where
     'data: 'file,
 {
     #[cfg(feature = "coff")]
     Coff(coff::CoffRelocationIterator<'data, 'file>),
     #[cfg(feature = "elf")]
-    Elf32(elf::ElfRelocationIterator32<'data, 'file>),
+    Elf32(elf::ElfSectionRelocationIterator32<'data, 'file>),
     #[cfg(feature = "elf")]
-    Elf64(elf::ElfRelocationIterator64<'data, 'file>),
+    Elf64(elf::ElfSectionRelocationIterator64<'data, 'file>),
     #[cfg(feature = "macho")]
     MachO32(macho::MachORelocationIterator32<'data, 'file>),
     #[cfg(feature = "macho")]
@@ -1030,10 +1072,10 @@ where
     Wasm(wasm::WasmRelocationIterator<'data, 'file>),
 }
 
-impl<'data, 'file> Iterator for RelocationIterator<'data, 'file> {
+impl<'data, 'file> Iterator for SectionRelocationIterator<'data, 'file> {
     type Item = (u64, Relocation);
 
     fn next(&mut self) -> Option<Self::Item> {
-        with_inner_mut!(self.inner, RelocationIteratorInternal, |x| x.next())
+        with_inner_mut!(self.inner, SectionRelocationIteratorInternal, |x| x.next())
     }
 }

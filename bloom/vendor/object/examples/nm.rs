@@ -73,7 +73,8 @@ fn print_symbol(symbol: &Symbol<'_, '_>, section_kinds: &HashMap<SectionIndex, S
             | Some(SectionKind::Debug)
             | Some(SectionKind::Linker)
             | Some(SectionKind::Note)
-            | Some(SectionKind::Metadata) => '?',
+            | Some(SectionKind::Metadata)
+            | Some(SectionKind::Elf(_)) => '?',
             Some(SectionKind::Text) => 't',
             Some(SectionKind::Data) | Some(SectionKind::Tls) | Some(SectionKind::TlsVariables) => {
                 'd'

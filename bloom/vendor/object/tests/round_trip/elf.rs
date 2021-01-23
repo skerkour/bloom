@@ -194,11 +194,11 @@ fn note() {
     assert_eq!(section.sh_addralign(endian), 4);
     let mut notes = section.notes(endian, bytes).unwrap().unwrap();
     let note = notes.next().unwrap().unwrap();
-    assert_eq!(note.name(), b"name1\0");
+    assert_eq!(note.name(), b"name1");
     assert_eq!(note.desc(), b"descriptor\0");
     assert_eq!(note.n_type(endian), 1);
     let note = notes.next().unwrap().unwrap();
-    assert_eq!(note.name(), b"name2\0");
+    assert_eq!(note.name(), b"name2");
     assert_eq!(note.desc(), b"descriptor\0");
     assert_eq!(note.n_type(endian), 2);
     assert!(notes.next().unwrap().is_none());
@@ -208,11 +208,11 @@ fn note() {
     assert_eq!(section.sh_addralign(endian), 8);
     let mut notes = section.notes(endian, bytes).unwrap().unwrap();
     let note = notes.next().unwrap().unwrap();
-    assert_eq!(note.name(), b"name1\0");
+    assert_eq!(note.name(), b"name1");
     assert_eq!(note.desc(), b"descriptor\0");
     assert_eq!(note.n_type(endian), 1);
     let note = notes.next().unwrap().unwrap();
-    assert_eq!(note.name(), b"abc\0");
+    assert_eq!(note.name(), b"abc");
     assert_eq!(note.desc(), b"descriptor\0");
     assert_eq!(note.n_type(endian), 2);
     assert!(notes.next().unwrap().is_none());

@@ -5,6 +5,9 @@
 //!
 //! Also provides `MachOFile` and related types which implement the `Object` trait.
 
+mod fat;
+pub use fat::*;
+
 mod file;
 pub use file::*;
 

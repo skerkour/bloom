@@ -1833,9 +1833,12 @@ pub struct ImageThunkData32 {
         pub address_of_data: U32<LE>,
     } u1;
 }
+*/
 
 pub const IMAGE_ORDINAL_FLAG64: u64 = 0x8000000000000000;
 pub const IMAGE_ORDINAL_FLAG32: u32 = 0x80000000;
+
+/*
 #define IMAGE_ORDINAL64(Ordinal) (Ordinal & 0xffff)
 #define IMAGE_ORDINAL32(Ordinal) (Ordinal & 0xffff)
 #define IMAGE_SNAP_BY_ORDINAL64(Ordinal) ((Ordinal & IMAGE_ORDINAL_FLAG64) != 0)
@@ -1873,25 +1876,22 @@ pub struct ImageTlsDirectory32 {
     pub characteristics: U32<LE>,
 }
 
-// TODO: unaligned?
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ImageImportDescriptor {
+    /// RVA to original unbound IAT (`ImageThunkData32`/`ImageThunkData64`)
     /// 0 for terminating null import descriptor
-    /// RVA to original unbound IAT (PIMAGE_THUNK_DATA)
-    pub characteristics_or_original_first_thunk: U32<LE>,
-    pub original_first_thunk: U32<LE>,
+    pub original_first_thunk: U32Bytes<LE>,
     /// 0 if not bound,
     /// -1 if bound, and real date\time stamp
     ///     in IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT (new BIND)
     /// O.W. date/time stamp of DLL bound to (Old BIND)
-    pub time_date_stamp: U32<LE>,
-
+    pub time_date_stamp: U32Bytes<LE>,
     /// -1 if no forwarders
-    pub forwarder_chain: U32<LE>,
-    pub name: U32<LE>,
+    pub forwarder_chain: U32Bytes<LE>,
+    pub name: U32Bytes<LE>,
     /// RVA to IAT (if bound this IAT has actual addresses)
-    pub first_thunk: U32<LE>,
+    pub first_thunk: U32Bytes<LE>,
 }
 
 //

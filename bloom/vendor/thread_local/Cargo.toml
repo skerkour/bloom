@@ -11,11 +11,12 @@
 # will likely look very different (and much more reasonable)
 
 [package]
+edition = "2018"
 name = "thread_local"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
 description = "Per-object thread-local storage"
-documentation = "https://amanieu.github.io/thread_local-rs/thread_local/index.html"
+documentation = "https://docs.rs/thread_local/"
 readme = "README.md"
 keywords = ["thread_local", "concurrent", "thread"]
 license = "Apache-2.0/MIT"
@@ -29,8 +30,8 @@ required-features = ["criterion"]
 version = "0.3.3"
 optional = true
 
-[dependencies.lazy_static]
-version = "1.0"
+[dependencies.once_cell]
+version = "1.5.2"
 
 [dev-dependencies]
 [badges.travis-ci]

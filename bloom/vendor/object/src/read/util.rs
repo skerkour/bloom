@@ -1,5 +1,6 @@
 use crate::pod::Bytes;
 
+#[allow(unused)]
 #[inline]
 pub(crate) fn align(offset: usize, size: usize) -> usize {
     (offset + (size - 1)) & !(size - 1)

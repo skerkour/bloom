@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "object"
-version = "0.22.0"
+version = "0.23.0"
 authors = ["Nick Fitzgerald <fitzgen@gmail.com>", "Philip Craig <philipjcraig@gmail.com>"]
 exclude = ["/.coveralls.yml", "/.travis.yml"]
 description = "A unified interface for reading and writing object file formats."
@@ -24,8 +24,8 @@ repository = "https://github.com/gimli-rs/object"
 features = ["all"]
 
 [[example]]
-name = "nm"
-required-features = ["read"]
+name = "ar"
+required-features = ["read_core", "archive"]
 
 [[example]]
 name = "objcopy"
@@ -33,15 +33,19 @@ required-features = ["read", "write"]
 
 [[example]]
 name = "objdump"
-required-features = ["read_core"]
-
-[[example]]
-name = "ar"
-required-features = ["read_core", "archive"]
+required-features = ["read"]
 
 [[example]]
 name = "objectmap"
 required-features = ["read_core"]
+
+[[example]]
+name = "nm"
+required-features = ["read"]
+
+[[example]]
+name = "readobj"
+required-features = ["read"]
 [dependencies.alloc]
 version = "1.0.0"
 optional = true

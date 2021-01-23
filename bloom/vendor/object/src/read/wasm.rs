@@ -10,10 +10,10 @@ use core::{slice, str};
 use wasmparser as wp;
 
 use crate::read::{
-    self, Architecture, ComdatKind, CompressedData, Error, FileFlags, Object, ObjectComdat,
-    ObjectSection, ObjectSegment, ObjectSymbol, ObjectSymbolTable, ReadError, Relocation, Result,
-    SectionFlags, SectionIndex, SectionKind, SymbolFlags, SymbolIndex, SymbolKind, SymbolScope,
-    SymbolSection,
+    self, Architecture, ComdatKind, CompressedData, Error, Export, FileFlags, Import,
+    NoDynamicRelocationIterator, Object, ObjectComdat, ObjectSection, ObjectSegment, ObjectSymbol,
+    ObjectSymbolTable, ReadError, Relocation, Result, SectionFlags, SectionIndex, SectionKind,
+    SymbolFlags, SymbolIndex, SymbolKind, SymbolScope, SymbolSection,
 };
 
 const SECTION_CUSTOM: usize = 0;
@@ -298,6 +298,7 @@ where
     type Symbol = WasmSymbol<'data, 'file>;
     type SymbolIterator = WasmSymbolIterator<'data, 'file>;
     type SymbolTable = WasmSymbolTable<'data, 'file>;
+    type DynamicRelocationIterator = NoDynamicRelocationIterator;
 
     #[inline]
     fn architecture(&self) -> Architecture {
@@ -379,6 +380,21 @@ where
     #[inline]
     fn dynamic_symbol_table(&'file self) -> Option<WasmSymbolTable<'data, 'file>> {
         None
+    }
+
+    #[inline]
+    fn dynamic_relocations(&self) -> Option<NoDynamicRelocationIterator> {
+        None
+    }
+
+    fn imports(&self) -> Result<Vec<Import<'data>>> {
+        // TODO: return entries in the import section
+        Ok(Vec::new())
+    }
+
+    fn exports(&self) -> Result<Vec<Export<'data>>> {
+        // TODO: return entries in the export section
+        Ok(Vec::new())
     }
 
     fn has_debug_symbols(&self) -> bool {

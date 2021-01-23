@@ -1,8 +1,9 @@
+use alloc::vec::Vec;
 use core::str;
 
 use crate::read::{
-    self, Architecture, FileFlags, Object, ObjectSection, ReadError, Result, SectionIndex,
-    SymbolIndex,
+    self, Architecture, Export, FileFlags, Import, NoDynamicRelocationIterator, Object,
+    ObjectSection, ReadError, Result, SectionIndex, SymbolIndex,
 };
 use crate::{pe, Bytes, LittleEndian as LE};
 
@@ -64,6 +65,7 @@ where
     type Symbol = CoffSymbol<'data, 'file>;
     type SymbolIterator = CoffSymbolIterator<'data, 'file>;
     type SymbolTable = CoffSymbolTable<'data, 'file>;
+    type DynamicRelocationIterator = NoDynamicRelocationIterator;
 
     fn architecture(&self) -> Architecture {
         match self.header.machine.get(LE) {
@@ -151,6 +153,23 @@ where
     #[inline]
     fn dynamic_symbol_table(&'file self) -> Option<CoffSymbolTable<'data, 'file>> {
         None
+    }
+
+    #[inline]
+    fn dynamic_relocations(&'file self) -> Option<NoDynamicRelocationIterator> {
+        None
+    }
+
+    #[inline]
+    fn imports(&self) -> Result<Vec<Import<'data>>> {
+        // TODO: this could return undefined symbols, but not needed yet.
+        Ok(Vec::new())
+    }
+
+    #[inline]
+    fn exports(&self) -> Result<Vec<Export<'data>>> {
+        // TODO: this could return global symbols, but not needed yet.
+        Ok(Vec::new())
     }
 
     fn has_debug_symbols(&self) -> bool {

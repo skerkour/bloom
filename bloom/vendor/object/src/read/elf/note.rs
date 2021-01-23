@@ -2,16 +2,16 @@ use core::fmt::Debug;
 use core::mem;
 
 use crate::elf;
-use crate::endian::{self, Endianness};
+use crate::endian;
 use crate::pod::{Bytes, Pod};
 use crate::read::util;
 use crate::read::{self, Error, ReadError};
 
 use super::FileHeader;
 
-/// An iterator over the notes in an `ElfSegment` or `ElfSection`.
+/// An iterator over the notes in an ELF section or segment.
 #[derive(Debug)]
-pub struct ElfNoteIterator<'data, Elf>
+pub struct NoteIterator<'data, Elf>
 where
     Elf: FileHeader,
 {
@@ -20,7 +20,7 @@ where
     data: Bytes<'data>,
 }
 
-impl<'data, Elf> ElfNoteIterator<'data, Elf>
+impl<'data, Elf> NoteIterator<'data, Elf>
 where
     Elf: FileHeader,
 {
@@ -36,7 +36,7 @@ where
             _ => return Err(Error("Invalid ELF note alignment")),
         };
         // TODO: check data alignment?
-        Ok(ElfNoteIterator {
+        Ok(NoteIterator {
             endian,
             align,
             data,
@@ -44,7 +44,7 @@ where
     }
 
     /// Returns the next note.
-    pub fn next(&mut self) -> read::Result<Option<ElfNote<'data, Elf>>> {
+    pub fn next(&mut self) -> read::Result<Option<Note<'data, Elf>>> {
         let mut data = self.data;
         if data.is_empty() {
             return Ok(None);
@@ -77,18 +77,13 @@ where
         }
         self.data = data;
 
-        Ok(Some(ElfNote { header, name, desc }))
+        Ok(Some(Note { header, name, desc }))
     }
 }
 
-/// A parsed `NoteHeader32`.
-pub type ElfNote32<'data, Endian = Endianness> = ElfNote<'data, elf::FileHeader32<Endian>>;
-/// A parsed `NoteHeader64`.
-pub type ElfNote64<'data, Endian = Endianness> = ElfNote<'data, elf::FileHeader64<Endian>>;
-
 /// A parsed `NoteHeader`.
 #[derive(Debug)]
-pub struct ElfNote<'data, Elf>
+pub struct Note<'data, Elf>
 where
     Elf: FileHeader,
 {
@@ -97,7 +92,7 @@ where
     desc: &'data [u8],
 }
 
-impl<'data, Elf: FileHeader> ElfNote<'data, Elf> {
+impl<'data, Elf: FileHeader> Note<'data, Elf> {
     /// Return the `n_type` field of the `NoteHeader`.
     ///
     /// The meaning of this field is determined by `name`.
@@ -115,11 +110,20 @@ impl<'data, Elf: FileHeader> ElfNote<'data, Elf> {
         self.header.n_descsz(endian)
     }
 
-    /// Return the bytes for the name field following the `NoteHeader`.
+    /// Return the bytes for the name field following the `NoteHeader`,
+    /// excluding any null terminator.
     ///
-    /// The length of this field is given by `n_namesz`. This field is usually a
-    /// string including a null terminator (but it is not required to be).
+    /// This field is usually a string including a null terminator
+    /// (but it is not required to be).
+    ///
+    /// The length of this field (including any null terminator) is given by
+    /// `n_namesz`.
     pub fn name(&self) -> &'data [u8] {
+        if let Some((last, name)) = self.name.split_last() {
+            if *last == 0 {
+                return name;
+            }
+        }
         self.name
     }
 

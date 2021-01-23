@@ -379,6 +379,15 @@ pub trait Nlist: Debug + Pod {
         let n_type = self.n_type();
         n_type & macho::N_STAB == 0 && n_type & macho::N_TYPE != macho::N_UNDF
     }
+
+    /// Return the library ordinal.
+    ///
+    /// This is either a 1-based index into the dylib load commands,
+    /// or a special ordinal.
+    #[inline]
+    fn library_ordinal(&self, endian: Self::Endian) -> u8 {
+        (self.n_desc(endian) >> 8) as u8
+    }
 }
 
 impl<Endian: endian::Endian> Nlist for macho::Nlist32<Endian> {

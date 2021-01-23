@@ -3,7 +3,6 @@ use core::{iter, slice, str};
 
 use crate::elf;
 use crate::endian::{Endianness, U32Bytes};
-use crate::pod::Bytes;
 use crate::read::{self, ComdatKind, ObjectComdat, ReadError, SectionIndex, SymbolIndex};
 
 use super::{ElfFile, FileHeader, SectionHeader, Sym};
@@ -56,7 +55,7 @@ where
     file: &'file ElfFile<'data, Elf>,
     index: SectionIndex,
     section: &'data Elf::SectionHeader,
-    data: Bytes<'data>,
+    sections: &'data [U32Bytes<Elf::Endian>],
 }
 
 impl<'data, 'file, Elf: FileHeader> ElfComdat<'data, 'file, Elf> {
@@ -65,19 +64,15 @@ impl<'data, 'file, Elf: FileHeader> ElfComdat<'data, 'file, Elf> {
         index: usize,
         section: &'data Elf::SectionHeader,
     ) -> Option<ElfComdat<'data, 'file, Elf>> {
-        if section.sh_type(file.endian) != elf::SHT_GROUP {
-            return None;
-        }
-        let mut data = section.data(file.endian, file.data).ok()?;
-        let flags = data.read::<U32Bytes<_>>().ok()?;
-        if flags.get(file.endian) != elf::GRP_COMDAT {
+        let (flag, sections) = section.group(file.endian, file.data).ok()??;
+        if flag != elf::GRP_COMDAT {
             return None;
         }
         Some(ElfComdat {
             file,
             index: SectionIndex(index),
             section,
-            data,
+            sections,
         })
     }
 }
@@ -110,7 +105,7 @@ impl<'data, 'file, Elf: FileHeader> ObjectComdat<'data> for ElfComdat<'data, 'fi
     fn sections(&self) -> Self::SectionIterator {
         ElfComdatSectionIterator {
             file: self.file,
-            data: self.data,
+            sections: self.sections.iter(),
         }
     }
 }
@@ -130,18 +125,14 @@ where
     Elf: FileHeader,
 {
     file: &'file ElfFile<'data, Elf>,
-    data: Bytes<'data>,
+    sections: slice::Iter<'data, U32Bytes<Elf::Endian>>,
 }
 
 impl<'data, 'file, Elf: FileHeader> Iterator for ElfComdatSectionIterator<'data, 'file, Elf> {
     type Item = SectionIndex;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.data.is_empty() {
-            None
-        } else {
-            let index = self.data.read::<U32Bytes<_>>().ok()?;
-            Some(SectionIndex(index.get(self.file.endian) as usize))
-        }
+        let index = self.sections.next()?;
+        Some(SectionIndex(index.get(self.file.endian) as usize))
     }
 }

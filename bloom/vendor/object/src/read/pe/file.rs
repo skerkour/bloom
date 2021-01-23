@@ -1,12 +1,13 @@
+use alloc::vec::Vec;
 use core::fmt::Debug;
 use core::{mem, str};
 
 use crate::read::coff::{CoffCommon, CoffSymbol, CoffSymbolIterator, CoffSymbolTable, SymbolTable};
 use crate::read::{
-    self, Architecture, ComdatKind, Error, FileFlags, Object, ObjectComdat, ReadError, Result,
-    SectionIndex, SymbolIndex,
+    self, Architecture, ComdatKind, Error, Export, FileFlags, Import, NoDynamicRelocationIterator,
+    Object, ObjectComdat, ReadError, Result, SectionIndex, SymbolIndex,
 };
-use crate::{pe, Bytes, LittleEndian as LE, Pod};
+use crate::{pe, ByteString, Bytes, LittleEndian as LE, Pod, U16Bytes, U32Bytes, U32, U64};
 
 use super::{PeSection, PeSectionIterator, PeSegment, PeSegmentIterator, SectionTable};
 
@@ -65,6 +66,20 @@ impl<'data, Pe: ImageNtHeaders> PeFile<'data, Pe> {
     pub(super) fn section_alignment(&self) -> u64 {
         u64::from(self.nt_headers.optional_header().section_alignment())
     }
+
+    fn data_directory(&self, id: usize) -> Option<&'data pe::ImageDataDirectory> {
+        self.data_directories
+            .get(id)
+            .filter(|d| d.size.get(LE) != 0)
+    }
+
+    fn data_at(&self, va: u32) -> Option<Bytes<'data>> {
+        self.common
+            .sections
+            .iter()
+            .filter_map(|section| section.pe_data_at(self.data, va))
+            .next()
+    }
 }
 
 impl<'data, Pe: ImageNtHeaders> read::private::Sealed for PeFile<'data, Pe> {}
@@ -83,6 +98,7 @@ where
     type Symbol = CoffSymbol<'data, 'file>;
     type SymbolIterator = CoffSymbolIterator<'data, 'file>;
     type SymbolTable = CoffSymbolTable<'data, 'file>;
+    type DynamicRelocationIterator = NoDynamicRelocationIterator;
 
     fn architecture(&self) -> Architecture {
         match self.nt_headers.file_header().machine.get(LE) {
@@ -172,6 +188,145 @@ where
 
     fn dynamic_symbol_table(&'file self) -> Option<CoffSymbolTable<'data, 'file>> {
         None
+    }
+
+    fn dynamic_relocations(&'file self) -> Option<NoDynamicRelocationIterator> {
+        None
+    }
+
+    fn imports(&self) -> Result<Vec<Import<'data>>> {
+        let data_dir = match self.data_directory(pe::IMAGE_DIRECTORY_ENTRY_IMPORT) {
+            Some(data_dir) => data_dir,
+            None => return Ok(Vec::new()),
+        };
+        let import_data = self
+            .data_at(data_dir.virtual_address.get(LE))
+            .read_error("Invalid PE import dir virtual address")?
+            .read_bytes(data_dir.size.get(LE) as usize)
+            .read_error("Invalid PE import dir size")?;
+
+        let mut imports = Vec::new();
+        let mut import_descriptors = import_data;
+        loop {
+            let import_desc = import_descriptors
+                .read::<pe::ImageImportDescriptor>()
+                .read_error("Missing PE null import descriptor")?;
+            if import_desc.original_first_thunk.get(LE) == 0 {
+                break;
+            }
+
+            let library = self
+                .data_at(import_desc.name.get(LE))
+                .read_error("Invalid PE import descriptor name")?
+                .read_string()
+                .read_error("Invalid PE import descriptor name")?;
+
+            let thunk_va = import_desc.original_first_thunk.get(LE);
+            let mut thunk_data = self
+                .data_at(thunk_va)
+                .read_error("Invalid PE import thunk address")?;
+            loop {
+                let hint_name = if self.is_64() {
+                    let thunk = thunk_data
+                        .read::<U64<_>>()
+                        .read_error("Missing PE null import thunk")?
+                        .get(LE);
+                    if thunk == 0 {
+                        break;
+                    }
+                    if thunk & pe::IMAGE_ORDINAL_FLAG64 != 0 {
+                        // TODO: handle import by ordinal
+                        continue;
+                    }
+                    thunk as u32
+                } else {
+                    let thunk = thunk_data
+                        .read::<U32<_>>()
+                        .read_error("Missing PE null import thunk")?
+                        .get(LE);
+                    if thunk == 0 {
+                        break;
+                    }
+                    if thunk & pe::IMAGE_ORDINAL_FLAG32 != 0 {
+                        // TODO: handle import by ordinal
+                        continue;
+                    }
+                    thunk
+                };
+                let name = self
+                    .data_at(hint_name)
+                    .read_error("Invalid PE import thunk name")?
+                    .read_string_at(2)
+                    .read_error("Invalid PE import thunk name")?;
+
+                imports.push(Import {
+                    name: ByteString(name),
+                    library: ByteString(library),
+                });
+            }
+        }
+        Ok(imports)
+    }
+
+    fn exports(&self) -> Result<Vec<Export<'data>>> {
+        let data_dir = match self.data_directory(pe::IMAGE_DIRECTORY_ENTRY_EXPORT) {
+            Some(data_dir) => data_dir,
+            None => return Ok(Vec::new()),
+        };
+        let export_va = data_dir.virtual_address.get(LE);
+        let export_size = data_dir.size.get(LE);
+        let export_data = self
+            .data_at(export_va)
+            .read_error("Invalid PE export dir virtual address")?
+            .read_bytes(export_size as usize)
+            .read_error("Invalid PE export dir size")?;
+        let export_dir = export_data
+            .read_at::<pe::ImageExportDirectory>(0)
+            .read_error("Invalid PE export dir size")?;
+        let addresses = export_data
+            .read_slice_at::<U32Bytes<_>>(
+                export_dir
+                    .address_of_functions
+                    .get(LE)
+                    .wrapping_sub(export_va) as usize,
+                export_dir.number_of_functions.get(LE) as usize,
+            )
+            .read_error("Invalid PE export address table")?;
+        let number = export_dir.number_of_names.get(LE) as usize;
+        let names = export_data
+            .read_slice_at::<U32Bytes<_>>(
+                export_dir.address_of_names.get(LE).wrapping_sub(export_va) as usize,
+                number,
+            )
+            .read_error("Invalid PE export name table")?;
+        let ordinals = export_data
+            .read_slice_at::<U16Bytes<_>>(
+                export_dir
+                    .address_of_name_ordinals
+                    .get(LE)
+                    .wrapping_sub(export_va) as usize,
+                number,
+            )
+            .read_error("Invalid PE export ordinal table")?;
+
+        let mut exports = Vec::new();
+        for (name, ordinal) in names.iter().zip(ordinals.iter()) {
+            let name = export_data
+                .read_string_at(name.get(LE).wrapping_sub(export_va) as usize)
+                .read_error("Invalid PE export name entry")?;
+            let address = addresses
+                .get(ordinal.get(LE) as usize)
+                .read_error("Invalid PE export ordinal entry")?
+                .get(LE);
+            // Check for export address (vs forwarder address).
+            if address < export_va || (address - export_va) >= export_size {
+                exports.push(Export {
+                    name: ByteString(name),
+                    address: self.common.image_base.wrapping_add(address.into()),
+                })
+            }
+        }
+        Ok(exports)
     }
 
     fn has_debug_symbols(&self) -> bool {

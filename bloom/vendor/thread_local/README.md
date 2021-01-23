@@ -8,7 +8,7 @@ object to be used for each thread. This allows for per-object thread-local
 storage, unlike the standard library's `thread_local!` macro which only allows
 static thread-local storage.
 
-[Documentation](https://amanieu.github.io/thread_local-rs/thread_local/index.html)
+[Documentation](https://docs.rs/thread_local/)
 
 ## Usage
 
@@ -16,18 +16,12 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-thread_local = "1.0"
-```
-
-and this to your crate root:
-
-```rust
-extern crate thread_local;
+thread_local = "1.1"
 ```
 
 ## Minimum Rust version
 
-This crate's minimum supported Rust version (MSRV) is 1.28.0.
+This crate's minimum supported Rust version (MSRV) is 1.36.0.
 
 ## License
 

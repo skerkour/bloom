@@ -358,9 +358,13 @@ cfg_if::cfg_if! {
                 bias: slide,
             })
         }
-    } else if #[cfg(any(
-        target_os = "linux",
-        target_os = "fuchsia",
+    } else if #[cfg(all(
+        any(
+            target_os = "linux",
+            target_os = "fuchsia",
+            target_os = "freebsd",
+        ),
+        not(target_env = "uclibc"),
     ))] {
         // Other Unix (e.g. Linux) platforms use ELF as an object file format
         // and typically implement an API called `dl_iterate_phdr` to load
@@ -618,10 +622,14 @@ pub unsafe fn resolve(what: ResolveWhat<'_>, cb: &mut dyn FnMut(&super::Symbol))
         if let Ok(mut frames) = cx.dwarf.find_frames(addr as u64) {
             while let Ok(Some(frame)) = frames.next() {
                 any_frames = true;
+                let name = match frame.function {
+                    Some(f) => Some(f.name.slice()),
+                    None => cx.object.search_symtab(addr as u64),
+                };
                 call(Symbol::Frame {
                     addr: addr as *mut c_void,
                     location: frame.location,
-                    name: frame.function.map(|f| f.name.slice()),
+                    name,
                 });
             }
         }

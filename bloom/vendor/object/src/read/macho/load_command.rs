@@ -85,6 +85,40 @@ impl<'data, E: Endian> MachOLoadCommand<'data, E> {
         }
     }
 
+    /// Try to parse this command as a `DysymtabCommand`.
+    pub fn dysymtab(self) -> Result<Option<&'data macho::DysymtabCommand<E>>> {
+        if self.cmd == macho::LC_DYSYMTAB {
+            Some(
+                self.data
+                    .clone()
+                    .read()
+                    .read_error("Invalid Mach-O LC_DYSYMTAB command size"),
+            )
+            .transpose()
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Try to parse this command as a `DylibCommand`.
+    pub fn dylib(self) -> Result<Option<&'data macho::Dylib<E>>> {
+        if self.cmd == macho::LC_LOAD_DYLIB
+            || self.cmd == macho::LC_LOAD_WEAK_DYLIB
+            || self.cmd == macho::LC_REEXPORT_DYLIB
+            || self.cmd == macho::LC_LAZY_LOAD_DYLIB
+            || self.cmd == macho::LC_LOAD_UPWARD_DYLIB
+        {
+            let command = self
+                .data
+                .clone()
+                .read::<macho::DylibCommand<_>>()
+                .read_error("Invalid Mach-O LC_*_DYLIB command size")?;
+            Ok(Some(&command.dylib))
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Try to parse this command as a `UuidCommand`.
     pub fn uuid(self) -> Result<Option<&'data macho::UuidCommand<E>>> {
         if self.cmd == macho::LC_UUID {
@@ -113,6 +147,21 @@ impl<'data, E: Endian> MachOLoadCommand<'data, E> {
         }
     }
 
+    /// Try to parse this command as a `DyldInfoCommand`.
+    pub fn dyld_info(self) -> Result<Option<&'data macho::DyldInfoCommand<E>>> {
+        if self.cmd == macho::LC_DYLD_INFO || self.cmd == macho::LC_DYLD_INFO_ONLY {
+            Some(
+                self.data
+                    .clone()
+                    .read()
+                    .read_error("Invalid Mach-O LC_DYLD_INFO command size"),
+            )
+            .transpose()
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Try to parse this command as an `EntryPointCommand`.
     pub fn entry_point(self) -> Result<Option<&'data macho::EntryPointCommand<E>>> {
         if self.cmd == macho::LC_MAIN {
@@ -126,6 +175,12 @@ impl<'data, E: Endian> MachOLoadCommand<'data, E> {
         } else {
             Ok(None)
         }
+    }
+
+    pub fn string(&self, endian: E, s: macho::LcStr<E>) -> Result<&'data [u8]> {
+        self.data
+            .read_string_at(s.offset.get(endian) as usize)
+            .read_error("Invalid load command string offset")
     }
 }
 

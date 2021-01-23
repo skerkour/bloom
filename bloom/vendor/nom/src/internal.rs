@@ -288,6 +288,16 @@ where
   }
 }
 
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
+
+#[cfg(feature = "alloc")]
+impl<'a, I, O, E> Parser<I, O, E> for Box<dyn Parser<I, O, E> + 'a> {
+  fn parse(&mut self, input: I) -> IResult<I, O, E> {
+    (**self).parse(input)
+  }
+}
+
 /// Implementation of `Parser:::map`
 #[allow(missing_doc_code_examples)]
 pub struct Map<F, G, O1> {

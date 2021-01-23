@@ -258,6 +258,15 @@ impl pe::ImageSectionHeader {
         let (offset, size) = self.pe_file_range();
         data.read_bytes_at(offset as usize, size as usize)
     }
+
+    /// Return the data at the given virtual address if this section contains it.
+    pub fn pe_data_at<'data>(&self, data: Bytes<'data>, va: u32) -> Option<Bytes<'data>> {
+        let section_va = self.virtual_address.get(LE);
+        let offset = va.checked_sub(section_va)?;
+        let mut section_data = self.pe_data(data).ok()?;
+        section_data.skip(offset as usize).ok()?;
+        Some(section_data)
+    }
 }
 
 /// An iterator over the relocations in an `PeSection`.

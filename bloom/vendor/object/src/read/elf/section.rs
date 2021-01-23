@@ -10,7 +10,7 @@ use crate::read::{
 };
 
 use super::{
-    CompressionHeader, ElfFile, ElfNoteIterator, ElfRelocationIterator, FileHeader,
+    CompressionHeader, ElfFile, ElfSectionRelocationIterator, FileHeader, NoteIterator,
     RelocationSections, SymbolTable,
 };
 
@@ -75,9 +75,7 @@ impl<'data, Elf: FileHeader> SectionTable<'data, Elf> {
         endian: Elf::Endian,
         section: &'data Elf::SectionHeader,
     ) -> read::Result<&'data [u8]> {
-        self.strings
-            .get(section.sh_name(endian))
-            .read_error("Invalid ELF section name offset")
+        section.name(endian, self.strings)
     }
 
     /// Return the symbol table of the given section type.
@@ -90,7 +88,36 @@ impl<'data, Elf: FileHeader> SectionTable<'data, Elf> {
         data: Bytes<'data>,
         sh_type: u32,
     ) -> read::Result<SymbolTable<'data, Elf>> {
-        SymbolTable::parse(endian, data, self, sh_type)
+        debug_assert!(sh_type == elf::SHT_DYNSYM || sh_type == elf::SHT_SYMTAB);
+
+        let (index, section) = match self
+            .iter()
+            .enumerate()
+            .find(|s| s.1.sh_type(endian) == sh_type)
+        {
+            Some(s) => s,
+            None => return Ok(SymbolTable::default()),
+        };
+
+        SymbolTable::parse(endian, data, self, index, section)
+    }
+
+    /// Return the symbol table at the given section index.
+    ///
+    /// Returns an error if the section is not a symbol table.
+    #[inline]
+    pub fn symbol_table_by_index(
+        &self,
+        endian: Elf::Endian,
+        data: Bytes<'data>,
+        index: usize,
+    ) -> read::Result<SymbolTable<'data, Elf>> {
+        let section = self.section(index)?;
+        match section.sh_type(endian) {
+            elf::SHT_DYNSYM | elf::SHT_SYMTAB => {}
+            _ => return Err(Error("Invalid ELF symbol table section type.")),
+        }
+        SymbolTable::parse(endian, data, self, index, section)
     }
 
     /// Create a mapping from section index to associated relocation sections.
@@ -221,7 +248,7 @@ impl<'data, 'file, Elf: FileHeader> ElfSection<'data, 'file, Elf> {
 impl<'data, 'file, Elf: FileHeader> read::private::Sealed for ElfSection<'data, 'file, Elf> {}
 
 impl<'data, 'file, Elf: FileHeader> ObjectSection<'data> for ElfSection<'data, 'file, Elf> {
-    type RelocationIterator = ElfRelocationIterator<'data, 'file, Elf>;
+    type RelocationIterator = ElfSectionRelocationIterator<'data, 'file, Elf>;
 
     #[inline]
     fn index(&self) -> SectionIndex {
@@ -289,7 +316,8 @@ impl<'data, 'file, Elf: FileHeader> ObjectSection<'data> for ElfSection<'data, '
 
     fn kind(&self) -> SectionKind {
         let flags = self.section.sh_flags(self.file.endian).into();
-        match self.section.sh_type(self.file.endian) {
+        let sh_type = self.section.sh_type(self.file.endian);
+        match sh_type {
             elf::SHT_PROGBITS => {
                 if flags & u64::from(elf::SHF_ALLOC) != 0 {
                     if flags & u64::from(elf::SHF_EXECINSTR) != 0 {
@@ -326,15 +354,12 @@ impl<'data, 'file, Elf: FileHeader> ObjectSection<'data> for ElfSection<'data, '
             | elf::SHT_REL
             | elf::SHT_DYNSYM
             | elf::SHT_GROUP => SectionKind::Metadata,
-            _ => {
-                // TODO: maybe add more specialised kinds based on sh_type (e.g. Unwind)
-                SectionKind::Unknown
-            }
+            _ => SectionKind::Elf(sh_type),
         }
     }
 
-    fn relocations(&self) -> ElfRelocationIterator<'data, 'file, Elf> {
-        ElfRelocationIterator {
+    fn relocations(&self) -> ElfSectionRelocationIterator<'data, 'file, Elf> {
+        ElfSectionRelocationIterator {
             section_index: self.index.0,
             file: self.file,
             relocations: None,
@@ -351,9 +376,9 @@ impl<'data, 'file, Elf: FileHeader> ObjectSection<'data> for ElfSection<'data, '
 /// A trait for generic access to `SectionHeader32` and `SectionHeader64`.
 #[allow(missing_docs)]
 pub trait SectionHeader: Debug + Pod {
+    type Elf: FileHeader<SectionHeader = Self, Endian = Self::Endian, Word = Self::Word>;
     type Word: Into<u64>;
     type Endian: endian::Endian;
-    type Elf: FileHeader<Word = Self::Word, Endian = Self::Endian>;
 
     fn sh_name(&self, endian: Self::Endian) -> u32;
     fn sh_type(&self, endian: Self::Endian) -> u32;
@@ -365,6 +390,17 @@ pub trait SectionHeader: Debug + Pod {
     fn sh_info(&self, endian: Self::Endian) -> u32;
     fn sh_addralign(&self, endian: Self::Endian) -> Self::Word;
     fn sh_entsize(&self, endian: Self::Endian) -> Self::Word;
+
+    /// Parse the section name from the string table.
+    fn name<'data>(
+        &self,
+        endian: Self::Endian,
+        strings: StringTable<'data>,
+    ) -> read::Result<&'data [u8]> {
+        strings
+            .get(self.sh_name(endian))
+            .read_error("Invalid ELF section name offset")
+    }
 
     /// Return the offset and size of the section in the file.
     ///
@@ -403,6 +439,80 @@ pub trait SectionHeader: Debug + Pod {
         data.read_slice(data.len() / mem::size_of::<T>())
     }
 
+    /// Return the symbols in the section.
+    ///
+    /// Also finds the corresponding string table in `sections`.
+    ///
+    /// `section_index` must be the 0-based index of this section, and is used
+    /// to find the corresponding extended section index table in `sections`.
+    ///
+    /// Returns `Ok(None)` if the section does not contain symbols.
+    /// Returns `Err` for invalid values.
+    fn symbols<'data>(
+        &self,
+        endian: Self::Endian,
+        data: Bytes<'data>,
+        sections: &SectionTable<Self::Elf>,
+        section_index: usize,
+    ) -> read::Result<Option<SymbolTable<'data, Self::Elf>>> {
+        let sh_type = self.sh_type(endian);
+        if sh_type != elf::SHT_SYMTAB && sh_type != elf::SHT_DYNSYM {
+            return Ok(None);
+        }
+        SymbolTable::parse(endian, data, sections, section_index, self).map(Some)
+    }
+
+    /// Return the `Elf::Rel` entries in the section.
+    ///
+    /// Returns `Ok(None)` if the section does not contain relocations.
+    /// Returns `Err` for invalid values.
+    fn rel<'data>(
+        &self,
+        endian: Self::Endian,
+        data: Bytes<'data>,
+    ) -> read::Result<Option<&'data [<Self::Elf as FileHeader>::Rel]>> {
+        if self.sh_type(endian) != elf::SHT_REL {
+            return Ok(None);
+        }
+        self.data_as_array(endian, data)
+            .map(Some)
+            .read_error("Invalid ELF relocation section offset or size")
+    }
+
+    /// Return the `Elf::Rela` entries in the section.
+    ///
+    /// Returns `Ok(None)` if the section does not contain relocations.
+    /// Returns `Err` for invalid values.
+    fn rela<'data>(
+        &self,
+        endian: Self::Endian,
+        data: Bytes<'data>,
+    ) -> read::Result<Option<&'data [<Self::Elf as FileHeader>::Rela]>> {
+        if self.sh_type(endian) != elf::SHT_RELA {
+            return Ok(None);
+        }
+        self.data_as_array(endian, data)
+            .map(Some)
+            .read_error("Invalid ELF relocation section offset or size")
+    }
+
+    /// Return the symbol table for a relocation section.
+    ///
+    /// Returns `Err` for invalid values, including if the section does not contain
+    /// relocations.
+    fn relocation_symbols<'data>(
+        &self,
+        endian: Self::Endian,
+        data: Bytes<'data>,
+        sections: &SectionTable<'data, Self::Elf>,
+    ) -> read::Result<SymbolTable<'data, Self::Elf>> {
+        let sh_type = self.sh_type(endian);
+        if sh_type != elf::SHT_REL && sh_type != elf::SHT_RELA {
+            return Err(Error("Invalid ELF relocation section type"));
+        }
+        sections.symbol_table_by_index(endian, data, self.sh_link(endian) as usize)
+    }
+
     /// Return a note iterator for the section data.
     ///
     /// Returns `Ok(None)` if the section does not contain notes.
@@ -411,22 +521,51 @@ pub trait SectionHeader: Debug + Pod {
         &self,
         endian: Self::Endian,
         data: Bytes<'data>,
-    ) -> read::Result<Option<ElfNoteIterator<'data, Self::Elf>>> {
+    ) -> read::Result<Option<NoteIterator<'data, Self::Elf>>> {
         if self.sh_type(endian) != elf::SHT_NOTE {
             return Ok(None);
         }
         let data = self
             .data(endian, data)
             .read_error("Invalid ELF note section offset or size")?;
-        let notes = ElfNoteIterator::new(endian, self.sh_addralign(endian), data)?;
+        let notes = NoteIterator::new(endian, self.sh_addralign(endian), data)?;
         Ok(Some(notes))
+    }
+
+    /// Return the contents of a group section.
+    ///
+    /// The first value is a `GRP_*` value, and the remaining values
+    /// are section indices.
+    ///
+    /// Returns `Ok(None)` if the section does not define a group.
+    /// Returns `Err` for invalid values.
+    fn group<'data>(
+        &self,
+        endian: Self::Endian,
+        data: Bytes<'data>,
+    ) -> read::Result<Option<(u32, &'data [U32Bytes<Self::Endian>])>> {
+        if self.sh_type(endian) != elf::SHT_GROUP {
+            return Ok(None);
+        }
+        let mut data = self
+            .data(endian, data)
+            .read_error("Invalid ELF group section offset or size")?;
+        let flag = data
+            .read::<U32Bytes<_>>()
+            .read_error("Invalid ELF group section offset or size")?
+            .get(endian);
+        let count = data.len() / mem::size_of::<U32Bytes<Self::Endian>>();
+        let sections = data
+            .read_slice(count)
+            .read_error("Invalid ELF group section offset or size")?;
+        Ok(Some((flag, sections)))
     }
 }
 
 impl<Endian: endian::Endian> SectionHeader for elf::SectionHeader32<Endian> {
+    type Elf = elf::FileHeader32<Endian>;
     type Word = u32;
     type Endian = Endian;
-    type Elf = elf::FileHeader32<Endian>;
 
     #[inline]
     fn sh_name(&self, endian: Self::Endian) -> u32 {
