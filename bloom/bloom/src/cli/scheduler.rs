@@ -36,7 +36,7 @@ pub fn run() -> Result<(), Error> {
             config,
             db.clone(),
             queue.clone(),
-            mailer,
+            mailer.clone(),
             storage.clone(),
             stdx_xss_sanitizer.clone(),
         ));
@@ -46,6 +46,7 @@ pub fn run() -> Result<(), Error> {
             db,
             queue.clone(),
             stdx_xss_sanitizer,
+            mailer.clone(),
         ));
         kernel_service.inject_missing_dependencies(files_service.clone(), inbox_service.clone());
 

@@ -1,9 +1,12 @@
 use super::{Job, Queue};
 use crate::{db::DB, domain::messages::Message};
 use std::time::Duration;
-use stdx::sqlx::{self, types::Json};
 use stdx::tokio::time::delay_for;
 use stdx::{chrono, ulid::Ulid, uuid::Uuid};
+use stdx::{
+    log::error,
+    sqlx::{self, types::Json},
+};
 
 #[derive(Debug, Clone)]
 pub struct PostgresQueue {
@@ -12,6 +15,7 @@ pub struct PostgresQueue {
 }
 
 const MAX_FAILED_ATTEMPTS: i32 = 5;
+const TOO_LONG: Duration = Duration::from_secs(60 * 15); // 15 mins
 
 /// A Job, as represented in DB
 /// we use a BIGSERIAL instead of habitual UUID (ULID) to improve performance:
@@ -119,7 +123,7 @@ impl Queue for PostgresQueue {
             WHERE id IN (
                 SELECT id
                 FROM kernel_queue
-                WHERE status = $3 AND scheduled_for >= $4 AND failed_attempts <= $5
+                WHERE status = $3 AND scheduled_for >= $4 AND failed_attempts < $5
                 ORDER BY scheduled_for
                 FOR UPDATE SKIP LOCKED
                 LIMIT $6
@@ -147,12 +151,71 @@ impl Queue for PostgresQueue {
 }
 
 impl PostgresQueue {
-    // TODO: repush jobs that were running for to much time
-    // TODO: mark job as failed
     async fn watch_loop(&self) {
         loop {
-            delay_for(Duration::from_secs(5)).await;
-            // todo!() // TODO
+            delay_for(Duration::from_secs(20)).await;
+            self.mark_jobs_as_failed().await;
+            self.requeue_stalled_jobs().await;
+        }
+    }
+
+    async fn mark_jobs_as_failed(&self) {
+        let now = chrono::Utc::now();
+        let query = "UPDATE kernel_queue
+            SET status = $1, updated_at = $2
+            WHERE id IN (
+                SELECT id
+                FROM kernel_queue
+                WHERE status = $3 AND failed_attempts >= $4
+                FOR UPDATE SKIP LOCKED
+            )";
+
+        match sqlx::query(query)
+            .bind(PostgresJobStatus::Failed)
+            .bind(now)
+            .bind(PostgresJobStatus::Queued)
+            .bind(MAX_FAILED_ATTEMPTS)
+            .execute(&self.db)
+            .await
+        {
+            Ok(_) => {}
+            Err(err) => {
+                error!(
+                    "kernel.driver.queue.postgres.mark_jobs_as_failed: marking jobs as failed: {}",
+                    &err
+                );
+            }
+        }
+    }
+
+    async fn requeue_stalled_jobs(&self) {
+        let now = chrono::Utc::now();
+        let too_long = chrono::Duration::from_std(TOO_LONG)
+            .expect("kernel.driver.queue.postgres.requeue_stalled_jobs: converting duration");
+        let query = "UPDATE kernel_queue
+            SET status = $1, updated_at = $2
+            WHERE id IN (
+                SELECT id
+                FROM kernel_queue
+                WHERE status = $3 AND updated_at < $4
+                FOR UPDATE SKIP LOCKED
+            )";
+
+        match sqlx::query(query)
+            .bind(PostgresJobStatus::Queued)
+            .bind(now)
+            .bind(PostgresJobStatus::Running)
+            .bind(now - too_long)
+            .execute(&self.db)
+            .await
+        {
+            Ok(_) => {}
+            Err(err) => {
+                error!(
+                    "kernel.driver.queue.postgres.requeue_stalled_jobs: requeueing stalled jobs: {}",
+                    &err
+                );
+            }
         }
     }
 }
