@@ -1,22 +1,16 @@
 use kernel::{
-    config::{Config, Env},
+    config::Config,
     drivers::{
         mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage, xss::stdx::StdxXssSanitizer,
     },
     Error,
 };
 use std::sync::Arc;
-use stdx::env_logger::Builder;
-use stdx::log::LevelFilter;
 
 pub fn run() -> Result<(), Error> {
     let config = Config::load()?;
-    let log_level = if config.env == Env::Production {
-        LevelFilter::Info
-    } else {
-        LevelFilter::Debug
-    };
-    Builder::new().filter_level(log_level).init();
+
+    super::init_logger(&config);
 
     let mut runtime = stdx::tokio::runtime::Builder::new()
         .threaded_scheduler()

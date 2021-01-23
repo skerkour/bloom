@@ -1,3 +1,6 @@
+use kernel::config::{Config, Env};
+use stdx::{env_logger::Builder, log::LevelFilter};
+
 pub mod masterkey;
 pub mod release;
 pub mod scheduler;
@@ -22,3 +25,16 @@ pub const SCHEDULER_DESCRIPTION: &str = "Run the scheduler";
 
 pub const WORKER_SUBCOMMAND: &str = "worker";
 pub const WORKER_DESCRIPTION: &str = "Run the worker";
+
+fn init_logger(config: &Config) {
+    let log_level = if config.env == Env::Production {
+        LevelFilter::Info
+    } else {
+        LevelFilter::Debug
+    };
+
+    Builder::new()
+        .filter_level(log_level)
+        .filter_module("sqlx::query", LevelFilter::Error)
+        .init();
+}

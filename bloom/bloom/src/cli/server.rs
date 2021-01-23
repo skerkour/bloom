@@ -1,25 +1,19 @@
 use clap::ArgMatches;
 use kernel::{
-    config::{Config, Env},
+    config::Config,
     drivers::{
         mailer::ses::SesMailer, queue::postgres::PostgresQueue, storage::s3::S3Storage, xss::stdx::StdxXssSanitizer,
     },
 };
 use std::sync::Arc;
-use stdx::env_logger::Builder;
 use stdx::log::debug;
-use stdx::log::LevelFilter;
 use stdx::tokio::task;
 
 // #[tokio::main]
 pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
     let config = Config::load()?;
-    let log_level = if config.env == Env::Production {
-        LevelFilter::Info
-    } else {
-        LevelFilter::Debug
-    };
-    Builder::new().filter_level(log_level).init();
+
+    super::init_logger(&config);
 
     let worker_flag = cli_matches.is_present("worker");
     let scheduler_flag = cli_matches.is_present("scheduler");
