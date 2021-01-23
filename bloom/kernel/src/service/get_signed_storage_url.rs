@@ -32,7 +32,7 @@ impl Service {
         let url = self
             .storage
             .get_presigned_upload_url(&storage_key, input.filesize)
-            .await?;
+            .await;
 
         Ok(SignedStorageUrl {
             url,
