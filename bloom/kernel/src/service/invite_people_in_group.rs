@@ -68,8 +68,10 @@ impl Service {
                 {
                     Err(Error::MembersLimitReachedForPlan)
                 }
-                // Pro and Ultra
-                _ if members_count_after_invites > consts::MAX_MEMBERS_SOFT_LIMIT => Err(Error::SoftLimitReached),
+                // Pro
+                crate::consts::BillingPlan::Pro if members_count_after_invites > consts::MAX_MEMBERS_SOFT_LIMIT => {
+                    Err(Error::SoftLimitReached)
+                }
                 _ => Ok(()),
             }?;
         }
