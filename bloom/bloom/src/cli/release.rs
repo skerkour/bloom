@@ -1,4 +1,8 @@
-use kernel::{config::Config, Error};
+use kernel::{
+    config::{Config, Env},
+    Error,
+};
+use stdx::{env_logger::Builder, log::LevelFilter};
 
 pub fn run() -> Result<(), Error> {
     let mut runtime = stdx::tokio::runtime::Builder::new()
@@ -8,6 +12,13 @@ pub fn run() -> Result<(), Error> {
         .unwrap();
 
     let config = Config::load()?;
+
+    let log_level = if config.env == Env::Production {
+        LevelFilter::Info
+    } else {
+        LevelFilter::Debug
+    };
+    Builder::new().filter_level(log_level).init();
 
     runtime.block_on(async move {
         let db = kernel::db::connect(&config.database).await?;

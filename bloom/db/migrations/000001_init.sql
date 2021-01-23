@@ -91,7 +91,7 @@ CREATE TABLE kernel_sessions (
 
   user_id UUID NOT NULL REFERENCES kernel_users(id) ON DELETE CASCADE
 );
-CREATE INDEX index_kernel_sessions_on_user_id ON sessions (user_id);
+CREATE INDEX index_kernel_sessions_on_user_id ON kernel_sessions (user_id);
 
 
 CREATE TABLE kernel_pending_sessions (
@@ -132,8 +132,8 @@ CREATE TABLE kernel_groups_members (
   group_id UUID NOT NULL REFERENCES kernel_groups(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES kernel_users(id)
 );
-CREATE INDEX index_kernel_groups_members_on_group_id ON groups_members (group_id);
-CREATE INDEX index_kernel_groups_members_on_user_id ON groups_members (user_id);
+CREATE INDEX index_kernel_groups_members_on_group_id ON kernel_groups_members (group_id);
+CREATE INDEX index_kernel_groups_members_on_user_id ON kernel_groups_members (user_id);
 
 
 CREATE TABLE kernel_group_invitations (
@@ -141,9 +141,9 @@ CREATE TABLE kernel_group_invitations (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
-  group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
-  inviter_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  invitee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+  group_id UUID NOT NULL REFERENCES kernel_groups(id) ON DELETE CASCADE,
+  inviter_id UUID NOT NULL REFERENCES kernel_users(id) ON DELETE CASCADE,
+  invitee_id UUID NOT NULL REFERENCES kernel_users(id) ON DELETE CASCADE
 );
 CREATE INDEX index_kernel_group_invitations_on_group_id ON kernel_group_invitations (group_id);
 CREATE INDEX index_kernel_group_invitations_on_invitee_id ON kernel_group_invitations (invitee_id);
@@ -376,12 +376,12 @@ CREATE TABLE inbox_newsletter_messages (
   body_html TEXT NOT NULL,
   status TEXT NOT NULL,
   scheduled_for TIMESTAMP WITH TIME ZONE,
-  last_sent_at TIMESTAMP WITH TIME ZONE
+  last_sent_at TIMESTAMP WITH TIME ZONE,
   sent_count BIGINT NOT NULL,
   error_count BIGINT NOT NULL,
 
   namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
+  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE
 );
 CREATE INDEX index_inbox_newsletter_messages_on_list_id ON inbox_newsletter_messages (list_id);
 CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
@@ -409,8 +409,8 @@ CREATE TABLE inbox_conversations_contacts (
 
   PRIMARY KEY (contact_id, conversation_id)
 );
-CREATE INDEX index_inbox_conversations_contacts_on_contact_id ON inbox_conversatios_contacts (contact_id);
-CREATE INDEX index_inbox_conversations_contacts_on_conversation_id ON inbox_conversatios_contacts (conversation_id);
+CREATE INDEX index_inbox_conversations_contacts_on_contact_id ON inbox_conversations_contacts (contact_id);
+CREATE INDEX index_inbox_conversations_contacts_on_conversation_id ON inbox_conversations_contacts (conversation_id);
 
 
 CREATE TABLE inbox_contacts_anonymous_ids (

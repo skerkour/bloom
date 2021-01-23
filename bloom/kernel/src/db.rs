@@ -28,7 +28,13 @@ pub async fn connect(database: &config::Database) -> Result<DB, crate::Error> {
 }
 
 pub async fn migrate(db: &DB) -> Result<(), crate::Error> {
-    sqlx::migrate!("../db/migrations").run(db).await?;
+    match sqlx::migrate!("../db/migrations").run(db).await {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            error!("kernel.migrate: migrating: {}", &err);
+            Err(err)
+        }
+    }?;
 
     Ok(())
 }

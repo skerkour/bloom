@@ -25,16 +25,16 @@ pub const NEWSLETTER_EMAIL_TEMPLATE: &str = r##"
     <table width="600" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff" align="left">
         <tr>
             <td align="left" valign="top">
-			{{ content }}
+            {{ content }}
 
 
-			{{ if unsubscribe_link }}
-			<div class="unsubscribe">
-				<br /><br /><br />
-				<a href="{{ unsubscribe_link }}">Unsubscribe</a>
-				<br />
-		   </div>
-			{{end}}
+            {% if unsubscribe_link %}
+            <div class="unsubscribe">
+                <br /><br /><br />
+                <a href="{{ unsubscribe_link }}">Unsubscribe</a>
+                <br />
+           </div>
+           {% endif %}
 
             </td>
         </tr>
