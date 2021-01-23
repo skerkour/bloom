@@ -42,7 +42,7 @@ export default class ApiClient {
     data = data ?? {};
 
     try {
-      res = await this.http.post(`${this.apiBaseURL}/${route}`, data);
+      res = await this.http.post(`${this.apiBaseURL}${route}`, data);
     } catch (err) {
       if (err.response) {
         res = err.response;

@@ -141,7 +141,7 @@ export default VueApp.extend({
     },
     avatarUrl(): string {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.$store.state.me!.avatarUrl;
+      return this.$store.state.me!.avatar_url;
     },
     projectDrawer(): boolean {
       if (this.$route.meta.projectDrawer) {

@@ -30,6 +30,7 @@ export type Session = {
   // TODO
   id: string,
   created_at: string,
+  token: string | null,
 }
 
 
@@ -41,5 +42,5 @@ export type Registered = {
 
 export type SignedIn = {
   me: Me;
-  session: Session;
+  session: Session
 }
