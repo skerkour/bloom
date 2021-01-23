@@ -1,10 +1,9 @@
+use crate::{consts, Error, Service};
 use stdx::{
     chrono::{DateTime, Utc},
     encoding::hex,
     url::Url,
 };
-
-use crate::{consts, Error, Service};
 
 impl Service {
     pub fn validate_contact_name(&self, name: &str) -> Result<(), Error> {

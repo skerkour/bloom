@@ -116,6 +116,10 @@ impl Service {
         format!("{}/preferences/invitations", &self.config.base_url)
     }
 
+    pub fn base_url(&self) -> String {
+        self.config.base_url.clone()
+    }
+
     pub async fn verify_session_secret(&self, session: &Session, secret: Vec<u8>) -> Result<(), crate::Error> {
         let hash = self.hash_session(session.id, secret).await?;
 

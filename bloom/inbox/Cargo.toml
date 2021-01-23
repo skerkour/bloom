@@ -12,3 +12,4 @@ stdx = { path = "../stdx" }
 
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }
+tera = { version = "1", default-features = false }

@@ -1,5 +1,6 @@
 use stdx::sqlx;
 
+#[derive(Debug)]
 pub enum Error {
     // Contacts
     ContactNotFound,

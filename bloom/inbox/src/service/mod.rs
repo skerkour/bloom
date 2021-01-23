@@ -1,4 +1,7 @@
-use crate::repository::Repository;
+use crate::{
+    notifications::{NEWSLETTER_EMAIL_TEMPLATE, NEWSLETTER_EMAIL_TEMPLATE_ID},
+    repository::Repository,
+};
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::{
@@ -41,6 +44,7 @@ mod update_chatbox_preferences;
 mod update_contact;
 mod update_newsletter_list;
 mod update_newsletter_message;
+mod utils;
 mod validators;
 
 #[derive(Debug)]
@@ -50,6 +54,8 @@ pub struct Service {
     kernel_service: Arc<kernel::Service>,
     queue: Arc<dyn drivers::Queue>,
     xss: Arc<dyn drivers::XssSanitizer>,
+    mailer: Arc<dyn drivers::Mailer>,
+    templates: tera::Tera,
 }
 
 impl Service {
@@ -58,8 +64,16 @@ impl Service {
         db: DB,
         queue: Arc<dyn drivers::Queue>,
         xss: Arc<dyn drivers::XssSanitizer>,
+        mailer: Arc<dyn drivers::Mailer>,
     ) -> Service {
         let repo = Repository::new();
+
+        let mut templates = tera::Tera::default();
+        // don't escape input as it's provided by us
+        templates.autoescape_on(Vec::new());
+        templates
+            .add_raw_template(NEWSLETTER_EMAIL_TEMPLATE_ID, NEWSLETTER_EMAIL_TEMPLATE)
+            .expect("inbox: parsing NEWSLETTER_EMAIL_TEMPLATE");
 
         Service {
             db,
@@ -67,6 +81,8 @@ impl Service {
             kernel_service,
             queue,
             xss,
+            templates,
+            mailer,
         }
     }
 }
