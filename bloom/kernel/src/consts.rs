@@ -3,14 +3,14 @@ use std::time::Duration;
 use stdx::sqlx;
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Copy, Eq, PartialEq)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum TwoFaMethod {
     Totp,
 }
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Copy)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum GroupRole {
     Administrator,
@@ -18,7 +18,7 @@ pub enum GroupRole {
 }
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Copy)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum NamespaceType {
     User,
@@ -26,7 +26,7 @@ pub enum NamespaceType {
 }
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Copy)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum BillingPlan {
     Free,
@@ -35,7 +35,7 @@ pub enum BillingPlan {
 }
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Copy)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum TaxIdType {
     EuVat,

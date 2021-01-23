@@ -78,7 +78,7 @@ pub struct PageEvent {
 }
 
 #[derive(sqlx::Type, Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum DeviceType {
     Phone,

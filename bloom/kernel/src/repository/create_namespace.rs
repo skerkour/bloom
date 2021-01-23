@@ -1,12 +1,15 @@
 use super::Repository;
-use crate::{db, entities, errors::kernel::Error};
-use stdx::log::error;
+use crate::{entities, errors::kernel::Error};
 use stdx::sqlx;
+use stdx::{
+    log::error,
+    sqlx::{Postgres, Transaction},
+};
 
 impl Repository {
-    pub async fn create_namespace<'c, C: db::Queryer<'c>>(
+    pub async fn create_namespace<'c>(
         &self,
-        db: C,
+        tx: &mut Transaction<'c, Postgres>,
         namespace: &entities::Namespace,
     ) -> Result<(), Error> {
         const QUERY: &str = "INSERT INTO kernel_namespaces
@@ -22,7 +25,7 @@ impl Repository {
             .bind(namespace.parent_id)
             .bind(namespace.used_storage)
             .bind(namespace.plan)
-            .execute(db)
+            .execute(tx)
             .await
         {
             Err(err) => {

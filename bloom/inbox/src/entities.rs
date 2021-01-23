@@ -6,7 +6,7 @@ use stdx::{
 };
 
 #[derive(sqlx::Type, Debug, Clone, Eq, PartialEq, Copy, Deserialize, Serialize)]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename = "text", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum NewsletterMessageStatus {
     Saved,

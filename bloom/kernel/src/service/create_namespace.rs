@@ -26,11 +26,7 @@ impl Service {
             plan: BillingPlan::Free,
         };
 
-        {
-            // we do this because otherwise we can't use tx in init_namespace below
-            let tx: &mut Transaction<'c, Postgres> = tx;
-            self.repo.create_namespace(tx, &namespace).await?;
-        }
+        self.repo.create_namespace(tx, &namespace).await?;
 
         self.files_service
             .as_ref()

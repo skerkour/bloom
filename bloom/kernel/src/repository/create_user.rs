@@ -5,7 +5,7 @@ use stdx::sqlx;
 
 impl Repository {
     pub async fn create_user<'c, C: db::Queryer<'c>>(&self, db: C, user: &entities::User) -> Result<(), Error> {
-        const QUERY: &str = "NSERT INTO kernel_users
+        const QUERY: &str = "INSERT INTO kernel_users
             (id, created_at, updated_at, blocked_at, username, email, is_admin, two_fa_enabled, two_fa_method, encrypted_totp_secret,
                 totp_secret_nonce, name, description, avatar_storage_key, namespace_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)";
