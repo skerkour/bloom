@@ -5,8 +5,12 @@ pub mod s3;
 
 #[async_trait::async_trait]
 pub trait Storage: Send + Sync + Debug {
-    async fn get_object_size(&self, key: &str) -> Result<i64, Error>;
+    async fn base_path(&self) -> String;
     async fn copy_object(&self, from: &str, to: &str) -> Result<(), Error>;
-    async fn get_presigned_uplaod_url(&self, key: &str, size: u64) -> Result<String, Error>;
     async fn delete_object(&self, key: &str) -> Result<(), Error>;
+    async fn get_object(&self, key: &str) -> Result<Vec<u8>, Error>; // (object io.ReadCloser, err error)
+    async fn get_object_download_url(&self, key: &str, name: &str, content_type: &str) -> Result<String, Error>;
+    async fn get_object_size(&self, key: &str) -> Result<i64, Error>;
+    async fn get_presigned_upload_url(&self, key: &str, size: u64) -> Result<String, Error>;
+    async fn put_object(&self, key: &str, object: &[u8]) -> Result<(), Error>; // ctx context.Context, key string, object io.Reader)
 }

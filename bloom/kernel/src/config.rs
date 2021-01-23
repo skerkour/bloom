@@ -193,7 +193,7 @@ impl fmt::Display for MailDriver {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Storage {
     pub driver: StorageDriver,
-    pub base_direcotry: String,
+    pub base_directory: String,
 }
 const DEFAULT_STORAGE_DRIVER: StorageDriver = StorageDriver::S3;
 const DEFAULT_STORAGE_BASE_DIRECTORY: &str = "";
@@ -409,12 +409,12 @@ impl Config {
         let storage_driver = std::env::var(ENV_STORAGE_DRIVER)
             .ok()
             .map_or(Ok(DEFAULT_STORAGE_DRIVER), |env_val| env_val.parse::<StorageDriver>())?;
-        let storage_base_direcotry =
+        let storage_base_directory =
             std::env::var(ENV_STORAGE_BASE_DIRECTORY).unwrap_or(String::from(DEFAULT_STORAGE_BASE_DIRECTORY));
 
         let storage = Storage {
             driver: storage_driver,
-            base_direcotry: storage_base_direcotry,
+            base_directory: storage_base_directory,
         };
 
         let stripe_private_key =

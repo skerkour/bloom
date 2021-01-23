@@ -23,7 +23,7 @@ impl Service {
             created_at: now,
             updated_at: now,
             size: input.filesize as i64,
-            completed: true,
+            completed: false,
             namespace_id: input.namespace_id,
         };
         self.repo.create_upload(&self.db, &upload).await?;
@@ -31,7 +31,7 @@ impl Service {
         let storage_key = upload.tmp_storage_key();
         let url = self
             .storage
-            .get_presigned_uplaod_url(&storage_key, input.filesize)
+            .get_presigned_upload_url(&storage_key, input.filesize)
             .await?;
 
         Ok(SignedStorageUrl {
