@@ -14,7 +14,6 @@
           outlined
           @keyup="checkCodeLength"
           counter="6"
-          type="number"
         />
       </v-col>
 
