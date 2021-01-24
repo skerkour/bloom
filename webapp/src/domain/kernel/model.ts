@@ -45,6 +45,7 @@ export type SignedIn = {
   me: Me;
   session: Session;
   token: string;
+  two_fa_method: string | null,
 }
 
 export type SignIn = {
@@ -58,6 +59,11 @@ export type SignInStarted = {
 
 
 export type CompleteSignIn = {
+  pending_session_id: string;
+  code: string;
+}
+
+export type CompleteTwoFaChallenge = {
   pending_session_id: string;
   code: string;
 }

@@ -12,7 +12,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands } from './routes';
 import {
-  CompleteRegistration, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -46,6 +46,28 @@ export class KernelService {
     const res: SignInStarted = await this.apiClient.post(Commands.signIn, input);
     this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.pending_session_id);
     this.router.push({ path: '/login/complete' });
+  }
+
+  async completeSignIn(input: CompleteSignIn): Promise<void> {
+    const res: SignedIn = await this.apiClient.post(Commands.completeSignIn, input);
+
+    // if 2fa is enabled
+    if (res.two_fa_method) {
+      this.router.push({ path: '/login/2fa' });
+      return;
+    }
+
+    // otherwise, complete sign-in flow
+    this.store.commit(Mutation.SIGN_IN, res);
+    this.router.push({ path: '/' });
+  }
+
+  async completeTwoFaChallenge(input: CompleteTwoFaChallenge): Promise<void> {
+    const res: SignedIn = await this.apiClient.post(Commands.completeTwoFaChallenge, input);
+
+    // complete sign-in flow
+    this.store.commit(Mutation.SIGN_IN, res);
+    this.router.push({ path: '/' });
   }
 
   async fetchMySessions(): Promise<Session[]> {

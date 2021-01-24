@@ -39,7 +39,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { mask } from 'vue-the-mask';
-import { CompleteSignInInput } from '@/api/graphql/model';
+import { CompleteSignIn } from '@/domain/kernel/model';
 
 const CODE_LENGTH = 14;
 
@@ -79,13 +79,13 @@ export default VueApp.extend({
     async completeSignIn() {
       this.loading = true;
       this.error = '';
-      const input: CompleteSignInInput = {
-        pendingSessionId: this.pendingSessionId,
+      const input: CompleteSignIn = {
+        pending_session_id: this.pendingSessionId,
         code: this.code,
       };
 
       try {
-        await this.$usersService.completeSignIn(input);
+        await this.$kernelService.completeSignIn(input);
       } catch (err) {
         this.error = err.message;
       } finally {

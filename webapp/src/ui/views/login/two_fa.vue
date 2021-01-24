@@ -34,8 +34,8 @@
 
 
 <script lang="ts">
-import { CompleteTwoFaInput } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
+import { CompleteTwoFaChallenge } from '@/domain/kernel/model';
 
 const CODE_LENGTH = 6;
 
@@ -65,13 +65,13 @@ export default VueApp.extend({
     async completeTwoFA() {
       this.loading = true;
       this.error = '';
-      const input: CompleteTwoFaInput = {
-        pendingSessionId: this.pendingSessionId,
+      const input: CompleteTwoFaChallenge = {
+        pending_session_id: this.pendingSessionId,
         code: this.code,
       };
 
       try {
-        await this.$usersService.completeTwoFA(input);
+        await this.$kernelService.completeTwoFaChallenge(input);
       } catch (err) {
         this.error = err.message;
       } finally {

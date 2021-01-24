@@ -2,13 +2,10 @@ import ApiClient from '@/api/client';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import {
-  CompleteSignInInput,
-  SignedIn,
   RevokeSessionInput,
   Group,
   User, UpdateMyProfileInput, VerifyEmailInput, AcceptGroupInvitationInput,
   DeclineGroupInvitationInput,
-  CompleteTwoFaInput,
 } from '@/api/graphql/model';
 import Router from '@/app/router';
 
@@ -22,76 +19,6 @@ export class UsersService {
     this.store = store;
     this.router = router;
   }
-
-  async completeSignIn(input: CompleteSignInInput): Promise<void> {
-    const query = `
-      mutation($input: CompleteSignInInput!) {
-        completeSignIn(input: $input) {
-          twoFaMethod
-          me {
-            id
-            createdAt
-            username
-            email
-            name
-            description
-            isAdmin
-            avatarUrl
-          }
-          session {
-            id
-            createdAt
-            token
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { completeSignIn: SignedIn } = await this.apiClient.query(query, variables);
-
-    // if 2fa is enabled
-    if (res.completeSignIn.twoFaMethod) {
-      this.router.push({ path: '/login/2fa' });
-      return;
-    }
-
-    // otherwise, complete sign-in flow
-    this.store.commit(Mutation.SIGN_IN, res.completeSignIn);
-    this.router.push({ path: '/' });
-  }
-
-  async completeTwoFA(input: CompleteTwoFaInput): Promise<void> {
-    const query = `
-      mutation($input: CompleteTwoFAInput!) {
-        completeTwoFA(input: $input) {
-          me {
-            id
-            createdAt
-            username
-            email
-            name
-            description
-            isAdmin
-            avatarUrl
-          }
-          session {
-            id
-            createdAt
-            token
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { completeTwoFA: SignedIn } = await this.apiClient.query(query, variables);
-
-    // complete sign-in flow
-    this.store.commit(Mutation.SIGN_IN, res.completeTwoFA);
-    this.router.push({ path: '/' });
-  }
-
 
   async revokeSession(sessionId: string): Promise<void> {
     const input: RevokeSessionInput = { sessionId };
