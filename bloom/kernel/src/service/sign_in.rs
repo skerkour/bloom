@@ -11,7 +11,7 @@ use stdx::{log::error, tokio::time::delay_for};
 
 impl Service {
     pub async fn sign_in(&self, actor: Actor, input: SignInInput) -> Result<PendingSession, crate::Error> {
-        if actor.is_none() {
+        if actor.is_some() {
             return Err(Error::MustNotBeAuthenticated.into());
         }
 
