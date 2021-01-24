@@ -109,6 +109,29 @@
 
       <b-footer v-if="showFooter" />
     </v-main>
+
+    <v-bottom-navigation fixed v-if="authenticated">
+      <v-btn to="/inbox">
+        <span>Inbox</span>
+        <v-icon>mdi-inbox</v-icon>
+      </v-btn>
+
+      <v-btn to="/files">
+        <span>Files</span>
+        <v-icon>mdi-folder</v-icon>
+      </v-btn>
+
+      <v-btn to="/analytics">
+        <span>Analytics</span>
+        <v-icon>mdi-chart-line</v-icon>
+      </v-btn>
+
+      <v-btn to="/apps">
+        <span>All</span>
+        <v-icon>mdi-apps</v-icon>
+      </v-btn>
+
+    </v-bottom-navigation>
   </v-app>
 </template>
 
