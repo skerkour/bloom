@@ -37,10 +37,27 @@ export type Session = {
 export type Registered = {
   me: Me;
   session: Session;
+  token: string;
 }
 
 
 export type SignedIn = {
   me: Me;
-  session: Session
+  session: Session;
+  token: string;
+}
+
+export type SignIn = {
+  email_or_username: string;
+}
+
+
+export type SignInStarted = {
+  pending_session_id: string;
+}
+
+
+export type CompleteSignIn = {
+  pending_session_id: string;
+  code: string;
 }

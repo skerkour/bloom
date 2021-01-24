@@ -30,7 +30,7 @@
 
 
 <script lang="ts">
-import { SignInInput } from '@/api/graphql/model';
+import { SignIn } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 
 export default VueApp.extend({
@@ -46,12 +46,12 @@ export default VueApp.extend({
     async signIn() {
       this.loading = true;
       this.error = '';
-      const input: SignInInput = {
-        emailOrUsername: this.emailOrUsername,
+      const input: SignIn = {
+        email_or_username: this.emailOrUsername,
       };
 
       try {
-        await this.$usersService.signIn(input);
+        await this.$kernelService.signIn(input);
       } catch (err) {
         this.error = err.message;
       } finally {

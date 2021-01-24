@@ -12,7 +12,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands } from './routes';
 import {
-  CompleteRegistration, Register, RegistrationStarted, Session, SignedIn,
+  CompleteRegistration, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -40,6 +40,12 @@ export class KernelService {
     const res: SignedIn = await this.apiClient.post(Commands.completeRegistration, input);
     this.store.commit(Mutation.SIGN_IN, res);
     this.router.push({ path: '/' });
+  }
+
+  async signIn(input: SignIn): Promise<void> {
+    const res: SignInStarted = await this.apiClient.post(Commands.signIn, input);
+    this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.pending_session_id);
+    this.router.push({ path: '/login/complete' });
   }
 
   async fetchMySessions(): Promise<Session[]> {

@@ -2,7 +2,6 @@ import ApiClient from '@/api/client';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import {
-  SignInInput, SignInStarted, CompleteRegistrationInput,
   CompleteSignInInput,
   SignedIn,
   RevokeSessionInput,
@@ -23,22 +22,6 @@ export class UsersService {
     this.store = store;
     this.router = router;
   }
-
-  async signIn(input: SignInInput): Promise<void> {
-    const query = `
-      mutation($input: SignInInput!) {
-        signIn(input: $input) {
-          pendingSessionId
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { signIn: SignInStarted } = await this.apiClient.query(query, variables);
-    this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.signIn.pendingSessionId);
-    this.router.push({ path: '/login/complete' });
-  }
-
 
   async completeSignIn(input: CompleteSignInInput): Promise<void> {
     const query = `
