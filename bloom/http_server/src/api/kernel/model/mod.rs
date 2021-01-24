@@ -41,28 +41,22 @@ impl From<kernel::entities::Session> for Session {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Registered {
-    pub session: Session,
-    pub me: User,
-    pub token: String,
-}
-
-impl From<kernel::service::Registered> for Registered {
-    fn from(item: kernel::service::Registered) -> Self {
-        Registered {
-            session: item.session.into(),
-            me: item.user.into(),
-            token: item.token,
-        }
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SignedIn {
     pub session: Option<Session>,
     pub me: Option<User>,
     pub two_fa_method: Option<TwoFaMethod>,
     pub token: Option<String>,
+}
+
+impl From<kernel::service::Registered> for SignedIn {
+    fn from(item: kernel::service::Registered) -> Self {
+        SignedIn {
+            session: Some(item.session.into()),
+            me: Some(item.user.into()),
+            token: Some(item.token),
+            two_fa_method: None,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, Eq, PartialEq)]
