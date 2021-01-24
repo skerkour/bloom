@@ -5,6 +5,7 @@ export type Register = {
   email: string;
 };
 
+
 export type RegistrationStarted = {
   pending_user_id: string;
 }
@@ -17,6 +18,8 @@ export type CompleteRegistration = {
 export type Me = {
   // TODO
   user: User,
+  session: Session;
+  groups: Group[],
 }
 
 export type User = {
@@ -30,20 +33,17 @@ export type Session = {
   // TODO
   id: string,
   created_at: string,
-  token: string | null,
 }
 
-
-export type Registered = {
-  me: Me;
-  session: Session;
-  token: string;
+export type Group = {
+  // TODO
+  id: string,
+  created_at: string,
 }
 
 
 export type SignedIn = {
   me: Me;
-  session: Session;
   token: string;
   two_fa_method: string | null,
 }

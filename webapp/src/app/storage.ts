@@ -4,8 +4,8 @@ import localStorage from 'store';
 
 
 export class Storage {
-  keySession = 'bloom_session';
-  keyMe = 'bloom_me';
+  keyToken = 'bloom_token';
+  // keyMe = 'bloom_me';
   keyDarkMode = 'bloom_dark_mode';
 
   set(key: string, value: any) {

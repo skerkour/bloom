@@ -2,7 +2,9 @@
 import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { Storage } from '@/app/storage';
-import { SignedIn, User, Session } from '@/domain/kernel/model';
+import {
+  SignedIn, User, Session, Group,
+} from '@/domain/kernel/model';
 
 Vue.use(Vuex);
 
@@ -10,6 +12,8 @@ export interface AppState {
   darkMode: boolean;
   me: User | null;
   session: Session | null;
+  sessionToken: string | null;
+  groups: Group[];
   pendingUserId: string | null;
   pendingSessionId: string | null;
   namespaceIsGroup: boolean;
@@ -35,10 +39,12 @@ function defaultAppState(): AppState {
     darkMode: false,
     me: null,
     session: null,
+    sessionToken: null,
     pendingUserId: null,
     pendingSessionId: null,
     namespaceIsGroup: false,
     drawer: true,
+    groups: [],
   };
 }
 
@@ -50,23 +56,29 @@ export function newStore(storage: Storage): Store<AppState> {
   if (storedDarkMode) {
     baseAppState.darkMode = storedDarkMode;
   }
-  const storedMe = storage.get(storage.keyMe);
-  if (storedMe) {
-    baseAppState.me = storedMe;
-  }
-  const storedSession = storage.get(storage.keySession);
-  if (storedSession) {
-    baseAppState.session = storedSession;
+
+  // const storedMe = storage.get(storage.keyMe);
+  // if (storedMe) {
+  //   baseAppState.me = storedMe;
+  // }
+
+  const storedToken = storage.get(storage.keyToken);
+  if (storedToken) {
+    baseAppState.sessionToken = storedToken;
   }
 
   return new Store<AppState>({
     state: baseAppState,
     mutations: {
       [Mutation.SIGN_IN](state: AppState, params: SignedIn) {
-        state.session = params.session;
+        state.session = params.me.session;
+        state.sessionToken = params.token;
         state.me = params.me.user;
-        storage.set(storage.keyMe, state.me);
-        storage.set(storage.keySession, state.session);
+        state.groups = params.me.groups;
+
+        // storage.set(storage.keyMe, state.me);
+        storage.set(storage.keyToken, state.sessionToken);
+
         state.pendingSessionId = null;
         state.pendingUserId = null;
       },
@@ -76,6 +88,7 @@ export function newStore(storage: Storage): Store<AppState> {
         Object.entries(emptyState).forEach(([key, value]: [string, any]) => {
           state[key] = value;
         });
+
         storage.clear();
       },
       [Mutation.SET_PENDING_USER_ID](state: AppState, pendingUserId: string) {
@@ -91,7 +104,7 @@ export function newStore(storage: Storage): Store<AppState> {
         state.me!.username = me.username ?? state.me?.username;
         state.me!.name = me.name ?? state.me?.name;
         state.me!.avatar_url = me.avatar_url ?? state.me?.avatar_url;
-        storage.set(storage.keyMe, state.me);
+        // storage.set(storage.keyMe, state.me);
       },
       [Mutation.SET_DRAWER](state: AppState, value: boolean) {
         state.drawer = value;

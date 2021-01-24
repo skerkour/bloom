@@ -28,7 +28,7 @@ export default class ApiClient {
     this.router = router;
 
     this.http.interceptors.request.use((conf: AxiosRequestConfig) => {
-      const token = this.store.state.session?.token;
+      const token = this.store.state.sessionToken;
       if (token) {
         conf.headers.Authorization = `Basic ${token}`;
       }
