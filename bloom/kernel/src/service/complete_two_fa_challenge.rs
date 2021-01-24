@@ -15,7 +15,9 @@ impl Service {
         actor: Actor,
         input: CompleteTwoFaChallengeInput,
     ) -> Result<SignedIn, crate::Error> {
-        let actor = self.current_user(actor)?;
+        if actor.is_some() {
+            return Err(Error::MustNotBeAuthenticated.into());
+        }
         let now = Utc::now();
 
         // sleep to prevent spam and bruteforce
@@ -26,10 +28,6 @@ impl Service {
             .repo
             .find_pending_session_by_id(&self.db, input.pending_session_id)
             .await?;
-
-        if pending_session.user_id != actor.id {
-            return Err(Error::PermissionDenied.into());
-        }
 
         if pending_session.failed_attempts + 1 >= consts::SIGN_IN_MAX_FAILED_ATTEMPTS {
             return Err(Error::MaxSignInAttempsReached.into());
@@ -43,6 +41,8 @@ impl Service {
         if !pending_session.two_fa_verified {
             return Err(Error::PermissionDenied.into());
         }
+
+        let actor = self.repo.find_user_by_id(&self.db, pending_session.user_id).await?;
 
         // clean and validate data
         let two_fa_code = input.code.trim().to_lowercase().replace("-", "");
@@ -79,6 +79,8 @@ impl Service {
 
         let new_session = self.new_session(actor.id).await?;
 
+        let groups = self.repo.find_groups_for_user(&self.db, actor.id).await?;
+
         // create a new session and delete pending session
         let mut tx = self.db.begin().await?;
 
@@ -92,6 +94,7 @@ impl Service {
             session: new_session.session,
             user: actor,
             token: new_session.token,
+            groups,
         })
     }
 }

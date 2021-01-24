@@ -44,6 +44,7 @@ impl From<kernel::entities::Session> for Session {
 pub struct SignedIn {
     pub session: Option<Session>,
     pub me: Option<User>,
+    pub groups: Option<Vec<Group>>,
     pub two_fa_method: Option<TwoFaMethod>,
     pub token: Option<String>,
 }
@@ -54,6 +55,7 @@ impl From<kernel::service::Registered> for SignedIn {
             session: Some(item.session.into()),
             me: Some(item.user.into()),
             token: Some(item.token),
+            groups: None,
             two_fa_method: None,
         }
     }
@@ -80,17 +82,20 @@ impl From<kernel::service::SignedIn> for SignedIn {
                 session,
                 user,
                 token,
+                groups,
             } => SignedIn {
                 session: Some(session.into()),
                 me: Some(user.into()),
+                groups: Some(groups.into_iter().map(Into::into).collect()),
                 two_fa_method: None,
                 token: Some(token),
             },
             kernel::service::SignedIn::TwoFa(method) => SignedIn {
                 session: None,
                 me: None,
-                two_fa_method: Some(method.into()),
+                groups: None,
                 token: None,
+                two_fa_method: Some(method.into()),
             },
         }
     }

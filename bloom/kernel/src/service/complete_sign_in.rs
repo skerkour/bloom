@@ -62,6 +62,8 @@ impl Service {
         // otherwise, we continue the normal login flow
         let new_session = self.new_session(user.id).await?;
 
+        let groups = self.repo.find_groups_for_user(&self.db, user.id).await?;
+
         // create a new session and delete pending session
         let mut tx = self.db.begin().await?;
 
@@ -75,6 +77,7 @@ impl Service {
             session: new_session.session,
             user,
             token: new_session.token,
+            groups,
         })
     }
 }

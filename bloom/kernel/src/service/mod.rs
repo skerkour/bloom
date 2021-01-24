@@ -5,7 +5,7 @@ use crate::{
     db::DB,
     domain::{files, inbox},
     drivers,
-    entities::{Session, User},
+    entities::{Group, Session, User},
     notifications::PAYMENT_ACTION_REQUIRED_EMAIL_TEMPLATE_ID,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE_ID,
@@ -152,6 +152,7 @@ pub enum SignedIn {
         session: Session,
         user: User,
         token: String,
+        groups: Vec<Group>,
     },
     TwoFa(TwoFaMethod),
 }
