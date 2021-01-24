@@ -16,16 +16,16 @@ impl Service {
             code,
         })
         .map_err(|err| {
-            error!("kernel.send_register_email: building template context: {}", err);
-            Error::Internal
+            error!("kernel.send_register_email: building template context: {}", &err);
+            Error::Internal(err.to_string())
         })?;
 
         let html = self
             .templates
             .render(notifications::REGISTRATION_EMAIL_TEMPLATE_ID, &email_data)
             .map_err(|err| {
-                error!("kernel.send_register_email: rendering template: {}", err);
-                Error::Internal
+                error!("kernel.send_register_email: rendering template: {}", &err);
+                Error::Internal(err.to_string())
             })?;
 
         let email = mail::Email {

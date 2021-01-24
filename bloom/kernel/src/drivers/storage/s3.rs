@@ -93,7 +93,10 @@ impl super::Storage for S3Storage {
         };
         let res = self.s3_client.get_object(req).await?;
 
-        let mut reader = res.body.ok_or(Error::Internal)?.into_async_read();
+        let mut reader = res
+            .body
+            .ok_or(Error::Internal(String::from("s3.get_object: body is missing")))?
+            .into_async_read();
         let mut data = Vec::with_capacity(res.content_length.unwrap_or(100_000) as usize);
         reader.read_to_end(&mut data).await?;
 
@@ -134,7 +137,9 @@ impl super::Storage for S3Storage {
 
         let res = self.s3_client.head_object(req).await?;
 
-        Ok(res.content_length.ok_or(Error::Internal)?)
+        Ok(res.content_length.ok_or(Error::Internal(String::from(
+            "s3.get_object_size: content_length is missing",
+        )))?)
     }
 
     async fn get_presigned_upload_url(&self, key: &str, size: u64) -> String {

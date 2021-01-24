@@ -8,7 +8,7 @@ pub mod kernel;
 #[derive(Error, Debug, Clone)]
 pub enum Error {
     #[error("Internal error")]
-    Internal,
+    Internal(String),
     #[error("{0}")]
     NotFound(String),
     #[error("Authentication required.")]
@@ -25,20 +25,20 @@ impl std::convert::From<sqlx::Error> for Error {
     fn from(err: sqlx::Error) -> Self {
         match err {
             sqlx::Error::RowNotFound => Error::NotFound("Not found".into()),
-            _ => Error::Internal,
+            _ => Error::Internal(err.to_string()),
         }
     }
 }
 
 impl std::convert::From<actix_web::Error> for Error {
-    fn from(_: actix_web::Error) -> Self {
-        Error::Internal
+    fn from(err: actix_web::Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
 impl std::convert::From<std::io::Error> for Error {
-    fn from(_: std::io::Error) -> Self {
-        Error::Internal
+    fn from(err: std::io::Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
@@ -46,14 +46,14 @@ impl std::convert::From<std::env::VarError> for Error {
     fn from(err: std::env::VarError) -> Self {
         match err {
             std::env::VarError::NotPresent => Error::NotFound("Env var not found".into()),
-            _ => Error::Internal,
+            _ => Error::Internal(err.to_string()),
         }
     }
 }
 
 impl std::convert::From<sqlx::migrate::MigrateError> for Error {
-    fn from(_err: sqlx::migrate::MigrateError) -> Self {
-        Error::Internal
+    fn from(err: sqlx::migrate::MigrateError) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
@@ -83,27 +83,25 @@ impl std::convert::From<serde_json::Error> for Error {
 
 impl std::convert::From<stdx::sync::threadpool::Error> for Error {
     fn from(err: stdx::sync::threadpool::Error) -> Self {
-        match err {
-            _ => Error::Internal,
-        }
+        Error::Internal(err.to_string())
     }
 }
 
 impl std::convert::From<std::string::FromUtf8Error> for Error {
-    fn from(_err: std::string::FromUtf8Error) -> Self {
-        Error::Internal
+    fn from(err: std::string::FromUtf8Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
 impl std::convert::From<stdx::image::error::ImageError> for Error {
-    fn from(_err: stdx::image::error::ImageError) -> Self {
-        Error::Internal
+    fn from(err: stdx::image::error::ImageError) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
 impl std::convert::From<stdx::csv::Error> for Error {
-    fn from(_err: stdx::csv::Error) -> Self {
-        Error::Internal
+    fn from(err: stdx::csv::Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
@@ -111,7 +109,7 @@ impl<S> std::convert::From<rusoto_core::RusotoError<S>> for Error {
     fn from(err: rusoto_core::RusotoError<S>) -> Self {
         match err {
             rusoto_core::RusotoError::ParseError(err_str) => Error::InvalidArgument(err_str),
-            _ => Error::Internal,
+            _ => Error::Internal(String::new()),
         }
     }
 }
@@ -141,13 +139,13 @@ impl std::convert::From<stdx::uuid::Error> for Error {
 }
 
 impl std::convert::From<stdx::otp::Error> for Error {
-    fn from(_: stdx::otp::Error) -> Self {
-        Error::Internal
+    fn from(err: stdx::otp::Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }
 
 impl std::convert::From<stdx::crypto::Error> for Error {
-    fn from(_: stdx::crypto::Error) -> Self {
-        Error::Internal
+    fn from(err: stdx::crypto::Error) -> Self {
+        Error::Internal(err.to_string())
     }
 }

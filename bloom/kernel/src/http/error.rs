@@ -16,7 +16,7 @@ impl ResponseError for Error {
             Error::PermissionDenied(_) => StatusCode::FORBIDDEN,       // 403
             Error::NotFound(_) => StatusCode::NOT_FOUND,               // 404
             Error::AlreadyExists(_) => StatusCode::CONFLICT,           // 409
-            Error::Internal => StatusCode::INTERNAL_SERVER_ERROR,      // 500
+            Error::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,   // 500
         }
     }
 }

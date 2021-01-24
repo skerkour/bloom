@@ -10,8 +10,8 @@ impl Service {
             contact_url,
         })
         .map_err(|err| {
-            error!("kernel.send_email_changed_email: building template context: {}", err);
-            Error::Internal
+            error!("kernel.send_email_changed_email: building template context: {}", &err);
+            Error::Internal(err.to_string())
         })?;
         let subject = String::from("Bloom - Your email address was updated");
         let to = mail::Address {
@@ -23,8 +23,8 @@ impl Service {
             .templates
             .render(notifications::EMAIL_CHANGED_EMAIL_TEMPLATE_ID, &data)
             .map_err(|err| {
-                error!("kernel.send_email_changed_email: rendering tempplate: {}", err);
-                Error::Internal
+                error!("kernel.send_email_changed_email: rendering tempplate: {}", &err);
+                Error::Internal(err.to_string())
             })?;
 
         let email = mail::Email {

@@ -166,7 +166,7 @@ impl std::convert::From<Error> for crate::Error {
             Error::SoftLimitReached => {
                 crate::Error::InvalidArgument(String::from("Soft limit reached. Please contact support."))
             }
-            Error::Internal => crate::Error::Internal,
+            Error::Internal => crate::Error::Internal(String::new()),
             Error::EmailIsInvalid => crate::Error::InvalidArgument(String::from("Email is not valid.")),
             Error::UploadNotFound => crate::Error::NotFound(String::from("Upload not found.")),
         }

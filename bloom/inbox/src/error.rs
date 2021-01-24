@@ -153,7 +153,7 @@ impl std::convert::From<Error> for kernel::Error {
             }
 
             // Other
-            Error::Internal => kernel::Error::Internal,
+            Error::Internal => kernel::Error::Internal(String::new()),
             Error::PermissionDenied => kernel::Error::PermissionDenied(String::from("Permission denied.")),
         }
     }

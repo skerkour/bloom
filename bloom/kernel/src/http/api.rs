@@ -63,7 +63,7 @@ impl std::convert::From<crate::Error> for Error {
                     extensions: Some(extensions),
                 }
             }
-            crate::Error::Internal => {
+            crate::Error::Internal(_) => {
                 let mut extensions = HashMap::new();
                 extensions.insert(EXTENSION_KEY_CODE.into(), CODE_INTERNAL.into());
 

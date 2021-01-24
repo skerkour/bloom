@@ -38,7 +38,7 @@ impl Service {
                 Ok(res) => res,
                 Err(err) => {
                     error!("kernel.sign_in: hashing code: {}", err);
-                    return Err(crate::Error::Internal);
+                    return Err(crate::Error::Internal(err.to_string()));
                 }
             };
 

@@ -41,7 +41,7 @@ impl std::convert::From<Error> for kernel::Error {
             Error::FileTypeIsNotValid => kernel::Error::InvalidArgument(String::from("File type is not valid.")),
 
             // Other
-            Error::Internal => kernel::Error::Internal,
+            Error::Internal => kernel::Error::Internal(String::new()),
             Error::PermissionDenied => kernel::Error::PermissionDenied(String::from("Permission denied.")),
         }
     }

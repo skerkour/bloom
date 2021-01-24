@@ -1,6 +1,6 @@
 use super::{SendNewsletterMessageJobInput, Service};
 use crate::notifications;
-use kernel::Error;
+use crate::Error;
 use stdx::{chrono::Utc, log::error, mail};
 
 impl Service {

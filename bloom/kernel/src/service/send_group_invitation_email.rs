@@ -20,8 +20,11 @@ impl Service {
             invitations_url: self.group_invitations_url(),
         })
         .map_err(|err| {
-            error!("kernel.send_group_invitation_email: building template context: {}", err);
-            Error::Internal
+            error!(
+                "kernel.send_group_invitation_email: building template context: {}",
+                &err
+            );
+            Error::Internal(err.to_string())
         })?;
         let to = mail::Address {
             name: invitee.name,
@@ -34,8 +37,8 @@ impl Service {
             .templates
             .render(notifications::GROUP_INVITATION_EMAIL_TEMPLATE_ID, &data)
             .map_err(|err| {
-                error!("kernel.send_group_invitation_email: rendering tempplate: {}", err);
-                Error::Internal
+                error!("kernel.send_group_invitation_email: rendering tempplate: {}", &err);
+                Error::Internal(err.to_string())
             })?;
 
         let email = mail::Email {

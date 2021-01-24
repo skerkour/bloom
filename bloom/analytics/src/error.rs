@@ -30,7 +30,7 @@ impl std::convert::From<Error> for kernel::Error {
             Error::VisitorNotFound => kernel::Error::NotFound(String::from("Visitor not found.")),
 
             // Other
-            Error::Internal => kernel::Error::Internal,
+            Error::Internal => kernel::Error::Internal(String::new()),
         }
     }
 }

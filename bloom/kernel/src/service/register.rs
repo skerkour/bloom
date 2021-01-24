@@ -45,8 +45,8 @@ impl Service {
             let code_hash = match crypto::hash_password(&code) {
                 Ok(res) => res,
                 Err(err) => {
-                    error!("kernel.register: hashing code: {}", err);
-                    return Err(crate::Error::Internal);
+                    error!("kernel.register: hashing code: {}", &err);
+                    return Err(crate::Error::Internal(err.to_string()));
                 }
             };
 

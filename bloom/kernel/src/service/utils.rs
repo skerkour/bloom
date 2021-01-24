@@ -136,7 +136,7 @@ impl Service {
         let hash =
             spawn_blocking(move || crypto::derive_key_from_key(&secret, session_id.as_bytes(), crypto::KEY_SIZE_512))
                 .await?
-                .map_err(|_| crate::Error::Internal)?;
+                .map_err(|err| crate::Error::Internal(err.to_string()))?;
 
         Ok(hash)
     }
@@ -161,7 +161,7 @@ pub mod test {
 
     #[tokio::test]
     async fn format_code_html() {
-        let config = Config::load().expect("loading config");
+        let config = Config::load().unwrap();
         let service = new_service_mock(config).await;
 
         let code = "1a2a3a4a5a6a";
