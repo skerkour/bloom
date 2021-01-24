@@ -1,4 +1,4 @@
-use super::{CompleteSignInInput, Service, SignedIn};
+use super::{CompleteSignInInput, Me, Service, SignedIn};
 use crate::{consts, errors::kernel::Error, Actor};
 use consts::TwoFaMethod;
 use stdx::tokio::time::delay_for;
@@ -73,11 +73,14 @@ impl Service {
 
         tx.commit().await?;
 
-        Ok(SignedIn::Success {
+        let me = Me {
             session: new_session.session,
             user,
-            token: new_session.token,
             groups,
+        };
+        Ok(SignedIn::Success {
+            me,
+            token: new_session.token,
         })
     }
 }

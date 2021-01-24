@@ -45,6 +45,7 @@ mod find_namespace_and_membership;
 mod find_upload;
 mod get_signed_storage_url;
 mod invite_people_in_group;
+mod me;
 mod new_session;
 mod quit_group;
 mod register;
@@ -148,13 +149,15 @@ impl Service {
 
 #[derive(Debug, Clone)]
 pub enum SignedIn {
-    Success {
-        session: Session,
-        user: User,
-        token: String,
-        groups: Vec<Group>,
-    },
+    Success { me: Me, token: String },
     TwoFa(TwoFaMethod),
+}
+
+#[derive(Debug, Clone)]
+pub struct Me {
+    pub session: Session,
+    pub user: User,
+    pub groups: Vec<Group>,
 }
 
 #[derive(Debug, Clone)]

@@ -1,11 +1,11 @@
-use crate::entities;
+use crate::entities::{Session, User};
 use actix_web::{dev, error::ErrorInternalServerError, Error, FromRequest, HttpRequest};
 use stdx::futures::future::{err, ok, Ready};
 use stdx::{log::error, uuid::Uuid};
 
 #[derive(Clone)]
 pub enum Actor {
-    User(entities::User),
+    User { user: User, session: Session },
     Anonymous(Uuid),
     None,
 }

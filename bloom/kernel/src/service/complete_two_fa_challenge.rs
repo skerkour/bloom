@@ -1,4 +1,4 @@
-use super::{CompleteTwoFaChallengeInput, Service, SignedIn};
+use super::{CompleteTwoFaChallengeInput, Me, Service, SignedIn};
 use crate::{consts, errors::kernel::Error, Actor};
 use stdx::{
     chrono::{Duration, Utc},
@@ -90,11 +90,14 @@ impl Service {
 
         tx.commit().await?;
 
-        Ok(SignedIn::Success {
+        let me = Me {
             session: new_session.session,
             user: actor,
-            token: new_session.token,
             groups,
+        };
+        Ok(SignedIn::Success {
+            me,
+            token: new_session.token,
         })
     }
 }

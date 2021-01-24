@@ -26,6 +26,23 @@ pub struct RegistrationStarted {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Me {
+    pub session: Session,
+    pub user: User,
+    pub groups: Vec<Group>,
+}
+
+impl From<kernel::service::Me> for Me {
+    fn from(me: kernel::service::Me) -> Self {
+        Me {
+            session: me.session.into(),
+            user: me.user.into(),
+            groups: me.groups.into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Session {
     pub id: Id,
     pub created_at: Time,
@@ -42,9 +59,7 @@ impl From<kernel::entities::Session> for Session {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SignedIn {
-    pub session: Option<Session>,
-    pub me: Option<User>,
-    pub groups: Option<Vec<Group>>,
+    pub me: Option<Me>,
     pub two_fa_method: Option<TwoFaMethod>,
     pub token: Option<String>,
 }
@@ -52,10 +67,12 @@ pub struct SignedIn {
 impl From<kernel::service::Registered> for SignedIn {
     fn from(item: kernel::service::Registered) -> Self {
         SignedIn {
-            session: Some(item.session.into()),
-            me: Some(item.user.into()),
+            me: Some(Me {
+                user: item.user.into(),
+                session: item.session.into(),
+                groups: Vec::new(),
+            }),
             token: Some(item.token),
-            groups: None,
             two_fa_method: None,
         }
     }
@@ -79,21 +96,15 @@ impl From<kernel::service::SignedIn> for SignedIn {
     fn from(item: kernel::service::SignedIn) -> Self {
         match item {
             kernel::service::SignedIn::Success {
-                session,
-                user,
+                me,
                 token,
-                groups,
             } => SignedIn {
-                session: Some(session.into()),
-                me: Some(user.into()),
-                groups: Some(groups.into_iter().map(Into::into).collect()),
+                me: Some(me.into()),
                 two_fa_method: None,
                 token: Some(token),
             },
             kernel::service::SignedIn::TwoFa(method) => SignedIn {
-                session: None,
                 me: None,
-                groups: None,
                 token: None,
                 two_fa_method: Some(method.into()),
             },

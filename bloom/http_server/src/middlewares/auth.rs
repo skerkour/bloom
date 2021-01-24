@@ -194,7 +194,10 @@ where
                         actor = match auth_token.token_type {
                             AuthorizationTokenType::Basic => {
                                 match kernel_service.decode_and_validate_session_token(auth_token.token).await {
-                                    Ok(user) => Actor::User(user),
+                                    Ok((user, session)) => Actor::User {
+                                        user,
+                                        session,
+                                    },
                                     Err(err) => {
                                         error!("middlewares/auth: decoding session token: {}", err);
                                         Actor::None

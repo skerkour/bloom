@@ -15,7 +15,19 @@ use stdx::{
 impl Service {
     pub fn current_user(&self, actor: Actor) -> Result<User, crate::Error> {
         match actor {
-            Actor::User(user) => Ok(user),
+            Actor::User {
+                user, ..
+            } => Ok(user),
+            _ => Err(Error::AuthenticationRequired.into()),
+        }
+    }
+
+    pub fn current_user_and_session(&self, actor: Actor) -> Result<(User, Session), crate::Error> {
+        match actor {
+            Actor::User {
+                user,
+                session,
+            } => Ok((user, session)),
             _ => Err(Error::AuthenticationRequired.into()),
         }
     }
