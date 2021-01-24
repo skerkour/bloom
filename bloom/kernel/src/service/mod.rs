@@ -399,3 +399,25 @@ pub struct SendVerifyEmailEmailInput {
 // 	Customer
 // 	Namespace
 // }
+
+#[cfg(test)]
+pub mod test {
+    use crate::{
+        config::Config,
+        drivers::{
+            mailer::test::MailerMock, queue::test::QueueMock, storage::test::StorageMock, xss::stdx::StdxXssSanitizer,
+        },
+        Service,
+    };
+    use std::sync::Arc;
+
+    pub async fn new_service_mock(config: Config) -> Arc<Service> {
+        let db = crate::db::connect(&config.database).await.expect("connecting to db");
+        let queue = Arc::new(QueueMock::new());
+        let mailer = Arc::new(MailerMock::new());
+        let storage = Arc::new(StorageMock::new());
+        let stdx_xss_sanitizer = Arc::new(StdxXssSanitizer::new());
+
+        Arc::new(Service::new(config, db, queue, mailer, storage, stdx_xss_sanitizer))
+    }
+}

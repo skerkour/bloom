@@ -153,3 +153,22 @@ impl Service {
         Ok(base64::encode(token_bytes))
     }
 }
+
+#[cfg(test)]
+pub mod test {
+    use crate::{config::Config, service::test::new_service_mock};
+    use stdx::tokio;
+
+    #[tokio::test]
+    async fn format_code_html() {
+        let config = Config::load().expect("loading config");
+        let service = new_service_mock(config).await;
+
+        let code = "1a2a3a4a5a6a";
+        let expected_html = "<span></span>";
+
+        let res = service.format_code_html(code.to_string());
+
+        assert_eq!(res, expected_html);
+    }
+}

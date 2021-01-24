@@ -24,3 +24,41 @@ pub trait Queue: Send + Sync + Debug {
     async fn fail_job(&self, job_id: Uuid) -> Result<(), crate::Error>;
     async fn clear(&self) -> Result<(), crate::Error>;
 }
+
+#[cfg(test)]
+pub mod test {
+    use super::{Job, Message, Queue, Uuid};
+    use stdx::chrono;
+
+    #[derive(Clone, Debug)]
+    pub struct QueueMock {}
+
+    impl QueueMock {
+        pub fn new() -> Self {
+            QueueMock {}
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl Queue for QueueMock {
+        async fn push(&self, _: Message, _: Option<chrono::DateTime<chrono::Utc>>) -> Result<(), crate::Error> {
+            Ok(())
+        }
+
+        async fn pull(&self, _: u32) -> Result<Vec<Job>, crate::Error> {
+            Ok(Vec::new())
+        }
+
+        async fn delete_job(&self, _: Uuid) -> Result<(), crate::Error> {
+            Ok(())
+        }
+
+        async fn fail_job(&self, _: Uuid) -> Result<(), crate::Error> {
+            Ok(())
+        }
+
+        async fn clear(&self) -> Result<(), crate::Error> {
+            Ok(())
+        }
+    }
+}
