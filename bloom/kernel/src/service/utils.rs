@@ -85,7 +85,7 @@ impl Service {
 
     pub fn format_code_html(&self, code: String) -> String {
         let mut ret = String::with_capacity(code.len() * 45 + 15);
-        ret.push_str("span");
+        ret.push_str("<span>");
 
         for c in code.chars().into_iter() {
             if c.is_alphabetic() || c == '-' {
@@ -100,6 +100,8 @@ impl Service {
                 ret.push_str("</span>");
             }
         }
+
+        ret.push_str("</span>");
 
         ret
     }
