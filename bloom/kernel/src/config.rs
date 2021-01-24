@@ -1,14 +1,13 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt,
-    fs::File,
-    io::{BufRead, BufReader},
-};
-
 use crate::Error;
 use rusoto_core::Region;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+    fs::OpenOptions,
+    io::{BufRead, BufReader},
+};
 use stdx::{crypto, dotenv, encoding::base64, mail, url::Url};
 
 const ENV_APP_ENV: &str = "APP_ENV";
@@ -386,7 +385,10 @@ impl Config {
             std::env::var(ENV_MAIL_BLOCKLIST).unwrap_or(String::from(DEFAULT_MAIL_BLOCKLIST_FILE));
 
         let mail_domains_blocklist: HashSet<String> = {
-            let blocklist_file = File::open(&mail_domains_blocklist_file)?;
+            let blocklist_file = OpenOptions::new()
+                .read(true)
+                .open(&mail_domains_blocklist_file)
+                .map_err(|err| Error::Internal(format!("config: Error reading email blocklist: {}", err)))?;
             let reader = BufReader::new(&blocklist_file);
             let mut blocklist = HashSet::new();
             for line in reader.lines() {
@@ -598,4 +600,19 @@ impl Config {
 
 fn env_not_found(var: &str) -> Error {
     Error::NotFound(format!("config: {} env var not found", var))
+}
+
+#[cfg(test)]
+pub mod test {
+    use super::Config;
+    use std::env;
+
+    pub fn load_test_config() -> Config {
+        // by default cargo run the tests in the directory of the package's manifest
+        // in ou case, we need to run the tests in the directory of the workspace, in
+        // order to load assets
+        let current_dir = env::current_dir().unwrap();
+        env::set_current_dir(current_dir.join("..")).unwrap();
+        Config::load().unwrap()
+    }
 }

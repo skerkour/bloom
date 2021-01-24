@@ -156,19 +156,50 @@ impl Service {
 
 #[cfg(test)]
 pub mod test {
-    use crate::{config::Config, service::test::new_service_mock};
+    use crate::{config::test::load_test_config, service::test::new_service_mock};
     use stdx::tokio;
 
     #[tokio::test]
     async fn format_code_html() {
-        let config = Config::load().unwrap();
+        let config = load_test_config();
         let service = new_service_mock(config).await;
 
-        let code = "1a2a3a4a5a6a";
-        let expected_html = "<span></span>";
+        let code = "1a2a3a4a5a6a#|";
+        let expected_html = concat!(
+            "<span>",
+            r#"<span style="color: red">1</span>"#,
+            "a",
+            r#"<span style="color: red">2</span>"#,
+            "a",
+            r#"<span style="color: red">3</span>"#,
+            "a",
+            r#"<span style="color: red">4</span>"#,
+            "a",
+            r#"<span style="color: red">5</span>"#,
+            "a",
+            r#"<span style="color: red">6</span>"#,
+            "a",
+            r##"<span style="color: blue">#</span>"##,
+            r#"<span style="color: blue">|</span>"#,
+            "</span>"
+        );
 
         let res = service.format_code_html(code.to_string());
 
         assert_eq!(res, expected_html);
+    }
+
+    #[tokio::test]
+    async fn format_code_hyphen() {
+        let config = load_test_config();
+        let service = new_service_mock(config).await;
+
+        let codes = ["1a2a3a4a5a6a", "1a2a3a4a5a6a1a2a3a4a5a6a", "1a2a"];
+        let expected = ["1a2a-3a4a-5a6a", "1a2a-3a4a-5a6a-1a2a-3a4a-5a6a", "1a2a"];
+
+        for (i, code) in codes.iter().enumerate() {
+            let res = service.format_code_hyphen(code.to_string());
+            assert_eq!(res, expected[i]);
+        }
     }
 }
