@@ -2,7 +2,7 @@ use super::Mailer;
 use crate::{config::Config, Error};
 use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
 use std::{fmt, time::Duration};
-use stdx::{mail::Email, retry};
+use stdx::{base64, log::error, mail::Email, retry};
 
 #[derive(Clone)]
 pub struct SesMailer {
@@ -32,16 +32,23 @@ impl Mailer for SesMailer {
 
         let ses_request = SendRawEmailRequest {
             raw_message: RawMessage {
-                data: raw_email.into(),
+                data: base64::encode(raw_email).into(),
             },
             ..Default::default()
         };
 
-        retry::retry_fn(|| self.ses_client.send_raw_email(ses_request.clone()))
+        match retry::retry_fn(|| self.ses_client.send_raw_email(ses_request.clone()))
             .retries(10)
             .exponential_backoff(Duration::from_secs(1))
             .max_delay(Duration::from_secs(10))
-            .await?;
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(err) => {
+                error!("SesMailer.send: sending email: {}", &err);
+                Err(err)
+            }
+        }?;
         Ok(())
     }
 }

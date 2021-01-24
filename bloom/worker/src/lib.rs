@@ -61,7 +61,7 @@ pub async fn run(
         let res = match worker.handle_job(job).await {
             Ok(_) => queue.delete_job(job_id).await,
             Err(err) => {
-                error!("worker.run: handling job: {}", &err);
+                error!("worker.run: handling job({}): {}", job_id, &err);
                 queue.fail_job(job_id).await
             }
         };

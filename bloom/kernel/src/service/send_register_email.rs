@@ -35,10 +35,7 @@ impl Service {
             subject,
             html,
         };
-        self.mailer.send(email).await.map_err(|err| {
-            error!("kernel.send_register_email: sending email: {}", err);
-            Error::Internal
-        })?;
+        self.mailer.send(email).await?;
 
         Ok(())
     }

@@ -14,7 +14,7 @@ pub struct PostgresQueue {
     max_attempts: u32,
 }
 
-const MAX_FAILED_ATTEMPTS: i32 = 5;
+const MAX_FAILED_ATTEMPTS: i32 = 3; // low, as most jobs also use retries internally
 const TOO_LONG: Duration = Duration::from_secs(60 * 15); // 15 mins
 
 /// A Job, as represented in DB
