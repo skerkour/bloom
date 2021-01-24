@@ -45,6 +45,7 @@ export default VueApp.extend({
   box-shadow: none;
   transition: box-shadow 0.2s ease-in-out;
   cursor: pointer;
+  z-index: 9999;
 }
 
 .floating-button:hover {

@@ -57,7 +57,7 @@ export default VueApp.extend({
   transition: 0.4s ease-in-out;
   border-radius: 10px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  z-index: 999;
+  z-index: 9999;
 
   @media (max-width: 450px) {
     width: 100%;
