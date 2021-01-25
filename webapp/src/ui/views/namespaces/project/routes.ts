@@ -1,6 +1,4 @@
-import { Route, RouteConfig } from 'vue-router';
-
-const Inbox = () => import(/* webpackChunkName: "chunk-projects" */ './inbox/inbox.vue');
+import { RouteConfig } from 'vue-router';
 
 const Contacts = () => import(/* webpackChunkName: "chunk-projects" */ './contacts/contacts.vue');
 const Contact = () => import(/* webpackChunkName: "chunk-projects" */ './contacts/contact.vue');
@@ -41,11 +39,6 @@ const PreferencesInbox = () => import(/* webpackChunkName: "chunk-projects-prefe
 
 
 const routes: Array<RouteConfig> = [
-  {
-    path: '/:namespacePath/:projectPath',
-    redirect: (to: Route) => `/${to.params.namespacePath}/${to.params.projectPath}/-/inbox`,
-  },
-
   {
     path: '/:namespacePath/:projectPath/-/tickets',
     component: Tickets,
@@ -195,14 +188,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/lists/:listId',
     component: List,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/inbox',
-    component: Inbox,
     meta: {
       projectDrawer: true,
     },

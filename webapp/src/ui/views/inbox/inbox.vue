@@ -139,7 +139,7 @@ import { InboxSubscriptionOptions, ProjectAndBaseUrl } from '@/domain/support/se
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
 
 export default VueApp.extend({
-  name: 'BProjectInboxView',
+  name: 'BInboxView',
   components: {
     BMessage,
     BInboxSetupCard,

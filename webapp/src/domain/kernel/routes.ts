@@ -10,3 +10,8 @@ export const Commands = {
   completeSignIn: `/${prefix}/${commands}/complete_sign_in`,
   completeTwoFaChallenge: `/${prefix}/${commands}/complete_two_fa_challenge`,
 }
+
+export const Queries = {
+  me: `/${prefix}/${queries}/me`,
+  signedUploadUrl: `/${prefix}/${queries}/signed_upload_url`,
+}

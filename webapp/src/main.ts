@@ -22,7 +22,7 @@ import { GrowthService, GrowthServiceInjector } from './domain/growth/service';
 import { OperationsService, OperationsServiceInjector } from './domain/operations/service';
 import { ToolsService, ToolsServiceInjector } from './domain/tools/service';
 import { KernelService, KernelServiceInjector } from './domain/kernel/service';
-
+import { InboxService, InboxServiceInjector } from './domain/inbox/service';
 
 const config = new Config();
 const storage = new Storage();
@@ -31,6 +31,7 @@ const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
 const kernelService = new KernelService(apiClient, store, router);
+const inboxService = new InboxService(apiClient, store);
 const usersService = new UsersService(apiClient, store, router);
 const groupsService = new GroupsService(apiClient, router, config);
 const projectsService = new ProjectsService(apiClient, router, kernelService);
@@ -62,6 +63,7 @@ if (config.sentryDsn) {
 Vue.use(VueRouter);
 Vue.use(ConfigServiceInjector, config);
 Vue.use(UsersServiceInjector, usersService);
+Vue.use(InboxServiceInjector, inboxService);
 Vue.use(KernelServiceInjector, kernelService);
 Vue.use(GroupsServiceInjector, groupsService);
 Vue.use(ProjectsServiceInjector, projectsService);

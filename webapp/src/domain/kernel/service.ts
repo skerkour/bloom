@@ -30,25 +30,11 @@ export class KernelService {
     this.router = router;
   }
 
-  async register(input: Register): Promise<void> {
-    const res: RegistrationStarted = await this.apiClient.post(Commands.register, input);
-
-    this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
-    this.router.push({ path: '/register/complete' });
-  }
-
   async completeRegistration(input: CompleteRegistration): Promise<void> {
     const res: SignedIn = await this.apiClient.post(Commands.completeRegistration, input);
 
     this.store.commit(Mutation.SIGN_IN, res);
     this.router.push({ path: '/' });
-  }
-
-  async signIn(input: SignIn): Promise<void> {
-    const res: SignInStarted = await this.apiClient.post(Commands.signIn, input);
-
-    this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.pending_session_id);
-    this.router.push({ path: '/login/complete' });
   }
 
   async completeSignIn(input: CompleteSignIn): Promise<void> {
@@ -76,6 +62,20 @@ export class KernelService {
   async fetchMySessions(): Promise<Session[]> {
     // TODO
     return [];
+  }
+
+  async register(input: Register): Promise<void> {
+    const res: RegistrationStarted = await this.apiClient.post(Commands.register, input);
+
+    this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
+    this.router.push({ path: '/register/complete' });
+  }
+
+  async signIn(input: SignIn): Promise<void> {
+    const res: SignInStarted = await this.apiClient.post(Commands.signIn, input);
+
+    this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.pending_session_id);
+    this.router.push({ path: '/login/complete' });
   }
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {
