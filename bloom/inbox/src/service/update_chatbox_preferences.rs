@@ -1,5 +1,5 @@
-use super::UpdateChatboxPreferencesInput;
-use crate::{entities::ChatboxPreferences, Error, Service};
+use super::{DetailedChatboxPreferences, UpdateChatboxPreferencesInput};
+use crate::{Error, Service};
 use kernel::{consts::BillingPlan, Actor};
 use stdx::chrono::Utc;
 
@@ -8,7 +8,7 @@ impl Service {
         &self,
         actor: Actor,
         input: UpdateChatboxPreferencesInput,
-    ) -> Result<ChatboxPreferences, kernel::Error> {
+    ) -> Result<DetailedChatboxPreferences, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
 
         let (namespace, _) = self
@@ -44,7 +44,14 @@ impl Service {
         preferences.show_branding = show_branding;
         self.repo.update_chatbox_preferences(&self.db, &preferences).await?;
 
-        Ok(preferences)
+        let base_url = self.kernel_service.base_url();
+
+        let ret = DetailedChatboxPreferences {
+            preferences,
+            base_url,
+        };
+
+        Ok(ret)
 
         // ret = support.ChatboxPreferencesAndProjectPublicData{
         //     ChatboxPreferences: preferences,

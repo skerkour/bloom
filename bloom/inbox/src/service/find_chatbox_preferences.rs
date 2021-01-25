@@ -1,5 +1,5 @@
-use super::FindChatboxPreferencesInput;
-use crate::{entities::ChatboxPreferences, Error, Service};
+use super::{DetailedChatboxPreferences, FindChatboxPreferencesInput};
+use crate::{Error, Service};
 use kernel::Actor;
 
 impl Service {
@@ -7,7 +7,7 @@ impl Service {
         &self,
         actor: Actor,
         input: FindChatboxPreferencesInput,
-    ) -> Result<ChatboxPreferences, kernel::Error> {
+    ) -> Result<DetailedChatboxPreferences, kernel::Error> {
         if actor.is_none() {
             return Err(Error::PermissionDenied.into());
         }
@@ -16,7 +16,15 @@ impl Service {
             .repo
             .find_chatbox_preferences_for_namespace(&self.db, input.namespace_id)
             .await?;
-        Ok(preferences)
+
+        let base_url = self.kernel_service.base_url();
+
+        let ret = DetailedChatboxPreferences {
+            preferences,
+            base_url,
+        };
+
+        Ok(ret)
         // TODO
         // project, err := service.projectsService.FindProjectByIDUnauthenticated(ctx, service.db, input.ProjectID)
         // if err != nil {

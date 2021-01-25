@@ -200,16 +200,18 @@ pub struct ChatboxPreferences {
     pub avatar: String,
     pub show_branding: bool,
     pub welcome_message: String,
+    pub base_url: String,
 }
 
-impl From<inbox::entities::ChatboxPreferences> for ChatboxPreferences {
-    fn from(preferences: inbox::entities::ChatboxPreferences) -> Self {
+impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
+    fn from(input: inbox::service::DetailedChatboxPreferences) -> Self {
         ChatboxPreferences {
-            color: preferences.color,
-            name: preferences.name,
+            color: input.preferences.color,
+            name: input.preferences.name,
             avatar: String::from(consts::DEFAULT_AVATAR), // TODO
-            show_branding: preferences.show_branding,
-            welcome_message: preferences.welcome_message,
+            show_branding: input.preferences.show_branding,
+            welcome_message: input.preferences.welcome_message,
+            base_url: input.base_url,
         }
     }
 }
