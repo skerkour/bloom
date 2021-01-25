@@ -19,7 +19,7 @@ export type Conversation = {
 export type ConversationWithConatctsAndMessages = {
   conversation: Conversation,
   contacts: Contact[],
-  message: Message[],
+  messages: Message[],
 };
 
 export type GetArchive = {
@@ -44,4 +44,10 @@ export type Inbox = {
 
 export type Message = {
   id: string;
+  conversation_id: string;
+};
+
+export type SendMessage = {
+  conversation_id: string;
+  body: string;
 };

@@ -128,15 +128,13 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import {
-  SendMessageToConversationInput,
-  InboxConversation,
-  InboxMessage,
-} from '@/api/graphql/model';
 import BMessage from '@/ui/components/support/message.vue';
 import { calendar } from '@/app/filters';
-import { InboxSubscriptionOptions, ProjectAndBaseUrl } from '@/domain/support/service';
+import { InboxSubscriptionOptions } from '@/domain/support/service';
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
+import {
+  ConversationWithConatctsAndMessages, GetInbox, Message, SendMessage,
+} from '@/domain/inbox/model';
 
 export default VueApp.extend({
   name: 'BInboxView',
@@ -150,11 +148,11 @@ export default VueApp.extend({
       error: '',
       selected: 'All',
       selectedConversationIndex: 0,
-      selectedConversation: null as InboxConversation | null,
+      selectedConversation: null as ConversationWithConatctsAndMessages | null,
       message: '',
-      messages: [] as InboxMessage[],
+      messages: [] as Message[],
       projectId: '',
-      conversations: [] as InboxConversation[],
+      conversations: [] as ConversationWithConatctsAndMessages[],
       seenMessages: new Set<string>(),
       seenConversations: new Set<string>(),
       baseUrl: '',
@@ -182,19 +180,23 @@ export default VueApp.extend({
     async fetchData() {
       this.loading = true;
       this.error = '';
+      const input: GetInbox = {
+        namespace_id: '', // TODO
+      };
 
       try {
-        const projectAndBaseUrl: ProjectAndBaseUrl = await
-        this.$supportService.findProjectConversationsWithMessages(this.projectFullPath);
+        const inbox = await this.$inboxService.fetchInbox(input);
+        // const projectAndBaseUrl: ProjectAndBaseUrl = await
+        // this.$supportService.findProjectConversationsWithMessages(this.projectFullPath);
 
-        this.projectId = projectAndBaseUrl.project.id;
-        this.baseUrl = projectAndBaseUrl.baseUrl;
-        this.conversations = projectAndBaseUrl.project.conversations;
+        // this.projectId = projectAndBaseUrl.project.id;
+        // this.baseUrl = projectAndBaseUrl.baseUrl;
+        this.conversations = inbox.conversations;
 
-        this.conversations.forEach((conversation: InboxConversation) => {
-          this.seenConversations.add(conversation.id);
+        this.conversations.forEach((conversation) => {
+          this.seenConversations.add(conversation.conversation.id);
           // eslint-disable-next-line max-len
-          conversation.messages.forEach((message: InboxMessage) => this.seenMessages.add(message.id));
+          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
         });
 
         if (this.conversations.length !== 0) {
@@ -224,13 +226,13 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: SendMessageToConversationInput = {
-        conversationId: this.conversations[this.selectedConversationIndex].id,
+      const input: SendMessage = {
+        conversation_id: this.conversations[this.selectedConversationIndex].conversation.id,
         body: this.message,
       };
 
       try {
-        const message = await this.$supportService.sendMessageToConversation(input);
+        const message = await this.$inboxService.sendMessage(input);
         this.onMessage(message);
         this.message = '';
       } catch (err) {
@@ -239,16 +241,16 @@ export default VueApp.extend({
         this.loading = false;
       }
     },
-    onConversation(conversation: InboxConversation): void {
-      if (!this.seenConversations.has(conversation.id)) {
+    onConversation(conversation: ConversationWithConatctsAndMessages): void {
+      if (!this.seenConversations.has(conversation.conversation.id)) {
         // new conversation
-        conversation.messages.forEach((message: InboxMessage) => this.seenMessages.add(message.id));
+        conversation.messages.forEach((message) => this.seenMessages.add(message.id));
         const index = this.conversations.length >= 1 ? 1 : 0;
         this.conversations.splice(index, 0, conversation);
-        this.seenConversations.add(conversation.id);
+        this.seenConversations.add(conversation.conversation.id);
       } else {
         // existing conversation
-        conversation.messages?.forEach((message: InboxMessage) => {
+        conversation.messages?.forEach((message) => {
           this.onMessage(message);
         });
       }
@@ -257,10 +259,10 @@ export default VueApp.extend({
         this.selectedConversationIndexChanged(0);
       }
     },
-    onMessage(message: InboxMessage): void {
+    onMessage(message: Message): void {
       if (!this.seenMessages.has(message.id)) {
-        this.conversations.forEach((conversation: InboxConversation) => {
-          if (conversation.id === message.conversationId) {
+        this.conversations.forEach((conversation) => {
+          if (conversation.conversation.id === message.conversation_id) {
             conversation.messages.push(message);
           }
         });

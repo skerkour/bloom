@@ -2,9 +2,9 @@
 import ApiClient from '@/api/client';
 import { Store } from 'vuex';
 import { AppState } from '@/app/store';
-import { Queries } from './routes';
+import { Commands, Queries } from './routes';
 import {
-  GetInbox, Inbox, GetArchive, GetSpam, GetTrash,
+  GetInbox, Inbox, GetArchive, GetSpam, GetTrash, SendMessage, Message,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -40,6 +40,12 @@ export class InboxService {
 
   async fetchTrash(input: GetTrash): Promise<Inbox> {
     const res: Inbox = await this.apiClient.post(Queries.inbox, input);
+
+    return res;
+  }
+
+  async sendMessage(input: SendMessage): Promise<Message> {
+    const res: Message = await this.apiClient.post(Commands.sendMessage, input);
 
     return res;
   }
