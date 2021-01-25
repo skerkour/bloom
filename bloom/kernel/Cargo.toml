@@ -19,3 +19,4 @@ serde = { version = "1", features = ["derive"] }
 rusoto_core = "0.45"
 rusoto_s3 = "0.45"
 rusoto_ses = "0.45"
+sentry = "0.21"

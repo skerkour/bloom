@@ -1785,6 +1785,7 @@ dependencies = [
  "rusoto_core",
  "rusoto_s3",
  "rusoto_ses",
+ "sentry",
  "serde",
  "serde_json",
  "stdx",
@@ -4292,6 +4293,7 @@ dependencies = [
  "inbox",
  "kernel",
  "reqwest",
+ "sentry",
  "stdx",
  "tokio",
 ]

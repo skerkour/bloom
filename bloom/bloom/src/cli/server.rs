@@ -28,6 +28,7 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
     } else {
         None
     };
+    std::env::set_var("RUST_BACKTRACE", "1");
 
     let worker_flag = cli_matches.is_present("worker");
     let scheduler_flag = cli_matches.is_present("scheduler");

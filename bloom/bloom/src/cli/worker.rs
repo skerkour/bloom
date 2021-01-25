@@ -25,6 +25,7 @@ pub fn run() -> Result<(), Error> {
     } else {
         None
     };
+    std::env::set_var("RUST_BACKTRACE", "1");
 
     let mut runtime = stdx::tokio::runtime::Builder::new()
         .threaded_scheduler()

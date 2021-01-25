@@ -24,6 +24,7 @@ pub fn run() -> Result<(), Error> {
     } else {
         None
     };
+    std::env::set_var("RUST_BACKTRACE", "1");
 
     runtime.block_on(async move {
         let db = kernel::db::connect(&config.database).await?;

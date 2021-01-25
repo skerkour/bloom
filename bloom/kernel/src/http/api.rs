@@ -19,6 +19,13 @@ impl<T: Serialize> Response<T> {
     }
 
     pub fn err(err: crate::Error) -> Response<()> {
+        match &err {
+            err @ crate::Error::Internal(_) => {
+                sentry::capture_error(err);
+            }
+            _ => {}
+        }
+
         return Response::<()> {
             data: None,
             errors: Some(vec![err.into()]),
