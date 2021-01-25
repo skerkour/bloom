@@ -1,4 +1,5 @@
 use crate::api::scalars::{Id, Time};
+use kernel::consts;
 use serde::{Deserialize, Serialize};
 
 pub mod input;
@@ -10,6 +11,7 @@ pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User
         name: user.name,
         username: user.username,
         namespace_id: None,
+        avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
     };
 
     if private_details {
@@ -27,6 +29,7 @@ pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> G
         created_at: None,
         namespace_id: None,
         name: group.name,
+        avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
     };
 
     if private_details {
@@ -40,11 +43,12 @@ pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> G
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
-    id: Option<Id>,
-    created_at: Option<Time>,
-    name: String,
-    username: String,
-    namespace_id: Option<Id>,
+    pub id: Option<Id>,
+    pub created_at: Option<Time>,
+    pub avatar_url: String,
+    pub name: String,
+    pub username: String,
+    pub namespace_id: Option<Id>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -177,6 +181,7 @@ pub struct SetupTwoFa {
 pub struct Group {
     pub id: Option<Id>,
     pub created_at: Option<Time>,
+    pub avatar_url: String,
     pub namespace_id: Option<Id>,
     pub name: String,
 }
