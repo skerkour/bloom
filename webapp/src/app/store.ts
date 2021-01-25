@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { Storage } from '@/app/storage';
 import {
-  SignedIn, User, Session, Group,
+  SignedIn, User, Session, Group, Me,
 } from '@/domain/kernel/model';
 
 Vue.use(Vuex);
@@ -27,6 +27,7 @@ export interface AppState {
 // eslint-disable-next-line
 export enum Mutation {
   SIGN_IN = 'SIGN_IN',
+  INIT = 'INIT',
   SIGN_OUT = 'SIGN_OUT',
   SET_PENDING_USER_ID = 'SET_PENDING_USER_ID',
   SET_PENDING_SESSION_ID = 'SET_PENDING_SESSION_ID',
@@ -85,6 +86,14 @@ export function newStore(storage: Storage): Store<AppState> {
 
         state.pendingSessionId = null;
         state.pendingUserId = null;
+      },
+      [Mutation.INIT](state: AppState, me: Me) {
+        state.session = me.session;
+        state.me = me.user;
+        state.groups = me.groups;
+        state.currentNamespaceId = me.user.namespace_id;
+
+        // storage.set(storage.keyMe, state.me);
       },
       [Mutation.SIGN_OUT](state: AppState) {
         const emptyState = defaultAppState();

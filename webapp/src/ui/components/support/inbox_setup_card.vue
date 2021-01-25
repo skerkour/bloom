@@ -9,7 +9,7 @@
     <v-card-text>
       <code>
 &lt;script type="text/javascript"&gt; <br/>
-window.$bloom = { project: '{{ projectId }}' }; <br/>
+window.$bloom = { project: '{{ namespaceId }}' }; <br/>
 (function(){d=document;s=d.createElement("script");s.src="{{ baseUrl }}/libs/bloom.js";
 s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})(); <br/>
 &lt;/script&gt;
@@ -20,19 +20,17 @@ s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})(); <br/>
 
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
-import { PropType } from 'vue';
 
 export default VueApp.extend({
   name: 'BInboxSetupCard',
-  props: {
-    baseUrl: {
-      type: String as PropType<string>,
-      required: true,
+  computed: {
+    namespaceId(): string {
+      return this.$store.state.currentNamespaceId!;
     },
-    projectId: {
-      type: String as PropType<string>,
-      required: true,
+    baseUrl(): string {
+      return this.$kernelService.baseUrl();
     },
   },
 });

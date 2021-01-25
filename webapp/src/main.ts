@@ -8,7 +8,7 @@ import { Storage } from '@/app/storage';
 // import registerServiceWorker from '@/app/service_worker';
 import App from '@/ui/app.vue';
 import routes from '@/ui/views/routes';
-import { newStore } from '@/app/store';
+import { Mutation, newStore } from '@/app/store';
 import vuetify from '@/plugins/vuetify';
 import Vuetify from 'vuetify/lib';
 import { UsersService, UsersServiceInjector } from '@/domain/users/service';
@@ -30,7 +30,7 @@ const store = newStore(storage);
 const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
-const kernelService = new KernelService(apiClient, store, router);
+const kernelService = new KernelService(config, apiClient, store, router);
 const inboxService = new InboxService(apiClient, store);
 const usersService = new UsersService(apiClient, store, router);
 const groupsService = new GroupsService(apiClient, router, config);
@@ -74,9 +74,20 @@ Vue.use(GrowthServiceInjector, growthService);
 Vue.use(OperationsServiceInjector, operationsService);
 Vue.use(ToolsServiceInjector, toolsService);
 
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
-}).$mount('#app');
+
+async function main() {
+  if (store.state.sessionToken !== null) {
+    const me = await kernelService.fetchMe();
+
+    store.commit(Mutation.INIT, me);
+  }
+
+  new Vue({
+    router,
+    store,
+    vuetify,
+    render: (h) => h(App),
+  }).$mount('#app');
+}
+
+main();

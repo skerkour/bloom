@@ -7,24 +7,26 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
+import { Message } from '@/domain/inbox/model';
 import { PropType } from 'vue';
-import { ChatboxMessage } from '@/api/graphql/model';
 
 
 export default VueApp.extend({
   name: 'BMessage',
   props: {
     message: {
-      type: Object as PropType<ChatboxMessage>,
+      type: Object as PropType<Message>,
       required: true,
     },
   },
   computed: {
     isAgentMessage(): boolean {
-      return this.message.author !== null;
+      // return this.message.author !== null;
+      return true;
     },
     isUserMessage(): boolean {
-      return this.message.author === null;
+      // return this.message.author === null;
+      return false;
     },
   },
 });

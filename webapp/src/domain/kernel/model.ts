@@ -1,5 +1,6 @@
 /* eslint-disable */
 export type Option<T> = T | null;
+export type Empty = {};
 
 export type CompleteRegistration = {
   pending_user_id: string;

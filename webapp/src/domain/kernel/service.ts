@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-len */
 import ApiClient from '@/api/client';
@@ -10,9 +11,10 @@ import {
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
-import { Commands } from './routes';
+import { Config } from '@/app/config';
+import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, Me, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -23,11 +25,17 @@ export class KernelService {
   private apiClient: ApiClient;
   private store: Store<AppState>;
   private router: Router;
+  private _baseUrl: string;
 
-  constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
+  constructor(config: Config, apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;
+    this._baseUrl = config.baseURL;
+  }
+
+  baseUrl(): string {
+    return this._baseUrl;
   }
 
   async completeRegistration(input: CompleteRegistration): Promise<void> {
@@ -57,6 +65,12 @@ export class KernelService {
     // complete sign-in flow
     this.store.commit(Mutation.SIGN_IN, res);
     this.router.push({ path: '/' });
+  }
+
+  async fetchMe(): Promise<Me> {
+    const res: Me = await this.apiClient.post(Queries.me, {});
+
+    return res;
   }
 
   async fetchMySessions(): Promise<Session[]> {

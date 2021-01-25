@@ -11,30 +11,7 @@
 
     <v-row justify="center">
       <v-col cols="4" lg="3" class="pa-0 bloom-left-col">
-        <!-- <v-toolbar elevation="0"> -->
-          <!-- <v-select
-            class="text-left"
-            :items="inboxesSelect"
-            label="Select"
-            return-object
-            single-line
-            :value="selected"
-            dense
-            hide-details
-            solo
-            flat
-            placeholder="Inbox"
-          />
-        </v-toolbar> -->
-        <!-- <v-tabs center-active show-arrows>
-          <v-tab>Unassigned</v-tab>
-          <v-tab>Assigned to me</v-tab>
-          <v-tab>Snoozed</v-tab>
-          <v-tab>All</v-tab>
-          <v-tab>Trash</v-tab>
-          <v-tab>Spam</v-tab>
-        </v-tabs> -->
-        <div class="overflow-y-auto blm-conversations-list">
+        <div class="overflow-y-auto b-conversations-list">
           <v-list-item-group
             mandatory
             v-model="selectedConversationIndex"
@@ -46,21 +23,25 @@
                 <v-list-item :key="`conversation-${index}`">
 
                   <v-list-item-avatar>
-                    <v-img :src="conversation.contact.avatarUrl" />
+                    <v-icon dark>
+                      mdi-account
+                    </v-icon>
                   </v-list-item-avatar>
 
                   <v-list-item-content class="text-left">
                     <v-list-item-title>
-                      {{ conversation.contact.name }}
+                      <!-- {{ conversation.contact.name }} -->
+                      Title
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                      {{ conversation.messages[conversation.messages.length - 1].bodyHtml }}
+                  <!-- {{ conversation.messages[conversation.messages.length - 1].bodyHtml }} -->
+                      Subtitle
                     </v-list-item-subtitle>
                   </v-list-item-content>
 
                   <v-list-item-action>
                     <v-list-item-action-text>
-                      {{ calendar(conversation.lastMessageReceivedAt) }}
+                      {{ calendar(conversation.last_message_at) }}
                     </v-list-item-action-text>
                   </v-list-item-action>
 
@@ -80,16 +61,17 @@
           color="white"
           class="elevation-0 contact-appbar"
           v-if="selectedConversation">
-          <v-avatar size="40">
+          <!-- <v-avatar size="40">
             <img
               :src="selectedConversation.contact.avatarUrl"
             />
-          </v-avatar>
+          </v-avatar> -->
 
           <v-toolbar-title>
-            <router-link :to="`/${projectFullPath}/-/contacts/${selectedConversation.contact.id}`">
+        <!-- <router-link :to="`/${projectFullPath}/-/contacts/${selectedConversation.contact.id}`">
             {{ selectedConversation.contact.name }}
-            </router-link>
+            </router-link> -->
+            Title
           </v-toolbar-title>
 
         </v-app-bar>
@@ -104,9 +86,7 @@
             indeterminate
           />
 
-          <b-inbox-setup-card class="mt-5"
-            :baseUrl="baseUrl" :projectId="projectId"
-            v-if="messages.length === 0" />
+          <b-inbox-setup-card class="mt-5" v-if="messages.length === 0" />
 
           <template v-for="(message, i) in messages" v-else>
             <b-message :message="message" :key="i" />
@@ -151,7 +131,6 @@ export default VueApp.extend({
       selectedConversation: null as ConversationWithConatctsAndMessages | null,
       message: '',
       messages: [] as Message[],
-      projectId: '',
       conversations: [] as ConversationWithConatctsAndMessages[],
       seenMessages: new Set<string>(),
       seenConversations: new Set<string>(),
@@ -183,11 +162,7 @@ export default VueApp.extend({
 
       try {
         const inbox = await this.$inboxService.fetchInbox();
-        // const projectAndBaseUrl: ProjectAndBaseUrl = await
-        // this.$supportService.findProjectConversationsWithMessages(this.projectFullPath);
 
-        // this.projectId = projectAndBaseUrl.project.id;
-        // this.baseUrl = projectAndBaseUrl.baseUrl;
         this.conversations = inbox.conversations;
 
         this.conversations.forEach((conversation) => {
@@ -246,7 +221,7 @@ export default VueApp.extend({
         this.seenConversations.add(conversation.conversation.id);
       } else {
         // existing conversation
-        conversation.messages?.forEach((message) => {
+        conversation.messages.forEach((message) => {
           this.onMessage(message);
         });
       }
@@ -317,7 +292,7 @@ export default VueApp.extend({
   }
 }
 
-.blm-conversations-list {
+.b-conversations-list {
   height: calc(100vh - 50px);
 }
 </style>
