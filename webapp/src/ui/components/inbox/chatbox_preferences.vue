@@ -65,9 +65,8 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { ChatboxPreferences } from '@/domain/inbox/model';
+import { ChatboxPreferences, UpdateChatboxPreferences } from '@/domain/inbox/model';
 import { PropType } from 'vue';
-import { UpdateChatboxPreferencesInput } from '@/api/graphql/model';
 
 export default VueApp.extend({
   name: 'BChatboxPreferences',
@@ -89,11 +88,6 @@ export default VueApp.extend({
       welcomeMessage: '',
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   created() {
     this.cancel();
   },
@@ -103,16 +97,17 @@ export default VueApp.extend({
       this.error = '';
       this.success = false;
 
-      const input: UpdateChatboxPreferencesInput = {
-        projectFullPath: this.projectFullPath,
+      const input: UpdateChatboxPreferences = {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        namespace_id: this.$store.state.currentNamespaceId!,
         color: this.color,
         name: this.name,
-        branding: this.branding,
-        welcomeMessage: this.welcomeMessage,
+        show_branding: this.branding,
+        welcome_message: this.welcomeMessage,
       };
 
       try {
-        const preferences = await this.$supportService.updateChatboxPreferences(input);
+        const preferences = await this.$inboxService.updateChatboxPreferences(input);
         this.success = true;
         this.$emit('updated', preferences);
         setTimeout(() => {

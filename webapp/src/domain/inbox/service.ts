@@ -13,6 +13,7 @@ import {
   GetContacts,
   GetContact,
   ImportContacts,
+  UpdateChatboxPreferences,
 } from './model';
 
 
@@ -143,6 +144,13 @@ export class InboxService {
 
   unsubscribeFromInbox(): void {
     this.subscriptionTimeout = 0;
+  }
+
+  async updateChatboxPreferences(input: UpdateChatboxPreferences): Promise<ChatboxPreferences> {
+    // eslint-disable-next-line max-len
+    const res: ChatboxPreferences = await this.apiClient.post(Commands.updateChetboxPreferences, input);
+
+    return res;
   }
 }
 

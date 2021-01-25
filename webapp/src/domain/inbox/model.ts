@@ -100,3 +100,11 @@ export type SendMessage = {
   conversation_id: string;
   body: string;
 };
+
+export type UpdateChatboxPreferences = {
+  namespace_id: string;
+  color: string;
+  name: string;
+  show_branding: boolean;
+  welcome_message: string;
+};

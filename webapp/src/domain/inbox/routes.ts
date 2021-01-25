@@ -4,8 +4,9 @@ const commands = 'commands';
 const queries = 'queries';
 
 export const Commands = {
-  importContacts: `/${prefix}/${queries}/import_contacts`,
-  sendMessage: `/${prefix}/${queries}/send_message`,
+  importContacts: `/${prefix}/${commands}/import_contacts`,
+  sendMessage: `/${prefix}/${commands}/send_message`,
+  updateChetboxPreferences:  `/${prefix}/${commands}/update_chatbox_preferences`,
 }
 
 export const Queries = {
