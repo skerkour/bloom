@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-
     <v-row>
       <v-col cols="12" class="text-center" v-if="error !== ''">
         <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" dismissible>
@@ -19,12 +18,14 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="project">
+    <v-row v-if="chatboxPreferences">
       <v-col cols="12" class="text-left">
         <h2 class="headline">Chatbox</h2>
 
+        <b-chatbox-setup-card class="mt-5 mb-5" :preferences="chatboxPreferences" />
+
         <b-chatbox-preferences
-          :preferences="project.chatboxPreferences"
+          :preferences="chatboxPreferences"
           @updated="onChatboxPreferencesUpdated"
         />
       </v-col>
@@ -35,37 +36,33 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BChatboxPreferences from '@/ui/components/projects/chatbox_preferences.vue';
-import { Project, ChatboxPreferences } from '@/api/graphql/model';
-
+import BChatboxPreferences from '@/ui/components/inbox/chatbox_preferences.vue';
+import { ChatboxPreferences } from '@/domain/inbox/model';
+import BChatboxSetupCard from '@/ui/components/inbox/chatbox_setup_card.vue';
 
 export default VueApp.extend({
-  name: 'ProjectPreferencesInboxView',
+  name: 'BInboxChatboxView',
   components: {
     BChatboxPreferences,
+    BChatboxSetupCard,
   },
   data() {
     return {
       loading: false,
       error: '',
-      project: null as Project | null,
+      chatboxPreferences: null as ChatboxPreferences | null,
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   created() {
-    this.fetchProject();
+    this.fetchData();
   },
   methods: {
-    async fetchProject() {
+    async fetchData() {
       this.loading = true;
       this.error = '';
 
       try {
-        this.project = await this.$projectsService.fetchProjectPreferences(this.projectFullPath);
+        this.chatboxPreferences = await this.$inboxService.fetchChatboxPreferences();
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -74,7 +71,7 @@ export default VueApp.extend({
     },
     onChatboxPreferencesUpdated(preferences: ChatboxPreferences) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.project!.chatboxPreferences = preferences;
+      this.chatboxPreferences = preferences;
     },
   },
 });

@@ -5,6 +5,15 @@ export type Contact = {
   id: string;
 };
 
+export type ChatboxPreferences = {
+  color: string;
+  name: string;
+  avatar: string;
+  show_branding: boolean;
+  welcome_message: string;
+  base_url: string;
+};
+
 export type Conversation = {
   id: string;
   created_at: string;
@@ -23,6 +32,10 @@ export type ConversationWithContactsAndMessages = {
 };
 
 export type GetArchive = {
+  namespace_id: string;
+};
+
+export type GetChatboxPreferences = {
   namespace_id: string;
 };
 

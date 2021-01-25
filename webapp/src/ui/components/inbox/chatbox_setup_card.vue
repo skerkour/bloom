@@ -22,15 +22,23 @@ s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})(); <br/>
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
+import { ChatboxPreferences } from '@/domain/inbox/model';
+import { PropType } from 'vue';
 
 export default VueApp.extend({
-  name: 'BInboxSetupCard',
+  name: 'BChatboxSetupCard',
+  props: {
+    preferences: {
+      required: true,
+      type: Object as PropType<ChatboxPreferences>,
+    },
+  },
   computed: {
     namespaceId(): string {
       return this.$store.state.currentNamespaceId!;
     },
     baseUrl(): string {
-      return this.$kernelService.baseUrl();
+      return this.preferences.base_url;
     },
   },
 });

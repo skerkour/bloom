@@ -21,10 +21,12 @@
     </v-row>
 
     <v-row>
-      <v-text-field
-        label="Chatbox Name"
-        v-model="name"
-      />
+      <v-col cols="12" sm="6" xl="4">
+        <v-text-field
+          label="Chatbox Name"
+          v-model="name"
+        />
+      </v-col>
     </v-row>
 
     <v-row>
@@ -63,8 +65,9 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
+import { ChatboxPreferences } from '@/domain/inbox/model';
 import { PropType } from 'vue';
-import { ChatboxPreferences, UpdateChatboxPreferencesInput } from '../../../api/graphql/model';
+import { UpdateChatboxPreferencesInput } from '@/api/graphql/model';
 
 export default VueApp.extend({
   name: 'BChatboxPreferences',
@@ -124,8 +127,8 @@ export default VueApp.extend({
     cancel() {
       this.color = this.preferences.color;
       this.name = this.preferences.name;
-      this.branding = this.preferences.branding;
-      this.welcomeMessage = this.preferences.welcomeMessage;
+      this.branding = this.preferences.show_branding;
+      this.welcomeMessage = this.preferences.welcome_message;
     },
   },
 });

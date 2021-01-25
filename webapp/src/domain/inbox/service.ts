@@ -7,6 +7,8 @@ import { Commands, Queries } from './routes';
 import {
   GetInbox, Inbox, GetArchive, GetSpam, GetTrash, SendMessage, Message,
   ConversationWithContactsAndMessages,
+  ChatboxPreferences,
+  GetChatboxPreferences,
 } from './model';
 
 
@@ -39,6 +41,15 @@ export class InboxService {
       namespace_id: this.store.state.currentNamespaceId!,
     };
     const res: Inbox = await this.apiClient.post(Queries.archive, input);
+
+    return res;
+  }
+
+  async fetchChatboxPreferences(): Promise<ChatboxPreferences> {
+    const input: GetChatboxPreferences = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: ChatboxPreferences = await this.apiClient.post(Queries.chatboxPreferences, input);
 
     return res;
   }

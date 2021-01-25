@@ -11,7 +11,6 @@ import {
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
-import { Config } from '@/app/config';
 import { Commands, Queries } from './routes';
 import {
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, Me, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
@@ -25,17 +24,11 @@ export class KernelService {
   private apiClient: ApiClient;
   private store: Store<AppState>;
   private router: Router;
-  private _baseUrl: string;
 
-  constructor(config: Config, apiClient: ApiClient, store: Store<AppState>, router: Router) {
+  constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;
-    this._baseUrl = config.baseURL;
-  }
-
-  baseUrl(): string {
-    return this._baseUrl;
   }
 
   async completeRegistration(input: CompleteRegistration): Promise<void> {

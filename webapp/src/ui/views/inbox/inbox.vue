@@ -86,8 +86,6 @@
             indeterminate
           />
 
-          <b-inbox-setup-card class="mt-5" v-if="messages.length === 0" />
-
           <template v-for="(message, i) in messages" v-else>
             <b-message :message="message" :key="i" />
           </template>
@@ -111,7 +109,6 @@ import { VueApp } from '@/app/vue';
 import BMessage from '@/ui/components/inbox/message.vue';
 import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions } from '@/domain/inbox/service';
-import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
 import {
   ConversationWithContactsAndMessages, Message, SendMessage,
 } from '@/domain/inbox/model';
@@ -120,7 +117,6 @@ export default VueApp.extend({
   name: 'BInboxView',
   components: {
     BMessage,
-    BInboxSetupCard,
   },
   data() {
     return {

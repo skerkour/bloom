@@ -9,7 +9,8 @@ export const Commands = {
 
 export const Queries = {
   archive: `/${prefix}/${queries}/archive`,
+  trash: `/${prefix}/${queries}/trash`,
   inbox: `/${prefix}/${queries}/inbox`,
   spam: `/${prefix}/${queries}/spam`,
-  trash: `/${prefix}/${queries}/trash`,
+  chatboxPreferences: `/${prefix}/${queries}/chatbox_preferences`,
 }

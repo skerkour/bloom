@@ -3,16 +3,16 @@
     :mobile-breakpoint="this.$vuetify.breakpoint.thresholds.sm">
     <v-list nav dense class="text-left">
 
-      <v-list-item to="/inbox" color="primary">
+      <v-list-item exact link to="/inbox" color="primary">
         <v-list-item-icon>
-          <v-icon>mdi-inbox</v-icon>
+          <v-icon color="primary">mdi-inbox</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Inbox</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item to="/inbox/archive">
+      <v-list-item exact link to="/inbox/archive" color="success">
         <v-list-item-icon>
           <v-icon color="success">mdi-check</v-icon>
         </v-list-item-icon>
@@ -23,7 +23,7 @@
 
       <v-divider />
 
-      <v-list-item to="/inbox/trash">
+      <v-list-item exact link to="/inbox/trash">
         <v-list-item-icon>
           <v-icon>mdi-delete</v-icon>
         </v-list-item-icon>
@@ -32,7 +32,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item to="/inbox/spam">
+      <v-list-item exact link to="/inbox/spam">
         <v-list-item-icon>
           <v-icon>mdi-alert-octagon</v-icon>
         </v-list-item-icon>
@@ -41,7 +41,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item to="/inbox/contacts">
+      <v-list-item exact link to="/inbox/contacts">
         <v-list-item-icon>
           <v-icon>mdi-account-box</v-icon>
         </v-list-item-icon>
