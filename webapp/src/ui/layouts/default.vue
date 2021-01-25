@@ -27,22 +27,9 @@
 
       <v-spacer />
 
-      <v-menu left bottom v-if="authenticated">
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list>
-          <v-list-item to="/projects/new">
-            <v-list-item-title>New project</v-list-item-title>
-          </v-list-item>
-          <v-list-item to="/groups/new">
-            <v-list-item-title>New group</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <v-btn icon to="/apps" v-if="authenticated">
+        <v-icon>mdi-apps</v-icon>
+      </v-btn>
 
       <v-btn to="/login" text v-if="!authenticated">
         Sign In
@@ -181,7 +168,8 @@ export default VueApp.extend({
       // eslint-disable-next-line no-unneeded-ternary
       return (this.$store.state.me ? true : false)
         // eslint-disable-next-line max-len
-        && (this.projectDrawer || this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer);
+        && (this.projectDrawer || this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
+          || this.inboxDrawer);
     },
   },
   methods: {

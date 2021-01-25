@@ -13,6 +13,7 @@ import LicensingView from './licensing.vue';
 import PricingView from './pricing.vue';
 import VerifyEmailView from './verify_email.vue';
 import FeaturesView from './features.vue';
+import AppsView from './apps.vue';
 
 import LoginRoutes from './login/routes';
 import RegisterRoutes from './register/routes';
@@ -114,6 +115,11 @@ const routes: Array<RouteConfig> = [
     path: '/features/*',
     redirect: '/features',
     meta: { auth: false },
+  },
+
+  {
+    path: '/apps',
+    component: AppsView,
   },
 
   ...LoginRoutes,

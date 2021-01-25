@@ -18,17 +18,18 @@ export type CompleteTwoFaChallenge = {
 }
 
 export type Group = {
-  id: Option<string>,
-  name: string,
-  created_at: Option<string>,
-  namespace_id: Option<string>,
+  id: Option<string>;
+  avatar_url: string;
+  name: string;
+  created_at: Option<string>;
+  namespace_id: Option<string>;
 }
 
 export type Me = {
   // TODO
-  user: User,
+  user: User;
   session: Session;
-  groups: Group[],
+  groups: Group[];
 }
 
 export type Register = {
