@@ -25,7 +25,7 @@
             <v-icon left>mdi-cloud-upload</v-icon>
             Import contacts
           </v-btn>
-          <v-btn :to="`/${projectFullPath}/-/contacts/new`" color="success" depressed>
+          <v-btn to="/inbox/contacts/new" color="success" depressed>
             <v-icon left>mdi-plus</v-icon>
             New contact
           </v-btn>
@@ -85,15 +85,15 @@ email</pre>
 </template>
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
 import {
-  Project,
-  Contact, ImportContactsInput,
-} from '@/api/graphql/model';
-import BContactsList from '@/ui/components/support/contacts_list.vue';
+  Contact, ImportContacts,
+} from '@/domain/inbox/model';
+import BContactsList from '@/ui/components/inbox/contacts_list.vue';
 
 export default VueApp.extend({
-  name: 'ProjectContactsView',
+  name: 'BContactsView',
   components: {
     BContactsList,
   },
@@ -101,7 +101,7 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
-      project: null as Project | null,
+      contacts: [] as Contact[],
       showImportDialog: false,
       contactsToImport: '',
       importContactsLabel: `name,email
@@ -109,9 +109,6 @@ name,email`,
     };
   },
   computed: {
-    contacts(): Contact[] {
-      return this.project?.contacts ?? [];
-    },
     projectFullPath(): string {
       return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
     },
@@ -125,7 +122,7 @@ name,email`,
       this.error = '';
 
       try {
-        this.project = await this.$growthService.fetchContacts(this.projectFullPath);
+        this.contacts = await this.$inboxService.fetchContacts();
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -135,18 +132,17 @@ name,email`,
     async importContacts(): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: ImportContactsInput = {
-        projectFullPath: this.projectFullPath,
-        contacts: this.contactsToImport,
+      const input: ImportContacts = {
+        namespace_id: this.$store.state.currentNamespaceId!,
+        contacts_csv: this.contactsToImport,
+        list_id: null,
       };
 
       try {
-        const contacts = await this.$growthService.importContacts(input);
+        const contacts = await this.$inboxService.importContacts(input);
         const contactsSet = new Set(contacts.map((c: Contact) => c.id));
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, max-len
-        const oldContacts = this.project!.contacts.filter((contact: Contact) => !contactsSet.has(contact.id));
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.project!.contacts = oldContacts.concat(contacts);
+        const oldContacts = this.contacts.filter((contact) => !contactsSet.has(contact.id));
+        this.contacts = oldContacts.concat(contacts);
         this.closeImportDialog();
       } catch (err) {
         this.error = err.message;

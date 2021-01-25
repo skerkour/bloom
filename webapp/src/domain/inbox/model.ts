@@ -3,6 +3,27 @@ import { Option } from '../kernel/model';
 
 export type Contact = {
   id: string;
+  created_at: string;
+  name: string;
+  birthday: Option<string>,
+  email: string;
+  pgp_key: string;
+  phone: string;
+  address: string;
+  website: string;
+  twitter: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  skype: string;
+  telegram: string;
+  bloom: string;
+  notes: string;
+  country: string;
+  country_code: string;
+  plan: string;
+  user_id: string;
+  avatar_url: string;
 };
 
 export type ChatboxPreferences = {
@@ -35,6 +56,14 @@ export type GetArchive = {
   namespace_id: string;
 };
 
+export type GetContact = {
+  contact_id: string;
+};
+
+export type GetContacts = {
+  namespace_id: string;
+};
+
 export type GetChatboxPreferences = {
   namespace_id: string;
 };
@@ -49,6 +78,13 @@ export type GetSpam = {
 
 export type GetTrash = {
   namespace_id: string;
+};
+
+
+export type ImportContacts = {
+  namespace_id: string;
+  list_id: Option<string>;
+  contacts_csv: string;
 };
 
 export type Inbox = {

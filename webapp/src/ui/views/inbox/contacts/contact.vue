@@ -18,8 +18,9 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="project">
-      <b-contact :projectLabels="labels" :projectLists="lists"/>
+    <v-row v-if="contact">
+      <b-contact :contact="contact" @updated="onContactUpdated"
+        :projectLabels="labels" :projectLists="lists" />
     </v-row>
   </v-container>
 </template>
@@ -27,28 +28,25 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BContact from '@/ui/components/support/contact.vue';
-import { Project, Label, List } from '@/api/graphql/model';
+import { Contact, Label, List } from '@/api/graphql/model';
+import BContact from '@/ui/components/inbox/contact.vue';
+
 
 export default VueApp.extend({
-  name: 'ProjectNewContactView',
+  name: 'ProjectContactView',
   components: {
     BContact,
   },
   data() {
     return {
-      error: '',
       loading: false,
-      project: null as Project | null,
+      error: '',
+      contact: null as Contact | null,
+      labels: [] as Label[],
+      lists: [] as List[],
     };
   },
   computed: {
-    labels(): Label[] {
-      return this.project ? this.project.labels : [];
-    },
-    lists(): List[] {
-      return this.project ? this.project.lists : [];
-    },
     projectFullPath(): string {
       return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
     },
@@ -62,12 +60,21 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$collaborationService.fetchLabelsAndLists(this.projectFullPath);
+        const res = await this.$growthService.fetchContactWithLabelsAndLists(
+          this.projectFullPath,
+          this.$route.params.contactId,
+        );
+        this.labels = res.project.labels;
+        this.lists = res.project.lists;
+        this.contact = res.contact;
       } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
       }
+    },
+    onContactUpdated(contact: Contact) {
+      this.contact = contact;
     },
   },
 });

@@ -9,6 +9,10 @@ import {
   ConversationWithContactsAndMessages,
   ChatboxPreferences,
   GetChatboxPreferences,
+  Contact,
+  GetContacts,
+  GetContact,
+  ImportContacts,
 } from './model';
 
 
@@ -50,6 +54,21 @@ export class InboxService {
       namespace_id: this.store.state.currentNamespaceId!,
     };
     const res: ChatboxPreferences = await this.apiClient.post(Queries.chatboxPreferences, input);
+
+    return res;
+  }
+
+  async fetchContact(input: GetContact): Promise<Contact> {
+    const res: Contact = await this.apiClient.post(Queries.contact, input);
+
+    return res;
+  }
+
+  async fetchContacts(): Promise<Contact[]> {
+    const input: GetContacts = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: Contact[] = await this.apiClient.post(Queries.contacts, input);
 
     return res;
   }
@@ -101,6 +120,12 @@ export class InboxService {
       namespace_id: this.store.state.currentNamespaceId!,
     };
     const res: Inbox = await this.apiClient.post(Queries.trash, input);
+
+    return res;
+  }
+
+  async importContacts(input: ImportContacts): Promise<Contact[]> {
+    const res: Contact[] = await this.apiClient.post(Commands.importContacts, input);
 
     return res;
   }

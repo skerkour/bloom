@@ -61,6 +61,15 @@
         </v-list-item-content>
       </v-list-item>
 
+      <v-list-item exact link to="/inbox/newsletter">
+        <v-list-item-icon>
+          <v-icon>mdi-feather</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Newsletter</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
     </v-list>
   </v-navigation-drawer>
 </template>

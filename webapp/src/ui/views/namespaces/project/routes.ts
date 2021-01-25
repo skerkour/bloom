@@ -1,9 +1,5 @@
 import { RouteConfig } from 'vue-router';
 
-const Contacts = () => import(/* webpackChunkName: "chunk-projects" */ './contacts/contacts.vue');
-const Contact = () => import(/* webpackChunkName: "chunk-projects" */ './contacts/contact.vue');
-const NewContact = () => import(/* webpackChunkName: "chunk-projects" */ './contacts/new.vue');
-
 const Tickets = () => import(/* webpackChunkName: "chunk-projects" */ './tickets/tickets.vue');
 const NewTicket = () => import(/* webpackChunkName: "chunk-projects" */ './tickets/new.vue');
 const Ticket = () => import(/* webpackChunkName: "chunk-projects" */ './tickets/ticket.vue');
@@ -77,28 +73,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/milestones/:milestoneId',
     component: Milestone,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/contacts',
-    component: Contacts,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/contacts/new',
-    component: NewContact,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/contacts/:contactId',
-    component: Contact,
     meta: {
       projectDrawer: true,
     },
