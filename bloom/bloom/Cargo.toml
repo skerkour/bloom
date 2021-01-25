@@ -33,6 +33,7 @@ inbox = { path = "../inbox" }
 actix-web = "3"
 clap = "2"
 serde = { version = "1", features = ["derive"] }
+sentry = "0.21"
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.3"

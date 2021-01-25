@@ -38,3 +38,8 @@ fn init_logger(config: &Config) {
         .filter_module("sqlx::query", LevelFilter::Error)
         .init();
 }
+
+// need by sentry sdk...
+fn string_to_static_str(s: String) -> &'static str {
+    Box::leak(s.into_boxed_str())
+}
