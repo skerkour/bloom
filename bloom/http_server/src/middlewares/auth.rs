@@ -96,9 +96,9 @@ impl TryFrom<String> for AuthorizationToken {
             )));
         }
 
-        let token_type = match parts[0].as_str() {
+        let token_type = match parts[0].to_lowercase().as_str() {
             "basic" => AuthorizationTokenType::Basic,
-            "anonnymous" => AuthorizationTokenType::Anonymous,
+            "anonymous" => AuthorizationTokenType::Anonymous,
             _ => {
                 return Err(kernelError::InvalidArgument(String::from(
                     "Invalid Authorization token",

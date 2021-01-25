@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         session_id: Uuid,
     ) -> Result<entities::Session, Error> {
-        const QUERY: &str = "SELECT * FROM kernel_session WHERE id = $1";
+        const QUERY: &str = "SELECT * FROM kernel_sessions WHERE id = $1";
 
         match sqlx::query_as::<_, entities::Session>(QUERY)
             .bind(session_id)
