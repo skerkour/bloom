@@ -111,28 +111,7 @@
       <b-footer v-if="showFooter" />
     </v-main>
 
-    <v-bottom-navigation fixed v-if="authenticated">
-      <v-btn to="/inbox">
-        <span>Inbox</span>
-        <v-icon>mdi-inbox</v-icon>
-      </v-btn>
-
-      <v-btn to="/files">
-        <span>Files</span>
-        <v-icon>mdi-folder</v-icon>
-      </v-btn>
-
-      <v-btn to="/analytics">
-        <span>Analytics</span>
-        <v-icon>mdi-chart-line</v-icon>
-      </v-btn>
-
-      <v-btn to="/apps">
-        <span>All</span>
-        <v-icon>mdi-apps</v-icon>
-      </v-btn>
-
-    </v-bottom-navigation>
+    <b-bottom-nav-bar />
   </v-app>
 </template>
 
@@ -145,6 +124,7 @@ import BFooter from '@/ui/components/kernel/footer.vue';
 import BToolsDrawer from '@/ui/components/tools/drawer.vue';
 import BAdminDrawer from '@/ui/components/admin/drawer.vue';
 import BInboxDrawer from '@/ui/components/inbox/drawer.vue';
+import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';
 import { Mutation } from '@/app/store';
 
 export default VueApp.extend({
@@ -157,6 +137,7 @@ export default VueApp.extend({
     BToolsDrawer,
     BAdminDrawer,
     BInboxDrawer,
+    BBottomNavBar,
   },
   computed: {
     darkMode(): boolean {

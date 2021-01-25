@@ -6,7 +6,7 @@ import { AppState } from '@/app/store';
 import { Commands, Queries } from './routes';
 import {
   GetInbox, Inbox, GetArchive, GetSpam, GetTrash, SendMessage, Message,
-  ConversationWithConatctsAndMessages,
+  ConversationWithContactsAndMessages,
 } from './model';
 
 
@@ -15,7 +15,7 @@ const DEFAULT_MESSAGES_TIMEOUT = 2000; // 2 secs
 
 export interface InboxSubscriptionOptions {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
- onData: (data: ConversationWithConatctsAndMessages) => void;
+ onData: (data: ConversationWithContactsAndMessages) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
  onError: (err: any) => void;
  onDisconnected?: () => void;

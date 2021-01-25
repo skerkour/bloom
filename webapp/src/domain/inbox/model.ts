@@ -16,7 +16,7 @@ export type Conversation = {
   description: string;
 };
 
-export type ConversationWithConatctsAndMessages = {
+export type ConversationWithContactsAndMessages = {
   conversation: Conversation,
   contacts: Contact[],
   messages: Message[],
@@ -39,7 +39,7 @@ export type GetTrash = {
 };
 
 export type Inbox = {
-  conversations: ConversationWithConatctsAndMessages[];
+  conversations: ConversationWithContactsAndMessages[];
 };
 
 export type Message = {

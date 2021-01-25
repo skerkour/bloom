@@ -113,7 +113,7 @@ import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions } from '@/domain/inbox/service';
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
 import {
-  ConversationWithConatctsAndMessages, Message, SendMessage,
+  ConversationWithContactsAndMessages, Message, SendMessage,
 } from '@/domain/inbox/model';
 
 export default VueApp.extend({
@@ -128,10 +128,10 @@ export default VueApp.extend({
       error: '',
       selected: 'All',
       selectedConversationIndex: 0,
-      selectedConversation: null as ConversationWithConatctsAndMessages | null,
+      selectedConversation: null as ConversationWithContactsAndMessages | null,
       message: '',
       messages: [] as Message[],
-      conversations: [] as ConversationWithConatctsAndMessages[],
+      conversations: [] as ConversationWithContactsAndMessages[],
       seenMessages: new Set<string>(),
       seenConversations: new Set<string>(),
       baseUrl: '',
@@ -212,7 +212,7 @@ export default VueApp.extend({
         this.loading = false;
       }
     },
-    onConversation(conversation: ConversationWithConatctsAndMessages): void {
+    onConversation(conversation: ConversationWithContactsAndMessages): void {
       if (!this.seenConversations.has(conversation.conversation.id)) {
         // new conversation
         conversation.messages.forEach((message) => this.seenMessages.add(message.id));
