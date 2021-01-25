@@ -1,7 +1,4 @@
-use crate::{
-    api::kernel::model::{input, Group},
-    ServerContext,
-};
+use crate::{api::kernel::model, ServerContext};
 use actix_web::web;
 use kernel::{http::api, service, Actor};
 use std::sync::Arc;
@@ -9,9 +6,9 @@ use web::Json;
 
 pub async fn create_group(
     ctx: web::Data<Arc<ServerContext>>,
-    input: Json<input::CreateGroup>,
+    input: Json<model::input::CreateGroup>,
     actor: Actor,
-) -> Result<api::Response<Group>, kernel::Error> {
+) -> Result<api::Response<model::Group>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::CreateGroupInput {
         name: input.name,
@@ -20,5 +17,5 @@ pub async fn create_group(
     };
     let group = ctx.kernel_service.create_group(actor, service_input).await?;
 
-    Ok(api::Response::ok(group.into()))
+    Ok(api::Response::ok(model::convert_group(group, true)))
 }

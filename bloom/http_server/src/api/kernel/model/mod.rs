@@ -3,21 +3,48 @@ use serde::{Deserialize, Serialize};
 
 pub mod input;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct User {
-    id: Id,
-    created_at: Time,
-    name: String,
+pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User {
+    let mut ret = User {
+        id: None,
+        created_at: None,
+        name: user.name,
+        username: user.username,
+        namespace_id: None,
+    };
+
+    if private_details {
+        ret.id = Some(user.id);
+        ret.created_at = Some(user.created_at);
+        ret.namespace_id = Some(user.namespace_id);
+    }
+
+    ret
 }
 
-impl From<kernel::entities::User> for User {
-    fn from(user: kernel::entities::User) -> Self {
-        User {
-            id: user.id,
-            created_at: user.created_at,
-            name: user.name,
-        }
+pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> Group {
+    let mut ret = Group {
+        id: None,
+        created_at: None,
+        namespace_id: None,
+        name: group.name,
+    };
+
+    if private_details {
+        ret.id = Some(group.id);
+        ret.created_at = Some(group.created_at);
+        ret.namespace_id = Some(group.namespace_id);
     }
+
+    ret
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct User {
+    id: Option<Id>,
+    created_at: Option<Time>,
+    name: String,
+    username: String,
+    namespace_id: Option<Id>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -36,8 +63,8 @@ impl From<kernel::service::Me> for Me {
     fn from(me: kernel::service::Me) -> Self {
         Me {
             session: me.session.into(),
-            user: me.user.into(),
-            groups: me.groups.into_iter().map(Into::into).collect(),
+            user: convert_user(me.user, true),
+            groups: me.groups.into_iter().map(|g| convert_group(g, true)).collect(),
         }
     }
 }
@@ -65,14 +92,14 @@ pub struct SignedIn {
 }
 
 impl From<kernel::service::Registered> for SignedIn {
-    fn from(item: kernel::service::Registered) -> Self {
+    fn from(input: kernel::service::Registered) -> Self {
         SignedIn {
             me: Some(Me {
-                user: item.user.into(),
-                session: item.session.into(),
+                user: convert_user(input.user, true),
+                session: input.session.into(),
                 groups: Vec::new(),
             }),
-            token: Some(item.token),
+            token: Some(input.token),
             two_fa_method: None,
         }
     }
@@ -148,17 +175,10 @@ pub struct SetupTwoFa {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Group {
-    pub id: Id,
-    pub created_at: Time,
-}
-
-impl From<kernel::entities::Group> for Group {
-    fn from(group: kernel::entities::Group) -> Self {
-        Group {
-            id: group.id,
-            created_at: group.created_at,
-        }
-    }
+    pub id: Option<Id>,
+    pub created_at: Option<Time>,
+    pub namespace_id: Option<Id>,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
