@@ -6,7 +6,7 @@ use crate::{
 };
 use kernel::Actor;
 use std::collections::HashMap;
-use stdx::{chrono::Utc, csv, ulid::Ulid, uuid::Uuid};
+use stdx::{chrono::Utc, ulid::Ulid, uuid::Uuid};
 
 impl Service {
     // TODO: check if list/contact relation exists
@@ -40,10 +40,22 @@ impl Service {
             return Err(Error::ContactsCsvTooLarge.into());
         }
 
-        let mut imported_contacts: Vec<ImportedContact> = Vec::with_capacity(500);
-        let mut csv_reader = csv::Reader::from_reader(input.contacts_csv.as_bytes());
-        for record in csv_reader.deserialize() {
-            let imported_contact: ImportedContact = record?;
+        // manually parse CSV...
+        let lines: Vec<&str> = input.contacts_csv.split('\n').collect();
+        let mut imported_contacts: Vec<ImportedContact> = Vec::with_capacity(lines.len());
+        for line in lines {
+            let parts: Vec<&str> = line.split(',').collect();
+            let imported_contact = match parts.len() {
+                1 => Ok(ImportedContact {
+                    name: String::new(),
+                    email: parts[0].to_string(),
+                }),
+                2 => Ok(ImportedContact {
+                    name: parts[0].to_string(),
+                    email: parts[1].to_string(),
+                }),
+                _ => Err(Error::ContactsCsvNotValid),
+            }?;
             imported_contacts.push(imported_contact);
         }
 

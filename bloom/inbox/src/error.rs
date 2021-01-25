@@ -5,6 +5,7 @@ pub enum Error {
     // Contacts
     ContactNotFound,
     ContactsCsvTooLarge,
+    ContactsCsvNotValid,
     ContactNameIsTooLong,
     ContactNameIsNotValid,
     ContactBirthdayCantBeInTheFuture,
@@ -77,6 +78,7 @@ impl std::convert::From<Error> for kernel::Error {
             // Contacts
             Error::ContactNotFound => kernel::Error::NotFound(String::from("Contact not found.")),
             Error::ContactsCsvTooLarge => kernel::Error::InvalidArgument(String::from("contacts CSV too large.")),
+            Error::ContactsCsvNotValid => kernel::Error::InvalidArgument(String::from("contacts CSV not valid.")),
             Error::ContactNameIsTooLong => kernel::Error::InvalidArgument(String::from("Name is too long.")),
             Error::ContactNameIsNotValid => kernel::Error::InvalidArgument(String::from("Name is not valid.")),
             Error::ContactBirthdayCantBeInTheFuture => {
