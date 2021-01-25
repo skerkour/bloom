@@ -29,7 +29,7 @@ pub struct Contact {
     pub country_code: String,
     pub plan: String,
     pub user_id: String,
-    pub avatar: String,
+    pub avatar_url: String,
 }
 
 impl From<inbox::entities::Contact> for Contact {
@@ -56,7 +56,7 @@ impl From<inbox::entities::Contact> for Contact {
             country_code: contact.country_code,
             plan: contact.plan,
             user_id: contact.user_id,
-            avatar: String::from(consts::DEFAULT_AVATAR), // TODO
+            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
         }
     }
 }
