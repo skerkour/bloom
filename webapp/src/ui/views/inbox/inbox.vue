@@ -128,7 +128,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BMessage from '@/ui/components/support/message.vue';
+import BMessage from '@/ui/components/inbox/message.vue';
 import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions } from '@/domain/inbox/service';
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';

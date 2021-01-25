@@ -5,6 +5,7 @@
     <b-user-preferences-drawer v-if="userPreferencesDrawer" />
     <b-tools-drawer v-if="toolsDrawer" />
     <b-admin-drawer v-if="adminDrawer" />
+    <b-inbox-drawer v-if="inboxDrawer" />
 
     <v-app-bar app color="#24292e" dark elevation="0" dense fixed clipped-left>
       <v-app-bar-nav-icon  @click.stop="toggleDrawer" v-if="showDrawerButton"/>
@@ -143,6 +144,7 @@ import BUserPreferencesDrawer from '@/ui/components/kernel/preferences_drawer.vu
 import BFooter from '@/ui/components/kernel/footer.vue';
 import BToolsDrawer from '@/ui/components/tools/drawer.vue';
 import BAdminDrawer from '@/ui/components/admin/drawer.vue';
+import BInboxDrawer from '@/ui/components/inbox/drawer.vue';
 import { Mutation } from '@/app/store';
 
 export default VueApp.extend({
@@ -154,6 +156,7 @@ export default VueApp.extend({
     BFooter,
     BToolsDrawer,
     BAdminDrawer,
+    BInboxDrawer,
   },
   computed: {
     darkMode(): boolean {
@@ -186,6 +189,9 @@ export default VueApp.extend({
     },
     adminDrawer(): boolean {
       return this.$route.path.startsWith('/admin');
+    },
+    inboxDrawer(): boolean {
+      return this.$route.path.startsWith('/inbox');
     },
     showFooter(): boolean {
       return this.$route.meta.auth === false && this.$route.path !== '/';
