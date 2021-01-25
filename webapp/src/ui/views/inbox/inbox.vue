@@ -130,7 +130,7 @@
 import { VueApp } from '@/app/vue';
 import BMessage from '@/ui/components/support/message.vue';
 import { calendar } from '@/app/filters';
-import { InboxSubscriptionOptions } from '@/domain/support/service';
+import { InboxSubscriptionOptions } from '@/domain/inbox/service';
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
 import {
   ConversationWithConatctsAndMessages, GetInbox, Message, SendMessage,
@@ -173,7 +173,7 @@ export default VueApp.extend({
     this.subscribeToMessages();
   },
   beforeDestroy() {
-    this.$supportService.unsubscribeFromInboxMessages();
+    this.$inboxService.unsubscribeFromInbox();
   },
   methods: {
     calendar,
@@ -213,11 +213,11 @@ export default VueApp.extend({
     },
     subscribeToMessages() {
       const options: InboxSubscriptionOptions = {
-        projectFullPath: this.projectFullPath,
+        namespace_id: '', // TODO
         onData: this.onConversation,
         onError: console.error,
       };
-      this.$supportService.subscribeToInboxMessages(options);
+      this.$inboxService.subscribeToInbox(options);
     },
     async sendMessage() {
       if (this.message.trim() === '') {
