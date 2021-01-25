@@ -1,5 +1,5 @@
 <template>
-  <b-inbox v-if="$store.state.me" />
+  <b-redirect v-if="$store.state.me" :to="'/inbox'"/>
   <b-landing v-else />
 </template>
 
@@ -7,14 +7,14 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import BLanding from '@/ui/components/kernel/landing.vue';
-import BInbox from './inbox/inbox.vue';
+import BRedirect from '@/ui/components/kernel/redirect.vue';
 
 
 export default VueApp.extend({
   name: 'BIndexView',
   components: {
     BLanding,
-    BInbox,
+    BRedirect,
   },
 });
 </script>

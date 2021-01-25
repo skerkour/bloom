@@ -35,7 +35,6 @@ const NewMilestone = () => import(/* webpackChunkName: "chunk-projects" */ './mi
 const Milestone = () => import(/* webpackChunkName: "chunk-projects" */ './milestones/milestone.vue');
 
 const Preferences = () => import(/* webpackChunkName: "chunk-projects-preferences" */ './preferences/preferences.vue');
-const PreferencesInbox = () => import(/* webpackChunkName: "chunk-projects-preferences" */ './preferences/inbox.vue');
 
 
 const routes: Array<RouteConfig> = [
@@ -226,13 +225,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/preferences',
     component: Preferences,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/preferences/inbox',
-    component: PreferencesInbox,
     meta: {
       projectDrawer: true,
     },

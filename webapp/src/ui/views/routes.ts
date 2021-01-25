@@ -12,16 +12,17 @@ import FaqView from './faq.vue';
 import LicensingView from './licensing.vue';
 import PricingView from './pricing.vue';
 import VerifyEmailView from './verify_email.vue';
+import FeaturesView from './features.vue';
 
 import LoginRoutes from './login/routes';
 import RegisterRoutes from './register/routes';
-import FeaturesRoutes from './features/routes';
 import PreferencesRoutes from './preferences/routes';
 import GroupsRoutes from './groups/routes';
 import ProjectsRoutes from './projects/routes';
 import NamespacesRoutes from './namespaces/routes';
 import ToolsRoutes from './tools/routes';
 import AdminRoutes from './admin/routes';
+import InboxRoutes from './inbox/routes';
 
 const StatusView = () => import(/* webpackChunkName: "chunk-projects-operations" */ './status.vue');
 
@@ -103,14 +104,24 @@ const routes: Array<RouteConfig> = [
     component: PricingView,
     meta: { auth: false },
   },
+  {
+    path: '/features',
+    component: FeaturesView,
+    meta: { auth: false },
+  },
+
+  {
+    path: '/features/*',
+    redirect: '/features',
+    meta: { auth: false },
+  },
 
   ...LoginRoutes,
   ...AdminRoutes,
   ...RegisterRoutes,
-  ...FeaturesRoutes,
   ...PreferencesRoutes,
   ...ToolsRoutes,
-
+  ...InboxRoutes,
   ...GroupsRoutes,
   ...ProjectsRoutes,
   ...NamespacesRoutes,
