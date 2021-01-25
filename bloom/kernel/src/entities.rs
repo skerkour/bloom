@@ -176,13 +176,6 @@ pub struct GroupInvitation {
     pub invitee_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone)]
-pub struct SignedStorageUploadUrl {
-    pub url: String,
-    pub tmp_storage_key: String,
-    pub size: u64,
-}
-
 #[derive(sqlx::FromRow, Debug, Clone)]
 pub struct Upload {
     pub id: uuid::Uuid,

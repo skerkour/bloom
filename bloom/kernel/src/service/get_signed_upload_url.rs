@@ -1,14 +1,14 @@
-use super::{GetSignedStorageUploadUrlInput, SignedStorageUrl};
+use super::{GetSignedUploadUrlInput, SignedUploadUrl};
 use crate::{entities::Upload, Actor, Error, Service};
 use stdx::{chrono::Utc, uuid::Uuid};
 
 impl Service {
     /// Create an entity that can be retrieved later with the size, the user and the tmp_key
-    pub async fn get_signed_storage_url(
+    pub async fn get_signed_upload_url(
         &self,
         actor: Actor,
-        input: GetSignedStorageUploadUrlInput,
-    ) -> Result<SignedStorageUrl, Error> {
+        input: GetSignedUploadUrlInput,
+    ) -> Result<SignedUploadUrl, Error> {
         let actor = self.current_user(actor)?;
 
         self.validate_upload_size(input.filesize)?;
@@ -34,7 +34,7 @@ impl Service {
             .get_presigned_upload_url(&storage_key, input.filesize)
             .await;
 
-        Ok(SignedStorageUrl {
+        Ok(SignedUploadUrl {
             url,
             upload_id: upload.id,
         })

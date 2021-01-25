@@ -43,7 +43,7 @@ mod dispatch_delete_old_data;
 mod find_group_and_membership;
 mod find_namespace_and_membership;
 mod find_upload;
-mod get_signed_storage_url;
+mod get_signed_upload_url;
 mod invite_people_in_group;
 mod me;
 mod new_session;
@@ -312,7 +312,7 @@ pub struct QuitGroupInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct GetSignedStorageUploadUrlInput {
+pub struct GetSignedUploadUrlInput {
     pub namespace_id: Uuid,
     pub filesize: u64,
 }
@@ -361,7 +361,7 @@ pub struct DecodedSessionToken {
 // }
 
 #[derive(Debug, Clone)]
-pub struct SignedStorageUrl {
+pub struct SignedUploadUrl {
     pub url: String,
     pub upload_id: Uuid,
 }

@@ -135,8 +135,8 @@ pub async fn run(
                             .service(
                                 web::scope("/queries")
                                     .service(
-                                        web::resource("/signed_storage_url")
-                                            .route(web::post().to(api::kernel::queries::signed_storage_url)),
+                                        web::resource("/signed_upload_url")
+                                            .route(web::post().to(api::kernel::queries::signed_upload_url)),
                                     )
                                     .service(web::resource("/me").route(web::post().to(api::kernel::queries::me))),
                             ),
