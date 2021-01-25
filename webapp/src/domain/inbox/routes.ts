@@ -8,5 +8,8 @@ export const Commands = {
 }
 
 export const Queries = {
+  archive: `/${prefix}/${queries}/archive`,
   inbox: `/${prefix}/${queries}/inbox`,
+  spam: `/${prefix}/${queries}/spam`,
+  trash: `/${prefix}/${queries}/trash`,
 }

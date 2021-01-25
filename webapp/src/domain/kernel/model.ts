@@ -17,8 +17,10 @@ export type CompleteTwoFaChallenge = {
 }
 
 export type Group = {
-  id: string,
-  created_at: string,
+  id: Option<string>,
+  name: string,
+  created_at: Option<string>,
+  namespace_id: Option<string>,
 }
 
 export type Me = {
@@ -57,7 +59,9 @@ export type SignInStarted = {
 }
 
 export type User = {
-  username: string,
-  name: string,
-  avatar_url: string,
+  id: Option<string>;
+  username: string;
+  name: string;
+  avatar_url: string;
+  namespace_id: Option<string>;
 }

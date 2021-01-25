@@ -18,6 +18,7 @@ export interface AppState {
   pendingSessionId: string | null;
   namespaceIsGroup: boolean;
   drawer: boolean;
+  currentNamespaceId: string | null,
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [state: string]: any;
@@ -31,6 +32,7 @@ export enum Mutation {
   SET_PENDING_SESSION_ID = 'SET_PENDING_SESSION_ID',
   SET_NAMESPACE_IS_GROUP = 'SET_NAMESPACE_IS_GROUP',
   UPDATE_MY_PROFILE = 'UPDATE_MY_PROFILE',
+  SET_CURRENT_NAMESPACE_ID = 'SET_CURRENT_NAMESPACE_ID',
   SET_DRAWER = 'SET_DRAWER',
 }
 
@@ -45,6 +47,7 @@ function defaultAppState(): AppState {
     namespaceIsGroup: false,
     drawer: true,
     groups: [],
+    currentNamespaceId: null,
   };
 }
 
@@ -75,6 +78,7 @@ export function newStore(storage: Storage): Store<AppState> {
         state.sessionToken = params.token;
         state.me = params.me.user;
         state.groups = params.me.groups;
+        state.currentNamespaceId = params.me.user.namespace_id;
 
         // storage.set(storage.keyMe, state.me);
         storage.set(storage.keyToken, state.sessionToken);
@@ -108,6 +112,9 @@ export function newStore(storage: Storage): Store<AppState> {
       },
       [Mutation.SET_DRAWER](state: AppState, value: boolean) {
         state.drawer = value;
+      },
+      [Mutation.SET_CURRENT_NAMESPACE_ID](state: AppState, namespaceId: string) {
+        state.currentNamespaceId = namespaceId;
       },
     },
     actions: {

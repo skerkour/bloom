@@ -133,7 +133,7 @@ import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions } from '@/domain/inbox/service';
 import BInboxSetupCard from '@/ui/components/support/inbox_setup_card.vue';
 import {
-  ConversationWithConatctsAndMessages, GetInbox, Message, SendMessage,
+  ConversationWithConatctsAndMessages, Message, SendMessage,
 } from '@/domain/inbox/model';
 
 export default VueApp.extend({
@@ -180,12 +180,9 @@ export default VueApp.extend({
     async fetchData() {
       this.loading = true;
       this.error = '';
-      const input: GetInbox = {
-        namespace_id: '', // TODO
-      };
 
       try {
-        const inbox = await this.$inboxService.fetchInbox(input);
+        const inbox = await this.$inboxService.fetchInbox();
         // const projectAndBaseUrl: ProjectAndBaseUrl = await
         // this.$supportService.findProjectConversationsWithMessages(this.projectFullPath);
 
@@ -213,7 +210,6 @@ export default VueApp.extend({
     },
     subscribeToMessages() {
       const options: InboxSubscriptionOptions = {
-        namespace_id: '', // TODO
         onData: this.onConversation,
         onError: console.error,
       };

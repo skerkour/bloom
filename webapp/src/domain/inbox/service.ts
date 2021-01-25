@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable class-methods-use-this */
 import ApiClient from '@/api/client';
 import { Store } from 'vuex';
@@ -13,8 +14,6 @@ const DEFAULT_MESSAGES_TIMEOUT = 2000; // 2 secs
 
 
 export interface InboxSubscriptionOptions {
-  // eslint-disable-next-line camelcase
-  namespace_id: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
  onData: (data: ConversationWithConatctsAndMessages) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,13 +34,19 @@ export class InboxService {
     this.subscriptionTimeout = DEFAULT_MESSAGES_TIMEOUT;
   }
 
-  async fetchArchive(input: GetArchive): Promise<Inbox> {
-    const res: Inbox = await this.apiClient.post(Queries.inbox, input);
+  async fetchArchive(): Promise<Inbox> {
+    const input: GetArchive = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: Inbox = await this.apiClient.post(Queries.archive, input);
 
     return res;
   }
 
-  async fetchInbox(input: GetInbox): Promise<Inbox> {
+  async fetchInbox(): Promise<Inbox> {
+    const input: GetInbox = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
     const res: Inbox = await this.apiClient.post(Queries.inbox, input);
 
     return res;
@@ -53,10 +58,7 @@ export class InboxService {
     }
 
     try {
-      const input: GetInbox = {
-        namespace_id: options.namespace_id,
-      };
-      const inbox = await this.fetchInbox(input);
+      const inbox = await this.fetchInbox();
       inbox.conversations.forEach((conversation) => {
         // conversation.messages.forEach((message: InboxMessage) => {
         options?.onData(conversation);
@@ -74,14 +76,20 @@ export class InboxService {
     }
   }
 
-  async fetchSpam(input: GetSpam): Promise<Inbox> {
-    const res: Inbox = await this.apiClient.post(Queries.inbox, input);
+  async fetchSpam(): Promise<Inbox> {
+    const input: GetSpam = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: Inbox = await this.apiClient.post(Queries.spam, input);
 
     return res;
   }
 
-  async fetchTrash(input: GetTrash): Promise<Inbox> {
-    const res: Inbox = await this.apiClient.post(Queries.inbox, input);
+  async fetchTrash(): Promise<Inbox> {
+    const input: GetTrash = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: Inbox = await this.apiClient.post(Queries.trash, input);
 
     return res;
   }
