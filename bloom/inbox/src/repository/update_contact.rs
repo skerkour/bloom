@@ -5,7 +5,7 @@ use stdx::{log::error, sqlx};
 
 impl Repository {
     pub async fn update_contact<'c, C: Queryer<'c>>(&self, db: C, contact: &Contact) -> Result<(), Error> {
-        const QUERY: &str = "UPDATE inbox_newsletter_messages SET
+        const QUERY: &str = "UPDATE inbox_contacts SET
                 updated_at = $1, name = $2, birthday = $3, email = $4, pgp_key = $5, phone = $6, address = $7,
                 website = $8, twitter = $9, instagram = $10, facebook = $11, linkedin = $12, skype = $13, telegram = $14,
                 bloom = $15, notes = $16, country = $17, country_code = $18, plan = $19, user_id = $20, avatar_storage_key = $21

@@ -16,7 +16,9 @@ impl Service {
 
         // clean and validate input
         let email = input.email.trim().to_lowercase();
-        self.kernel_service.validate_email(&email, false)?;
+        if !email.is_empty() {
+            self.kernel_service.validate_email(&email, false)?;
+        }
 
         let name = input.name.trim().to_string();
         self.validate_contact_name(&name)?;
