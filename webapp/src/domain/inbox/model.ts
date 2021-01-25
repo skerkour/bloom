@@ -26,6 +26,27 @@ export type Contact = {
   avatar_url: string;
 };
 
+export type CreateContact = {
+  namespace_id: string;
+  name: string;
+  birthday: Option<string>;
+  email: string;
+  pgp_key: string;
+  phone: string;
+  address: string;
+  website: string;
+  twitter: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  skype: string;
+  telegram: string;
+  bloom: string;
+  notes: string;
+  plan: string;
+  user_id: string;
+};
+
 export type ChatboxPreferences = {
   color: string;
   name: string;
@@ -52,6 +73,10 @@ export type ConversationWithContactsAndMessages = {
   messages: Message[],
 };
 
+export type DeleteContact = {
+  contact_id: string;
+};
+
 export type GetArchive = {
   namespace_id: string;
 };
@@ -72,6 +97,14 @@ export type GetInbox = {
   namespace_id: string;
 };
 
+export type GetNewsletterList = {
+  list_id: string;
+};
+
+export type GetNewsletterLists = {
+  namespace_id: string;
+};
+
 export type GetSpam = {
   namespace_id: string;
 };
@@ -79,7 +112,6 @@ export type GetSpam = {
 export type GetTrash = {
   namespace_id: string;
 };
-
 
 export type ImportContacts = {
   namespace_id: string;
@@ -96,6 +128,13 @@ export type Message = {
   conversation_id: string;
 };
 
+export type NewsletterList = {
+  id: string;
+  created_at: string;
+  name: string;
+  description: string;
+};
+
 export type SendMessage = {
   conversation_id: string;
   body: string;
@@ -107,4 +146,25 @@ export type UpdateChatboxPreferences = {
   name: string;
   show_branding: boolean;
   welcome_message: string;
+};
+
+export type UpdateContact = {
+  contact_id: string;
+  name: string;
+  birthday: Option<string>,
+  email: string;
+  pgp_key: string;
+  phone: string;
+  address: string;
+  website: string;
+  twitter: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
+  skype: string;
+  telegram: string;
+  bloom: string;
+  notes: string;
+  plan: string;
+  user_id: string;
 };

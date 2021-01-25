@@ -45,14 +45,14 @@
       <v-col cols="12" sm="6">
         <v-text-field v-model="phone" label="Phone" prepend-icon="mdi-phone" />
       </v-col>
-      <v-col cols="12" sm="6">
+      <!-- <v-col cols="12" sm="6">
         <v-select
           :items="countrySelectItems"
           label="Country"
           v-model="countryCode"
           prepend-icon="mdi-earth"
         />
-      </v-col>
+      </v-col> -->
 
       <v-col cols="12" sm="6">
         <v-text-field v-model="address" label="Address" prepend-icon="mdi-home" />
@@ -92,14 +92,6 @@
       </v-col>
 
       <v-col cols="12">
-        <b-select-labels v-model="labels" :items="projectLabels" />
-      </v-col>
-
-      <v-col cols="12">
-        <b-select-lists v-model="lists" :items="projectLists" multiple />
-      </v-col>
-
-      <v-col cols="12">
         <v-textarea v-model="notes" label="Notes" prepend-icon="mdi-note-text"  outlined/>
       </v-col>
 
@@ -111,33 +103,19 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
-import {
-  Contact, CreateContactInput, UpdateContactInput, DeleteContactInput, Label, List,
-} from '@/api/graphql/model';
-import BSelectLabels from '@/ui/components/collaboration/select_labels.vue';
-import BSelectLists from '@/ui/components/growth/select_lists.vue';
 import countries from '@/app/utils/countries';
+import {
+  CreateContact, DeleteContact, UpdateContact, Contact,
+} from '@/domain/inbox/model';
 
 
 export default VueApp.extend({
   name: 'BContact',
-  components: {
-    BSelectLabels,
-    BSelectLists,
-  },
   props: {
     contact: {
       type: Object as PropType<Contact | null>,
       required: false,
       default: null,
-    },
-    projectLabels: {
-      type: Array as PropType<Label[]>,
-      required: true,
-    },
-    projectLists: {
-      type: Array as PropType<List[]>,
-      required: true,
     },
   },
   data() {
@@ -158,8 +136,6 @@ export default VueApp.extend({
       countryCode: '',
       plan: '',
       userId: '',
-      labels: [] as Label[],
-      lists: [] as List[],
 
       loading: false,
       error: '',
@@ -184,13 +160,13 @@ export default VueApp.extend({
   },
   methods: {
     cancel() {
-      this.$router.push({ path: `/${this.projectFullPath}/-/contacts` });
+      this.$router.push({ path: '/inbox/contacts' });
     },
     clearFields() {
       if (this.contact) {
         this.name = this.contact.name;
         this.email = this.contact.email;
-        this.pgpKey = this.contact.pgpKey;
+        this.pgpKey = this.contact.pgp_key;
         this.phone = this.contact.phone;
         this.address = this.contact.address;
         this.website = this.contact.website;
@@ -201,11 +177,9 @@ export default VueApp.extend({
         this.skype = this.contact.skype;
         this.telegram = this.contact.telegram;
         this.notes = this.contact.notes;
-        this.countryCode = this.contact.countryCode;
+        this.countryCode = ''; // TODO
         this.plan = this.contact.plan;
-        this.userId = this.contact.userId;
-        this.labels = this.contact.labels;
-        this.lists = this.contact.lists;
+        this.userId = this.contact.user_id;
       } else {
         this.name = '';
         this.email = '';
@@ -223,20 +197,17 @@ export default VueApp.extend({
         this.countryCode = '';
         this.plan = '';
         this.userId = '';
-        this.labels = [];
-        this.lists = [];
       }
     },
     async create() {
       this.loading = true;
       this.error = '';
-      const labelsIds = this.labels.map((label: Label) => label.id);
-      const listsIds = this.lists.map((list: List) => list.id);
-      const input: CreateContactInput = {
-        projectFullPath: this.projectFullPath,
+      const input: CreateContact = {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        namespace_id: this.$store.state.currentNamespaceId!,
         name: this.name,
         email: this.email,
-        pgpKey: this.pgpKey,
+        pgp_key: this.pgpKey,
         phone: this.phone,
         address: this.address,
         website: this.website,
@@ -247,15 +218,14 @@ export default VueApp.extend({
         skype: this.skype,
         telegram: this.telegram,
         notes: this.notes,
-        countryCode: this.countryCode,
         plan: this.plan,
-        userId: this.userId,
-        labels: labelsIds,
-        lists: listsIds,
+        user_id: this.userId,
+        birthday: null, // TODO
+        bloom: '', // TODO
       };
 
       try {
-        await this.$growthService.createContact(input);
+        await this.$inboxService.createContact(input);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -265,14 +235,12 @@ export default VueApp.extend({
     async update() {
       this.loading = true;
       this.error = '';
-      const labelsIds = this.labels.map((label: Label) => label.id);
-      const listsIds = this.lists.map((list: List) => list.id);
-      const input: UpdateContactInput = {
+      const input: UpdateContact = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        contactId: this.contact!.id,
+        contact_id: this.contact!.id,
         name: this.name,
         email: this.email,
-        pgpKey: this.pgpKey,
+        pgp_key: this.pgpKey,
         phone: this.phone,
         address: this.address,
         website: this.website,
@@ -283,15 +251,14 @@ export default VueApp.extend({
         skype: this.skype,
         telegram: this.telegram,
         notes: this.notes,
-        countryCode: this.countryCode,
         plan: this.plan,
-        userId: this.userId,
-        labels: labelsIds,
-        lists: listsIds,
+        user_id: this.userId,
+        birthday: null,
+        bloom: '', // TODO
       };
 
       try {
-        const contact = await this.$growthService.updateContact(input);
+        const contact = await this.$inboxService.updateContact(input);
         this.$emit('updated', contact);
       } catch (err) {
         this.error = err.message;
@@ -307,13 +274,13 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: DeleteContactInput = {
+      const input: DeleteContact = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        contactId: this.contact!.id,
+        contact_id: this.contact!.id,
       };
 
       try {
-        await this.$growthService.deleteContact(this.projectFullPath, input);
+        await this.$inboxService.deleteContact(input);
       } catch (err) {
         this.error = err.message;
       } finally {

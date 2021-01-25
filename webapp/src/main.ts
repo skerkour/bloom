@@ -31,7 +31,7 @@ const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
 const kernelService = new KernelService(apiClient, store, router);
-const inboxService = new InboxService(apiClient, store);
+const inboxService = new InboxService(apiClient, store, router);
 const usersService = new UsersService(apiClient, store, router);
 const groupsService = new GroupsService(apiClient, router, config);
 const projectsService = new ProjectsService(apiClient, router, kernelService);

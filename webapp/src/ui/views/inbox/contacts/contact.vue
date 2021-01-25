@@ -19,8 +19,7 @@
     </v-row>
 
     <v-row v-if="contact">
-      <b-contact :contact="contact" @updated="onContactUpdated"
-        :projectLabels="labels" :projectLists="lists" />
+      <b-contact :contact="contact" @updated="onContactUpdated" />
     </v-row>
   </v-container>
 </template>
@@ -28,8 +27,8 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { Contact, Label, List } from '@/api/graphql/model';
 import BContact from '@/ui/components/inbox/contact.vue';
+import { GetContact, Contact } from '@/domain/inbox/model';
 
 
 export default VueApp.extend({
@@ -42,14 +41,7 @@ export default VueApp.extend({
       loading: false,
       error: '',
       contact: null as Contact | null,
-      labels: [] as Label[],
-      lists: [] as List[],
     };
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -58,15 +50,12 @@ export default VueApp.extend({
     async fetchData(): Promise<void> {
       this.loading = true;
       this.error = '';
+      const input: GetContact = {
+        contact_id: this.$route.params.contactId,
+      };
 
       try {
-        const res = await this.$growthService.fetchContactWithLabelsAndLists(
-          this.projectFullPath,
-          this.$route.params.contactId,
-        );
-        this.labels = res.project.labels;
-        this.lists = res.project.lists;
-        this.contact = res.contact;
+        this.contact = await this.$inboxService.fetchContact(input);
       } catch (err) {
         this.error = err.message;
       } finally {

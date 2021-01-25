@@ -18,8 +18,8 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="project">
-      <b-contact :projectLabels="labels" :projectLists="lists"/>
+    <v-row v-if="loaded">
+      <b-contact :projectLists="lists"/>
     </v-row>
   </v-container>
 </template>
@@ -28,7 +28,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import BContact from '@/ui/components/inbox/contact.vue';
-import { Project, Label, List } from '@/api/graphql/model';
+import { NewsletterList } from '@/domain/inbox/model';
 
 export default VueApp.extend({
   name: 'ProjectNewContactView',
@@ -39,19 +39,9 @@ export default VueApp.extend({
     return {
       error: '',
       loading: false,
-      project: null as Project | null,
+      loaded: false,
+      lists: [] as NewsletterList[],
     };
-  },
-  computed: {
-    labels(): Label[] {
-      return this.project ? this.project.labels : [];
-    },
-    lists(): List[] {
-      return this.project ? this.project.lists : [];
-    },
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -62,7 +52,8 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$collaborationService.fetchLabelsAndLists(this.projectFullPath);
+        this.lists = await this.$inboxService.fetchNewsletterLists();
+        this.loaded = true;
       } catch (err) {
         this.error = err.message;
       } finally {

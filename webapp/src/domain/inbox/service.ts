@@ -3,6 +3,7 @@
 import ApiClient from '@/api/client';
 import { Store } from 'vuex';
 import { AppState } from '@/app/store';
+import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
   GetInbox, Inbox, GetArchive, GetSpam, GetTrash, SendMessage, Message,
@@ -14,6 +15,12 @@ import {
   GetContact,
   ImportContacts,
   UpdateChatboxPreferences,
+  NewsletterList,
+  GetNewsletterList,
+  GetNewsletterLists,
+  UpdateContact,
+  DeleteContact,
+  CreateContact,
 } from './model';
 
 
@@ -33,12 +40,25 @@ export class InboxService {
   private apiClient: ApiClient;
   private store: Store<AppState>;
   private subscriptionTimeout: number;
+  private router: Router;
 
-
-  constructor(apiClient: ApiClient, store: Store<AppState>) {
+  constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
+    this.router = router;
     this.subscriptionTimeout = DEFAULT_MESSAGES_TIMEOUT;
+  }
+
+  async createContact(input: CreateContact): Promise<void> {
+    const contact: Contact = await this.apiClient.post(Commands.createContact, input);
+
+    this.router.push({ path: `/inbox/contacts/${contact.id}` });
+  }
+
+  async deleteContact(input: DeleteContact): Promise<void> {
+    await this.apiClient.post(Commands.deleteContact, input);
+
+    this.router.push({ path: '/inbox/contacts' });
   }
 
   async fetchArchive(): Promise<Inbox> {
@@ -107,6 +127,21 @@ export class InboxService {
     }
   }
 
+  async fetchNewsletterList(input: GetNewsletterList): Promise<NewsletterList> {
+    const res: NewsletterList = await this.apiClient.post(Queries.newsletterList, input);
+
+    return res;
+  }
+
+  async fetchNewsletterLists(): Promise<NewsletterList[]> {
+    const input: GetNewsletterLists = {
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: NewsletterList[] = await this.apiClient.post(Queries.newsletterLists, input);
+
+    return res;
+  }
+
   async fetchSpam(): Promise<Inbox> {
     const input: GetSpam = {
       namespace_id: this.store.state.currentNamespaceId!,
@@ -149,6 +184,12 @@ export class InboxService {
   async updateChatboxPreferences(input: UpdateChatboxPreferences): Promise<ChatboxPreferences> {
     // eslint-disable-next-line max-len
     const res: ChatboxPreferences = await this.apiClient.post(Commands.updateChetboxPreferences, input);
+
+    return res;
+  }
+
+  async updateContact(input: UpdateContact): Promise<Contact> {
+    const res: Contact = await this.apiClient.post(Commands.updateContact, input);
 
     return res;
   }

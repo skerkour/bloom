@@ -21,7 +21,7 @@
           {{ item.email }}
         </td>
         <td>
-          {{ calendar(item.createdAt) }}
+          {{ calendar(item.created_at) }}
         </td>
       </tr>
     </template>
@@ -32,7 +32,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
-import { Contact } from '@/api/graphql/model';
+import { Contact } from '@/domain/inbox/model';
 import { calendar } from '@/app/filters';
 
 export default VueApp.extend({
@@ -66,23 +66,18 @@ export default VueApp.extend({
           value: 'email',
         },
         {
-          text: 'Create at',
+          text: 'Created at',
           align: 'start',
           sortable: true,
-          value: 'createdAt',
+          value: 'created_at',
         },
       ],
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   methods: {
     calendar,
     gotoContact(contact: Contact) {
-      this.$router.push({ path: `/${this.projectFullPath}/-/contacts/${contact.id}` });
+      this.$router.push({ path: `/inbox/contacts/${contact.id}` });
     },
   },
 });
