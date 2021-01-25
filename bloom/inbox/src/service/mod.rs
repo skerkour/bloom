@@ -1,4 +1,5 @@
 use crate::{
+    entities::{Contact, Conversation, Message},
     notifications::{NEWSLETTER_EMAIL_TEMPLATE, NEWSLETTER_EMAIL_TEMPLATE_ID},
     repository::Repository,
 };
@@ -322,4 +323,11 @@ pub struct SendNewsletterMessageJobInput {
     pub to: mail::Address,
     pub from: mail::Address,
     pub subscription_id: Option<Uuid>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ConversationWithMessageAndContacts {
+    pub conversation: Conversation,
+    pub messages: Vec<Message>,
+    pub contacts: Vec<Contact>,
 }

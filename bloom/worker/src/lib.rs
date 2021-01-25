@@ -62,6 +62,7 @@ pub async fn run(
             Ok(_) => queue.delete_job(job_id).await,
             Err(err) => {
                 error!("worker.run: handling job({}): {}", job_id, &err);
+                sentry::capture_error(&err);
                 queue.fail_job(job_id).await
             }
         };

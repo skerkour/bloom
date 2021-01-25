@@ -177,6 +177,23 @@ impl From<inbox::entities::Conversation> for Conversation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConversationWithContactsAndMessages {
+    pub conversation: Conversation,
+    pub contacts: Vec<Contact>,
+    pub messages: Vec<Message>,
+}
+
+impl From<inbox::service::ConversationWithMessageAndContacts> for ConversationWithContactsAndMessages {
+    fn from(input: inbox::service::ConversationWithMessageAndContacts) -> Self {
+        ConversationWithContactsAndMessages {
+            conversation: input.conversation.into(),
+            contacts: input.contacts.into_iter().map(Into::into).collect(),
+            messages: input.messages.into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatboxPreferences {
     pub color: String,
     pub name: String,
@@ -195,4 +212,9 @@ impl From<inbox::entities::ChatboxPreferences> for ChatboxPreferences {
             welcome_message: preferences.welcome_message,
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Inbox {
+    pub conversations: Vec<ConversationWithContactsAndMessages>,
 }
