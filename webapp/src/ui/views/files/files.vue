@@ -32,26 +32,23 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { File } from '@/api/graphql/model';
-import FileComponent from '@/ui/components/collaboration/file.vue';
-import Folder from '@/ui/components/collaboration/folder.vue';
+import { File } from '@/domain/files/model';
+import FileComponent from '@/ui/components/files/file.vue';
+import Folder from '@/ui/components/files/folder.vue';
 
 
 export default VueApp.extend({
-  name: 'ProjectFilesView',
+  name: 'BFilesView',
   components: {
     file: FileComponent,
     Folder,
   },
   computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
     fileId(): string | null {
       return this.$route.params.fileId ?? null;
     },
     isFolder(): boolean {
-      return this.file ? this.file.type === this.$collaborationService.fileTypeFolder : false;
+      return this.file ? this.file.type === this.$filesService.fileTypeFolder : false;
     },
   },
   data() {
@@ -75,7 +72,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.file = await this.$collaborationService.fetchFile(this.projectFullPath, this.fileId);
+        this.file = await this.$filesService.fetchFile(this.fileId);
       } catch (err) {
         this.error = err.message;
       } finally {

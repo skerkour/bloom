@@ -24,6 +24,7 @@ import { ToolsService, ToolsServiceInjector } from './domain/tools/service';
 import { KernelService, KernelServiceInjector } from './domain/kernel/service';
 import { InboxService, InboxServiceInjector } from './domain/inbox/service';
 import { AnalyticsService, AnalyticsServiceInjector } from './domain/analytics/service';
+import { FilesService, FilesServiceInjector } from './domain/files/service';
 
 const config = new Config();
 const storage = new Storage();
@@ -43,6 +44,7 @@ const collaborationService = new CollaborationService(apiClient, router);
 const growthService = new GrowthService(apiClient, router);
 const operationsService = new OperationsService(apiClient, router);
 const toolsService = new ToolsService(apiClient);
+const filesService = new FilesService(apiClient, store);
 
 
 if (config.env === 'production') {
@@ -76,6 +78,7 @@ Vue.use(CollaborationServiceInjector, collaborationService);
 Vue.use(GrowthServiceInjector, growthService);
 Vue.use(OperationsServiceInjector, operationsService);
 Vue.use(ToolsServiceInjector, toolsService);
+Vue.use(FilesServiceInjector, filesService);
 
 
 async function main() {

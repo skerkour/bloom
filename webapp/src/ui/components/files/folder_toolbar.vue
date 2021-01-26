@@ -48,7 +48,7 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import { File } from '@/api/graphql/model';
-import BFilePath from '@/ui/components/collaboration/file_path.vue';
+import BFilePath from './file_path.vue';
 
 export default VueApp.extend({
   name: 'BFolderToolbar',

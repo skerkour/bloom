@@ -79,7 +79,7 @@ import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import { File } from '@/api/graphql/model';
 import { calendar, filesize } from '@/app/filters';
-import BFileIcon from '@/ui/components/collaboration/file_icon.vue';
+import BFileIcon from './file_icon.vue';
 
 // type SelectableFile = {
 // }

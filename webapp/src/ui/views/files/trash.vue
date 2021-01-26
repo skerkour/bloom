@@ -48,8 +48,8 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { File, RestoreFilesFromTrashInput } from '@/api/graphql/model';
-import BFilesList from '@/ui/components/collaboration/files_list.vue';
-import BTrashToolbar from '@/ui/components/collaboration/trash_toolbar.vue';
+import BFilesList from '@/ui/components/files/files_list.vue';
+import BTrashToolbar from '@/ui/components/files/trash_toolbar.vue';
 
 
 export default VueApp.extend({

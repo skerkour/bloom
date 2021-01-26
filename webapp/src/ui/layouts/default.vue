@@ -40,7 +40,7 @@
               <v-col cols="4" v-for="(app, index) in apps" :key="index" class="text-center pa-0">
                 <router-link :to="app.url">
                   <v-avatar class="blm-pointer"  size="52">
-                    <v-icon>{{ app.icon }}</v-icon>
+                    <v-icon :color="app.color">{{ app.icon }}</v-icon>
                   </v-avatar>
                   <p class="subtitle-1 font-weight-medium">
                     {{ app.name }}
@@ -207,21 +207,25 @@ export default VueApp.extend({
           name: 'Inbox',
           icon: 'mdi-inbox',
           url: '/inbox',
+          color: 'primary',
         },
         {
           name: 'Files',
           icon: 'mdi-folder',
           url: '/files',
+          color: 'yellow',
         },
         {
           name: 'Analytics',
           icon: 'mdi-chart-line',
           url: '/analytics',
+          color: 'success',
         },
         {
           name: 'Tools',
           icon: 'mdi-hammer-wrench',
           url: '/tools',
+          color: '',
         },
       ],
     };

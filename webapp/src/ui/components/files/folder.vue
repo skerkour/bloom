@@ -55,13 +55,14 @@ import { PropType } from 'vue';
 import axios, { CancelTokenSource } from 'axios';
 import { VueApp } from '@/app/vue';
 import { CompleteFileUploadInput, File as ApiFile, MoveFilesToTrashInput } from '@/api/graphql/model';
-import BFilesList from '@/ui/components/collaboration/files_list.vue';
-import BFolderToolbar from '@/ui/components/collaboration/folder_toolbar.vue';
-import BNewFolderDialog from '@/ui/components/collaboration/new_folder_dialog.vue';
-import BRenameFileDialog from '@/ui/components/collaboration/rename_file_dialog.vue';
-import BFilesUploadDialog from '@/ui/components/collaboration/files_upload_dialog.vue';
 import { UploadingFile } from '@/domain/collaboration/service';
 import { StorageSignedUploadUrlInput } from '@/domain/kernel/service';
+import BFilesList from './files_list.vue';
+import BFolderToolbar from './folder_toolbar.vue';
+import BNewFolderDialog from './new_folder_dialog.vue';
+import BRenameFileDialog from './rename_file_dialog.vue';
+import BFilesUploadDialog from './files_upload_dialog.vue';
+
 
 export default VueApp.extend({
   name: 'BFolder',
