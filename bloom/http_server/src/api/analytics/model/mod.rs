@@ -1,3 +1,3 @@
 pub mod input;
 
-pub type Analytics = analytics::entities::Analytics;
+pub type Analytics = analytics::service::Analytics;

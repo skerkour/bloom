@@ -87,18 +87,6 @@ pub enum DeviceType {
     Other,
 }
 
-#[derive(Serialize, Debug, Clone)]
-pub struct Analytics {
-    pub visits: Vec<Visit>,
-    pub pages: Vec<Page>,
-    pub referrers: Vec<Referrer>,
-    pub devices: Vec<Device>,
-    pub events: Vec<Event>,
-    // browsers: Vec<Browser>,
-    // countries: Vec<Country>,
-    // oses: Vec<Os>,
-}
-
 #[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Visit {
     pub date: DateTime<Utc>,

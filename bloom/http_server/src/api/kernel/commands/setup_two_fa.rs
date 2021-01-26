@@ -1,7 +1,4 @@
-use crate::{
-    api::kernel::model::{SetupTwoFa},
-    ServerContext,
-};
+use crate::{api::kernel::model::SetupTwoFa, ServerContext};
 use actix_web::web;
 use kernel::{http::api, Actor};
 use std::sync::Arc;

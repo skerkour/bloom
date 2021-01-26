@@ -1,5 +1,5 @@
 use super::Service;
-use crate::entities::Analytics;
+use crate::service::Analytics;
 use kernel::Actor;
 use stdx::uuid::Uuid;
 
