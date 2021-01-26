@@ -17,6 +17,10 @@ export type CompleteTwoFaChallenge = {
   code: string;
 }
 
+export type GenerateQrCode = {
+  input: string;
+}
+
 export type Group = {
   id: Option<string>;
   avatar_url: string;
@@ -26,10 +30,13 @@ export type Group = {
 }
 
 export type Me = {
-  // TODO
   user: User;
   session: Session;
   groups: Group[];
+}
+
+export type QrCode = {
+  base64_jpeg_qr_code: string;
 }
 
 export type Register = {

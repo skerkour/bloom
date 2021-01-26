@@ -60,7 +60,8 @@ export default VueApp.extend({
       this.loading = true;
 
       try {
-        this.qrcode = await this.$toolsService.qrCode(this.input);
+        const qrcode = await this.$kernelService.generateQrCode(this.input);
+        this.qrcode = qrcode.base64_jpeg_qr_code;
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -13,7 +13,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, Me, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -69,6 +69,15 @@ export class KernelService {
   async fetchMySessions(): Promise<Session[]> {
     // TODO
     return [];
+  }
+
+  async generateQrCode(input: string): Promise<QrCode> {
+    const apiInput: GenerateQrCode = {
+      input,
+    };
+    const res: QrCode = await this.apiClient.post(Queries.generateQrCode, apiInput);
+
+    return res;
   }
 
   async register(input: Register): Promise<void> {

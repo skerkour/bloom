@@ -27,7 +27,7 @@
 
       <v-spacer />
 
-      <v-btn icon to="/apps" v-if="authenticated">
+      <v-btn icon to="/apps" v-if="showNavBarAppsButton">
         <v-icon>mdi-apps</v-icon>
       </v-btn>
 
@@ -163,6 +163,9 @@ export default VueApp.extend({
     },
     showFooter(): boolean {
       return this.$route.meta.auth === false && this.$route.path !== '/';
+    },
+    showNavBarAppsButton(): boolean {
+      return this.authenticated && this.$vuetify.breakpoint.mdAndUp;
     },
     showDrawerButton(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
