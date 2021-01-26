@@ -9,6 +9,7 @@ mod find_file_by_id;
 mod find_file_by_parent_and_name;
 mod find_files_by_ids;
 mod find_root_file_for_namespace;
+mod get_file_path;
 mod update_file;
 
 #[derive(Debug)]

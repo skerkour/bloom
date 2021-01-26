@@ -1,9 +1,13 @@
-use super::{FileWithChildren, FindFileInput, Service};
+use super::{FileWithPathAndChildren, FindFileInput, Service};
 use crate::Error;
 use kernel::Actor;
 
 impl Service {
-    pub async fn find_file(&self, actor: Actor, input: FindFileInput) -> Result<FileWithChildren, kernel::Error> {
+    pub async fn find_file(
+        &self,
+        actor: Actor,
+        input: FindFileInput,
+    ) -> Result<FileWithPathAndChildren, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
 
         self.kernel_service
@@ -32,9 +36,12 @@ impl Service {
             Vec::new()
         };
 
-        Ok(FileWithChildren {
+        let path = self.repo.get_file_path(&self.db, file.id).await?;
+
+        Ok(FileWithPathAndChildren {
             file,
             children,
+            path,
         })
     }
 }

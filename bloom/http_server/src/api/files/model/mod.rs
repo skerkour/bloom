@@ -14,6 +14,7 @@ pub struct File {
     pub explicitly_trashed: bool,
     pub trashed_at: Option<Time>,
 
+    pub path: Vec<FilePath>,
     pub children: Option<Vec<File>>,
 }
 
@@ -29,12 +30,13 @@ impl From<files::entities::File> for File {
             explicitly_trashed: file.explicitly_trashed,
             trashed_at: file.trashed_at,
             children: None,
+            path: Vec::new(),
         }
     }
 }
 
-impl From<files::service::FileWithChildren> for File {
-    fn from(file: files::service::FileWithChildren) -> Self {
+impl From<files::service::FileWithPathAndChildren> for File {
+    fn from(file: files::service::FileWithPathAndChildren) -> Self {
         File {
             id: file.file.id,
             created_at: file.file.created_at,
@@ -45,6 +47,22 @@ impl From<files::service::FileWithChildren> for File {
             explicitly_trashed: file.file.explicitly_trashed,
             trashed_at: file.file.trashed_at,
             children: Some(file.children.into_iter().map(Into::into).collect()),
+            path: file.path.into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FilePath {
+    pub id: Id,
+    pub name: String,
+}
+
+impl From<files::entities::FilePath> for FilePath {
+    fn from(path: files::entities::FilePath) -> FilePath {
+        FilePath {
+            id: path.id,
+            name: path.name,
         }
     }
 }

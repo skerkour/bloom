@@ -41,6 +41,12 @@ impl File {
     }
 }
 
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct FilePath {
+    pub id: Uuid,
+    pub name: String,
+}
+
 #[cfg(test)]
 mod tests {
     use super::File;

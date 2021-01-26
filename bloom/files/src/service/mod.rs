@@ -1,4 +1,7 @@
-use crate::{entities::File, repository::Repository};
+use crate::{
+    entities::{File, FilePath},
+    repository::Repository,
+};
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::{
@@ -111,7 +114,8 @@ pub struct FindFileInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct FileWithChildren {
+pub struct FileWithPathAndChildren {
     pub file: File,
     pub children: Vec<File>,
+    pub path: Vec<FilePath>,
 }
