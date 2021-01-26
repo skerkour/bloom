@@ -53,7 +53,11 @@ impl super::Storage for S3Storage {
     }
 
     async fn copy_object(&self, from: &str, to: &str) -> Result<(), Error> {
-        let from = Path::new(&self.bucket).join(&self.base_path).join(from).to_string_lossy().to_string();
+        let from = Path::new(&self.bucket)
+            .join(&self.base_path)
+            .join(from)
+            .to_string_lossy()
+            .to_string();
         let to = Path::new(&self.base_path).join(to).to_string_lossy().to_string();
 
         let req = CopyObjectRequest {

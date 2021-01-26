@@ -37,7 +37,7 @@ impl File {
         // filesystems.
         // Here we can have up to 2^12 = 4096 files per folder
         let id_str = self.id.to_hyphenated().to_string();
-        format!("/files/{}/{}", &id_str[..3], &id_str[3..])
+        format!("files/{}/{}", &id_str[..3], &id_str[3..])
     }
 }
 
@@ -56,7 +56,7 @@ mod tests {
     fn file_storage_key() {
         let id = "c2ae4298-48a2-478b-a9f2-5eef5d9b54cd".parse::<Uuid>().unwrap();
         let now = Utc::now();
-        let expected_storage_key = "/files/c2a/e4298-48a2-478b-a9f2-5eef5d9b54cd".to_string();
+        let expected_storage_key = "files/c2a/e4298-48a2-478b-a9f2-5eef5d9b54cd".to_string();
 
         let file = File {
             id,
