@@ -24,33 +24,8 @@ pub struct CreateContact {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CreateNewsletterList {
-    pub namespace_id: Id,
-    pub name: String,
-    pub description: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CreateNewsletterMessage {
-    pub list_id: Id,
-    pub name: String,
-    pub subject: String,
-    pub body: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteContact {
     pub contact_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DeleteNewsletterList {
-    pub list_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DeleteNewsletterMessage {
-    pub message_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -58,16 +33,6 @@ pub struct ImportContacts {
     pub namespace_id: Id,
     pub list_id: Option<Id>,
     pub contacts_csv: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SendNewsletterMessage {
-    pub message_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SendTestNewsletterMessage {
-    pub message_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -93,48 +58,12 @@ pub struct UpdateContact {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UpdateNewsletterList {
-    pub list_id: Id,
-    pub name: String,
-    pub description: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UpdateNewsletterMessage {
-    pub message_id: Id,
-    pub list_id: Id,
-    pub name: String,
-    pub subject: String,
-    pub body: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetContact {
     pub contact_id: Id,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetContacts {
-    pub namespace_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetNewsletterList {
-    pub list_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetNewsletterLists {
-    pub namespace_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetNewsletterMessage {
-    pub message_id: Id,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetNewsletterMessages {
     pub namespace_id: Id,
 }
 

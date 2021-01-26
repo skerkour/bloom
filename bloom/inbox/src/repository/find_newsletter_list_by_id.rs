@@ -10,7 +10,7 @@ impl Repository {
         db: C,
         list_id: Uuid,
     ) -> Result<entities::NewsletterList, Error> {
-        const QUERY: &str = "SELECT * FROM inbox_newsletter_lists
+        const QUERY: &str = "SELECT * FROM newsletter_lists
             WHERE id = $1";
 
         match sqlx::query_as::<_, entities::NewsletterList>(QUERY)

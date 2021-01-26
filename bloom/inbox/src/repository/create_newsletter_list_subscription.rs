@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         subscription: &NewsletterListSubscription,
     ) -> Result<(), Error> {
-        const QUERY: &str = "INSERT INTO inbox_newsletter_lists_subscriptions
+        const QUERY: &str = "INSERT INTO newsletter_lists_subscriptions
             (id, created_at, updated_at, list_id, contact_id)
             VALUES ($1, $2, $3, $4, $5)";
 

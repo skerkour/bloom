@@ -1,4 +1,3 @@
-use inbox::entities::NewsletterMessageStatus;
 use kernel::consts;
 use serde::{Deserialize, Serialize};
 
@@ -74,60 +73,6 @@ impl From<inbox::entities::Message> for Message {
             id: message.id,
             received_at: message.received_at,
             body_html: message.body_html,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct NewsletterList {
-    pub id: Id,
-    pub created_at: Time,
-    pub name: String,
-    pub description: String,
-}
-
-impl From<inbox::entities::NewsletterList> for NewsletterList {
-    fn from(list: inbox::entities::NewsletterList) -> Self {
-        NewsletterList {
-            id: list.id,
-            created_at: list.created_at,
-            name: list.name,
-            description: list.description,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct NewsletterMessage {
-    pub id: Id,
-    pub created_at: Time,
-    pub name: String,
-    pub subject: String,
-    pub body: String,
-    pub body_html: String,
-    pub status: NewsletterMessageStatus,
-    pub scheduled_for: Option<Time>,
-    pub last_sent_at: Option<Time>,
-    pub sent_count: i64,
-    pub error_count: i64,
-    pub list_id: Id,
-}
-
-impl From<inbox::entities::NewsletterMessage> for NewsletterMessage {
-    fn from(message: inbox::entities::NewsletterMessage) -> Self {
-        NewsletterMessage {
-            id: message.id,
-            created_at: message.created_at,
-            name: message.name,
-            subject: message.subject,
-            body: message.body,
-            body_html: message.body_html,
-            status: message.status,
-            scheduled_for: message.scheduled_for,
-            last_sent_at: message.last_sent_at,
-            sent_count: message.sent_count,
-            error_count: message.error_count,
-            list_id: message.list_id,
         }
     }
 }

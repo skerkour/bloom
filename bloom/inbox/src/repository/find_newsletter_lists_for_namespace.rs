@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         namespace_id: Uuid,
     ) -> Result<Vec<entities::NewsletterList>, Error> {
-        const QUERY: &str = "SELECT * FROM inbox_newsletter_lists
+        const QUERY: &str = "SELECT * FROM newsletter_lists
             WHERE namespace_id = $1 ORDER BY id";
 
         match sqlx::query_as::<_, entities::NewsletterList>(QUERY)

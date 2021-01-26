@@ -1,5 +1,5 @@
 use crate::{
-    api::inbox::model::{self, input},
+    api::newsletter::model::{self, input},
     ServerContext,
 };
 use actix_web::web;
@@ -8,11 +8,11 @@ use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
-pub async fn newsletter_messages(
+pub async fn messages(
     ctx: web::Data<Arc<ServerContext>>,
-    input: Json<input::GetNewsletterMessages>,
+    input: Json<input::GetMessages>,
     actor: Actor,
-) -> Result<api::Response<Vec<model::NewsletterMessage>>, kernel::Error> {
+) -> Result<api::Response<Vec<model::Message>>, kernel::Error> {
     let input = input.into_inner();
     let service_input = FindNewsletterMessagesInput {
         namespace_id: input.namespace_id,

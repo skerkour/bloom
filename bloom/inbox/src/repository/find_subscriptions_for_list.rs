@@ -10,7 +10,7 @@ impl Repository {
         db: C,
         list_id: Uuid,
     ) -> Result<Vec<entities::NewsletterListSubscription>, Error> {
-        const QUERY: &str = "SELECT * FROM inbox_newsletter_lists_subscriptions
+        const QUERY: &str = "SELECT * FROM newsletter_lists_subscriptions
             WHERE list_id = $2";
 
         match sqlx::query_as::<_, entities::NewsletterListSubscription>(QUERY)

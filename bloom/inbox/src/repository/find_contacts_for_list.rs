@@ -10,9 +10,9 @@ impl Repository {
         list_id: Uuid,
     ) -> Result<Vec<entities::Contact>, Error> {
         const QUERY: &str = "SELECT * FROM inbox_contacts
-            INNER JOIN inbox_newsletter_lists_subscriptions
-                ON inbox_newsletter_lists_subscriptions.contact_id = inbox_contacts.id
-            WHERE inbox_newsletter_lists_subscriptions.list_id = $1";
+            INNER JOIN newsletter_lists_subscriptions
+                ON newsletter_lists_subscriptions.contact_id = inbox_contacts.id
+            WHERE newsletter_lists_subscriptions.list_id = $1";
 
         match sqlx::query_as::<_, entities::Contact>(QUERY)
             .bind(list_id)

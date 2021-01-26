@@ -1,5 +1,5 @@
 use crate::{
-    api::{inbox::model::input, kernel::model::Success},
+    api::{kernel::model::Success, newsletter::model::input},
     ServerContext,
 };
 use actix_web::web;

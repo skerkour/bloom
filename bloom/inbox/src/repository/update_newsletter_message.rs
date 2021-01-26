@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         message: &NewsletterMessage,
     ) -> Result<(), Error> {
-        const QUERY: &str = "UPDATE inbox_newsletter_messages SET
+        const QUERY: &str = "UPDATE newsletter_messages SET
             updated_at = $1, name = $2, subject = $3, body = $4, body_html = $5, status = $6, scheduled_for = $7,
             last_sent_at = $8, sent_count = $9, error_count = $10, list_id = $11
             WHERE id = $12";

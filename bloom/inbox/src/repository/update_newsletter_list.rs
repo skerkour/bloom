@@ -5,7 +5,7 @@ use stdx::{log::error, sqlx};
 
 impl Repository {
     pub async fn update_newsletter_list<'c, C: Queryer<'c>>(&self, db: C, list: &NewsletterList) -> Result<(), Error> {
-        const QUERY: &str = "UPDATE inbox_newsletter_lists SET
+        const QUERY: &str = "UPDATE newsletter_lists SET
             updated_at = $1, name = $2, description = $3
             WHERE id = $4";
 

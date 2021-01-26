@@ -340,53 +340,6 @@ CREATE INDEX index_inbox_contacts_on_email ON inbox_contacts (email);
 CREATE INDEX index_inbox_contacts_on_name ON inbox_contacts (name);
 
 
-CREATE TABLE inbox_newsletter_lists (
-  id UUID PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-
-  name TEXT NOT NULL,
-  description TEXT NOT NULL,
-
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
-);
-CREATE INDEX index_inbox_newsletter_lists_on_namespace_id ON inbox_newsletter_lists (namespace_id);
-
-
-CREATE TABLE inbox_newsletter_lists_subscriptions (
-  id UUID PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-
-  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE,
-  contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
-);
-CREATE INDEX index_inbox_newsletter_lists_subscriptions_on_list_id ON inbox_newsletter_lists_subscriptions (list_id);
-CREATE INDEX index_inbox_newsletter_lists_subscriptions_on_contact_id ON inbox_newsletter_lists_subscriptions (contact_id);
-
-
-CREATE TABLE inbox_newsletter_messages (
-  id UUID PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-
-  name TEXT NOT NULL,
-  subject TEXT NOT NULL,
-  body TEXT NOT NULL,
-  body_html TEXT NOT NULL,
-  status TEXT NOT NULL,
-  scheduled_for TIMESTAMP WITH TIME ZONE,
-  last_sent_at TIMESTAMP WITH TIME ZONE,
-  sent_count BIGINT NOT NULL,
-  error_count BIGINT NOT NULL,
-
-  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
-  list_id UUID NOT NULL REFERENCES inbox_newsletter_lists (id) ON DELETE CASCADE
-);
-CREATE INDEX index_inbox_newsletter_messages_on_list_id ON inbox_newsletter_messages (list_id);
-CREATE INDEX index_inbox_newsletter_messages_on_namespace_id ON inbox_newsletter_messages (namespace_id);
-
-
 CREATE TABLE inbox_chatbox_preferences (
   id UUID PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -417,3 +370,53 @@ CREATE TABLE inbox_contacts_anonymous_ids (
   anonymous_id UUID PRIMARY KEY,
   contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
 );
+
+
+-- #################################################################################################
+-- Newsletter
+-- #################################################################################################
+CREATE TABLE newsletter_lists (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE
+);
+CREATE INDEX index_newsletter_lists_on_namespace_id ON newsletter_lists (namespace_id);
+
+
+CREATE TABLE newsletter_lists_subscriptions (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  list_id UUID NOT NULL REFERENCES newsletter_lists (id) ON DELETE CASCADE,
+  contact_id UUID NOT NULL REFERENCES inbox_contacts (id) ON DELETE CASCADE
+);
+CREATE INDEX index_newsletter_lists_subscriptions_on_list_id ON newsletter_lists_subscriptions (list_id);
+CREATE INDEX index_newsletter_lists_subscriptions_on_contact_id ON newsletter_lists_subscriptions (contact_id);
+
+
+CREATE TABLE newsletter_messages (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  name TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  body_html TEXT NOT NULL,
+  status TEXT NOT NULL,
+  scheduled_for TIMESTAMP WITH TIME ZONE,
+  last_sent_at TIMESTAMP WITH TIME ZONE,
+  sent_count BIGINT NOT NULL,
+  error_count BIGINT NOT NULL,
+
+  namespace_id UUID NOT NULL REFERENCES kernel_namespaces (id) ON DELETE CASCADE,
+  list_id UUID NOT NULL REFERENCES newsletter_lists (id) ON DELETE CASCADE
+);
+CREATE INDEX index_newsletter_messages_on_list_id ON newsletter_messages (list_id);
+CREATE INDEX index_newsletter_messages_on_namespace_id ON newsletter_messages (namespace_id);

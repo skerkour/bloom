@@ -5,7 +5,7 @@ use stdx::{log::error, sqlx};
 
 impl Repository {
     pub async fn create_newsletter_list<'c, C: Queryer<'c>>(&self, db: C, list: &NewsletterList) -> Result<(), Error> {
-        const QUERY: &str = "INSERT INTO inbox_newsletter_lists
+        const QUERY: &str = "INSERT INTO newsletter_lists
             (id, created_at, updated_at, name, description, namespace_id)
             VALUES ($1, $2, $3, $4, $5, $6)";
 

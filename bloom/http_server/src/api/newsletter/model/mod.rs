@@ -1,0 +1,60 @@
+use inbox::entities::NewsletterMessageStatus;
+use serde::{Deserialize, Serialize};
+
+use crate::api::scalars::{Id, Time};
+
+pub mod input;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct List {
+    pub id: Id,
+    pub created_at: Time,
+    pub name: String,
+    pub description: String,
+}
+
+impl From<inbox::entities::NewsletterList> for List {
+    fn from(list: inbox::entities::NewsletterList) -> Self {
+        List {
+            id: list.id,
+            created_at: list.created_at,
+            name: list.name,
+            description: list.description,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Message {
+    pub id: Id,
+    pub created_at: Time,
+    pub name: String,
+    pub subject: String,
+    pub body: String,
+    pub body_html: String,
+    pub status: NewsletterMessageStatus,
+    pub scheduled_for: Option<Time>,
+    pub last_sent_at: Option<Time>,
+    pub sent_count: i64,
+    pub error_count: i64,
+    pub list_id: Id,
+}
+
+impl From<inbox::entities::NewsletterMessage> for Message {
+    fn from(message: inbox::entities::NewsletterMessage) -> Self {
+        Message {
+            id: message.id,
+            created_at: message.created_at,
+            name: message.name,
+            subject: message.subject,
+            body: message.body,
+            body_html: message.body_html,
+            status: message.status,
+            scheduled_for: message.scheduled_for,
+            last_sent_at: message.last_sent_at,
+            sent_count: message.sent_count,
+            error_count: message.error_count,
+            list_id: message.list_id,
+        }
+    }
+}

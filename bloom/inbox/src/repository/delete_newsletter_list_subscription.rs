@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         subscription_id: Uuid,
     ) -> Result<(), Error> {
-        const QUERY: &str = "DELETE FROM inbox_newsletter_lists_subscriptions WHERE id = $1";
+        const QUERY: &str = "DELETE FROM newsletter_lists_subscriptions WHERE id = $1";
 
         match sqlx::query(QUERY).bind(subscription_id).execute(db).await {
             Err(err) => {

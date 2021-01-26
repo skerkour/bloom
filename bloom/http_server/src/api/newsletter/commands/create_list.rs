@@ -1,5 +1,5 @@
 use crate::{
-    api::inbox::model::{self, input},
+    api::newsletter::model::{self, input},
     ServerContext,
 };
 use actix_web::web;
@@ -8,11 +8,11 @@ use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
-pub async fn create_newsletter_list(
+pub async fn create_list(
     ctx: web::Data<Arc<ServerContext>>,
-    input: Json<input::CreateNewsletterList>,
+    input: Json<input::CreateList>,
     actor: Actor,
-) -> Result<api::Response<model::NewsletterList>, kernel::Error> {
+) -> Result<api::Response<model::List>, kernel::Error> {
     let input = input.into_inner();
     let service_input = CreateNewsletterListInput {
         namespace_id: input.namespace_id,

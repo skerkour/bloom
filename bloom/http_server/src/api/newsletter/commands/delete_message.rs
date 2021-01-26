@@ -1,5 +1,5 @@
 use crate::{
-    api::{inbox::model::input, kernel::model::Success},
+    api::{kernel::model::Success, newsletter::model::input},
     ServerContext,
 };
 use actix_web::web;
@@ -8,9 +8,9 @@ use kernel::{http::api, Actor};
 use std::sync::Arc;
 use web::Json;
 
-pub async fn delete_newsletter_message(
+pub async fn delete_message(
     ctx: web::Data<Arc<ServerContext>>,
-    input: Json<input::DeleteNewsletterMessage>,
+    input: Json<input::DeleteMessage>,
     actor: Actor,
 ) -> Result<api::Response<Success>, kernel::Error> {
     let input = input.into_inner();

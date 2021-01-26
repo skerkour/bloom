@@ -6,6 +6,7 @@ pub mod analytics;
 pub mod files;
 pub mod inbox;
 pub mod kernel;
+pub mod newsletter;
 pub mod scalars;
 
 /// 404 handler for the `/api` routes

@@ -227,48 +227,16 @@ pub async fn run(
                                             .route(web::post().to(api::inbox::commands::create_contact)),
                                     )
                                     .service(
-                                        web::resource("/create_newsletter_list")
-                                            .route(web::post().to(api::inbox::commands::create_newsletter_list)),
-                                    )
-                                    .service(
-                                        web::resource("/create_newsletter_message")
-                                            .route(web::post().to(api::inbox::commands::create_newsletter_message)),
-                                    )
-                                    .service(
                                         web::resource("/delete_contact")
                                             .route(web::post().to(api::inbox::commands::delete_contact)),
-                                    )
-                                    .service(
-                                        web::resource("/delete_newsletter_list")
-                                            .route(web::post().to(api::inbox::commands::delete_newsletter_list)),
-                                    )
-                                    .service(
-                                        web::resource("/delete_newsletter_message")
-                                            .route(web::post().to(api::inbox::commands::delete_newsletter_message)),
                                     )
                                     .service(
                                         web::resource("/import_contacts")
                                             .route(web::post().to(api::inbox::commands::import_contacts)),
                                     )
                                     .service(
-                                        web::resource("/send_newsletter_message")
-                                            .route(web::post().to(api::inbox::commands::send_newsletter_message)),
-                                    )
-                                    .service(
-                                        web::resource("/send_test_newsletter_message")
-                                            .route(web::post().to(api::inbox::commands::send_test_newsletter_message)),
-                                    )
-                                    .service(
                                         web::resource("/update_contact")
                                             .route(web::post().to(api::inbox::commands::update_contact)),
-                                    )
-                                    .service(
-                                        web::resource("/update_newsletter_list")
-                                            .route(web::post().to(api::inbox::commands::update_newsletter_list)),
-                                    )
-                                    .service(
-                                        web::resource("/update_newsletter_message")
-                                            .route(web::post().to(api::inbox::commands::update_newsletter_message)),
                                     )
                                     .service(
                                         web::resource("/send_message")
@@ -281,14 +249,6 @@ pub async fn run(
                                     .service(
                                         web::resource("/update_chatbox_preferences")
                                             .route(web::post().to(api::inbox::commands::update_chatbox_preferences)),
-                                    )
-                                    .service(
-                                        web::resource("/subscribe_to_list")
-                                            .route(web::post().to(api::inbox::commands::subscribe_to_list)),
-                                    )
-                                    .service(
-                                        web::resource("/unsubscribe_from_list")
-                                            .route(web::post().to(api::inbox::commands::unsubscribe_from_list)),
                                     )
                                     .service(
                                         web::resource("/link_chatbox_contact")
@@ -304,22 +264,6 @@ pub async fn run(
                                         web::resource("/contacts").route(web::post().to(api::inbox::queries::contacts)),
                                     )
                                     .service(
-                                        web::resource("/newsletter_list")
-                                            .route(web::post().to(api::inbox::queries::newsletter_list)),
-                                    )
-                                    .service(
-                                        web::resource("/newsletter_lists")
-                                            .route(web::post().to(api::inbox::queries::newsletter_lists)),
-                                    )
-                                    .service(
-                                        web::resource("/newsletter_message")
-                                            .route(web::post().to(api::inbox::queries::newsletter_message)),
-                                    )
-                                    .service(
-                                        web::resource("/newsletter_messages")
-                                            .route(web::post().to(api::inbox::queries::newsletter_messages)),
-                                    )
-                                    .service(
                                         web::resource("/chatbox_preferences")
                                             .route(web::post().to(api::inbox::queries::chatbox_preferences)),
                                     )
@@ -333,6 +277,70 @@ pub async fn run(
                                         web::resource("/archive").route(web::post().to(api::inbox::queries::archive)),
                                     )
                                     .service(web::resource("/spam").route(web::post().to(api::inbox::queries::spam))),
+                            ),
+                    )
+                    // newsletter
+                    .service(
+                        web::scope("/newsletter")
+                            .service(
+                                web::scope("/commands")
+                                    .service(
+                                        web::resource("/create_list")
+                                            .route(web::post().to(api::newsletter::commands::create_list)),
+                                    )
+                                    .service(
+                                        web::resource("/create_message")
+                                            .route(web::post().to(api::newsletter::commands::create_message)),
+                                    )
+                                    .service(
+                                        web::resource("/delete_list")
+                                            .route(web::post().to(api::newsletter::commands::delete_list)),
+                                    )
+                                    .service(
+                                        web::resource("/delete_message")
+                                            .route(web::post().to(api::newsletter::commands::delete_message)),
+                                    )
+                                    .service(
+                                        web::resource("/send_message")
+                                            .route(web::post().to(api::newsletter::commands::send_message)),
+                                    )
+                                    .service(
+                                        web::resource("/send_test_message")
+                                            .route(web::post().to(api::newsletter::commands::send_test_message)),
+                                    )
+                                    .service(
+                                        web::resource("/update_list")
+                                            .route(web::post().to(api::newsletter::commands::update_list)),
+                                    )
+                                    .service(
+                                        web::resource("/update_message")
+                                            .route(web::post().to(api::newsletter::commands::update_message)),
+                                    )
+                                    .service(
+                                        web::resource("/subscribe_to_list")
+                                            .route(web::post().to(api::newsletter::commands::subscribe_to_list)),
+                                    )
+                                    .service(
+                                        web::resource("/unsubscribe_from_list")
+                                            .route(web::post().to(api::newsletter::commands::unsubscribe_from_list)),
+                                    ),
+                            )
+                            .service(
+                                web::scope("/queries")
+                                    .service(
+                                        web::resource("/list").route(web::post().to(api::newsletter::queries::list)),
+                                    )
+                                    .service(
+                                        web::resource("/lists").route(web::post().to(api::newsletter::queries::lists)),
+                                    )
+                                    .service(
+                                        web::resource("/message")
+                                            .route(web::post().to(api::newsletter::queries::message)),
+                                    )
+                                    .service(
+                                        web::resource("/messages")
+                                            .route(web::post().to(api::newsletter::queries::messages)),
+                                    ),
                             ),
                     )
                     .default_service(
