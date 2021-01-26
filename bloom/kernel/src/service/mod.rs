@@ -5,7 +5,7 @@ use crate::{
     db::DB,
     domain::{files, inbox},
     drivers,
-    entities::{Group, Session, User},
+    entities::{Group, GroupInvitation, Session, User},
     notifications::PAYMENT_ACTION_REQUIRED_EMAIL_TEMPLATE_ID,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE_ID,
@@ -41,6 +41,7 @@ mod delete_old_data;
 mod disable_two_fa;
 mod dispatch_delete_old_data;
 mod find_group_and_membership;
+mod find_my_group_invitations;
 mod find_namespace_and_membership;
 mod find_upload;
 mod get_signed_upload_url;
@@ -398,6 +399,14 @@ pub struct SendVerifyEmailEmailInput {
     pub email: String,
     pub name: String,
     pub code: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct GroupInvitationWithDetails {
+    pub invitation: GroupInvitation,
+    pub group: Group,
+    pub inviter: User,
+    pub invitee: User,
 }
 
 // type NamespaceAndCustomer struct {

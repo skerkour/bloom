@@ -142,6 +142,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/generate_qr_code")
                                             .route(web::post().to(api::kernel::queries::generate_qr_code)),
+                                    )
+                                    .service(
+                                        web::resource("/my_group_invitations")
+                                            .route(web::post().to(api::kernel::queries::my_group_invitations)),
                                     ),
                             ),
                     )

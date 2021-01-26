@@ -1,4 +1,4 @@
-use super::{InvitePeopleInGroupInput, Service};
+use super::{GroupInvitationWithDetails, InvitePeopleInGroupInput, Service};
 use crate::{
     consts::{self, GroupRole},
     entities::GroupInvitation,
@@ -13,7 +13,7 @@ impl Service {
         &self,
         actor: Actor,
         input: InvitePeopleInGroupInput,
-    ) -> Result<Vec<GroupInvitation>, crate::Error> {
+    ) -> Result<Vec<GroupInvitationWithDetails>, crate::Error> {
         let actor = self.current_user(actor)?;
 
         let (group, membership) = self
@@ -77,15 +77,24 @@ impl Service {
         }
 
         let now = Utc::now();
-        let invitations: Vec<GroupInvitation> = users_to_invite
+        let invitations: Vec<GroupInvitationWithDetails> = users_to_invite
             .into_iter()
-            .map(|invitee| GroupInvitation {
-                id: Ulid::new().into(),
-                created_at: now,
-                updated_at: now,
-                group_id: group.id,
-                inviter_id: actor.id,
-                invitee_id: invitee.id,
+            .map(|invitee| {
+                let invitation = GroupInvitation {
+                    id: Ulid::new().into(),
+                    created_at: now,
+                    updated_at: now,
+                    group_id: group.id,
+                    inviter_id: actor.id,
+                    invitee_id: invitee.id,
+                };
+
+                GroupInvitationWithDetails {
+                    invitation,
+                    invitee,
+                    inviter: actor.clone(),
+                    group: group.clone(),
+                }
             })
             .collect();
 
@@ -93,7 +102,9 @@ impl Service {
         let mut tx = self.db.begin().await?;
 
         for invitation in invitations.iter() {
-            self.repo.create_group_invitation(&mut tx, invitation).await?;
+            self.repo
+                .create_group_invitation(&mut tx, &invitation.invitation)
+                .await?;
         }
 
         tx.commit().await?;
@@ -101,7 +112,7 @@ impl Service {
         // for each invitation, send email
         for invitation in invitations.iter() {
             let job = crate::domain::messages::Message::KernelSendGroupInvitationEmail {
-                invitation_id: invitation.id,
+                invitation_id: invitation.invitation.id,
             };
             match self.queue.push(job, None).await {
                 Err(err) => error!("kernel.invite_people_in_group: queueing invitation email: {}", err),

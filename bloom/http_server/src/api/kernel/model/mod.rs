@@ -197,19 +197,6 @@ pub struct Group {
     pub name: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GroupInvitation {
-    id: Id,
-}
-
-impl From<kernel::entities::GroupInvitation> for GroupInvitation {
-    fn from(invitation: kernel::entities::GroupInvitation) -> Self {
-        GroupInvitation {
-            id: invitation.id,
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct SignedUploadUrl {
     pub url: String,
@@ -228,4 +215,25 @@ impl From<kernel::service::SignedUploadUrl> for SignedUploadUrl {
 #[derive(Serialize, Deserialize)]
 pub struct QrCode {
     pub base64_jpeg_qr_code: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GroupInvitation {
+    pub id: Id,
+    pub created_at: Time,
+    pub group: Group,
+    pub inviter: User,
+    pub invitee: User,
+}
+
+impl From<kernel::service::GroupInvitationWithDetails> for GroupInvitation {
+    fn from(item: kernel::service::GroupInvitationWithDetails) -> Self {
+        GroupInvitation {
+            id: item.invitation.id,
+            created_at: item.invitation.created_at,
+            group: convert_group(item.group, false),
+            inviter: convert_user(item.inviter, false),
+            invitee: convert_user(item.invitee, false),
+        }
+    }
 }
