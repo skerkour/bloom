@@ -15,9 +15,6 @@ import {
   GetContact,
   ImportContacts,
   UpdateChatboxPreferences,
-  NewsletterList,
-  GetNewsletterList,
-  GetNewsletterLists,
   UpdateContact,
   DeleteContact,
   CreateContact,
@@ -125,21 +122,6 @@ export class InboxService {
         this.fetchInboxMessages(options);
       }, this.subscriptionTimeout);
     }
-  }
-
-  async fetchNewsletterList(input: GetNewsletterList): Promise<NewsletterList> {
-    const res: NewsletterList = await this.apiClient.post(Queries.newsletterList, input);
-
-    return res;
-  }
-
-  async fetchNewsletterLists(): Promise<NewsletterList[]> {
-    const input: GetNewsletterLists = {
-      namespace_id: this.store.state.currentNamespaceId!,
-    };
-    const res: NewsletterList[] = await this.apiClient.post(Queries.newsletterLists, input);
-
-    return res;
   }
 
   async fetchSpam(): Promise<Inbox> {

@@ -7,4 +7,6 @@ export const Commands = {
 }
 
 export const Queries = {
+  list: `/${prefix}/${queries}/list`,
+  lists: `/${prefix}/${queries}/lists`,
 }

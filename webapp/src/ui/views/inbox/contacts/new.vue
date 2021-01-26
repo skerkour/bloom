@@ -1,25 +1,7 @@
 <template>
   <v-container fluid>
-    <v-row justify="center">
-      <v-col cols="12" md="8" lg="6" xl="4" v-if="error !== ''">
-        <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''">
-          {{ error }}
-        </v-alert>
-      </v-col>
-    </v-row>
-
-    <v-row justify="center" class="text-center" v-if="loading">
-      <v-col cols="12" sm="10" md="8" xl="6">
-        <v-progress-circular
-          :size="50"
-          color="primary"
-          indeterminate
-        />
-      </v-col>
-    </v-row>
-
-    <v-row v-if="loaded">
-      <b-contact :projectLists="lists"/>
+    <v-row>
+      <b-contact />
     </v-row>
   </v-container>
 </template>
@@ -28,38 +10,11 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import BContact from '@/ui/components/inbox/contact.vue';
-import { NewsletterList } from '@/domain/inbox/model';
 
 export default VueApp.extend({
   name: 'ProjectNewContactView',
   components: {
     BContact,
-  },
-  data() {
-    return {
-      error: '',
-      loading: false,
-      loaded: false,
-      lists: [] as NewsletterList[],
-    };
-  },
-  created() {
-    this.fetchData();
-  },
-  methods: {
-    async fetchData(): Promise<void> {
-      this.loading = true;
-      this.error = '';
-
-      try {
-        this.lists = await this.$inboxService.fetchNewsletterLists();
-        this.loaded = true;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },
   },
 });
 </script>

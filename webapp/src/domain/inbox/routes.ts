@@ -18,8 +18,6 @@ export const Queries = {
   contact: `/${prefix}/${queries}/contact`,
   contacts: `/${prefix}/${queries}/contacts`,
   inbox: `/${prefix}/${queries}/inbox`,
-  newsletterList: `/${prefix}/${queries}/newsletter_list`,
-  newsletterLists: `/${prefix}/${queries}/newsletter_lists`,
   spam: `/${prefix}/${queries}/spam`,
   trash: `/${prefix}/${queries}/trash`,
 }
