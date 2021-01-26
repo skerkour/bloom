@@ -4,7 +4,7 @@ use stdx::sqlx;
 use stdx::{log::error, uuid::Uuid};
 
 impl Repository {
-    pub async fn find_group_invitations_for_user<'c, C: Queryer<'c>>(
+    pub async fn find_group_invitations_for_invitee<'c, C: Queryer<'c>>(
         &self,
         db: C,
         user_id: Uuid,
