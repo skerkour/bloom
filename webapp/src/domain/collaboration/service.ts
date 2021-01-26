@@ -68,11 +68,6 @@ type TicketAndProject = {
   ticket: Ticket;
 }
 
-export type UploadingFile = {
-  name: string;
-  progress: number;
-};
-
 export class CollaborationService {
   private apiClient: ApiClient;
   private router: Router;

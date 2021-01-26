@@ -41,7 +41,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File, CreateFolderInput } from '@/api/graphql/model';
+import { File, CreateFolder } from '@/domain/files/model';
 
 export default VueApp.extend({
   name: 'BNewFolderDialog',
@@ -79,13 +79,13 @@ export default VueApp.extend({
     async createFolder() {
       this.loading = true;
       this.error = '';
-      const input: CreateFolderInput = {
-        parentId: this.parent.id,
+      const input: CreateFolder = {
+        parent_id: this.parent.id,
         name: this.newFolderName,
       };
 
       try {
-        const folder = await this.$collaborationService.createFolder(input);
+        const folder = await this.$filesService.createFolder(input);
         this.$emit('created', folder);
         this.cancel();
       } catch (err) {

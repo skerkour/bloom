@@ -33,6 +33,11 @@ export type GenerateQrCode = {
   input: string;
 }
 
+export type GetSignedUploadUrl = {
+  namespace_id: string;
+  filesize: number;
+}
+
 export type Group = {
   id: Option<string>;
   avatar_url: string;
@@ -73,6 +78,11 @@ export type SignedIn = {
   me: Me;
   token: string;
   two_fa_method: Option<string>,
+}
+
+export type SignedUploadUrl = {
+  url: string;
+  upload_id: string;
 }
 
 export type SignIn = {

@@ -3,8 +3,18 @@
 import ApiClient from '@/api/client';
 import { AppState } from '@/app/store';
 import { Store } from 'vuex';
-import { File, GetFile, GetTrash } from './model';
-import { Queries } from './routes';
+import {
+  CompleteFileUpload,
+  CreateFolder,
+  EmptyTrash,
+  File, GetFile, GetTrash, MoveFilesToTrash, RenameFile, RestoreFilesFromTrash,
+} from './model';
+import { Commands, Queries } from './routes';
+
+export type UploadingFile = {
+  name: string;
+  progress: number;
+};
 
 export class FilesService {
   private apiClient: ApiClient;
@@ -17,6 +27,27 @@ export class FilesService {
     this.store = store;
     this.fileTypeFolder = 'application/com.bloom42.files.folder';
     this.rootFileName = '__ROOT__';
+  }
+
+  async completeFileUpload(input: CompleteFileUpload): Promise<File> {
+    const res: File = await this.apiClient.post(Commands.completeFileUpload, input);
+
+    return res;
+  }
+
+  async createFolder(input: CreateFolder): Promise<File> {
+    const res: File = await this.apiClient.post(Commands.createFolder, input);
+
+    return res;
+  }
+
+
+  async emptyTrash(): Promise<void> {
+    const input: EmptyTrash = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    await this.apiClient.post(Commands.emptyTrash, input);
   }
 
   async fetchFile(fileId: string | null): Promise<File> {
@@ -42,6 +73,26 @@ export class FilesService {
 
   async downloadFile(file: File): Promise<void> {
     // TODO
+  }
+
+  async moveFilesToTrash(files: string[]): Promise<void> {
+    const input: MoveFilesToTrash = {
+      files,
+    };
+    await this.apiClient.post(Commands.moveFilesToTrash, input);
+  }
+
+  async renameFile(input: RenameFile): Promise<File> {
+    const res: File = await this.apiClient.post(Commands.renameFile, input);
+
+    return res;
+  }
+
+  async restoreFilesFromTrash(files: string[]): Promise<void> {
+    const input: RestoreFilesFromTrash = {
+      files,
+    };
+    await this.apiClient.post(Commands.restoreFilesFromTrash, input);
   }
 }
 

@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { EmptyTrashInput, RestoreFilesFromTrashInput, File } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 import { PropType } from 'vue';
 
 
@@ -46,9 +46,6 @@ export default VueApp.extend({
     },
   },
   computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
     canRestore(): boolean {
       return this.selected.length > 0;
     },
@@ -68,12 +65,9 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: EmptyTrashInput = {
-        projectFullPath: this.projectFullPath,
-      };
 
       try {
-        await this.$collaborationService.emptyTrash(input);
+        await this.$filesService.emptyTrash();
         this.$emit('emptied');
       } catch (err) {
         this.error = err.message;
@@ -85,12 +79,9 @@ export default VueApp.extend({
       this.loading = true;
       this.error = '';
       const files = this.selected.map((file: File) => file.id);
-      const input: RestoreFilesFromTrashInput = {
-        files,
-      };
 
       try {
-        await this.$collaborationService.restoreFilesFromTrash(input);
+        await this.$filesService.restoreFilesFromTrash(files);
         this.$emit('restored', this.selected);
       } catch (err) {
         this.error = err.message;

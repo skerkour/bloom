@@ -48,7 +48,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { UploadingFile } from '@/domain/collaboration/service';
+import { UploadingFile } from '@/domain/files/service';
 
 export default VueApp.extend({
   name: 'BFilesUploadDialog',

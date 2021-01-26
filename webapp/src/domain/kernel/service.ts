@@ -3,14 +3,14 @@
 /* eslint-disable max-len */
 import ApiClient from '@/api/client';
 import {
-  Group, SignedStorageUploadUrl, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
+  Group, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignIn, SignInStarted, UpdateMyProfile,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
   User,
 } from './model';
 
@@ -122,6 +122,17 @@ export class KernelService {
     this.router.push({ path: '/login/complete' });
   }
 
+  async signedUploadUrl(filesize: number): Promise<SignedUploadUrl> {
+    const input: GetSignedUploadUrl = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      namespace_id: this.store.state.currentNamespaceId!,
+      filesize,
+    };
+    const res: SignedUploadUrl = await this.apiClient.post(Queries.signedUploadUrl, input);
+
+    return res;
+  }
+
   async updateMyProfile(input: UpdateMyProfile): Promise<User> {
     const res: User = await this.apiClient.post(Commands.updateMyProfile, input);
 
@@ -132,22 +143,6 @@ export class KernelService {
 
   // eslint-disable-next-line spaced-comment
   ////////////////////////////////////////////////////////////////////////////
-
-  async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {
-    const query = `
-      query($fileSize: Int64!) {
-        signedStorageUploadUrl(fileSize: $fileSize) {
-          url
-          size
-          tmpKey
-        }
-      }
-    `;
-    const variables = { fileSize: input.size };
-
-    const res: { signedStorageUploadUrl: SignedStorageUploadUrl } = await this.apiClient.query(query, variables);
-    return res.signedStorageUploadUrl;
-  }
 
   validateAvatar(file: File) {
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {

@@ -54,9 +54,8 @@
 import { PropType } from 'vue';
 import axios, { CancelTokenSource } from 'axios';
 import { VueApp } from '@/app/vue';
-import { CompleteFileUploadInput, File as ApiFile, MoveFilesToTrashInput } from '@/api/graphql/model';
-import { UploadingFile } from '@/domain/collaboration/service';
-import { StorageSignedUploadUrlInput } from '@/domain/kernel/service';
+import { CompleteFileUpload, File as ApiFile } from '@/domain/files/model';
+import { UploadingFile } from '@/domain/files/service';
 import BFilesList from './files_list.vue';
 import BFolderToolbar from './folder_toolbar.vue';
 import BNewFolderDialog from './new_folder_dialog.vue';
@@ -136,21 +135,19 @@ export default VueApp.extend({
       this.showNewFolderDialog = true;
     },
     onFolderCreated(file: ApiFile) {
-      this.folder.children.push(file);
+      this.folder.children?.push(file);
     },
     async onMoveToTrash(files: ApiFile[]): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: MoveFilesToTrashInput = {
-        files: files.map((file: ApiFile) => file.id),
-      };
+      const fileIds = files.map((file: ApiFile) => file.id);
 
       try {
-        await this.$collaborationService.moveFilesToTrash(input);
+        await this.$filesService.moveFilesToTrash(fileIds);
         const trashedSet = new Set<string>();
         files.forEach((file: ApiFile) => trashedSet.add(file.id));
-        this.folder.children = this.folder.children
-          .filter((file: ApiFile) => !trashedSet.has(file.id));
+        // eslint-disable-next-line max-len, @typescript-eslint/no-non-null-assertion
+        this.folder.children = this.folder.children!.filter((file: ApiFile) => !trashedSet.has(file.id));
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -162,7 +159,8 @@ export default VueApp.extend({
       this.showRenameFileDialog = true;
     },
     onFileRenamed(renamedFile: ApiFile) {
-      this.folder.children = this.folder.children.map((file: ApiFile) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.folder.children = this.folder.children!.map((file: ApiFile) => {
         if (file.id === renamedFile.id) {
           file.name = renamedFile.name;
         }
@@ -194,11 +192,8 @@ export default VueApp.extend({
           this.axiosCancelSource = axios.CancelToken.source();
 
           // get presignedUrl
-          const getSignedUrlDataInput: StorageSignedUploadUrlInput = {
-            size: fileToUpload.size,
-          };
           // eslint-disable-next-line no-await-in-loop, max-len
-          const signedUrlData = await this.$kernelService.storageSignedUploadUrl(getSignedUrlDataInput);
+          const signedUrlData = await this.$kernelService.signedUploadUrl(fileToUpload.size);
 
           // upload to s3
           const options = {
@@ -220,17 +215,16 @@ export default VueApp.extend({
           // this.$collaborationService.uploadFile(this.folder.id, fileToUpload, options);
 
           // complete upload
-          const completeUploadInput: CompleteFileUploadInput = {
-            parentId: this.folder.id,
+          const completeUploadInput: CompleteFileUpload = {
+            upload_id: signedUrlData.upload_id,
             name: fileToUpload.name,
-            size: fileToUpload.size,
-            mimeType: fileToUpload.type,
-            tmpKey: signedUrlData.tmpKey,
+            parent_id: this.folder.id,
+            mime_type: fileToUpload.type,
           };
 
           // eslint-disable-next-line no-await-in-loop, max-len
-          const uploadedFile = await this.$collaborationService.completeFileUpload(completeUploadInput);
-          this.folder.children.push(uploadedFile);
+          const uploadedFile = await this.$filesService.completeFileUpload(completeUploadInput);
+          this.folder.children?.push(uploadedFile);
         }
         this.uploadingFiles = [];
         this.showFilesUploadDialog = false;

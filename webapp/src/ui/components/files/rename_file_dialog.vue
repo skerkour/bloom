@@ -42,7 +42,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File, RenameFileInput } from '@/api/graphql/model';
+import { RenameFile, File } from '@/domain/files/model';
 
 export default VueApp.extend({
   name: 'BRenameFileDialog',
@@ -83,13 +83,13 @@ export default VueApp.extend({
     async renameFile() {
       this.loading = true;
       this.error = '';
-      const input: RenameFileInput = {
-        fileId: this.file.id,
+      const input: RenameFile = {
+        file_id: this.file.id,
         name: this.newFileName,
       };
 
       try {
-        const file = await this.$collaborationService.renameFile(input);
+        const file = await this.$filesService.renameFile(input);
         this.$emit('renamed', file);
         this.close();
       } catch (err) {
