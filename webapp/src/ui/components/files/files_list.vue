@@ -77,7 +77,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 import { calendar, filesize } from '@/app/filters';
 import BFileIcon from './file_icon.vue';
 
@@ -124,7 +124,7 @@ export default VueApp.extend({
           text: this.trash ? 'Trashed at' : 'Updated at',
           align: 'start',
           sortable: true,
-          value: this.trash ? 'trashedAt' : 'createdAt',
+          value: this.trash ? 'trashed_at' : 'created_at',
         },
         {
           text: 'Size',
@@ -141,11 +141,6 @@ export default VueApp.extend({
       ],
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   methods: {
     calendar,
     filesize(file: File): string {
@@ -155,13 +150,13 @@ export default VueApp.extend({
       return filesize(file.size);
     },
     isFolder(file: File): boolean {
-      return file.type === this.$collaborationService.fileTypeFolder;
+      return file.type === this.$filesService.fileTypeFolder;
     },
     goto(file: File) {
       if (this.trash) {
         return;
       }
-      this.$router.push({ path: `/${this.projectFullPath}/-/files/${file.id}` });
+      this.$router.push({ path: `/files/${file.id}` });
     },
     trashFile(file: File) {
       this.$emit('move-to-trash', [file]);
@@ -173,7 +168,7 @@ export default VueApp.extend({
       this.$emit('rename', file);
     },
     downloadFile(file: File) {
-      this.$collaborationService.downloadFile(this.projectFullPath, file);
+      this.$filesService.downloadFile(file);
     },
   },
 });

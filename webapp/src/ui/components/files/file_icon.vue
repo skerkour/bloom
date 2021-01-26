@@ -9,7 +9,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 
 export default VueApp.extend({
   name: 'BFileIcon',
@@ -21,7 +21,7 @@ export default VueApp.extend({
   },
   methods: {
     isFolder(file: File): boolean {
-      return file.type === this.$collaborationService.fileTypeFolder;
+      return file.type === this.$filesService.fileTypeFolder;
     },
   },
 });

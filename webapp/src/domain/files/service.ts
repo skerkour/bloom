@@ -3,7 +3,7 @@
 import ApiClient from '@/api/client';
 import { AppState } from '@/app/store';
 import { Store } from 'vuex';
-import { File, GetFile } from './model';
+import { File, GetFile, GetTrash } from './model';
 import { Queries } from './routes';
 
 export class FilesService {
@@ -26,6 +26,20 @@ export class FilesService {
     const res: File = await this.apiClient.post(Queries.file, input);
 
     return res;
+  }
+
+  async fetchTrash(): Promise<File[]> {
+    const input: GetTrash = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      namespace_id: this.store.state.currentNamespaceId!,
+    };
+    const res: File[] = await this.apiClient.post(Queries.trash, input);
+
+    return res;
+  }
+
+  async downloadFile(file: File): Promise<void> {
+    // TODO
   }
 }
 

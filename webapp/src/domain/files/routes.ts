@@ -8,4 +8,5 @@ export const Commands = {
 
 export const Queries = {
   file: `/${prefix}/${queries}/file`,
+  trash: `/${prefix}/${queries}/trash`,
 }
