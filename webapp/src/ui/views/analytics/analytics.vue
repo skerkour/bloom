@@ -19,34 +19,34 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" v-if="project">
+    <v-row justify="center" v-if="analytics">
       <v-col cols="12">
-        <b-analytics-visits :visits="visits" />
+        <b-analytics-visits :visits="analytics.visits" />
       </v-col>
 
       <v-col cols="12" md="6">
-        <b-analytics-pages :pages="pages" />
+        <b-analytics-pages :pages="analytics.pages" />
       </v-col>
       <v-col cols="12" md="6">
-        <b-analytics-referrers :referrers="referrers" />
+        <b-analytics-referrers :referrers="analytics.referrers" />
       </v-col>
 
 
-      <v-col cols="12" md="4">
-        <b-analytics-devices :devices="devices" />
+      <v-col cols="12" md="6">
+        <b-analytics-devices :devices="analytics.devices" />
       </v-col>
-      <v-col cols="12" md="4">
+      <!-- <v-col cols="12" md="4">
         <b-analytics-browsers :browsers="browsers" />
       </v-col>
       <v-col cols="12" md="4">
         <b-analytics-oses :oses="oses" />
-      </v-col>
+      </v-col> -->
 
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <b-analytics-countries :countries="countries" />
-      </v-col>
+      </v-col> -->
 
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <b-analytics-events :events="events" />
       </v-col>
     </v-row>
@@ -57,27 +57,18 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BAnalyticsBrowsers from '@/ui/components/growth/analytics_browsers.vue';
-import BAnalyticsCountries from '@/ui/components/growth/analytics_countries.vue';
-import BAnalyticsDevices from '@/ui/components/growth/analytics_devices.vue';
-import BAnalyticsEvents from '@/ui/components/growth/analytics_events.vue';
-import BAnalyticsOses from '@/ui/components/growth/analytics_oses.vue';
-import BAnalyticsPages from '@/ui/components/growth/analytics_pages.vue';
-import BAnalyticsReferrers from '@/ui/components/growth/analytics_referrers.vue';
-import BAnalyticsVisits from '@/ui/components/growth/analytics_visits.vue';
-import {
-  Project, AnalyticsVisit, AnalyticsEvent, AnalyticsPage, AnalyticsReferrer,
-  AnalyticsDevice, AnalyticsBrowser, AnalyticsOs, AnalyticsCountry,
-} from '@/api/graphql/model';
+import { Analytics } from '@/domain/analytics/model';
+import BAnalyticsDevices from '@/ui/components/analytics/devices.vue';
+import BAnalyticsEvents from '@/ui/components/analytics/events.vue';
+import BAnalyticsPages from '@/ui/components/analytics/pages.vue';
+import BAnalyticsReferrers from '@/ui/components/analytics/referrers.vue';
+import BAnalyticsVisits from '@/ui/components/analytics/visits.vue';
 
 export default VueApp.extend({
   name: 'BAnalyticsView',
   components: {
     BAnalyticsEvents,
-    BAnalyticsBrowsers,
-    BAnalyticsCountries,
     BAnalyticsDevices,
-    BAnalyticsOses,
     BAnalyticsPages,
     BAnalyticsReferrers,
     BAnalyticsVisits,
@@ -86,37 +77,8 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
-      project: null as Project | null,
+      analytics: null as Analytics | null,
     };
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-    visits(): AnalyticsVisit[] {
-      return this.project ? this.project.analytics.visits : [];
-    },
-    events(): AnalyticsEvent[] {
-      return this.project ? this.project.analytics.events : [];
-    },
-    pages(): AnalyticsPage[] {
-      return this.project ? this.project.analytics.pages : [];
-    },
-    referrers(): AnalyticsReferrer[] {
-      return this.project ? this.project.analytics.referrers : [];
-    },
-    devices(): AnalyticsDevice[] {
-      return this.project ? this.project.analytics.devices : [];
-    },
-    browsers(): AnalyticsBrowser[] {
-      return this.project ? this.project.analytics.browsers : [];
-    },
-    oses(): AnalyticsOs[] {
-      return this.project ? this.project.analytics.oses : [];
-    },
-    countries(): AnalyticsCountry[] {
-      return this.project ? this.project.analytics.countries : [];
-    },
   },
   created() {
     this.fetchData();
@@ -127,7 +89,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$growthService.fetchAnalytics(this.projectFullPath);
+        this.analytics = await this.$analyticsService.fetchAnalytics();
       } catch (err) {
         this.error = err.message;
       } finally {

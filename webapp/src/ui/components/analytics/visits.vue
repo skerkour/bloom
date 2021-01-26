@@ -10,7 +10,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import echarts from 'echarts';
-import { AnalyticsVisit } from '@/api/graphql/model';
+import { Visit } from '@/domain/analytics/model';
 import { PropType } from 'vue';
 
 
@@ -18,7 +18,7 @@ export default VueApp.extend({
   name: 'BAnalyticsVisits',
   props: {
     visits: {
-      type: Array as PropType<AnalyticsVisit[]>,
+      type: Array as PropType<Visit[]>,
       required: true,
     },
   },
@@ -38,9 +38,9 @@ export default VueApp.extend({
   methods: {
     init() {
       this.chart = echarts.init(document.getElementById('analytics-visits-chart') as HTMLDivElement);
-      const xAxisData = this.visits.map((visit: AnalyticsVisit) => visit.date);
-      const viewsData = this.visits.map((visit: AnalyticsVisit) => visit.views);
-      const visitorsData = this.visits.map((visit: AnalyticsVisit) => visit.visitors);
+      const xAxisData = this.visits.map((visit: Visit) => visit.date);
+      const viewsData = this.visits.map((visit: Visit) => visit.views);
+      const visitorsData = this.visits.map((visit: Visit) => visit.visitors);
 
       this.chart.setOption({
         tooltip: {

@@ -23,6 +23,7 @@ import { OperationsService, OperationsServiceInjector } from './domain/operation
 import { ToolsService, ToolsServiceInjector } from './domain/tools/service';
 import { KernelService, KernelServiceInjector } from './domain/kernel/service';
 import { InboxService, InboxServiceInjector } from './domain/inbox/service';
+import { AnalyticsService, AnalyticsServiceInjector } from './domain/analytics/service';
 
 const config = new Config();
 const storage = new Storage();
@@ -31,6 +32,7 @@ const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
 const kernelService = new KernelService(apiClient, store, router);
+const analyticsService = new AnalyticsService(apiClient, store);
 const inboxService = new InboxService(apiClient, store, router);
 const usersService = new UsersService(apiClient, store, router);
 const groupsService = new GroupsService(apiClient, router, config);
@@ -64,6 +66,7 @@ Vue.use(VueRouter);
 Vue.use(ConfigServiceInjector, config);
 Vue.use(UsersServiceInjector, usersService);
 Vue.use(InboxServiceInjector, inboxService);
+Vue.use(AnalyticsServiceInjector, analyticsService);
 Vue.use(KernelServiceInjector, kernelService);
 Vue.use(GroupsServiceInjector, groupsService);
 Vue.use(ProjectsServiceInjector, projectsService);

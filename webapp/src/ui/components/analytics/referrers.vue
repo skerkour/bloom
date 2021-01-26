@@ -3,8 +3,8 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="events"
-        item-key="eventName"
+        :items="referrers"
+        item-key="referrer"
         hide-default-footer
       >
         <template v-slot:no-data>
@@ -15,7 +15,7 @@
         <template v-slot:item="{ item }" class="text-left">
           <tr>
             <td>
-              {{ item.eventName }}
+              {{ truncate(item.referrer) }}
             </td>
             <td>
               {{ item.views }}
@@ -34,15 +34,15 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { AnalyticsEvent } from '@/api/graphql/model';
+import { Referrer } from '@/domain/analytics/model';
 import { PropType } from 'vue';
-
+import truncate from '@/app/filters/truncate';
 
 export default VueApp.extend({
-  name: 'BAnalyticsEvents',
+  name: 'BAnalyticsReferrers',
   props: {
-    events: {
-      type: Array as PropType<AnalyticsEvent[]>,
+    referrers: {
+      type: Array as PropType<Referrer[]>,
       required: true,
     },
   },
@@ -51,10 +51,10 @@ export default VueApp.extend({
       selected: [],
       headers: [
         {
-          text: 'Event',
+          text: 'Referrer',
           align: 'start',
           sortable: true,
-          value: 'eventName',
+          value: 'referrer',
         },
         {
           text: 'Views',
@@ -70,6 +70,9 @@ export default VueApp.extend({
         },
       ],
     };
+  },
+  methods: {
+    truncate,
   },
 });
 </script>

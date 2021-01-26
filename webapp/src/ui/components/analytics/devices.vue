@@ -15,7 +15,7 @@
         <template v-slot:item="{ item }" class="text-left">
           <tr>
             <td>
-              {{ item.deviceType }}
+              {{ item.device_type }}
             </td>
             <td>
               {{ item.views }}
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { AnalyticsDevice } from '@/api/graphql/model';
+import { Device } from '@/domain/analytics/model';
 import { PropType } from 'vue';
 
 
@@ -42,7 +42,7 @@ export default VueApp.extend({
   name: 'BAnalyticsDevices',
   props: {
     devices: {
-      type: Array as PropType<AnalyticsDevice[]>,
+      type: Array as PropType<Device[]>,
       required: true,
     },
   },

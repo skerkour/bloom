@@ -3,8 +3,8 @@
     <v-card-text>
       <v-data-table
         :headers="headers"
-        :items="pages"
-        item-key="path"
+        :items="events"
+        item-key="eventName"
         hide-default-footer
       >
         <template v-slot:no-data>
@@ -15,7 +15,7 @@
         <template v-slot:item="{ item }" class="text-left">
           <tr>
             <td>
-              {{ truncate(item.path) }}
+              {{ item.event_name }}
             </td>
             <td>
               {{ item.views }}
@@ -34,16 +34,15 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { AnalyticsPage } from '@/api/graphql/model';
+import { AnalyticsEvent } from '@/domain/analytics/model';
 import { PropType } from 'vue';
-import truncate from '@/app/filters/truncate';
 
 
 export default VueApp.extend({
-  name: 'BAnalyticsPages',
+  name: 'BAnalyticsEvents',
   props: {
-    pages: {
-      type: Array as PropType<AnalyticsPage[]>,
+    events: {
+      type: Array as PropType<AnalyticsEvent[]>,
       required: true,
     },
   },
@@ -52,10 +51,10 @@ export default VueApp.extend({
       selected: [],
       headers: [
         {
-          text: 'Path',
+          text: 'Event',
           align: 'start',
           sortable: true,
-          value: 'path',
+          value: 'event_name',
         },
         {
           text: 'Views',
@@ -71,9 +70,6 @@ export default VueApp.extend({
         },
       ],
     };
-  },
-  methods: {
-    truncate,
   },
 });
 </script>
