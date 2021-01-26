@@ -15,24 +15,24 @@ const routes: Array<RouteConfig> = [
     component: Messages,
   },
   {
-    path: '/messages/new',
+    path: '/newsletter/messages/new',
     component: NewMessage,
   },
   {
-    path: '/messages/:messageId',
+    path: '/newsletter/messages/:messageId',
     component: Message,
   },
 
   {
-    path: '/lists',
+    path: '/newsletter/lists',
     component: Lists,
   },
   {
-    path: '/lists/new',
+    path: '/newsletter/lists/new',
     component: NewList,
   },
   {
-    path: '/lists/:listId',
+    path: '/newsletter/lists/:listId',
     component: List,
   },
 

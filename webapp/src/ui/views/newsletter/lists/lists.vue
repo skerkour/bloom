@@ -21,7 +21,7 @@
       <v-col cols="12" class="ma-0 py-0">
         <v-app-bar dense color="white" flat>
           <v-spacer />
-          <v-btn to="/inbox/newsletter/lists/new" color="success" depressed>
+          <v-btn to="/newsletter/lists/new" color="success" depressed>
             <v-icon left>mdi-plus</v-icon>
             New List
           </v-btn>
