@@ -7,6 +7,11 @@ const routes: Array<RouteConfig> = [
     path: '/analytics',
     component: Analytics,
   },
+
+  {
+    path: '/analytics/*',
+    redirect: '/analytics',
+  },
 ];
 
 export default routes;

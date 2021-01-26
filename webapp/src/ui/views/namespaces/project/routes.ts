@@ -16,9 +16,6 @@ const Labels = () => import(/* webpackChunkName: "chunk-projects" */ './labels/l
 const NewLabel = () => import(/* webpackChunkName: "chunk-projects" */ './labels/new.vue');
 const EditLabel = () => import(/* webpackChunkName: "chunk-projects" */ './labels/edit.vue');
 
-const Files = () => import(/* webpackChunkName: "chunk-projects" */ './files/files.vue');
-const Trash = () => import(/* webpackChunkName: "chunk-projects" */ './files/trash.vue');
-
 const Monitors = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/monitors.vue');
 const NewMonitor = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/new.vue');
 const Monitor = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/monitor.vue');
@@ -93,28 +90,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/labels/:labelId',
     component: EditLabel,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/files',
-    component: Files,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/files/trash',
-    component: Trash,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/files/:fileId',
-    component: Files,
     meta: {
       projectDrawer: true,
     },
