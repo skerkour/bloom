@@ -10,7 +10,7 @@ impl Service {
         let namespace = self.repo.find_namespace_by_id(&self.db, actor.namespace_id).await?;
 
         if actor.two_fa_enabled {
-            let mut two_fa_code = input.two_fa_totp_code.ok_or(Error::TwoFACodeIsNotValid)?;
+            let mut two_fa_code = input.two_fa_code.ok_or(Error::TwoFACodeIsNotValid)?;
 
             // clean and validate data
             two_fa_code = two_fa_code.trim().to_lowercase().replace("-", "");

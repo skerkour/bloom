@@ -37,7 +37,7 @@ pub struct VerifyEmail {
 
 #[derive(Serialize, Deserialize)]
 pub struct DeleteMyAccount {
-    pub two_fa_totp_code: Option<String>,
+    pub two_fa_code: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]

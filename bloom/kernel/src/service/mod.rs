@@ -336,7 +336,7 @@ pub struct CompleteTwoFaChallengeInput {
 
 #[derive(Debug, Clone)]
 pub struct DeleteMyAccountInput {
-    pub two_fa_totp_code: Option<String>,
+    pub two_fa_code: Option<String>,
 }
 
 #[derive(Debug, Clone)]
