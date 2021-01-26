@@ -168,7 +168,7 @@ export default VueApp.extend({
       this.$emit('rename', file);
     },
     downloadFile(file: File) {
-      this.$filesService.downloadFile(file);
+      this.$filesService.downloadFile(file.id);
     },
   },
 });

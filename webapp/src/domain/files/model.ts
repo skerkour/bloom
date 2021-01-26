@@ -30,6 +30,10 @@ export type File = {
   path: FilePath[];
 };
 
+export type FileDownloadUrl = {
+  url: string;
+};
+
 export type FilePath = {
   id: string;
   name: string;
@@ -38,6 +42,10 @@ export type FilePath = {
 export type GetFile = {
   namespace_id: string;
   file_id: Option<string>;
+};
+
+export type GetFileDownloadUrl = {
+  file_id: string;
 };
 
 export type GetTrash = {

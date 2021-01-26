@@ -7,7 +7,8 @@ import {
   CompleteFileUpload,
   CreateFolder,
   EmptyTrash,
-  File, GetFile, GetTrash, MoveFilesToTrash, RenameFile, RestoreFilesFromTrash,
+  File, FileDownloadUrl, GetFile, GetFileDownloadUrl, GetTrash, MoveFilesToTrash, RenameFile,
+  RestoreFilesFromTrash,
 } from './model';
 import { Commands, Queries } from './routes';
 
@@ -71,8 +72,17 @@ export class FilesService {
     return res;
   }
 
-  async downloadFile(file: File): Promise<void> {
-    // TODO
+  async downloadFile(fileId: string): Promise<void> {
+    const input: GetFileDownloadUrl = {
+      file_id: fileId,
+    };
+    const res: FileDownloadUrl = await this.apiClient.post(Queries.fileDownloadUrl, input);
+
+    const downloadLink: HTMLAnchorElement = document.createElement('a');
+    downloadLink.href = res.url;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   }
 
   async moveFilesToTrash(files: string[]): Promise<void> {

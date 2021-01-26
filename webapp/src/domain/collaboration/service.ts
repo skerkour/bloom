@@ -2,9 +2,8 @@ import ApiClient from '@/api/client';
 import {
   Project, CreateLabelInput, UpdateLabelInput, Label, DeleteLabelInput, CreateTicketInput,
   Ticket, UpdateTicketInput, CloseTicketInput, CommentTicketInput, TicketComment, ReopenTicketInput,
-  DeleteTicketCommentInput, UpdateTicketCommentInput, File as ApiFile, CreateFolderInput,
-  EmptyTrashInput, RestoreFilesFromTrashInput, RenameFileInput, MoveFilesToTrashInput,
-  CompleteFileUploadInput, Milestone, CreateMilestoneInput, DeleteMilestoneInput,
+  DeleteTicketCommentInput, UpdateTicketCommentInput, Milestone, CreateMilestoneInput,
+  DeleteMilestoneInput,
   UpdateMilestoneInput, CloseMilestoneInput, ReopenMilestoneInput, DeleteTicketInput,
 } from '@/api/graphql/model';
 import Router from '@/app/router';
@@ -434,141 +433,6 @@ export class CollaborationService {
     await this.apiClient.query(query, variables);
   }
 
-  async fetchFile(projectFullPath: string, fileId: string | null): Promise<ApiFile> {
-    const query = `
-      query($projectFullPath: String!, $fileId: ID) {
-        file(projectFullPath: $projectFullPath, fileId: $fileId) {
-          id
-          createdAt
-          name
-          size
-          type
-          trashedAt
-          path {
-            id
-            name
-          }
-
-          children {
-            id
-            createdAt
-            name
-            size
-            type
-            trashedAt
-          }
-        }
-      }
-    `;
-    const variables = {
-      projectFullPath,
-      fileId,
-    };
-
-    const res: { file: ApiFile } = await this.apiClient.query(query, variables);
-    return res.file;
-  }
-
-  async createFolder(input: CreateFolderInput): Promise<ApiFile> {
-    const query = `
-      mutation($input: CreateFolderInput!) {
-        createFolder(input: $input) {
-          id
-          createdAt
-          name
-          size
-          type
-          trashedAt
-          path {
-            id
-            name
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { createFolder: ApiFile } = await this.apiClient.query(query, variables);
-    return res.createFolder;
-  }
-
-  async fetchTrash(projectFullPath: string): Promise<ApiFile[]> {
-    const query = `
-      query($projectFullPath: String!) {
-        trash(projectFullPath: $projectFullPath) {
-          id
-          createdAt
-          name
-          size
-          type
-          trashedAt
-        }
-      }
-    `;
-    const variables = {
-      projectFullPath,
-    };
-
-    const res: { trash: ApiFile[] } = await this.apiClient.query(query, variables);
-    return res.trash;
-  }
-
-  async emptyTrash(input: EmptyTrashInput): Promise<void> {
-    const query = `
-      mutation($input: EmptyTrashInput!) {
-        emptyTrash(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async restoreFilesFromTrash(input: RestoreFilesFromTrashInput): Promise<void> {
-    const query = `
-      mutation($input: RestoreFilesFromTrashInput!) {
-        restoreFilesFromTrash(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async moveFilesToTrash(input: MoveFilesToTrashInput): Promise<void> {
-    const query = `
-      mutation($input: MoveFilesToTrashInput!) {
-        moveFilesToTrash(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async renameFile(input: RenameFileInput): Promise<ApiFile> {
-    const query = `
-      mutation($input: RenameFileInput!) {
-        renameFile(input: $input) {
-          id
-          createdAt
-          name
-          size
-          type
-          trashedAt
-          path {
-            id
-            name
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { renameFile: ApiFile } = await this.apiClient.query(query, variables);
-    return res.renameFile;
-  }
-
   async fetchMilestones(projectFullPath: string): Promise<Project> {
     const query = `
       query($projectFullPath: String!) {
@@ -742,30 +606,6 @@ export class CollaborationService {
     await this.apiClient.query(query, variables);
   }
 
-  async completeFileUpload(input: CompleteFileUploadInput): Promise<ApiFile> {
-    const query = `
-      mutation($input: CompleteFileUploadInput!) {
-        completeFileUpload(input: $input) {
-          id
-          createdAt
-          name
-          size
-          type
-          trashedAt
-          path {
-            id
-            name
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { completeFileUpload: ApiFile } = await this.apiClient.query(query, variables);
-    return res.completeFileUpload;
-  }
-
-
   // eslint-disable-next-line max-len
   // async uploadFile(parentId: string, file: File, options?: AxiosRequestConfig): Promise<ApiFile> {
   //   const query = `
@@ -803,33 +643,6 @@ export class CollaborationService {
   //   const res: { uploadFile: ApiFile } = await this.apiClient.upload(formData, options);
   //   return res.uploadFile;
   // }
-
-  // eslint-disable-next-line class-methods-use-this
-  async downloadFile(projectFullPath: string, file: ApiFile): Promise<void> {
-    if (!file.url) {
-      const query = `
-        query($projectFullPath: String!, $fileId: ID) {
-          file(projectFullPath: $projectFullPath, fileId: $fileId) {
-            id
-            url
-          }
-        }
-      `;
-      const variables = {
-        projectFullPath,
-        fileId: file.id,
-      };
-
-      const res: { file: ApiFile } = await this.apiClient.query(query, variables);
-      file = res.file;
-    }
-
-    const downloadLink: HTMLAnchorElement = document.createElement('a');
-    downloadLink.href = file.url;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  }
 }
 
 export const CollaborationServiceInjector = {

@@ -62,7 +62,7 @@ export default VueApp.extend({
     calendar,
     filesize,
     downloadFile(file: File) {
-      this.$filesService.downloadFile(file);
+      this.$filesService.downloadFile(file.id);
     },
   },
 });
