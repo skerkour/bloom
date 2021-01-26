@@ -35,6 +35,7 @@ mod find_pending_email_by_id;
 mod find_pending_session_by_id;
 mod find_pending_user_by_id;
 mod find_session_by_id;
+mod find_sessions_by_user_id;
 mod find_upload_by_id;
 mod find_user_by_email;
 mod find_user_by_email_or_username;

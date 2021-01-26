@@ -6,3 +6,5 @@ mod generate_qr_code;
 pub use generate_qr_code::generate_qr_code;
 mod my_group_invitations;
 pub use my_group_invitations::my_group_invitations;
+mod my_sessions;
+pub use my_sessions::my_sessions;
