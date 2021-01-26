@@ -213,3 +213,8 @@ impl From<kernel::service::SignedUploadUrl> for SignedUploadUrl {
         }
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct QrcCode {
+    pub base64_jpeg_qr_code: String,
+}

@@ -138,7 +138,10 @@ pub async fn run(
                                         web::resource("/signed_upload_url")
                                             .route(web::post().to(api::kernel::queries::signed_upload_url)),
                                     )
-                                    .service(web::resource("/me").route(web::post().to(api::kernel::queries::me))),
+                                    .service(web::resource("/me").route(web::post().to(api::kernel::queries::me)))
+                                    .service(
+                                        web::resource("/qr_code").route(web::post().to(api::kernel::queries::qr_code)),
+                                    ),
                             ),
                     )
                     // files

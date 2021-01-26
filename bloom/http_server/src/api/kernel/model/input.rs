@@ -122,3 +122,8 @@ pub struct SignedUploadUrl {
     pub namespace_id: Id,
     pub filesize: u64,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct GenerateQrCode {
+    pub input: String,
+}

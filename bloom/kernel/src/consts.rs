@@ -79,6 +79,7 @@ pub const SLEEP_MAX: Duration = Duration::from_millis(500);
 pub const DEFAULT_AVATAR: &str = "/assets/imgs/profile.jpg";
 pub const UPLOAD_TMP_STORAGE_KEY_FODLER: &str = "/uploads/tmp";
 pub const UPLOAD_MAX_SIZE: u64 = 8_000_000_000; // 8GB
+pub const QR_CODE_INPUT_MAX_LENGTH: usize = 1024;
 
 // Namespace
 pub const NAMESPACE_MIN_LENGTH: usize = 4;

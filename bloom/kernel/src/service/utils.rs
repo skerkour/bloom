@@ -1,13 +1,16 @@
 use super::{DecodedSessionToken, Service};
 use crate::{
+    consts,
     domain::{files, inbox},
     entities::{Session, User},
     errors::kernel::Error,
     Actor,
 };
-use std::sync::Arc;
+use std::{io::BufWriter, sync::Arc};
 use stdx::{
     base64, crypto,
+    image::{jpeg::JpegEncoder, DynamicImage, Luma},
+    qrcode::QrCode,
     sync::threadpool::spawn_blocking,
     uuid::{self, Uuid},
 };
@@ -163,6 +166,32 @@ impl Service {
         let mut token_bytes: Vec<u8> = session_id_bytes[..].into();
         token_bytes.extend(secret);
         Ok(base64::encode(token_bytes))
+    }
+
+    pub async fn qr_code(&self, actor: Actor, input: String) -> Result<String, crate::Error> {
+        let _ = self.current_user(actor)?;
+
+        let base64_encoded_qr_code_image = spawn_blocking(move || -> Result<String, crate::Error> {
+            let code = QrCode::new(input.as_bytes()).map_err(|err| crate::Error::Internal(err.to_string()))?;
+
+            let qr_code_image = code.render::<Luma<u8>>().build();
+            let qr_code_image = DynamicImage::ImageLuma8(qr_code_image);
+
+            let ref mut qr_code_buffer = BufWriter::new(Vec::new());
+            let mut jpeg_encoder = JpegEncoder::new_with_quality(qr_code_buffer, consts::TOTP_QR_JPEG_QUALITY);
+            jpeg_encoder.encode(
+                qr_code_image.as_bytes(),
+                consts::TOTP_QR_CODE_SIZE,
+                consts::TOTP_QR_CODE_SIZE,
+                qr_code_image.color(),
+            )?;
+
+            let base64_encoded_qr_code_image = base64::encode(qr_code_buffer.buffer());
+            Ok(base64_encoded_qr_code_image)
+        })
+        .await??;
+
+        Ok(base64_encoded_qr_code_image)
     }
 }
 
