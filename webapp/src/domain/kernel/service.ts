@@ -10,7 +10,9 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
+  AcceptGroupInvitation,
+  CancelGroupInvitation,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
   User,
 } from './model';
 
@@ -27,6 +29,20 @@ export class KernelService {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;
+  }
+
+  async acceptGroupInvitation(invitationId: string): Promise<void> {
+    const input: AcceptGroupInvitation = {
+      invitation_id: invitationId,
+    };
+    await this.apiClient.post(Commands.acceptGroupInvitation, input);
+  }
+
+  async cancelGroupInvitation(invitationId: string): Promise<void> {
+    const input: CancelGroupInvitation = {
+      invitation_id: invitationId,
+    };
+    await this.apiClient.post(Commands.cancelGroupInvitation, input);
   }
 
   async completeRegistration(input: CompleteRegistration): Promise<void> {
@@ -63,6 +79,13 @@ export class KernelService {
       code,
     };
     await this.apiClient.post(Commands.completeTwoFaSetup, input);
+  }
+
+  async declineGroupInvitation(invitationId: string): Promise<void> {
+    const input: DeclineGroupInvitation = {
+      invitation_id: invitationId,
+    };
+    await this.apiClient.post(Commands.declineGroupInvitation, input);
   }
 
   async deleteMyAccount(twoFaCode: string | null): Promise<void> {

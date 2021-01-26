@@ -2,6 +2,14 @@
 export type Option<T> = T | null;
 export type Empty = {};
 
+export type AcceptGroupInvitation = {
+  invitation_id: string;
+}
+
+export type CancelGroupInvitation = {
+  invitation_id: string;
+}
+
 export type CompleteRegistration = {
   pending_user_id: string;
   code: string;
@@ -19,6 +27,10 @@ export type CompleteTwoFaChallenge = {
 
 export type CompleteTwoFaSetup = {
   code: string;
+}
+
+export type DeclineGroupInvitation = {
+  invitation_id: string;
 }
 
 export type DeleteMyAccount = {

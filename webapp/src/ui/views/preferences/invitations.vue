@@ -28,9 +28,6 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  AcceptGroupInvitationInput, DeclineGroupInvitationInput,
-} from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import BInvitationsList from '@/ui/components/groups/invitations_list.vue';
 import { GroupInvitation } from '@/domain/kernel/model';
@@ -67,12 +64,9 @@ export default VueApp.extend({
     async acceptInvitation(invitation: GroupInvitation) {
       this.loading = true;
       this.error = '';
-      const input: AcceptGroupInvitationInput = {
-        invitationId: invitation.id,
-      };
 
       try {
-        await this.$usersService.acceptInvitation(input);
+        await this.$kernelService.acceptGroupInvitation(invitation.id);
         this.invitations = this.invitations.filter((invit: GroupInvitation) => {
           if (invit.id === invitation.id) {
             return false;
@@ -88,12 +82,9 @@ export default VueApp.extend({
     async declineInvitation(invitation: GroupInvitation) {
       this.loading = true;
       this.error = '';
-      const input: DeclineGroupInvitationInput = {
-        invitationId: invitation.id,
-      };
 
       try {
-        await this.$usersService.declineInvitation(input);
+        await this.$kernelService.declineGroupInvitation(invitation.id);
         this.invitations = this.invitations.filter((invit: GroupInvitation) => {
           if (invit.id === invitation.id) {
             return false;

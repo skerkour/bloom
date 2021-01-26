@@ -4,13 +4,16 @@ const commands = 'commands';
 const queries = 'queries';
 
 export const Commands = {
-  register: `/${prefix}/${commands}/register`,
+  acceptGroupInvitation: `/${prefix}/${commands}/accept_group_invitation`,
+  cancelGroupInvitation: `/${prefix}/${commands}/cancel_group_invitation`,
   completeRegistration: `/${prefix}/${commands}/complete_registration`,
   completeSignIn: `/${prefix}/${commands}/complete_sign_in`,
   completeTwoFaChallenge: `/${prefix}/${commands}/complete_two_fa_challenge`,
   completeTwoFaSetup: `/${prefix}/${commands}/complete_two_fa_setup`,
+  declineGroupInvitation: `/${prefix}/${commands}/decline_group_invitation`,
   deleteMyAccount: `/${prefix}/${commands}/delete_my_account`,
   disableTwoFa: `/${prefix}/${commands}/disable_two_fa`,
+  register: `/${prefix}/${commands}/register`,
   signIn: `/${prefix}/${commands}/sign_in`,
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
   updateMyProfile: `/${prefix}/${commands}/update_my_profile`,
