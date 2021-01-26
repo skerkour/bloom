@@ -4,9 +4,13 @@ use crate::{
     errors::kernel::Error,
     Actor,
 };
-use std::io::BufWriter;
 use stdx::{
-    base64, chrono::Utc, crypto, image::codecs::jpeg::JpegEncoder, log::error, otp::totp,
+    base64,
+    chrono::Utc,
+    crypto,
+    image::{self, imageops::FilterType},
+    log::error,
+    otp::totp,
     sync::threadpool::spawn_blocking,
 };
 
@@ -48,23 +52,19 @@ impl Service {
             }
         };
 
-        let ref mut qr_code_buffer = BufWriter::new(Vec::new());
-        let mut jpeg_encoder = JpegEncoder::new_with_quality(qr_code_buffer, consts::TOTP_QR_JPEG_QUALITY);
-        jpeg_encoder.encode(
-            qr_code_image.as_bytes(),
+        let qr_code_image = qr_code_image.resize(
             consts::TOTP_QR_CODE_SIZE,
             consts::TOTP_QR_CODE_SIZE,
-            qr_code_image.color(),
-        )?;
-        // TODO
-        // if err != nil {
-        //     errMessage := "kernel.SetupTwoFA: encoding QR code to jpeg"
-        //     logger.Error(errMessage, log.Err("error", err))
-        //     err = errors.Internal(errMessage, err)
-        //     return
-        // }
+            FilterType::Lanczos3,
+        );
 
-        let base64_encoded_qr_code_image = base64::encode(qr_code_buffer.buffer());
+        let mut qr_code_buffer: Vec<u8> = Vec::new();
+        qr_code_image.write_to(
+            &mut qr_code_buffer,
+            image::ImageOutputFormat::Jpeg(consts::TOTP_QR_JPEG_QUALITY),
+        )?;
+
+        let base64_encoded_qr_code_image = base64::encode(qr_code_buffer);
         Ok(base64_encoded_qr_code_image)
     }
 }

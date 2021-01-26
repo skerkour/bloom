@@ -133,4 +133,12 @@ impl Service {
 
         Ok(())
     }
+
+    pub fn validate_qr_code_input(&self, input: &str) -> Result<(), Error> {
+        if input.len() > consts::QR_CODE_INPUT_MAX_LENGTH {
+            return Err(Error::FileIsTooLarge);
+        }
+
+        Ok(())
+    }
 }

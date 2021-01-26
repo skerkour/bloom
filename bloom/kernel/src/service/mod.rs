@@ -47,6 +47,7 @@ mod get_signed_upload_url;
 mod invite_people_in_group;
 mod me;
 mod new_session;
+mod qr_code;
 mod quit_group;
 mod register;
 mod remove_member_from_group;

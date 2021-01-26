@@ -140,7 +140,8 @@ pub async fn run(
                                     )
                                     .service(web::resource("/me").route(web::post().to(api::kernel::queries::me)))
                                     .service(
-                                        web::resource("/qr_code").route(web::post().to(api::kernel::queries::qr_code)),
+                                        web::resource("/generate_qr_code")
+                                            .route(web::post().to(api::kernel::queries::generate_qr_code)),
                                     ),
                             ),
                     )
