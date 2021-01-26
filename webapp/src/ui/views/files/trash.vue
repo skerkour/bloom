@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { File, RestoreFilesFromTrashInput } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 import BFilesList from '@/ui/components/files/files_list.vue';
 import BTrashToolbar from '@/ui/components/files/trash_toolbar.vue';
 
@@ -57,11 +57,6 @@ export default VueApp.extend({
   components: {
     BFilesList,
     BTrashToolbar,
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   data() {
     return {
@@ -80,7 +75,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.files = await this.$collaborationService.fetchTrash(this.projectFullPath);
+        this.files = await this.$filesService.fetchTrash();
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -94,12 +89,9 @@ export default VueApp.extend({
       // this.loading = true;
       this.error = '';
       const fileIds = files.map((file: File) => file.id);
-      const input: RestoreFilesFromTrashInput = {
-        files: fileIds,
-      };
 
       try {
-        await this.$collaborationService.restoreFilesFromTrash(input);
+        await this.$filesService.restoreFilesFromTrash(fileIds);
         this.onFilesRestored(fileIds);
       } catch (err) {
         this.error = err.message;
