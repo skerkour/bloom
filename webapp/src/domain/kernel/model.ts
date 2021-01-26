@@ -85,6 +85,10 @@ export type RegistrationStarted = {
   pending_user_id: string;
 }
 
+export type RevokeSession = {
+  session_id: string;
+}
+
 export type Session = {
   id: string,
   created_at: string,

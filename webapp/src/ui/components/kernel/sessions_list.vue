@@ -33,7 +33,7 @@
 
 
 <script lang="ts">
-import { Session } from '@/api/graphql/model';
+import { Session } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
 import calendar from '@/app/filters/calendar';

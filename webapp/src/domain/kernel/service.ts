@@ -12,7 +12,7 @@ import { Commands, Queries } from './routes';
 import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
   User,
 } from './model';
 
@@ -49,7 +49,7 @@ export class KernelService {
     const res: SignedIn = await this.apiClient.post(Commands.completeRegistration, input);
 
     this.store.commit(Mutation.SIGN_IN, res);
-    this.router.push({ path: '/' });
+    window.location.href = '/';
   }
 
   async completeSignIn(input: CompleteSignIn): Promise<void> {
@@ -118,8 +118,8 @@ export class KernelService {
   }
 
   async fetchMySessions(): Promise<Session[]> {
-    // TODO
-    return [];
+    const res: Session[] = await this.apiClient.post(Queries.mySessions, {});
+    return res;
   }
 
   async generateQrCode(input: string): Promise<QrCode> {
@@ -136,6 +136,18 @@ export class KernelService {
 
     this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
     this.router.push({ path: '/register/complete' });
+  }
+
+  async revokeSession(sessionId: string): Promise<void> {
+    const input: RevokeSession = {
+      session_id: sessionId,
+    };
+    await this.apiClient.post(Commands.revokeSession, input);
+
+    if (this.store.state.session?.id === sessionId) {
+      this.store.commit(Mutation.SIGN_OUT);
+      this.router.push({ path: '/' });
+    }
   }
 
   async setupTwoFa(): Promise<string> {
