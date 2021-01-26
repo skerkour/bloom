@@ -186,21 +186,23 @@ pub async fn run(
                             ),
                     )
                     // analytics
+                    // we use the /a shortcuts because otherwise the requests are blocked by adblockers
+                    // even if they are legitimate
                     .service(
-                        web::scope("/analytics")
+                        web::scope("/a")
                             .service(
                                 web::scope("/events")
                                     .service(
-                                        web::resource("/track")
+                                        web::resource("/t")
                                             .route(web::post().to(api::analytics::commands::handle_track_event)),
                                     )
                                     .service(
-                                        web::resource("/page")
+                                        web::resource("/p")
                                             .route(web::post().to(api::analytics::commands::handle_page_event)),
                                     ),
                             )
                             .service(web::scope("/queries").service(
-                                web::resource("/analytics").route(web::post().to(api::analytics::queries::analytics)),
+                                web::resource("/a").route(web::post().to(api::analytics::queries::analytics)),
                             )),
                     )
                     // inbox

@@ -89,7 +89,7 @@ pub enum DeviceType {
 
 #[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct Visit {
-    pub date: DateTime<Utc>,
+    pub date: String,
     pub views: i64,
     pub visitors: i64,
 }
