@@ -1,5 +1,5 @@
 /* eslint-disable */
-const prefix = 'inbox';
+const prefix = 'a';
 const commands = 'commands';
 const queries = 'queries';
 
@@ -7,5 +7,5 @@ export const Commands = {
 }
 
 export const Queries = {
-  analytics: `/${prefix}/${queries}/analytics`,
+  analytics: `/${prefix}/${queries}/a`,
 }
