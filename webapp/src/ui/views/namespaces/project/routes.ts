@@ -19,8 +19,6 @@ const EditLabel = () => import(/* webpackChunkName: "chunk-projects" */ './label
 const Files = () => import(/* webpackChunkName: "chunk-projects" */ './files/files.vue');
 const Trash = () => import(/* webpackChunkName: "chunk-projects" */ './files/trash.vue');
 
-const Analytics = () => import(/* webpackChunkName: "chunk-projects-analytics" */ './analytics/analytics.vue');
-
 const Monitors = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/monitors.vue');
 const NewMonitor = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/new.vue');
 const Monitor = () => import(/* webpackChunkName: "chunk-projects-operations" */ './monitors/monitor.vue');
@@ -161,14 +159,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/lists/:listId',
     component: List,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/analytics',
-    component: Analytics,
     meta: {
       projectDrawer: true,
     },
