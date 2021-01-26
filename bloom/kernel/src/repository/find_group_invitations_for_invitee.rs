@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         user_id: Uuid,
     ) -> Result<Vec<entities::GroupInvitation>, Error> {
-        const QUERY: &str = "SELECT * FROM group_invitations WHERE invitee_id = $1";
+        const QUERY: &str = "SELECT * FROM kernel_group_invitations WHERE invitee_id = $1";
 
         match sqlx::query_as::<_, entities::GroupInvitation>(QUERY)
             .bind(user_id)
