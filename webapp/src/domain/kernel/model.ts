@@ -17,6 +17,14 @@ export type CompleteTwoFaChallenge = {
   code: string;
 }
 
+export type CompleteTwoFaSetup = {
+  code: string;
+}
+
+export type DisableTwoFa = {
+  code: string;
+}
+
 export type GenerateQrCode = {
   input: string;
 }
@@ -53,6 +61,10 @@ export type Session = {
   created_at: string,
 }
 
+export type SetupTwoFa = {
+  base64_qr_code: string,
+}
+
 export type SignedIn = {
   me: Me;
   token: string;
@@ -73,4 +85,8 @@ export type User = {
   name: string;
   avatar_url: string;
   namespace_id: Option<string>;
+  two_fa_enabled: Option<boolean>;
+  is_admin:  Option<boolean>;
+  email:Option<string>;
+  description: string;
 }

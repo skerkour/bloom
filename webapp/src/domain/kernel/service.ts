@@ -4,8 +4,6 @@
 import ApiClient from '@/api/client';
 import {
   DeleteMyAccountInput,
-  DisableTwoFaInput,
-  EnableTwoFaInput,
   Group, SignedStorageUploadUrl, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput, User,
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
@@ -13,7 +11,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SignedIn, SignIn, SignInStarted,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DisableTwoFa, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignIn, SignInStarted,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -60,6 +58,20 @@ export class KernelService {
     this.router.push({ path: '/' });
   }
 
+  async completeTwoFaSetup(code: string): Promise<void> {
+    const input: CompleteTwoFaSetup = {
+      code,
+    };
+    await this.apiClient.post(Commands.completeTwoFaSetup, input);
+  }
+
+  async disableTwoFa(code: string): Promise<void> {
+    const input: DisableTwoFa = {
+      code,
+    };
+    await this.apiClient.post(Commands.disableTwoFa, input);
+  }
+
   async fetchMe(): Promise<Me> {
     const res: Me = await this.apiClient.post(Queries.me, {});
 
@@ -85,6 +97,12 @@ export class KernelService {
 
     this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
     this.router.push({ path: '/register/complete' });
+  }
+
+  async setupTwoFa(): Promise<string> {
+    const res: SetupTwoFa = await this.apiClient.post(Commands.setupTwoFa, {});
+
+    return res.base64_qr_code;
   }
 
   async signIn(input: SignIn): Promise<void> {
@@ -216,40 +234,6 @@ export class KernelService {
 
     const res: { statusPage: StatusPage } = await this.apiClient.query(query, variables);
     return res.statusPage;
-  }
-
-  async setupTwoFA(): Promise<string> {
-    const query = `
-      mutation {
-        setupTwoFA
-      }
-    `;
-    const variables = { };
-
-    const res: { setupTwoFA: string } = await this.apiClient.query(query, variables);
-    return res.setupTwoFA;
-  }
-
-  async enableTwoFA(input: EnableTwoFaInput): Promise<void> {
-    const query = `
-      mutation($input: EnableTwoFAInput!) {
-        enableTwoFA(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async disableTwoFA(input: DisableTwoFaInput): Promise<void> {
-    const query = `
-      mutation($input: DisableTwoFAInput!) {
-        disableTwoFA(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
   }
 }
 

@@ -110,14 +110,11 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  DeleteMyAccountInput,
-  DisableTwoFaInput, EnableTwoFaInput, UpdateMyProfileInput, User,
-} from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import BAvatarForm from '@/ui/components/kernel/avatar_form.vue';
 import BTwoFaSetupDialog from '@/ui/components/kernel/two_fa_setup_dialog.vue';
 import BDeleteAccountTwoFaDialog from '@/ui/components/kernel/delete_account_two_fa_dialog.vue';
+import { User } from '@/domain/kernel/model';
 
 export default VueApp.extend({
   name: 'BProfileView',
@@ -143,7 +140,7 @@ export default VueApp.extend({
   },
   computed: {
     twoFAEnabled(): boolean {
-      return this.user?.twoFAEnabled ?? false;
+      return this.user?.two_fa_enabled ?? false;
     },
   },
   mounted() {
@@ -155,7 +152,8 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.user = await this.$usersService.fetchMe();
+        const me = await this.$kernelService.fetchMe();
+        this.user = me.user;
         this.resetFields();
       } catch (err) {
         this.error = err.message;
@@ -194,7 +192,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.user!.avatarUrl = await this.$kernelService.updateMyAvatar(file);
+        this.user!.avatar_url = await this.$kernelService.updateMyAvatar(file);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -206,7 +204,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.twoFaQrCodeBase64Image = await this.$kernelService.setupTwoFA();
+        this.twoFaQrCodeBase64Image = await this.$kernelService.setupTwoFa();
         this.showTwoFaSetupDialog = true;
       } catch (err) {
         this.error = err.message;
@@ -217,15 +215,12 @@ export default VueApp.extend({
     async enableTwoFa(code: string): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: EnableTwoFaInput = {
-        code,
-      };
 
       try {
-        await this.$kernelService.enableTwoFA(input);
+        await this.$kernelService.completeTwoFaSetup(code);
         this.showTwoFaSetupDialog = false;
         this.twoFaQrCodeBase64Image = '';
-        this.user!.twoFAEnabled = true;
+        this.user!.two_fa_enabled = true;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -238,14 +233,11 @@ export default VueApp.extend({
     async disableTwoFa(code: string): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: DisableTwoFaInput = {
-        code,
-      };
 
       try {
-        await this.$kernelService.disableTwoFA(input);
+        await this.$kernelService.disableTwoFa(code);
         this.showTwoFaSetupDialog = false;
-        this.user!.twoFAEnabled = false;
+        this.user!.two_fa_enabled = false;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -275,7 +267,7 @@ export default VueApp.extend({
         return;
       }
 
-      if (this.user!.twoFAEnabled) {
+      if (this.user!.two_fa_enabled) {
         this.showDeleteAccountTwoFaDialog = true;
       } else {
         this.deleteMyAccount(null);
