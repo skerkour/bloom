@@ -11,25 +11,25 @@
 
     <v-row justify="center">
       <v-col cols="12">
-        <h2>Lists</h2>
+        <h2>Newsletter messages</h2>
         <p>
-          Lists allow you to segment your outbound messages and give better control to your contacts
-          to choose which messages they want to receive from you.
+          Newsletter messages (also known as campaigns or issues) are messages that you can
+          send and automate to reach and engage with your contacts.
         </p>
       </v-col>
 
       <v-col cols="12" class="ma-0 py-0">
         <v-app-bar dense color="white" flat>
           <v-spacer />
-          <v-btn :to="`/${projectFullPath}/-/lists/new`" color="success" depressed>
+          <v-btn to="/inbox/newsletter/messages/new" color="success" depressed>
             <v-icon left>mdi-plus</v-icon>
-            New List
+            New message
           </v-btn>
         </v-app-bar>
       </v-col>
 
       <v-col cols="12" class="ma-0 py-0">
-        <b-lists-list :lists="lists" :loading="loading" />
+        <b-outbound-messages-list :messages="messages" :loading="loading" />
       </v-col>
     </v-row>
 
@@ -38,14 +38,18 @@
 
 
 <script lang="ts">
-import { List, Project } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
-import BListsList from '@/ui/components/growth/lists_list.vue';
+import {
+  Project,
+  OutboundMessage,
+} from '@/api/graphql/model';
+import BOutboundMessagesList from '@/ui/components/growth/outbound_messages_list.vue';
+
 
 export default VueApp.extend({
-  name: 'BListsView',
+  name: 'BOutboundMessagesView',
   components: {
-    BListsList,
+    BOutboundMessagesList,
   },
   data() {
     return {
@@ -55,8 +59,8 @@ export default VueApp.extend({
     };
   },
   computed: {
-    lists(): List[] {
-      return this.project?.lists ?? [];
+    messages(): OutboundMessage[] {
+      return this.project?.outboundMessages ?? [];
     },
     projectFullPath(): string {
       return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
@@ -71,7 +75,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$growthService.fetchLists(this.projectFullPath);
+        this.project = await this.$growthService.fetchOutboundMessages(this.projectFullPath);
       } catch (err) {
         this.error = err.message;
       } finally {

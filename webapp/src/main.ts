@@ -25,6 +25,7 @@ import { KernelService, KernelServiceInjector } from './domain/kernel/service';
 import { InboxService, InboxServiceInjector } from './domain/inbox/service';
 import { AnalyticsService, AnalyticsServiceInjector } from './domain/analytics/service';
 import { FilesService, FilesServiceInjector } from './domain/files/service';
+import { NewsletterService, NewsletterServiceInjector } from './domain/newsletter/service';
 
 const config = new Config();
 const storage = new Storage();
@@ -45,7 +46,7 @@ const growthService = new GrowthService(apiClient, router);
 const operationsService = new OperationsService(apiClient, router);
 const toolsService = new ToolsService(apiClient);
 const filesService = new FilesService(apiClient, store);
-
+const newsletterService = new NewsletterService(apiClient, store);
 
 if (config.env === 'production') {
   Vue.config.productionTip = false;
@@ -79,6 +80,7 @@ Vue.use(GrowthServiceInjector, growthService);
 Vue.use(OperationsServiceInjector, operationsService);
 Vue.use(ToolsServiceInjector, toolsService);
 Vue.use(FilesServiceInjector, filesService);
+Vue.use(NewsletterServiceInjector, newsletterService);
 
 
 async function main() {

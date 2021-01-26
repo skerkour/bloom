@@ -4,14 +4,6 @@ const Tickets = () => import(/* webpackChunkName: "chunk-projects" */ './tickets
 const NewTicket = () => import(/* webpackChunkName: "chunk-projects" */ './tickets/new.vue');
 const Ticket = () => import(/* webpackChunkName: "chunk-projects" */ './tickets/ticket.vue');
 
-const Lists = () => import(/* webpackChunkName: "chunk-projects" */ './lists/lists.vue');
-const NewList = () => import(/* webpackChunkName: "chunk-projects" */ './lists/new.vue');
-const List = () => import(/* webpackChunkName: "chunk-projects" */ './lists/list.vue');
-
-const OutboundMessages = () => import(/* webpackChunkName: "chunk-projects" */ './outbound/outbound.vue');
-const NewOutboundMessage = () => import(/* webpackChunkName: "chunk-projects" */ './outbound/new.vue');
-const OutboundMessage = () => import(/* webpackChunkName: "chunk-projects" */ './outbound/message.vue');
-
 const Labels = () => import(/* webpackChunkName: "chunk-projects" */ './labels/labels.vue');
 const NewLabel = () => import(/* webpackChunkName: "chunk-projects" */ './labels/new.vue');
 const EditLabel = () => import(/* webpackChunkName: "chunk-projects" */ './labels/edit.vue');
@@ -90,50 +82,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:namespacePath/:projectPath/-/labels/:labelId',
     component: EditLabel,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/outbound',
-    component: OutboundMessages,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/outbound/new',
-    component: NewOutboundMessage,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/outbound/:messageId',
-    component: OutboundMessage,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-
-  {
-    path: '/:namespacePath/:projectPath/-/lists',
-    component: Lists,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/lists/new',
-    component: NewList,
-    meta: {
-      projectDrawer: true,
-    },
-  },
-  {
-    path: '/:namespacePath/:projectPath/-/lists/:listId',
-    component: List,
     meta: {
       projectDrawer: true,
     },

@@ -97,14 +97,6 @@ export type GetInbox = {
   namespace_id: string;
 };
 
-export type GetNewsletterList = {
-  list_id: string;
-};
-
-export type GetNewsletterLists = {
-  namespace_id: string;
-};
-
 export type GetSpam = {
   namespace_id: string;
 };
@@ -126,13 +118,6 @@ export type Inbox = {
 export type Message = {
   id: string;
   conversation_id: string;
-};
-
-export type NewsletterList = {
-  id: string;
-  created_at: string;
-  name: string;
-  description: string;
 };
 
 export type SendMessage = {

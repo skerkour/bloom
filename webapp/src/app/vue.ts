@@ -14,6 +14,7 @@ import { KernelService } from '@/domain/kernel/service';
 import { InboxService } from '@/domain/inbox/service';
 import { AnalyticsService } from '@/domain/analytics/service';
 import { FilesService } from '@/domain/files/service';
+import { NewsletterService } from '@/domain/newsletter/service';
 
 // export abstract class VueApp extends Vue {
 //   public $store!: Store<AppState>;
@@ -37,5 +38,6 @@ abstract class VueAppClass extends Vue {
   public $toolsService!: ToolsService;
   public $analyticsService!: AnalyticsService;
   public $filesService!: FilesService;
+  public $newsletterService!: NewsletterService;
 }
 export const VueApp = Vue as VueConstructor<VueAppClass>;
