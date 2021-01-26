@@ -1,6 +1,6 @@
 // Files
 pub const ROOT_FILE_NAME: &str = "__ROOT__";
-pub const FILE_TYPE_FOLDER: &str = "application/com.bloom42.folder";
+pub const FILE_TYPE_FOLDER: &str = "application/com.bloom42.files.folder";
 pub const FILE_TYPE_DEFAULT: &str = "application/octet-stream";
 
 pub const MAX_FILENAME_LENGTH: usize = 255;
