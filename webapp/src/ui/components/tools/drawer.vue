@@ -45,11 +45,12 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item exact link to="/tools/hexdump">
+      <!-- TODO -->
+      <!-- <v-list-item exact link to="/tools/hexdump">
         <v-list-item-content>
           <v-list-item-title>Hexdump</v-list-item-title>
         </v-list-item-content>
-      </v-list-item>
+      </v-list-item> -->
 
     </v-list>
   </v-navigation-drawer>

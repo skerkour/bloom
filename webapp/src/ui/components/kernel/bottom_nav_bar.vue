@@ -34,7 +34,9 @@ export default VueApp.extend({
       return this.$store.state.session !== null;
     },
     show(): boolean {
-      return this.authenticated && this.$vuetify.breakpoint.smAndDown;
+      // TODO
+      // return this.authenticated && this.$vuetify.breakpoint.smAndDown;
+      return false;
     },
   },
 });

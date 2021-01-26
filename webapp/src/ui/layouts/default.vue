@@ -27,9 +27,30 @@
 
       <v-spacer />
 
-      <v-btn icon to="/apps" v-if="showNavBarAppsButton">
-        <v-icon>mdi-apps</v-icon>
-      </v-btn>
+      <v-menu offset-y close-on-content-click>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-if="showNavBarAppsButton" v-bind="attrs" v-on="on">
+            <v-icon>mdi-apps</v-icon>
+          </v-btn>
+        </template>
+
+        <v-card id="b-app-bar-apps-card">
+          <v-card-text>
+            <v-row justify="start">
+              <v-col cols="4" v-for="(app, index) in apps" :key="index" class="text-center pa-0">
+                <router-link :to="app.url">
+                  <v-avatar class="blm-pointer"  size="52">
+                    <v-icon>{{ app.icon }}</v-icon>
+                  </v-avatar>
+                  <p class="subtitle-1 font-weight-medium">
+                    {{ app.name }}
+                  </p>
+                </router-link>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-menu>
 
       <v-btn to="/login" text v-if="!authenticated">
         Sign In
@@ -63,14 +84,17 @@
 
             <v-divider />
 
-            <v-list-item to="/tools">
+            <v-list-item to="/new">
               <v-list-item-icon>
-                <v-icon>mdi-hammer-wrench</v-icon>
+                <v-icon>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>Tools</v-list-item-title>
+                <v-list-item-title>New Workspace</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
+            <v-divider />
+
             <v-list-item to="/preferences">
               <v-list-item-icon>
                 <v-icon>mdi-cog</v-icon>
@@ -165,7 +189,8 @@ export default VueApp.extend({
       return this.$route.meta.auth === false && this.$route.path !== '/';
     },
     showNavBarAppsButton(): boolean {
-      return this.authenticated && this.$vuetify.breakpoint.mdAndUp;
+      // TODO
+      return this.authenticated; //  && this.$vuetify.breakpoint.mdAndUp;
     },
     showDrawerButton(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
@@ -174,6 +199,32 @@ export default VueApp.extend({
         && (this.projectDrawer || this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
           || this.inboxDrawer);
     },
+  },
+  data() {
+    return {
+      apps: [
+        {
+          name: 'Inbox',
+          icon: 'mdi-inbox',
+          url: '/inbox',
+        },
+        {
+          name: 'Files',
+          icon: 'mdi-folder',
+          url: '/files',
+        },
+        {
+          name: 'Analytics',
+          icon: 'mdi-chart-line',
+          url: '/analytics',
+        },
+        {
+          name: 'Tools',
+          icon: 'mdi-hammer-wrench',
+          url: '/tools',
+        },
+      ],
+    };
   },
   methods: {
     toggleDrawer() {
@@ -189,5 +240,9 @@ export default VueApp.extend({
   .headline {
     color: #fff;
   }
+}
+
+#b-app-bar-apps-card {
+  width: 300px;
 }
 </style>
