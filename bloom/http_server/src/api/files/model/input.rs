@@ -52,3 +52,8 @@ pub struct CompleteFileUpload {
     pub name: String,
     pub mime_type: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileDownloadUrl {
+    pub file_id: Id,
+}

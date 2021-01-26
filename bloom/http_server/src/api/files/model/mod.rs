@@ -66,3 +66,8 @@ impl From<files::entities::FilePath> for FilePath {
         }
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileDownloadUrl {
+    pub url: String,
+}

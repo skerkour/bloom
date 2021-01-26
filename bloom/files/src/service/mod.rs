@@ -15,6 +15,7 @@ mod create_folder;
 mod empty_trash;
 mod find_file;
 mod find_trash;
+mod get_file_download_url;
 mod init_namespace;
 mod move_files;
 mod move_files_to_trash;

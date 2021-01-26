@@ -182,7 +182,11 @@ pub async fn run(
                             .service(
                                 web::scope("/queries")
                                     .service(web::resource("/file").route(web::post().to(api::files::queries::file)))
-                                    .service(web::resource("/trash").route(web::post().to(api::files::queries::trash))),
+                                    .service(web::resource("/trash").route(web::post().to(api::files::queries::trash)))
+                                    .service(
+                                        web::resource("/file_download_url")
+                                            .route(web::post().to(api::files::queries::file_download_url)),
+                                    ),
                             ),
                     )
                     // analytics
