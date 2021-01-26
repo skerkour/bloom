@@ -1,7 +1,7 @@
 <template>
   <v-app-bar flat color="white">
       <v-toolbar-title>
-        <b-file-path :file="folder" :projectFullPath="projectFullPath" />
+        <b-file-path :file="folder" />
       </v-toolbar-title>
 
       <v-spacer />
@@ -47,7 +47,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 import BFilePath from './file_path.vue';
 
 export default VueApp.extend({
@@ -59,11 +59,6 @@ export default VueApp.extend({
     folder: {
       type: Object as PropType<File>,
       required: true,
-    },
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
     },
   },
   methods: {

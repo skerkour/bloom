@@ -4,7 +4,7 @@
     <v-row>
       <v-toolbar flat>
         <v-toolbar-title>
-          <b-file-path :file="file" :projectFullPath="projectFullPath" />
+          <b-file-path :file="file" />
         </v-toolbar-title>
       </v-toolbar>
     </v-row>
@@ -43,7 +43,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { File } from '@/api/graphql/model';
+import { File } from '@/domain/files/model';
 import { calendar, filesize } from '@/app/filters';
 import BFilePath from './file_path.vue';
 
@@ -58,16 +58,11 @@ export default VueApp.extend({
       required: true,
     },
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   methods: {
     calendar,
     filesize,
     downloadFile(file: File) {
-      this.$collaborationService.downloadFile(this.projectFullPath, file);
+      this.$filesService.downloadFile(file);
     },
   },
 });

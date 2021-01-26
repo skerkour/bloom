@@ -9,8 +9,14 @@ export type File = {
   size: number;
   type: string;
   explicitly_trashed: boolean;
-  trashed_at: Option<string>
-  children: Option<File[]>
+  trashed_at: Option<string>;
+  children: Option<File[]>;
+  path: FilePath[];
+};
+
+export type FilePath = {
+  id: string;
+  name: string;
 };
 
 export type GetFile = {

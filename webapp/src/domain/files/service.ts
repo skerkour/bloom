@@ -10,11 +10,13 @@ export class FilesService {
   private apiClient: ApiClient;
   private store: Store<AppState>;
   fileTypeFolder: string;
+  rootFileName: string;
 
   constructor(apiClient: ApiClient, store: Store<AppState>) {
     this.apiClient = apiClient;
     this.store = store;
     this.fileTypeFolder = 'application/com.bloom42.files.folder';
+    this.rootFileName = '__ROOT__';
   }
 
   async fetchFile(fileId: string | null): Promise<File> {
