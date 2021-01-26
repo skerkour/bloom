@@ -10,7 +10,7 @@ import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
   User,
 } from './model';
 
@@ -84,6 +84,12 @@ export class KernelService {
 
   async fetchMe(): Promise<Me> {
     const res: Me = await this.apiClient.post(Queries.me, {});
+
+    return res;
+  }
+
+  async fetchMyGroupInvitations(): Promise<GroupInvitation[]> {
+    const res: GroupInvitation[] = await this.apiClient.post(Queries.myGroupInvitations, {});
 
     return res;
   }

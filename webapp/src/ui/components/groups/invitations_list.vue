@@ -46,7 +46,7 @@
 
 <script lang="ts">
 /* eslint-disable no-else-return */
-import { GroupInvitation } from '@/api/graphql/model';
+import { GroupInvitation } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
 

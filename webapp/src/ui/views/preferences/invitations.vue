@@ -29,10 +29,11 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  AcceptGroupInvitationInput, DeclineGroupInvitationInput, GroupInvitation, User,
+  AcceptGroupInvitationInput, DeclineGroupInvitationInput,
 } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import BInvitationsList from '@/ui/components/groups/invitations_list.vue';
+import { GroupInvitation } from '@/domain/kernel/model';
 
 
 export default VueApp.extend({
@@ -42,16 +43,10 @@ export default VueApp.extend({
   },
   data() {
     return {
-      me: null as User | null,
-
       loading: false,
       error: '',
+      invitations: [] as GroupInvitation[],
     };
-  },
-  computed: {
-    invitations(): GroupInvitation[] {
-      return this.me?.invitations ?? [];
-    },
   },
   mounted() {
     this.fetchData();
@@ -62,7 +57,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.me = await this.$usersService.fetchMyGroupInvitations();
+        this.invitations = await this.$kernelService.fetchMyGroupInvitations();
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -78,7 +73,7 @@ export default VueApp.extend({
 
       try {
         await this.$usersService.acceptInvitation(input);
-        this.me!.invitations = this.me!.invitations.filter((invit: GroupInvitation) => {
+        this.invitations = this.invitations.filter((invit: GroupInvitation) => {
           if (invit.id === invitation.id) {
             return false;
           }
@@ -99,7 +94,7 @@ export default VueApp.extend({
 
       try {
         await this.$usersService.declineInvitation(input);
-        this.me!.invitations = this.me!.invitations.filter((invit: GroupInvitation) => {
+        this.invitations = this.invitations.filter((invit: GroupInvitation) => {
           if (invit.id === invitation.id) {
             return false;
           }

@@ -46,6 +46,14 @@ export type Group = {
   namespace_id: Option<string>;
 }
 
+export type GroupInvitation = {
+  id: string;
+  created_at: string;
+  inviter: User;
+  invitee: User;
+  group: Group;
+}
+
 export type Me = {
   user: User;
   session: Session;

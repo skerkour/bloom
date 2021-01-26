@@ -20,4 +20,5 @@ export const Queries = {
   me: `/${prefix}/${queries}/me`,
   generateQrCode: `/${prefix}/${queries}/generate_qr_code`,
   signedUploadUrl: `/${prefix}/${queries}/signed_upload_url`,
+  myGroupInvitations: `/${prefix}/${queries}/my_group_invitations`,
 }
