@@ -24,8 +24,8 @@
 
     <v-row v-if="user" class="mx-5">
       <v-col cols="10" md="6" lg="5" xl="4">
-        <b-avatar-form :loading="loading" @update-avatar="updateAvatar"
-          :avatarUrl="user.avatarUrl" />
+        <b-avatar-form :loading="loading" @update-avatar="updateAvatar" disabled
+          :avatarUrl="user.avatar_url" />
       </v-col>
     </v-row>
 
@@ -114,7 +114,7 @@ import { VueApp } from '@/app/vue';
 import BAvatarForm from '@/ui/components/kernel/avatar_form.vue';
 import BTwoFaSetupDialog from '@/ui/components/kernel/two_fa_setup_dialog.vue';
 import BDeleteAccountTwoFaDialog from '@/ui/components/kernel/delete_account_two_fa_dialog.vue';
-import { User } from '@/domain/kernel/model';
+import { UpdateMyProfile, User } from '@/domain/kernel/model';
 
 export default VueApp.extend({
   name: 'BProfileView',
@@ -168,7 +168,7 @@ export default VueApp.extend({
       const email = this.user!.email === this.email ? null : this.email;
       const name = this.user!.name === this.name ? null : this.name;
       const description = this.user!.description === this.bio ? null : this.bio;
-      const input: UpdateMyProfileInput = {
+      const input: UpdateMyProfile = {
         username,
         email,
         name,
@@ -176,7 +176,7 @@ export default VueApp.extend({
       };
 
       try {
-        this.user = await this.$usersService.updateMyProfile(input);
+        this.user = await this.$kernelService.updateMyProfile(input);
         if (email) {
           this.info = 'Please click on the link in the email we just sent you to complete your email update.';
         }
@@ -276,12 +276,9 @@ export default VueApp.extend({
     async deleteMyAccount(code: string | null): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: DeleteMyAccountInput = {
-        code,
-      };
 
       try {
-        await this.$kernelService.deleteMyAccount(input);
+        await this.$kernelService.deleteMyAccount(code);
       } catch (err) {
         this.error = err.message;
       } finally {

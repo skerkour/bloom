@@ -114,9 +114,9 @@ export function newStore(storage: Storage): Store<AppState> {
         state.namespaceIsGroup = namespaceIsGroup;
       },
       [Mutation.UPDATE_MY_PROFILE](state: AppState, me: User) {
-        state.me!.username = me.username ?? state.me?.username;
-        state.me!.name = me.name ?? state.me?.name;
-        state.me!.avatar_url = me.avatar_url ?? state.me?.avatar_url;
+        state.me!.username = me.username;
+        state.me!.name = me.name;
+        state.me!.avatar_url = me.avatar_url;
         // storage.set(storage.keyMe, state.me);
       },
       [Mutation.SET_DRAWER](state: AppState, value: boolean) {

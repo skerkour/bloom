@@ -9,9 +9,11 @@ export const Commands = {
   completeSignIn: `/${prefix}/${commands}/complete_sign_in`,
   completeTwoFaChallenge: `/${prefix}/${commands}/complete_two_fa_challenge`,
   completeTwoFaSetup: `/${prefix}/${commands}/complete_two_fa_setup`,
+  deleteMyAccount: `/${prefix}/${commands}/delete_my_account`,
   disableTwoFa: `/${prefix}/${commands}/disable_two_fa`,
   signIn: `/${prefix}/${commands}/sign_in`,
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
+  updateMyProfile: `/${prefix}/${commands}/update_my_profile`,
 }
 
 export const Queries = {

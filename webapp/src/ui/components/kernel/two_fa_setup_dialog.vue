@@ -22,7 +22,6 @@
           :loading="loading"
           outlined
           counter="6"
-          type="number"
         />
       </v-card-text>
 

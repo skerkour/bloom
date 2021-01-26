@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-hover v-slot:default="{ hover }">
-      <v-avatar class="blm-pointer" size="60" @click="openAvatarUploadDialog">
+      <v-avatar :class="{'blm-pointer': enabled }" size="60" @click="openAvatarUploadDialog">
         <v-img :src="avatarUrl" >
           <v-expand-transition>
             <div
-              v-if="hover"
+              v-if="hover && enabled"
   class="d-flex transition-fast-in-fast-out grey darken-4 blm-avatar-reveal white--text blm-pointer"
               style="height: 100%;"
             >
@@ -44,9 +44,23 @@ export default VueApp.extend({
       required: false,
       default: false,
     },
+    disabled: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false,
+    },
+  },
+  computed: {
+    enabled(): boolean {
+      return !this.disabled;
+    },
   },
   methods: {
     openAvatarUploadDialog() {
+      if (this.disabled) {
+        return;
+      }
+
       const upload = this.$refs.blmavatarupload as HTMLElement;
       upload.click();
     },

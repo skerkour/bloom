@@ -3,15 +3,15 @@
 /* eslint-disable max-len */
 import ApiClient from '@/api/client';
 import {
-  DeleteMyAccountInput,
-  Group, SignedStorageUploadUrl, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput, User,
+  Group, SignedStorageUploadUrl, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
 import { Commands, Queries } from './routes';
 import {
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DisableTwoFa, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignIn, SignInStarted,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeleteMyAccount, DisableTwoFa, GenerateQrCode, Me, QrCode, Register, RegistrationStarted, Session, SetupTwoFa, SignedIn, SignIn, SignInStarted, UpdateMyProfile,
+  User,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -65,6 +65,16 @@ export class KernelService {
     await this.apiClient.post(Commands.completeTwoFaSetup, input);
   }
 
+  async deleteMyAccount(twoFaCode: string | null): Promise<void> {
+    const input: DeleteMyAccount = {
+      two_fa_code: twoFaCode,
+    };
+    await this.apiClient.post(Commands.deleteMyAccount, input);
+
+    this.store.commit(Mutation.SIGN_OUT);
+    window.location.href = '/';
+  }
+
   async disableTwoFa(code: string): Promise<void> {
     const input: DisableTwoFa = {
       code,
@@ -111,6 +121,17 @@ export class KernelService {
     this.store.commit(Mutation.SET_PENDING_SESSION_ID, res.pending_session_id);
     this.router.push({ path: '/login/complete' });
   }
+
+  async updateMyProfile(input: UpdateMyProfile): Promise<User> {
+    const res: User = await this.apiClient.post(Commands.updateMyProfile, input);
+
+    this.store.commit(Mutation.UPDATE_MY_PROFILE, res);
+
+    return res;
+  }
+
+  // eslint-disable-next-line spaced-comment
+  ////////////////////////////////////////////////////////////////////////////
 
   async storageSignedUploadUrl(input: StorageSignedUploadUrlInput): Promise<SignedStorageUploadUrl> {
     const query = `
@@ -164,7 +185,7 @@ export class KernelService {
 
     const res: { updateMyProfile: User } = await this.apiClient.upload(formData);
     this.store.commit(Mutation.UPDATE_MY_PROFILE, res.updateMyProfile);
-    return res.updateMyProfile.avatarUrl;
+    return res.updateMyProfile.avatar_url;
   }
 
   async updateGroupAvatar(groupId: string, file: File): Promise<string> {
@@ -194,19 +215,6 @@ export class KernelService {
 
     const res: { updateGroupProfile: Group } = await this.apiClient.upload(formData);
     return res.updateGroupProfile.avatarUrl;
-  }
-
-  async deleteMyAccount(input: DeleteMyAccountInput): Promise<void> {
-    const query = `
-      mutation($input: DeleteMyAccountInput!) {
-        deleteMyAccount(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-    this.store.commit(Mutation.SIGN_OUT);
-    window.location.href = '/';
   }
 
   async fetchStatusPage(projectFullPath: string): Promise<StatusPage> {

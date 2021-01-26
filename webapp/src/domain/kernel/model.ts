@@ -21,6 +21,10 @@ export type CompleteTwoFaSetup = {
   code: string;
 }
 
+export type DeleteMyAccount = {
+  two_fa_code: Option<string>;
+}
+
 export type DisableTwoFa = {
   code: string;
 }
@@ -77,6 +81,13 @@ export type SignIn = {
 
 export type SignInStarted = {
   pending_session_id: string;
+}
+
+export type UpdateMyProfile = {
+  username: Option<string>;
+  name: Option<string>;
+  description: Option<string>;
+  email: Option<string>;
 }
 
 export type User = {
