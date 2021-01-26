@@ -1,70 +1,53 @@
-use super::Service;
-use crate::{
-    consts::{self, TwoFaMethod},
-    errors::kernel::Error,
-    Actor,
-};
-use stdx::{
-    base64,
-    chrono::Utc,
-    crypto,
-    image::{self, imageops::FilterType},
-    log::error,
-    otp::totp,
-    sync::threadpool::spawn_blocking,
-};
+use stdx::{chrono::Utc, crypto, log::error, otp::totp, sync::threadpool::spawn_blocking};
+
+use super::{CompleteTwoFaSetup, Service};
+use crate::{errors::kernel::Error, Actor};
 
 impl Service {
-    pub async fn complete_two_fa_setup(&self, actor: Actor) -> Result<String, crate::Error> {
+    pub async fn complete_two_fa_setup(&self, actor: Actor, input: CompleteTwoFaSetup) -> Result<(), crate::Error> {
         let mut actor = self.current_user(actor)?;
+
+        if actor.encrypted_totp_secret == None || actor.totp_secret_nonce == None || actor.two_fa_method == None {
+            return Err(Error::TwoFaIsNotEnabled.into());
+        }
 
         if actor.two_fa_enabled {
             return Err(Error::TwoFaAlreadyEnabled.into());
         }
 
-        // generate secret
-        let totp_key = totp::generate(consts::TOTP_ISSUER.to_string(), actor.username.clone()).await?;
+        let two_fa_code = input.code.trim().to_lowercase().replace("-", "");
 
-        // encrypt secret
         let master_key = self.config.master_key.clone();
-        let plaintext: Vec<u8> = totp_key.secret().as_bytes().into();
+        let encrypted_totp_secret = actor
+            .encrypted_totp_secret
+            .clone()
+            .expect("kernel.complete_two_fa_setup: accessing actor.encrypted_totp_secret");
+        let totp_secret_nonce = actor
+            .totp_secret_nonce
+            .clone()
+            .expect("kernel.complete_two_fa_setup: accessing actor.totp_secret_nonce");
         let ad: Vec<u8> = actor.id.as_bytes()[..].into();
-        let (encrypted_totp_secret, nonce) =
-            match spawn_blocking(move || crypto::aead_encrypt(&master_key, &plaintext, &ad)).await? {
-                Ok(res) => res,
-                Err(err) => {
-                    error!("kernel.complete_two_fa_setup: encrypting totp secret: {}", err);
-                    return Err(err.into());
-                }
-            };
-
-        actor.encrypted_totp_secret = Some(encrypted_totp_secret);
-        actor.totp_secret_nonce = Some(nonce);
-        actor.two_fa_method = Some(TwoFaMethod::Totp);
-        actor.updated_at = Utc::now();
-        self.repo.update_user(&self.db, &actor).await?;
-
-        let qr_code_image = match totp_key.image(consts::TOTP_QR_CODE_SIZE, consts::TOTP_QR_CODE_SIZE) {
+        let totp_secret = match spawn_blocking(move || {
+            crypto::aead_decrypt(&master_key, &encrypted_totp_secret, &totp_secret_nonce, &ad)
+        })
+        .await?
+        {
             Ok(res) => res,
             Err(err) => {
-                error!("kernel.complete_two_fa_setup: generating TOTP QR code: {}", err);
+                error!("kernel.complete_two_fa_setup: decrypting totp secret: {}", err);
                 return Err(err.into());
             }
         };
 
-        let qr_code_image = qr_code_image.resize(
-            consts::TOTP_QR_CODE_SIZE,
-            consts::TOTP_QR_CODE_SIZE,
-            FilterType::Lanczos3,
-        );
+        let totp_secret = String::from_utf8(totp_secret)?;
+        if !(totp::validate(two_fa_code, totp_secret).await?) {
+            return Err(Error::TwoFACodeIsNotValid.into());
+        }
 
-        let mut qr_code_buffer: Vec<u8> = Vec::new();
-        qr_code_image.write_to(
-            &mut qr_code_buffer,
-            image::ImageOutputFormat::Jpeg(consts::TOTP_QR_JPEG_QUALITY),
-        )?;
+        actor.two_fa_enabled = true;
+        actor.updated_at = Utc::now();
+        self.repo.update_user(&self.db, &actor).await?;
 
-        let base64_encoded_qr_code_image = base64::encode(qr_code_buffer);
-        Ok(base64_encoded_qr_code_image)
+        Ok(())
     }
 }

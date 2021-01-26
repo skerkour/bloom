@@ -41,7 +41,7 @@ pub struct DeleteMyAccount {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct EnableTwoFa {
+pub struct CompleteTwoFaSetup {
     pub code: String,
 }
 

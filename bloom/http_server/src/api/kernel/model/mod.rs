@@ -12,12 +12,19 @@ pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User
         username: user.username,
         namespace_id: None,
         avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
+        two_fa_enabled: None,
+        is_admin: None,
+        email: None,
+        description: user.description,
     };
 
     if private_details {
         ret.id = Some(user.id);
         ret.created_at = Some(user.created_at);
         ret.namespace_id = Some(user.namespace_id);
+        ret.two_fa_enabled = Some(user.two_fa_enabled);
+        ret.is_admin = Some(user.is_admin);
+        ret.email = Some(user.email);
     }
 
     ret
@@ -49,6 +56,10 @@ pub struct User {
     pub name: String,
     pub username: String,
     pub namespace_id: Option<Id>,
+    pub two_fa_enabled: Option<bool>,
+    pub is_admin: Option<bool>,
+    pub email: Option<String>,
+    pub description: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

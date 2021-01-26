@@ -29,7 +29,7 @@ mod check_namespace_membership;
 mod complete_registration;
 mod complete_sign_in;
 mod complete_two_fa_challenge;
-mod complete_two_fa_setup;
+mod setup_two_fa;
 mod config;
 mod create_group;
 mod create_namespace;
@@ -57,7 +57,7 @@ mod send_group_invitation_email;
 mod send_register_email;
 mod send_sign_in_email;
 mod send_verify_email_email;
-mod setup_two_fa;
+mod complete_two_fa_setup;
 mod sign_in;
 mod update_group_profile;
 mod update_my_profile;
@@ -319,7 +319,7 @@ pub struct GetSignedUploadUrlInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct EnableTwoFaInput {
+pub struct CompleteTwoFaSetup {
     pub code: String,
 }
 
