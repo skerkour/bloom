@@ -27,6 +27,10 @@ impl File {
         return self.name == consts::ROOT_FILE_NAME;
     }
 
+    pub fn is_folder(&self) -> bool {
+        return self.r#type == consts::FILE_TYPE_FOLDER;
+    }
+
     pub fn storage_key(&self) -> String {
         // we split files into folder to not have too many files
         // in the same folder, which may have a huge performance impact on traditional

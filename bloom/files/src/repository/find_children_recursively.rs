@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         file_id: Uuid,
     ) -> Result<Vec<File>, Error> {
-        const QUERY: &str = "	WITH RECURSIVE tree AS (
+        const QUERY: &str = "WITH RECURSIVE tree AS (
             SELECT id, created_at, updated_at, name, size, type, explicitly_trashed, trashed_at, namespace_id,
                 parent_id, ARRAY[]::UUID[] AS ancestors
             FROM files WHERE parent_id IS NULL

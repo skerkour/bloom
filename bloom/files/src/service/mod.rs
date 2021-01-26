@@ -1,4 +1,4 @@
-use crate::repository::Repository;
+use crate::{entities::File, repository::Repository};
 use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::{
@@ -108,4 +108,10 @@ pub struct RenameFileInput {
 pub struct FindFileInput {
     pub namespace_id: Uuid,
     pub file_id: Option<Uuid>,
+}
+
+#[derive(Debug, Clone)]
+pub struct FileWithChildren {
+    pub file: File,
+    pub children: Vec<File>,
 }
