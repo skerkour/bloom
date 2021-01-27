@@ -29,6 +29,12 @@ export type CompleteTwoFaSetup = {
   code: string;
 }
 
+export type CreateGroup = {
+  name: string;
+  path: string;
+  description: string;
+}
+
 export type DeclineGroupInvitation = {
   invitation_id: string;
 }

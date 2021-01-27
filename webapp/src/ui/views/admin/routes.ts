@@ -8,9 +8,6 @@ const Group = () => import(/* webpackChunkName: "chunk-admin" */ './groups/group
 const Users = () => import(/* webpackChunkName: "chunk-admin" */ './users/users.vue');
 const User = () => import(/* webpackChunkName: "chunk-admin" */ './users/user.vue');
 
-const Projects = () => import(/* webpackChunkName: "chunk-admin" */ './projects/projects.vue');
-const Project = () => import(/* webpackChunkName: "chunk-admin" */ './projects/project.vue');
-
 
 const routes: Array<RouteConfig> = [
   {
@@ -25,15 +22,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/admin/groups/:groupId',
     component: Group,
-  },
-
-  {
-    path: '/admin/projects',
-    component: Projects,
-  },
-  {
-    path: '/admin/projects/:projectId',
-    component: Project,
   },
 
   {

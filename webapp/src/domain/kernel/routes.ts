@@ -10,6 +10,7 @@ export const Commands = {
   completeSignIn: `/${prefix}/${commands}/complete_sign_in`,
   completeTwoFaChallenge: `/${prefix}/${commands}/complete_two_fa_challenge`,
   completeTwoFaSetup: `/${prefix}/${commands}/complete_two_fa_setup`,
+  createGroup: `/${prefix}/${commands}/create_group`,
   declineGroupInvitation: `/${prefix}/${commands}/decline_group_invitation`,
   deleteMyAccount: `/${prefix}/${commands}/delete_my_account`,
   disableTwoFa: `/${prefix}/${commands}/disable_two_fa`,

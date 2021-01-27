@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 import ApiClient from '@/api/client';
 import {
-  Group, StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
+  StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
@@ -12,8 +12,8 @@ import { Commands, Queries } from './routes';
 import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
+  User, Group,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -79,6 +79,11 @@ export class KernelService {
       code,
     };
     await this.apiClient.post(Commands.completeTwoFaSetup, input);
+  }
+
+  async createGroup(input: CreateGroup): Promise<Group> {
+    const res: Group = await this.apiClient.post(Commands.createGroup, input);
+    return res;
   }
 
   async declineGroupInvitation(invitationId: string): Promise<void> {
@@ -259,7 +264,7 @@ export class KernelService {
     formData.append('0', file);
 
     const res: { updateGroupProfile: Group } = await this.apiClient.upload(formData);
-    return res.updateGroupProfile.avatarUrl;
+    return res.updateGroupProfile.avatar_url;
   }
 
   async fetchStatusPage(projectFullPath: string): Promise<StatusPage> {

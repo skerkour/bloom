@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pt-5">
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6" xl="4" v-if="error !== ''">
         <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" dismissible>
@@ -14,39 +14,43 @@
       </v-btn>
 
       <v-btn class="mr-3"
-        @click="deleteMessage"
-        depressed
-        color="error"
-        :loading="loading"
-        v-if="message">
-        Delete message
-      </v-btn>
-      <v-btn class="mr-3"
-        @click="sendTestMessage"
-        outlined
-        color="primary"
-        :loading="loading"
-        v-if="message">
-        Send test message
-      </v-btn>
-      <v-btn class="mr-3"
         @click="sendMessage"
         depressed
         color="primary"
         :loading="loading"
         v-if="message">
+        <v-icon left>mdi-send</v-icon>
         Send message
-      </v-btn>
-      <v-btn
-        @click="updateMessage" depressed color="success" :loading="loading" :disabled="!canCreate"
-        v-if="message" class="mr-3">
-        Save changes
       </v-btn>
       <v-btn
         @click="createMessage" depressed color="success" :loading="loading" :disabled="!canCreate"
         v-else >
         Create message
       </v-btn>
+
+      <v-menu bottom v-if="message">
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item @click="deleteMessage">
+            <v-list-item-icon>
+              <v-icon>mdi-delete</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Delete message</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item @click="sendTestMessage">
+            <v-list-item-icon>
+              <v-icon>mdi-send-outline</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Send test message</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-row>
 
 
@@ -115,6 +119,7 @@ export default VueApp.extend({
       body: '',
       bodyHtml: '',
       selectedList: null as List | null,
+      autoSaveInterval: null as number | null,
     };
   },
   computed: {
@@ -124,6 +129,19 @@ export default VueApp.extend({
   },
   mounted() {
     this.clearFields();
+  },
+  created() {
+    if (this.message) {
+      this.autoSaveInterval = setInterval(() => {
+        this.autosave();
+      }, 1000);
+    }
+  },
+  beforeDestroy() {
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval);
+      this.autoSaveInterval = null;
+    }
   },
   methods: {
     cancel() {
@@ -141,6 +159,14 @@ export default VueApp.extend({
         this.body = '';
         this.bodyHtml = '';
         [this.selectedList] = this.lists;
+      }
+    },
+    async autosave() {
+      if (this.message
+        && this.name !== this.message.name
+        && this.subject !== this.message.subject
+        && this.body !== this.message.body) {
+        this.updateMessage();
       }
     },
     async createMessage() {

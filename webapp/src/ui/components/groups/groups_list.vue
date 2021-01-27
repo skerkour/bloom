@@ -43,13 +43,13 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import { Group } from '@/api/graphql/model';
-import BProjectsList from '@/ui/components/projects/projects_list.vue';
+// import BProjectsList from '@/ui/components/projects/projects_list.vue';
 
 
 export default VueApp.extend({
   name: 'BGroupsList',
   components: {
-    BProjectsList,
+    // BProjectsList,
   },
   props: {
     groups: {

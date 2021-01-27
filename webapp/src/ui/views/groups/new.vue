@@ -15,7 +15,7 @@
         <v-card elevation="0">
           <v-card-title>
             <p class="display-1 text--primary">
-              New Group
+              New Workspace
             </p>
           </v-card-title>
 
@@ -23,7 +23,7 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  label="Group name" v-model="name" :disabled="loading"
+                  label="Name" v-model="name" :disabled="loading"
                   @input="nameToNamespace"
                 />
               </v-col>
@@ -35,7 +35,7 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  label="Group url"
+                  label="Namespace"
                   v-model="path"
                   @keyup="lowercasePath"
                   :disabled="loading"
@@ -57,7 +57,7 @@
             </v-btn>
             <v-spacer />
             <v-btn color="success" @click="createGroup" :loading="loading" depressed>
-              Create group
+              Create
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -69,7 +69,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { CreateGroupInput } from '../../../api/graphql/model';
+import { CreateGroup } from '@/domain/kernel/model';
 
 
 export default VueApp.extend({
@@ -96,14 +96,14 @@ export default VueApp.extend({
     async createGroup() {
       this.loading = true;
       this.error = '';
-      const input: CreateGroupInput = {
+      const input: CreateGroup = {
         name: this.name,
         path: this.path,
         description: this.description,
       };
 
       try {
-        await this.$groupsService.createGroup(input);
+        await this.$kernelService.createGroup(input);
       } catch (err) {
         this.error = err.message;
       } finally {

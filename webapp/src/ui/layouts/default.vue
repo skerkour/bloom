@@ -85,7 +85,7 @@
 
             <v-divider />
 
-            <v-list-item to="/new">
+            <v-list-item to="/groups/new">
               <v-list-item-icon>
                 <v-icon>mdi-plus</v-icon>
               </v-list-item-icon>

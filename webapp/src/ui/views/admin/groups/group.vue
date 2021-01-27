@@ -56,30 +56,23 @@
         <b-group-members-list :members="members" :loading="loading" />
       </v-col>
 
-      <v-col cols="12">
-        <h3 class="text-h5">Projects </h3>
-        <b-admin-projects-list :projects="projects" :loading="loading" />
-      </v-col>
-
     </v-row>
   </v-container>
 </template>
 
 
 <script lang="ts">
-import { Group, GroupMember, Project } from '@/api/graphql/model';
+import { Group, GroupMember } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import date from '@/app/filters/date';
 import BGroupMembersList from '@/ui/components/groups/members_list.vue';
 import BBillingInformation from '@/ui/components/kernel/billing_information.vue';
-import BAdminProjectsList from '@/ui/components/projects/admin_projects_list.vue';
 
 export default VueApp.extend({
   name: 'BAdminGroupView',
   components: {
     BGroupMembersList,
     BBillingInformation,
-    BAdminProjectsList,
   },
   data() {
     return {
@@ -94,9 +87,6 @@ export default VueApp.extend({
     },
     members(): GroupMember[] {
       return this.group?.members ?? [];
-    },
-    projects(): Project[] {
-      return this.group?.projects ?? [];
     },
   },
   mounted() {

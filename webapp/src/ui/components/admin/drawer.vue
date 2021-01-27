@@ -30,15 +30,6 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item exact link to="/admin/projects">
-        <v-list-item-icon>
-          <v-icon>mdi-format-list-bulleted-square</v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Projects</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
     </v-list>
   </v-navigation-drawer>
 </template>

@@ -44,14 +44,14 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { User, Group, Project } from '@/api/graphql/model';
-import BProjectsList from '@/ui/components/projects/projects_list.vue';
+// import BProjectsList from '@/ui/components/projects/projects_list.vue';
 import BUserHomepage from '@/ui/components/kernel/user_homepage.vue';
 
 
 export default VueApp.extend({
   name: 'BNamespaceView',
   components: {
-    BProjectsList,
+    // BProjectsList,
     BUserHomepage,
   },
   data() {

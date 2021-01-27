@@ -77,7 +77,7 @@
 import { VueApp } from '@/app/vue';
 import { Group, Project } from '@/api/graphql/model';
 import BGroupsList from '@/ui/components/groups/groups_list.vue';
-import BProjectsList from '@/ui/components/projects/projects_list.vue';
+// import BProjectsList from '@/ui/components/projects/projects_list.vue';
 import { ProjectWithNamespace } from '@/domain/projects/service';
 
 
@@ -85,7 +85,7 @@ export default VueApp.extend({
   name: 'BHome',
   components: {
     BGroupsList,
-    BProjectsList,
+    // BProjectsList,
   },
   data() {
     return {
