@@ -1,6 +1,6 @@
 import ApiClient from '@/api/client';
 import { Store } from 'vuex';
-import { AppState, Mutation } from '@/app/store';
+import { AppState } from '@/app/store';
 
 export class NamespacesService {
   private apiClient: ApiClient;
@@ -45,15 +45,8 @@ export class NamespacesService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res: { namespace: any } = await this.apiClient.query(query, variables);
     // eslint-disable-next-line no-underscore-dangle
-    if (res.namespace.__typename === 'Group') {
-      this.store.commit(Mutation.SET_NAMESPACE_IS_GROUP, true);
-    }
 
     return res.namespace;
-  }
-
-  leaveNamespaceView() {
-    this.store.commit(Mutation.SET_NAMESPACE_IS_GROUP, false);
   }
 }
 

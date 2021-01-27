@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-len */
@@ -13,7 +14,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -93,13 +94,13 @@ export class KernelService {
     await this.apiClient.post(Commands.declineGroupInvitation, input);
   }
 
-  async deleteGroup(groupId: string): Promise<void> {
+  async deleteGroup(groupId: string, groupPath: string): Promise<void> {
     const input: DeleteGroup = {
       group_id: groupId,
     };
     await this.apiClient.post(Commands.deleteGroup, input);
 
-    // TODO: commit, remove namespace
+    this.store.commit(Mutation.REMOVE_NAMESPACE, groupPath);
 
     this.router.push({ path: '/' });
   }
@@ -179,13 +180,13 @@ export class KernelService {
     return res.html;
   }
 
-  async quitGroup(groupId: string): Promise<void> {
+  async quitGroup(groupId: string, groupPath: string): Promise<void> {
     const input: QuitGroup = {
       group_id: groupId,
     };
     await this.apiClient.post(Commands.quitGroup, input);
 
-    // TODO: commit, remove namespace
+    this.store.commit(Mutation.REMOVE_NAMESPACE, groupPath);
 
     this.router.push({ path: '/' });
   }
@@ -238,10 +239,18 @@ export class KernelService {
   }
 
   async updateGroupProfile(input: UpdateGroupProfile): Promise<Group> {
-    const res: Group = await this.apiClient.post(Commands.updateGroupProfile, input);
+    const group: Group = await this.apiClient.post(Commands.updateGroupProfile, input);
 
-    // TODO: commit
-    return res;
+    const namespace: Namespace = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      namespace_id: group.namespace_id!,
+      name: group.name,
+      path: group.path,
+      avatar_url: group.avatar_url,
+    };
+    this.store.commit(Mutation.UPDATE_NAMESPACE, namespace);
+
+    return group;
   }
 
   async updateMyProfile(input: UpdateMyProfile): Promise<User> {

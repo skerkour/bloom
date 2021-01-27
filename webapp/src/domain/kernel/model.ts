@@ -116,6 +116,14 @@ export type Me = {
   groups: Group[];
 }
 
+
+export type Namespace = {
+  namespace_id: string;
+  name: string;
+  path: string;
+  avatar_url: string;
+}
+
 export type QrCode = {
   base64_jpeg_qr_code: string;
 }

@@ -155,7 +155,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        await this.$kernelService.deleteGroup(this.group!.id!);
+        await this.$kernelService.deleteGroup(this.group!.id!, this.group!.path);
       } catch (err) {
         this.error = err.message;
       } finally {

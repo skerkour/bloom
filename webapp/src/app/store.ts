@@ -3,7 +3,7 @@ import Vue from 'vue';
 import Vuex, { Store } from 'vuex';
 import { Storage } from '@/app/storage';
 import {
-  SignedIn, User, Session, Group, Me,
+  SignedIn, User, Session, Me, Namespace,
 } from '@/domain/kernel/model';
 
 Vue.use(Vuex);
@@ -13,12 +13,12 @@ export interface AppState {
   me: User | null;
   session: Session | null;
   sessionToken: string | null;
-  groups: Group[];
   pendingUserId: string | null;
   pendingSessionId: string | null;
   namespaceIsGroup: boolean;
   drawer: boolean;
   currentNamespaceId: string | null,
+  namespaces: Namespace[],
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [state: string]: any;
@@ -31,10 +31,12 @@ export enum Mutation {
   SIGN_OUT = 'SIGN_OUT',
   SET_PENDING_USER_ID = 'SET_PENDING_USER_ID',
   SET_PENDING_SESSION_ID = 'SET_PENDING_SESSION_ID',
-  SET_NAMESPACE_IS_GROUP = 'SET_NAMESPACE_IS_GROUP',
   UPDATE_MY_PROFILE = 'UPDATE_MY_PROFILE',
   SET_CURRENT_NAMESPACE_ID = 'SET_CURRENT_NAMESPACE_ID',
   SET_DRAWER = 'SET_DRAWER',
+  ADD_NAMESPACE = 'ADD_NAMESPACE',
+  REMOVE_NAMESPACE = 'REMOVE_NAMESPACE',
+  UPDATE_NAMESPACE = 'UPDATE_NAMESPACE',
 }
 
 function defaultAppState(): AppState {
@@ -47,8 +49,8 @@ function defaultAppState(): AppState {
     pendingSessionId: null,
     namespaceIsGroup: false,
     drawer: true,
-    groups: [],
     currentNamespaceId: null,
+    namespaces: [],
   };
 }
 
@@ -93,6 +95,25 @@ export function newStore(storage: Storage): Store<AppState> {
         state.groups = me.groups;
         state.currentNamespaceId = me.user.namespace_id;
 
+        const namespaces: Namespace[] = [{
+          namespace_id: me.user.namespace_id!,
+          name: me.user.name,
+          path: me.user.username,
+          avatar_url: me.user.avatar_url,
+        }];
+
+        me.groups.forEach((group) => {
+          const namespace: Namespace = {
+            namespace_id: group.namespace_id!,
+            name: group.name,
+            path: group.path,
+            avatar_url: group.avatar_url,
+          };
+          namespaces.push(namespace);
+        });
+
+        state.namespaces = namespaces;
+
         // storage.set(storage.keyMe, state.me);
       },
       [Mutation.SIGN_OUT](state: AppState) {
@@ -110,9 +131,6 @@ export function newStore(storage: Storage): Store<AppState> {
       [Mutation.SET_PENDING_SESSION_ID](state: AppState, pendingSessionId: string) {
         state.pendingSessionId = pendingSessionId;
       },
-      [Mutation.SET_NAMESPACE_IS_GROUP](state: AppState, namespaceIsGroup: boolean) {
-        state.namespaceIsGroup = namespaceIsGroup;
-      },
       [Mutation.UPDATE_MY_PROFILE](state: AppState, me: User) {
         state.me!.username = me.username;
         state.me!.name = me.name;
@@ -124,6 +142,20 @@ export function newStore(storage: Storage): Store<AppState> {
       },
       [Mutation.SET_CURRENT_NAMESPACE_ID](state: AppState, namespaceId: string) {
         state.currentNamespaceId = namespaceId;
+      },
+      [Mutation.ADD_NAMESPACE](state: AppState, namespace: Namespace) {
+        state.namespaces.push(namespace);
+      },
+      [Mutation.REMOVE_NAMESPACE](state: AppState, path: string) {
+        state.namespaces = state.namespaces.filter((namespace) => namespace.path !== path);
+      },
+      [Mutation.UPDATE_NAMESPACE](state: AppState, namespace: Namespace) {
+        state.namespaces = state.namespaces.map((n) => {
+          if (n.namespace_id === namespace.namespace_id) {
+            return namespace;
+          }
+          return n;
+        });
       },
     },
     actions: {

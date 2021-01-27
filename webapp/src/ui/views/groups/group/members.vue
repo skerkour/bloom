@@ -231,7 +231,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        await this.$kernelService.quitGroup(this.group!.id!);
+        await this.$kernelService.quitGroup(this.group!.id!, this.group!.path);
       } catch (err) {
         this.error = err.message;
       } finally {

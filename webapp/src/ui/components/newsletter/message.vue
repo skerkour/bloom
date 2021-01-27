@@ -141,6 +141,7 @@ export default VueApp.extend({
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
       this.autoSaveInterval = null;
+      this.autosave();
     }
   },
   methods: {
@@ -163,9 +164,9 @@ export default VueApp.extend({
     },
     async autosave() {
       if (this.message
-        && this.name !== this.message.name
-        && this.subject !== this.message.subject
-        && this.body !== this.message.body) {
+        && (this.name !== this.message.name
+        || this.subject !== this.message.subject
+        || this.body !== this.message.body)) {
         this.updateMessage();
       }
     },
