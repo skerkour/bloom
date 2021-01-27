@@ -6,6 +6,23 @@ use crate::api::scalars::{Id, Time};
 pub mod input;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Contact {
+    pub id: Id,
+    pub name: String,
+    pub email: String,
+}
+
+impl From<inbox::entities::Contact> for Contact {
+    fn from(list: inbox::entities::Contact) -> Self {
+        Contact {
+            id: list.id,
+            name: list.name,
+            email: list.email,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct List {
     pub id: Id,
     pub created_at: Time,
@@ -20,6 +37,21 @@ impl From<inbox::entities::NewsletterList> for List {
             created_at: list.created_at,
             name: list.name,
             description: list.description,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ListWithContacts {
+    pub list: List,
+    pub contacts: Vec<Contact>,
+}
+
+impl From<inbox::service::NewsletterListWithContacts> for ListWithContacts {
+    fn from(list: inbox::service::NewsletterListWithContacts) -> Self {
+        ListWithContacts {
+            list: list.list.into(),
+            contacts: list.contacts.into_iter().map(Into::into).collect(),
         }
     }
 }

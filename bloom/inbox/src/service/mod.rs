@@ -344,3 +344,9 @@ pub struct NewsletterMessageWithLists {
     pub list: NewsletterList,
     pub lists: Vec<NewsletterList>,
 }
+
+#[derive(Debug, Clone)]
+pub struct NewsletterListWithContacts {
+    pub list: NewsletterList,
+    pub contacts: Vec<Contact>,
+}

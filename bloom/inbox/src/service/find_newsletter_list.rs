@@ -1,5 +1,5 @@
 use super::FindNewsletterListInput;
-use crate::{entities::NewsletterList, Error, Service};
+use crate::{service::NewsletterListWithContacts, Error, Service};
 use kernel::Actor;
 
 impl Service {
@@ -7,7 +7,7 @@ impl Service {
         &self,
         actor: Actor,
         input: FindNewsletterListInput,
-    ) -> Result<NewsletterList, kernel::Error> {
+    ) -> Result<NewsletterListWithContacts, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
 
         let list = self.repo.find_newsletter_list_by_id(&self.db, input.list_id).await?;
@@ -17,6 +17,11 @@ impl Service {
             .await
             .map_err(|_| Error::NewsletterListNotFound)?;
 
-        Ok(list)
+        let contacts = self.repo.find_contacts_for_list(&self.db, list.id).await?;
+
+        Ok(NewsletterListWithContacts {
+            list,
+            contacts,
+        })
     }
 }
