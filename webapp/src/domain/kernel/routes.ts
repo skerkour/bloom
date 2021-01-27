@@ -14,7 +14,10 @@ export const Commands = {
   declineGroupInvitation: `/${prefix}/${commands}/decline_group_invitation`,
   deleteMyAccount: `/${prefix}/${commands}/delete_my_account`,
   disableTwoFa: `/${prefix}/${commands}/disable_two_fa`,
+  invitePeopleInGroup: `/${prefix}/${commands}/invite_people_in_group`,
+  quitGroup: `/${prefix}/${commands}/quit_group`,
   register: `/${prefix}/${commands}/register`,
+  removeMemberFromGroup: `/${prefix}/${commands}/remove_member_from_group`,
   revokeSession: `/${prefix}/${commands}/revoke_session`,
   signIn: `/${prefix}/${commands}/sign_in`,
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
@@ -25,6 +28,7 @@ export const Commands = {
 export const Queries = {
   generateQrCode: `/${prefix}/${queries}/generate_qr_code`,
   group: `/${prefix}/${queries}/group`,
+  groupWithMembersAndInvitations: `/${prefix}/${queries}/group_with_members_and_invitations`,
   myGroupInvitations: `/${prefix}/${queries}/my_group_invitations`,
   markdown: `/${prefix}/${queries}/markdown`,
   me: `/${prefix}/${queries}/me`,

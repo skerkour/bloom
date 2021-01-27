@@ -82,7 +82,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn text @click="canceInvite" :loading="loading">Cancel</v-btn>
+          <v-btn text @click="cancelInvite" :loading="loading">Cancel</v-btn>
           <v-spacer />
 
           <v-btn @click="invitePeople" color="success" :loading="loading" depressed>
@@ -100,14 +100,12 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  CancelGroupInvitationInput,
-  Group, GroupInvitation, GroupMember, InvitePeopleInGroupInput, QuitGroupInput,
-  RemoveMemberFromGroupInput,
-} from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import BMembersList from '@/ui/components/groups/members_list.vue';
 import BInvitationsList from '@/ui/components/groups/invitations_list.vue';
+import {
+  Group, GroupMember, GroupInvitation, RemoveMemberFromGroup, InvitePeopleInGroup,
+} from '@/domain/kernel/model';
 
 export default VueApp.extend({
   name: 'BGroupMembersView',
@@ -122,6 +120,8 @@ export default VueApp.extend({
       usernamesToInvite: [] as string[],
       loading: false,
       error: '',
+      members: [] as GroupMember[],
+      invitations: [] as GroupInvitation[],
     };
   },
   computed: {
@@ -130,12 +130,6 @@ export default VueApp.extend({
     },
     groupPath(): string {
       return this.$route.params.groupPath;
-    },
-    members(): GroupMember[] {
-      return this.group?.members ?? [];
-    },
-    invitations(): GroupInvitation[] {
-      return this.group?.invitations ?? [];
     },
   },
   mounted() {
@@ -149,7 +143,7 @@ export default VueApp.extend({
       this.usernamesToInvite.splice(this.usernamesToInvite.indexOf(username), 1);
       this.usernamesToInvite = [...this.usernamesToInvite];
     },
-    canceInvite() {
+    cancelInvite() {
       this.showInviteDialog = false;
       this.usernamesToInvite = [];
     },
@@ -158,7 +152,11 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.group = await this.$groupsService.fetchGroupMembers(this.groupPath);
+        // eslint-disable-next-line max-len
+        const res = await this.$kernelService.fetchGroupWithMembersAndInvitations(this.groupPath);
+        this.group = res.group;
+        this.invitations = res.invitations;
+        this.members = res.members;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -168,14 +166,14 @@ export default VueApp.extend({
     async removeMember(member: GroupMember) {
       this.loading = true;
       this.error = '';
-      const input: RemoveMemberFromGroupInput = {
-        groupId: this.group!.id!,
+      const input: RemoveMemberFromGroup = {
+        group_id: this.group!.id!,
         username: member.username,
       };
 
       try {
-        await this.$groupsService.removeMemberFromGroup(input);
-        this.group!.members = this.group!.members.filter((groupMember: GroupMember) => {
+        await this.$kernelService.removeMemberFromGroup(input);
+        this.members = this.members.filter((groupMember: GroupMember) => {
           if (groupMember.username === member.username) {
             return false;
           }
@@ -190,13 +188,10 @@ export default VueApp.extend({
     async cancelInvitation(invitation: GroupInvitation) {
       this.loading = true;
       this.error = '';
-      const input: CancelGroupInvitationInput = {
-        invitationId: invitation.id,
-      };
 
       try {
-        await this.$groupsService.cancelInvitation(input);
-        this.group!.invitations = this.group!.invitations.filter((invit: GroupInvitation) => {
+        await this.$kernelService.cancelGroupInvitation(invitation.id);
+        this.invitations = this.invitations.filter((invit: GroupInvitation) => {
           if (invit.id === invitation.id) {
             return false;
           }
@@ -210,20 +205,21 @@ export default VueApp.extend({
     },
     async invitePeople() {
       if (this.usernamesToInvite.length === 0) {
-        this.canceInvite();
+        this.cancelInvite();
         return;
       }
 
       this.loading = true;
       this.error = '';
-      const input: InvitePeopleInGroupInput = {
-        groupId: this.group!.id!,
+      const input: InvitePeopleInGroup = {
+        group_id: this.group!.id!,
         usernames: this.usernamesToInvite,
       };
 
       try {
-        this.group = await this.$groupsService.invitePeopleInGroup(input);
-        this.canceInvite();
+        const invitations = await this.$kernelService.invitePeopleInGroup(input);
+        this.invitations = this.invitations.concat(invitations);
+        this.cancelInvite();
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -233,12 +229,9 @@ export default VueApp.extend({
     async quitGroup() {
       this.loading = true;
       this.error = '';
-      const input: QuitGroupInput = {
-        groupId: this.group!.id!,
-      };
 
       try {
-        await this.$groupsService.quitGroup(input);
+        await this.$kernelService.quitGroup(this.group!.id!);
       } catch (err) {
         this.error = err.message;
       } finally {

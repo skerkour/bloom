@@ -13,7 +13,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -119,6 +119,15 @@ export class KernelService {
     return res;
   }
 
+  async fetchGroupWithMembersAndInvitations(path: string): Promise<GroupWithMembersAndInvitations> {
+    const input: GetGroup = {
+      path,
+    };
+    const res: GroupWithMembersAndInvitations = await this.apiClient.post(Queries.groupWithMembersAndInvitations, input);
+
+    return res;
+  }
+
   async fetchMe(): Promise<Me> {
     const res: Me = await this.apiClient.post(Queries.me, {});
 
@@ -145,6 +154,11 @@ export class KernelService {
     return res;
   }
 
+  async invitePeopleInGroup(input: InvitePeopleInGroup): Promise<GroupInvitation[]> {
+    const res: GroupInvitation[] = await this.apiClient.post(Commands.invitePeopleInGroup, input);
+    return res;
+  }
+
   async markdown(markdown: string): Promise<string> {
     const input: Markdown = {
       markdown,
@@ -154,11 +168,26 @@ export class KernelService {
     return res.html;
   }
 
+  async quitGroup(groupId: string): Promise<void> {
+    const input: QuitGroup = {
+      group_id: groupId,
+    };
+    await this.apiClient.post(Commands.quitGroup, input);
+
+    // TODO: commit, remove namespace
+
+    this.router.push({ path: '/' });
+  }
+
   async register(input: Register): Promise<void> {
     const res: RegistrationStarted = await this.apiClient.post(Commands.register, input);
 
     this.store.commit(Mutation.SET_PENDING_USER_ID, res.pending_user_id);
     this.router.push({ path: '/register/complete' });
+  }
+
+  async removeMemberFromGroup(input: RemoveMemberFromGroup): Promise<void> {
+    await this.apiClient.post(Commands.removeMemberFromGroup, input);
   }
 
   async revokeSession(sessionId: string): Promise<void> {

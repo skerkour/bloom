@@ -78,6 +78,26 @@ export type GroupInvitation = {
   group: Group;
 }
 
+export type GroupMember = {
+  user_id: string;
+  username: string;
+  avatar_url: string;
+  name: string;
+  role: string;
+  joined_at: string;
+}
+
+export type GroupWithMembersAndInvitations = {
+  group: Group;
+  invitations: GroupInvitation[];
+  members: GroupMember[];
+}
+
+export type InvitePeopleInGroup = {
+  group_id: string;
+  usernames: string[];
+}
+
 export type Markdown = {
   markdown: string;
 }
@@ -94,6 +114,10 @@ export type Me = {
 
 export type QrCode = {
   base64_jpeg_qr_code: string;
+}
+
+export type QuitGroup = {
+  group_id: string;
 }
 
 export type Register = {
@@ -135,6 +159,11 @@ export type SignIn = {
 
 export type SignInStarted = {
   pending_session_id: string;
+}
+
+export type RemoveMemberFromGroup = {
+  group_id: string;
+  username: string;
 }
 
 export type UpdateGroupProfile = {
