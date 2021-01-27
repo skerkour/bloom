@@ -93,15 +93,10 @@ export default VueApp.extend({
       ],
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   methods: {
     calendar,
     gotoMessage(message: OutboundMessage) {
-      this.$router.push({ path: `/${this.projectFullPath}/-/outbound/${message.id}` });
+      this.$router.push({ path: `/newsletter/message/${message.id}` });
     },
   },
 });

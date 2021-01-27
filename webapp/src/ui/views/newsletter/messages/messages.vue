@@ -21,21 +21,22 @@
       <v-col cols="12" class="ma-0 py-0">
         <v-app-bar dense color="white" flat>
           <v-spacer />
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn disabled color="success" depressed v-if="lists.length === 0"
-                v-bind="attrs" v-on="on">
-                <v-icon left>mdi-plus</v-icon>
-                New message
-              </v-btn>
-            </template>
-            <span>Please create a list before a message</span>
-          </v-tooltip>
+
+          <v-btn disabled color="success" depressed v-if="lists.length === 0">
+             New message
+            <v-icon left>mdi-plus</v-icon>
+          </v-btn>
+
           <v-btn to="/newsletter/messages/new" color="success" depressed v-if="lists.length > 0">
             <v-icon left>mdi-plus</v-icon>
             New message
           </v-btn>
         </v-app-bar>
+
+        <div class="text-right" v-if="lists.length === 0">
+          Please create a list before a message
+        </div>
+
       </v-col>
 
       <v-col cols="12" class="ma-0 py-0">

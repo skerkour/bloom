@@ -38,9 +38,9 @@
 
 
 <script lang="ts">
-import { List, Project } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
-import BListsList from '@/ui/components/growth/lists_list.vue';
+import { List } from '@/domain/newsletter/model';
+import BListsList from '@/ui/components/newsletter/lists_list.vue';
 
 export default VueApp.extend({
   name: 'BListsView',
@@ -51,16 +51,8 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
-      project: null as Project | null,
+      lists: [] as List[],
     };
-  },
-  computed: {
-    lists(): List[] {
-      return this.project?.lists ?? [];
-    },
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -71,7 +63,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$growthService.fetchLists(this.projectFullPath);
+        this.lists = await this.$newsletterService.fetchLists();
       } catch (err) {
         this.error = err.message;
       } finally {

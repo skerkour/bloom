@@ -1,6 +1,18 @@
 /* eslint-disable */
 import { Option } from '../kernel/model';
 
+export type Contact = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export type CreateList = {
+  namespace_id: string;
+  name: string;
+  description: string;
+};
+
 export type CreateMessage = {
   list_id: string;
   name: string;
@@ -37,6 +49,11 @@ export type List = {
   created_at: string;
   name: string;
   description: string;
+};
+
+export type ListWithContacts = {
+  list: List;
+  contacts: Contact[];
 };
 
 export type Message = {

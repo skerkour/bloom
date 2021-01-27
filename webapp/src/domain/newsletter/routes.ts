@@ -4,6 +4,7 @@ const commands = 'commands';
 const queries = 'queries';
 
 export const Commands = {
+  createList: `/${prefix}/${commands}/create_list`,
   createMessage: `/${prefix}/${commands}/create_message`,
   deleteList: `/${prefix}/${commands}/delete_list`,
   deleteMessage: `/${prefix}/${commands}/delete_message`,

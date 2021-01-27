@@ -55,15 +55,10 @@ export default VueApp.extend({
       ],
     };
   },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
-  },
   methods: {
     calendar,
     gotoList(list: List) {
-      this.$router.push({ path: `/${this.projectFullPath}/-/lists/${list.id}` });
+      this.$router.push({ path: `/newsletter/lists/${list.id}` });
     },
   },
 });

@@ -77,7 +77,7 @@
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
 import BMarkdownEditor from '@/ui/components/kernel/markdown_editor.vue';
-import BSelectLists from '@/ui/components/growth/select_lists.vue';
+import BSelectLists from '@/ui/components/newsletter/select_lists.vue';
 import {
   CreateMessage, List, Message, UpdateMessage,
 } from '@/domain/newsletter/model';

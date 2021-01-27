@@ -5,11 +5,12 @@ import Router from '@/app/router';
 import { AppState } from '@/app/store';
 import { Store } from 'vuex';
 import {
+  CreateList,
   CreateMessage,
   DeleteList,
   DeleteMessage,
-  GetList, GetLists, GetMessage, GetMessages, List, Message, MessageWithLists, SendMessage,
-  SendTestMessage, UpdateList, UpdateMessage,
+  GetList, GetLists, GetMessage, GetMessages, List, ListWithContacts, Message, MessageWithLists,
+  SendMessage, SendTestMessage, UpdateList, UpdateMessage,
 } from './model';
 import { Commands, Queries } from './routes';
 
@@ -30,6 +31,12 @@ export class NewsletterService {
     this.router.push({ path: `/newsletter/messages/${message.id}` });
   }
 
+  async createList(input: CreateList): Promise<void> {
+    const list: List = await this.apiClient.post(Commands.createList, input);
+
+    this.router.push({ path: `/newsletter/lists/${list.id}` });
+  }
+
   async deleteList(listId: string): Promise<void> {
     const input: DeleteList = {
       list_id: listId,
@@ -48,11 +55,11 @@ export class NewsletterService {
     this.router.push({ path: '/newsletter/messages' });
   }
 
-  async fetchList(listId: string): Promise<List> {
+  async fetchList(listId: string): Promise<ListWithContacts> {
     const input: GetList = {
       list_id: listId,
     };
-    const res: List = await this.apiClient.post(Queries.list, input);
+    const res: ListWithContacts = await this.apiClient.post(Queries.list, input);
 
     return res;
   }

@@ -5,7 +5,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BList from '@/ui/components/growth/list.vue';
+import BList from '@/ui/components/newsletter/list.vue';
 
 
 export default VueApp.extend({

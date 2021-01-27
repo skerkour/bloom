@@ -67,6 +67,9 @@
               <td>
                 {{ item.name }}
               </td>
+              <td>
+                {{ item.email }}
+              </td>
             </tr>
           </template>
         </v-data-table>
@@ -79,10 +82,10 @@
 
 <script lang="ts">
 import { PropType } from 'vue';
-import {
-  List, Contact, CreateListInput, UpdateListInput, DeleteListInput,
-} from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
+import {
+  List, Contact, CreateList, UpdateList,
+} from '@/domain/newsletter/model';
 
 export default VueApp.extend({
   name: 'BList',
@@ -92,6 +95,11 @@ export default VueApp.extend({
       required: false,
       default: null,
     },
+    contacts: {
+      type: Array as PropType<Contact[]>,
+      required: false,
+      default: [],
+    },
   },
   data() {
     return {
@@ -100,7 +108,6 @@ export default VueApp.extend({
 
       name: '',
       description: '',
-      contacts: [] as Contact[],
       contactsHeaders: [
         {
           text: 'Contact',
@@ -108,13 +115,16 @@ export default VueApp.extend({
           sortable: true,
           value: 'name',
         },
+        {
+          text: 'Contact',
+          align: 'start',
+          sortable: true,
+          value: 'email',
+        },
       ],
     };
   },
   computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
     canCreate(): boolean {
       return this.name.length !== 0;
     },
@@ -124,30 +134,29 @@ export default VueApp.extend({
   },
   methods: {
     cancel() {
-      this.$router.push({ path: `/${this.projectFullPath}/-/lists` });
+      this.$router.push({ path: '/newsletter/lists' });
     },
     clearFields() {
       if (this.list) {
         this.name = this.list.name;
         this.description = this.list.description;
-        this.contacts = this.list.contacts;
       } else {
         this.name = '';
         this.description = '';
-        this.contacts = [];
       }
     },
     async createList() {
       this.loading = true;
       this.error = '';
-      const input: CreateListInput = {
-        projectFullPath: this.projectFullPath,
+      const input: CreateList = {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        namespace_id: this.$store.state.currentNamespaceId!,
         name: this.name,
         description: this.description,
       };
 
       try {
-        await this.$growthService.createList(input);
+        await this.$newsletterService.createList(input);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -157,16 +166,16 @@ export default VueApp.extend({
     async updateList() {
       this.loading = true;
       this.error = '';
-      const input: UpdateListInput = {
+      const input: UpdateList = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.list!.id,
+        list_id: this.list!.id,
         name: this.name,
         description: this.description,
       };
 
       try {
-        const message = await this.$growthService.updateList(input);
-        this.$emit('updated', message);
+        const list = await this.$newsletterService.updateList(input);
+        this.$emit('updated', list);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -181,13 +190,10 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: DeleteListInput = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: this.list!.id,
-      };
 
       try {
-        await this.$growthService.deleteList(this.projectFullPath, input);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.$newsletterService.deleteList(this.list!.id);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -195,7 +201,7 @@ export default VueApp.extend({
       }
     },
     gotoContact(contact: Contact) {
-      this.$router.push({ path: `/${this.projectFullPath}/-/contacts/${contact.id}` });
+      this.$router.push({ path: `/inbox/contacts/${contact.id}` });
     },
   },
 });

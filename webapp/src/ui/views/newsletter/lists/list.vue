@@ -19,7 +19,7 @@
     </v-row>
 
     <v-row v-if="list">
-      <b-list :list="list" @updated="onListUpdated" />
+      <b-list :list="list.list" :contacts="list.contacts" @updated="onListUpdated" />
     </v-row>
   </v-container>
 </template>
@@ -27,8 +27,8 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { List } from '@/api/graphql/model';
-import BList from '@/ui/components/growth/list.vue';
+import { List, ListWithContacts } from '@/domain/newsletter/model';
+import BList from '@/ui/components/newsletter/list.vue';
 
 export default VueApp.extend({
   name: 'BListView',
@@ -39,13 +39,8 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
-      list: null as List | null,
+      list: null as ListWithContacts | null,
     };
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -56,8 +51,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        const res = await this.$growthService.fetchList(this.$route.params.listId);
-        this.list = res;
+        this.list = await this.$newsletterService.fetchList(this.$route.params.listId);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -65,7 +59,8 @@ export default VueApp.extend({
       }
     },
     onListUpdated(list: List) {
-      this.list = list;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.list!.list = list;
     },
   },
 });
