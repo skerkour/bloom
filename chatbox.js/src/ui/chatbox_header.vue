@@ -56,8 +56,10 @@ export default VueApp.extend({
       };
     },
     avatarUrl(): string {
-      return ''; // TODO
-      // return this.$store.state.preferences!.avatarUrl;
+      if (this.$store.state.preferences!.avatar_url.startsWith('http')) {
+        return this.$store.state.preferences!.avatar_url;
+      }
+      return `${this.$store.state.preferences!.base_url}${this.$store.state.preferences!.avatar_url}`;
     },
     homepageUrl(): string {
       return ''; // TODO

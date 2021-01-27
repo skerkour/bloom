@@ -16,7 +16,7 @@ export type ChatboxMessage = {
 export type ChatboxPreferences = {
   color: string;
   name: string;
-  avatar: string;
+  avatar_url: string;
   show_branding: boolean;
   welcome_message: string;
   base_url: string;
