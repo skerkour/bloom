@@ -142,7 +142,7 @@ impl From<inbox::service::ConversationWithMessageAndContacts> for ConversationWi
 pub struct ChatboxPreferences {
     pub color: String,
     pub name: String,
-    pub avatar: String,
+    pub avatar_url: String,
     pub show_branding: bool,
     pub welcome_message: String,
     pub base_url: String,
@@ -153,7 +153,7 @@ impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
         ChatboxPreferences {
             color: input.preferences.color,
             name: input.preferences.name,
-            avatar: String::from(consts::DEFAULT_AVATAR), // TODO
+            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
             show_branding: input.preferences.show_branding,
             welcome_message: input.preferences.welcome_message,
             base_url: input.base_url,

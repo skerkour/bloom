@@ -12,7 +12,7 @@ pub async fn send_chatbox_message(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::SendChatboxMessage>,
     actor: Actor,
-) -> Result<api::Response<model::Message>, kernel::Error> {
+) -> Result<api::Response<model::ChatboxMessage>, kernel::Error> {
     let input = input.into_inner();
     let service_input = SendChatboxMessageInput {
         namespace_id: input.namespace_id,
