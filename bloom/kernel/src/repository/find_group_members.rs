@@ -8,12 +8,15 @@ impl Repository {
         &self,
         db: C,
         group_id: Uuid,
-    ) -> Result<Vec<entities::User>, Error> {
-        const QUERY: &str = "SELECT kernel_users.* FROM kernel_users
-        INNER JOIN kernel_groups_members ON kernel_groups_members.user_id = kernel_users.id
-        WHERE kernel_groups_members.group_id = $1";
+    ) -> Result<Vec<entities::GroupMember>, Error> {
+        const QUERY: &str = "SELECT kernel_users.id AS user_id, kernel_users.username AS username,
+                kernel_users.name AS name, kernel_users.avatar_url AS avatar_url,
+                kernel_groups_members.joined_at AS joined_at, kernel_groups_members.role AS role
+            FROM kernel_users
+            INNER JOIN kernel_groups_members ON kernel_groups_members.user_id = kernel_users.id
+            WHERE kernel_groups_members.group_id = $1";
 
-        match sqlx::query_as::<_, entities::User>(QUERY)
+        match sqlx::query_as::<_, entities::GroupMember>(QUERY)
             .bind(group_id)
             .fetch_all(db)
             .await

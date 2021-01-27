@@ -12,3 +12,5 @@ mod markdown;
 pub use markdown::markdown;
 mod group;
 pub use group::group;
+mod group_with_members_and_invitations;
+pub use group_with_members_and_invitations::group_with_members_and_invitations;

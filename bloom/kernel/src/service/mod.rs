@@ -5,7 +5,7 @@ use crate::{
     db::DB,
     domain::{files, inbox},
     drivers,
-    entities::{Group, GroupInvitation, Session, User},
+    entities::{Group, GroupInvitation, GroupMember, Session, User},
     notifications::PAYMENT_ACTION_REQUIRED_EMAIL_TEMPLATE_ID,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE,
     notifications::PAYMENT_FAILED_EMAIL_TEMPLATE_ID,
@@ -42,6 +42,7 @@ mod disable_two_fa;
 mod dispatch_delete_old_data;
 mod find_group;
 mod find_group_and_membership;
+mod find_group_members_and_invitations;
 mod find_my_group_invitations;
 mod find_my_sessions;
 mod find_namespace_and_membership;
@@ -410,6 +411,13 @@ pub struct GroupInvitationWithDetails {
     pub group: Group,
     pub inviter: User,
     pub invitee: User,
+}
+
+#[derive(Debug, Clone)]
+pub struct GroupWithMembersAndInvitations {
+    pub group: Group,
+    pub invitations: Vec<GroupInvitationWithDetails>,
+    pub members: Vec<GroupMember>,
 }
 
 // type NamespaceAndCustomer struct {

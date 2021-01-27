@@ -1,4 +1,5 @@
 use crate::api::scalars::{Id, Time};
+use consts::GroupRole;
 use kernel::consts;
 use serde::{Deserialize, Serialize};
 
@@ -245,4 +246,44 @@ impl From<kernel::service::GroupInvitationWithDetails> for GroupInvitation {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MarkdownHtml {
     pub html: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GroupMember {
+    pub user_id: Id,
+    pub username: String,
+    pub avatar_url: String,
+    pub name: String,
+    pub role: GroupRole,
+    pub joined_at: Time,
+}
+
+impl From<kernel::entities::GroupMember> for GroupMember {
+    fn from(item: kernel::entities::GroupMember) -> Self {
+        GroupMember {
+            user_id: item.user_id,
+            username: item.username,
+            avatar_url: item.avatar_url,
+            name: item.name,
+            role: item.role,
+            joined_at: item.joined_at,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GroupWithMembersAndInvitations {
+    pub group: Group,
+    pub members: Vec<GroupMember>,
+    pub invitations: Vec<GroupInvitation>,
+}
+
+impl From<kernel::service::GroupWithMembersAndInvitations> for GroupWithMembersAndInvitations {
+    fn from(item: kernel::service::GroupWithMembersAndInvitations) -> Self {
+        GroupWithMembersAndInvitations {
+            group: convert_group(item.group, true),
+            invitations: item.invitations.into_iter().map(Into::into).collect(),
+            members: item.members.into_iter().map(Into::into).collect(),
+        }
+    }
 }

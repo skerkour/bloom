@@ -198,6 +198,16 @@ impl Upload {
     }
 }
 
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct GroupMember {
+    pub user_id: uuid::Uuid,
+    pub username: String,
+    pub name: String,
+    pub avatar_url: String,
+    pub joined_at: chrono::DateTime<chrono::Utc>,
+    pub role: GroupRole,
+}
+
 // type NamespaceAndCustomer struct {
 // 	Customer
 // 	Namespace

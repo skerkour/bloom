@@ -22,6 +22,7 @@ mod find_customer_by_namespace_id;
 mod find_group_by_id;
 mod find_group_by_path;
 mod find_group_invitation_by_id;
+mod find_group_invitations_for_group;
 mod find_group_invitations_for_invitee;
 mod find_group_invitees;
 mod find_group_members;
