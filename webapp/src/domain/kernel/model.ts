@@ -51,6 +51,10 @@ export type GenerateQrCode = {
   input: string;
 }
 
+export type GetGroup = {
+  path: string;
+}
+
 export type GetSignedUploadUrl = {
   namespace_id: string;
   filesize: number;
@@ -62,6 +66,8 @@ export type Group = {
   name: string;
   created_at: Option<string>;
   namespace_id: Option<string>;
+  path: string;
+  description: string;
 }
 
 export type GroupInvitation = {
@@ -129,6 +135,13 @@ export type SignIn = {
 
 export type SignInStarted = {
   pending_session_id: string;
+}
+
+export type UpdateGroupProfile = {
+  group_id: string;
+  name: Option<string>;
+  path: Option<string>;
+  description: Option<string>;
 }
 
 export type UpdateMyProfile = {

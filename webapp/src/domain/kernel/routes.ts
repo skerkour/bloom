@@ -18,11 +18,13 @@ export const Commands = {
   revokeSession: `/${prefix}/${commands}/revoke_session`,
   signIn: `/${prefix}/${commands}/sign_in`,
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
+  updateGroupProfile: `/${prefix}/${commands}/update_group_profile`,
   updateMyProfile: `/${prefix}/${commands}/update_my_profile`,
 }
 
 export const Queries = {
   generateQrCode: `/${prefix}/${queries}/generate_qr_code`,
+  group: `/${prefix}/${queries}/group`,
   myGroupInvitations: `/${prefix}/${queries}/my_group_invitations`,
   markdown: `/${prefix}/${queries}/markdown`,
   me: `/${prefix}/${queries}/me`,

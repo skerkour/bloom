@@ -165,10 +165,7 @@ export default VueApp.extend({
       return this.$store.state.me!.avatar_url;
     },
     groupDrawer(): boolean {
-      if (this.$route.meta.groupDrawer || this.$store.state.namespaceIsGroup) {
-        return true;
-      }
-      return false;
+      return this.$route.path.startsWith('/groups') && this.$route.path !== '/groups/new';
     },
     userPreferencesDrawer(): boolean {
       return this.$route.path.startsWith('/preferences');

@@ -13,7 +13,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group,
+  User, Group, GetGroup, UpdateGroupProfile,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -81,9 +81,9 @@ export class KernelService {
     await this.apiClient.post(Commands.completeTwoFaSetup, input);
   }
 
-  async createGroup(input: CreateGroup): Promise<Group> {
-    const res: Group = await this.apiClient.post(Commands.createGroup, input);
-    return res;
+  async createGroup(input: CreateGroup): Promise<void> {
+    const group: Group = await this.apiClient.post(Commands.createGroup, input);
+    this.router.push({ path: `/groups/${group.path}` });
   }
 
   async declineGroupInvitation(invitationId: string): Promise<void> {
@@ -108,6 +108,15 @@ export class KernelService {
       code,
     };
     await this.apiClient.post(Commands.disableTwoFa, input);
+  }
+
+  async fetchGroup(path: string): Promise<Group> {
+    const input: GetGroup = {
+      path,
+    };
+    const res: Group = await this.apiClient.post(Queries.group, input);
+
+    return res;
   }
 
   async fetchMe(): Promise<Me> {
@@ -185,6 +194,13 @@ export class KernelService {
     };
     const res: SignedUploadUrl = await this.apiClient.post(Queries.signedUploadUrl, input);
 
+    return res;
+  }
+
+  async updateGroupProfile(input: UpdateGroupProfile): Promise<Group> {
+    const res: Group = await this.apiClient.post(Commands.updateGroupProfile, input);
+
+    // TODO: commit
     return res;
   }
 

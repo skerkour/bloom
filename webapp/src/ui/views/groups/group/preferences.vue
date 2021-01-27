@@ -18,7 +18,7 @@
     <v-row v-if="group" class="mx-5">
       <v-col cols="10" md="6" lg="5" xl="4">
         <b-avatar-form :loading="loading" @update-avatar="updateAvatar"
-          :avatarUrl="group.avatarUrl" />
+          :avatarUrl="group.avatar_url" disabled />
       </v-col>
     </v-row>
 
@@ -65,8 +65,8 @@
 
 <script lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Group, UpdateGroupProfileInput } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
+import { Group, UpdateGroupProfile } from '@/domain/kernel/model';
 import BAvatarForm from '@/ui/components/kernel/avatar_form.vue';
 
 
@@ -111,7 +111,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.group = await this.$groupsService.fetchGroup(this.groupPath);
+        this.group = await this.$kernelService.fetchGroup(this.groupPath);
         this.resetFields();
       } catch (err) {
         this.error = err.message;
@@ -126,17 +126,17 @@ export default VueApp.extend({
       const name = this.group!.name === this.name ? null : this.name;
       const description = this.group!.description === this.description ? null : this.description;
       const path = this.group!.path === this.path ? null : this.path;
-      const input: UpdateGroupProfileInput = {
-        id: this.group!.id!,
+      const input: UpdateGroupProfile = {
+        group_id: this.group!.id!,
         name,
         description,
         path,
       };
 
       try {
-        this.group = await this.$groupsService.updateGroupProfile(input);
+        this.group = await this.$kernelService.updateGroupProfile(input);
         if (oldPath !== this.group.path) {
-          this.$router.push({ path: `/groups/${this.group.path}/-/preferences` });
+          this.$router.push({ path: `/groups/${this.group.path}/preferences` });
         } else {
           this.resetFields();
         }
@@ -167,7 +167,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.group!.avatarUrl = await this.$kernelService.updateGroupAvatar(this.group!.id!, file);
+        this.group!.avatar_url = await this.$kernelService.updateGroupAvatar(this.group!.id!, file);
       } catch (err) {
         this.error = err.message;
       } finally {
