@@ -1,14 +1,9 @@
 import ApiClient from '@/api/client';
 import {
-  CreateGroupInput,
   Group,
-  DeleteGroupInput, CustomerPortalUrlInput, UpdateBillingInformationInput, CheckoutSessionInput,
-  SyncBillingWithProviderInput, User, UpdateGroupProfileInput, RemoveMemberFromGroupInput,
-  CancelGroupInvitationInput,
-  QuitGroupInput,
-  InvitePeopleInGroupInput,
+  CustomerPortalUrlInput, UpdateBillingInformationInput, CheckoutSessionInput,
+  SyncBillingWithProviderInput, User,
 } from '@/api/graphql/model';
-import { Config } from '@/app/config';
 import Router from '@/app/router';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -36,118 +31,10 @@ export type GroupeAndMe = {
 export class GroupsService {
   private apiClient: ApiClient;
   private router: Router;
-  private config: Config;
 
-  constructor(apiClient: ApiClient, router: Router, config: Config) {
+  constructor(apiClient: ApiClient, router: Router) {
     this.apiClient = apiClient;
     this.router = router;
-    this.config = config;
-  }
-
-  async createGroup(input: CreateGroupInput): Promise<void> {
-    const query = `
-      mutation($input: CreateGroupInput!) {
-        createGroup(input: $input) {
-          path
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { createGroup: Group } = await this.apiClient.query(query, variables);
-    this.router.push({ path: `/${res.createGroup.path}` });
-  }
-
-  async deleteGroup(groupPath: string) {
-    const query = `
-      mutation($input: DeleteGroupInput!) {
-        deleteGroup(input: $input)
-      }
-    `;
-    const input: DeleteGroupInput = {
-      fullPath: groupPath,
-    };
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-    this.router.push({ path: '/' });
-  }
-
-  async fetchGroup(fullPath: string): Promise<Group> {
-    const query = `
-      query($fullPath: String!) {
-        group(fullPath: $fullPath) {
-          id
-          createdAt
-          name
-          path
-          avatarUrl
-          description
-        }
-      }
-    `;
-    const variables = { fullPath };
-
-    const res: { group: Group } = await this.apiClient.query(query, variables);
-    return res.group;
-  }
-
-  async fetchGroupMembers(fullPath: string): Promise<Group> {
-    const query = `
-      query($fullPath: String!) {
-        group(fullPath: $fullPath) {
-          id
-          createdAt
-          name
-          path
-          avatarUrl
-          description
-
-          members {
-            username
-            name
-            avatarUrl
-            role
-          }
-          invitations {
-            id
-            inviter {
-              username
-              avatarUrl
-              name
-            }
-            invitee {
-              username
-              avatarUrl
-              name
-            }
-          }
-        }
-      }
-    `;
-    const variables = { fullPath };
-
-    const res: { group: Group } = await this.apiClient.query(query, variables);
-    return res.group;
-  }
-
-  async updateGroupProfile(input: UpdateGroupProfileInput): Promise<Group> {
-    const query = `
-      mutation($input: UpdateGroupProfileInput!) {
-        updateGroupProfile(input: $input) {
-          id
-          createdAt
-          name
-          path
-          avatarUrl
-          description
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { updateGroupProfile: Group } = await this.apiClient.query(query, variables);
-    return res.updateGroupProfile;
   }
 
   async fetchGroupBilling(fullPath: string): Promise<GroupeAndMe> {
@@ -187,81 +74,6 @@ export class GroupsService {
 
     const res: GroupeAndMe = await this.apiClient.query(query, variables);
     return res;
-  }
-
-  async removeMemberFromGroup(input: RemoveMemberFromGroupInput): Promise<void> {
-    const query = `
-      mutation($input: RemoveMemberFromGroupInput!) {
-        removeMemberFromGroup(input: $input) {
-          id
-        }
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async cancelInvitation(input: CancelGroupInvitationInput): Promise<void> {
-    const query = `
-      mutation($input: CancelGroupInvitationInput!) {
-        cancelGroupInvitation(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-  }
-
-  async quitGroup(input: QuitGroupInput): Promise<void> {
-    const query = `
-      mutation($input: QuitGroupInput!) {
-        quitGroup(input: $input)
-      }
-    `;
-    const variables = { input };
-
-    await this.apiClient.query(query, variables);
-    this.router.push({ path: '/' });
-  }
-
-  async invitePeopleInGroup(input: InvitePeopleInGroupInput): Promise<Group> {
-    const query = `
-      mutation($input: InvitePeopleInGroupInput!) {
-        invitePeopleInGroup(input: $input) {
-          id
-          createdAt
-          name
-          path
-          avatarUrl
-          description
-
-          members {
-            username
-            name
-            avatarUrl
-            role
-          }
-          invitations {
-            id
-            inviter {
-              username
-              avatarUrl
-              name
-            }
-            invitee {
-              username
-              avatarUrl
-              name
-            }
-          }
-        }
-      }
-    `;
-    const variables = { input };
-
-    const res: { invitePeopleInGroup: Group } = await this.apiClient.query(query, variables);
-    return res.invitePeopleInGroup;
   }
 
   async gotoBillingPortal(namespace: string) {

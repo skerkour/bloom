@@ -13,7 +13,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -91,6 +91,17 @@ export class KernelService {
       invitation_id: invitationId,
     };
     await this.apiClient.post(Commands.declineGroupInvitation, input);
+  }
+
+  async deleteGroup(groupId: string): Promise<void> {
+    const input: DeleteGroup = {
+      group_id: groupId,
+    };
+    await this.apiClient.post(Commands.deleteGroup, input);
+
+    // TODO: commit, remove namespace
+
+    this.router.push({ path: '/' });
   }
 
   async deleteMyAccount(twoFaCode: string | null): Promise<void> {

@@ -12,6 +12,7 @@ export const Commands = {
   completeTwoFaSetup: `/${prefix}/${commands}/complete_two_fa_setup`,
   createGroup: `/${prefix}/${commands}/create_group`,
   declineGroupInvitation: `/${prefix}/${commands}/decline_group_invitation`,
+  deleteGroup: `/${prefix}/${commands}/delete_group`,
   deleteMyAccount: `/${prefix}/${commands}/delete_my_account`,
   disableTwoFa: `/${prefix}/${commands}/disable_two_fa`,
   invitePeopleInGroup: `/${prefix}/${commands}/invite_people_in_group`,

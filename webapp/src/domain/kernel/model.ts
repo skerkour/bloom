@@ -43,6 +43,10 @@ export type DeleteMyAccount = {
   two_fa_code: Option<string>;
 }
 
+export type DeleteGroup = {
+  group_id: string;
+}
+
 export type DisableTwoFa = {
   code: string;
 }
