@@ -37,7 +37,6 @@ pub struct Message {
     pub last_sent_at: Option<Time>,
     pub sent_count: i64,
     pub error_count: i64,
-    pub list_id: Id,
 }
 
 impl From<inbox::entities::NewsletterMessage> for Message {
@@ -54,7 +53,23 @@ impl From<inbox::entities::NewsletterMessage> for Message {
             last_sent_at: message.last_sent_at,
             sent_count: message.sent_count,
             error_count: message.error_count,
-            list_id: message.list_id,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MessageWithLists {
+    pub message: Message,
+    pub list: List,
+    pub lists: Vec<List>,
+}
+
+impl From<inbox::service::NewsletterMessageWithLists> for MessageWithLists {
+    fn from(message: inbox::service::NewsletterMessageWithLists) -> Self {
+        MessageWithLists {
+            message: message.message.into(),
+            list: message.list.into(),
+            lists: message.lists.into_iter().map(Into::into).collect(),
         }
     }
 }

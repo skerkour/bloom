@@ -237,3 +237,8 @@ impl From<kernel::service::GroupInvitationWithDetails> for GroupInvitation {
         }
     }
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MarkdownHtml {
+    pub html: String,
+}

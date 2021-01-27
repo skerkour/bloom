@@ -12,6 +12,7 @@ pub enum Error {
     EmailIsInvalid,
     UploadNotFound,
     QrCodeInputIsTooLong,
+    MarkdownIsTooLong,
 
     // User
     UserNotFound,
@@ -171,6 +172,7 @@ impl std::convert::From<Error> for crate::Error {
             Error::EmailIsInvalid => crate::Error::InvalidArgument(String::from("Email is not valid.")),
             Error::UploadNotFound => crate::Error::NotFound(String::from("Upload not found.")),
             Error::QrCodeInputIsTooLong => crate::Error::InvalidArgument(String::from("QR code input is too long.")),
+            Error::MarkdownIsTooLong => crate::Error::InvalidArgument(String::from("Markdown is too long.")),
         }
     }
 }

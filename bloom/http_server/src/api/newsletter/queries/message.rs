@@ -12,7 +12,7 @@ pub async fn message(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::GetMessage>,
     actor: Actor,
-) -> Result<api::Response<model::Message>, kernel::Error> {
+) -> Result<api::Response<model::MessageWithLists>, kernel::Error> {
     let input = input.into_inner();
     let service_input = FindNewsletterMessageInput {
         message_id: input.message_id,

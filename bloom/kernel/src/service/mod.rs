@@ -47,6 +47,7 @@ mod find_namespace_and_membership;
 mod find_upload;
 mod get_signed_upload_url;
 mod invite_people_in_group;
+mod markdown;
 mod me;
 mod new_session;
 mod qr_code;

@@ -1,5 +1,5 @@
 use crate::{
-    entities::{ChatboxPreferences, Contact, Conversation, Message},
+    entities::{ChatboxPreferences, Contact, Conversation, Message, NewsletterList, NewsletterMessage},
     notifications::{NEWSLETTER_EMAIL_TEMPLATE, NEWSLETTER_EMAIL_TEMPLATE_ID},
     repository::Repository,
 };
@@ -336,4 +336,11 @@ pub struct ConversationWithMessageAndContacts {
 pub struct DetailedChatboxPreferences {
     pub preferences: ChatboxPreferences,
     pub base_url: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct NewsletterMessageWithLists {
+    pub message: NewsletterMessage,
+    pub list: NewsletterList,
+    pub lists: Vec<NewsletterList>,
 }

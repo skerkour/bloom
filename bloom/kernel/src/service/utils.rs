@@ -1,5 +1,6 @@
 use super::{DecodedSessionToken, Service};
 use crate::{
+    consts,
     domain::{files, inbox},
     entities::{Session, User},
     errors::kernel::Error,
@@ -77,6 +78,10 @@ impl Service {
     }
 
     pub async fn render_markdown(&self, markdown: &str) -> Result<String, crate::Error> {
+        if markdown.len() > consts::MARKDOWN_MAX_SIZE {
+            return Err(Error::MarkdownIsTooLong.into());
+        }
+
         let unsafe_html = stdx::markdown::render_markdown(markdown);
         let safe_html = self.xss.sanitize(&unsafe_html);
         Ok(safe_html)

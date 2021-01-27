@@ -80,6 +80,7 @@ pub const DEFAULT_AVATAR: &str = "/assets/imgs/profile.jpg";
 pub const UPLOAD_TMP_STORAGE_KEY_FODLER: &str = "uploads/tmp";
 pub const UPLOAD_MAX_SIZE: u64 = 8_000_000_000; // 8GB
 pub const QR_CODE_INPUT_MAX_LENGTH: usize = 1024;
+pub const MARKDOWN_MAX_SIZE: usize = 42_000; // 42kb
 
 // Namespace
 pub const NAMESPACE_MIN_LENGTH: usize = 4;

@@ -127,3 +127,8 @@ pub struct SignedUploadUrl {
 pub struct GenerateQrCode {
     pub input: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Markdown {
+    pub markdown: String,
+}
