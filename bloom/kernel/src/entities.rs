@@ -203,7 +203,7 @@ pub struct GroupMember {
     pub user_id: uuid::Uuid,
     pub username: String,
     pub name: String,
-    pub avatar_url: String,
+    pub avatar_storage_key: String,
     pub joined_at: chrono::DateTime<chrono::Utc>,
     pub role: GroupRole,
 }

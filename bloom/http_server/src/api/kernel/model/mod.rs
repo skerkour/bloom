@@ -263,7 +263,7 @@ impl From<kernel::entities::GroupMember> for GroupMember {
         GroupMember {
             user_id: item.user_id,
             username: item.username,
-            avatar_url: item.avatar_url,
+            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
             name: item.name,
             role: item.role,
             joined_at: item.joined_at,
