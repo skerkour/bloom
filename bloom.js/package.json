@@ -22,6 +22,6 @@
   "homepage": "https://github.com/bloom42/bloom",
   "dependencies": {},
   "devDependencies": {
-    "uglify-js": "^3.12.4"
+    "uglify-js": "^3.12.5"
   }
 }
