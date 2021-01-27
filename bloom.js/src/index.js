@@ -91,14 +91,14 @@
   }
 
   function trackPage() {
-    var pageEventEndpoint = bloomConfig.url + '/api/v1/events/page';
+    var pageEventEndpoint = bloomConfig.url + '/api/a/events/p';
     lastPage = window.location.pathname;
 
     var event = {
       anonymous_id: anonymousId,
       timestamp: new Date().toISOString(),
       sent_at: new Date().toISOString(),
-      project_id: bloomConfig.project,
+      namespace_id: bloomConfig.project,
       name: document.title,
       url: window.location.href,
       referrer: document.referrer,
