@@ -40,6 +40,7 @@ mod delete_my_account;
 mod delete_old_data;
 mod disable_two_fa;
 mod dispatch_delete_old_data;
+mod find_group;
 mod find_group_and_membership;
 mod find_my_group_invitations;
 mod find_my_sessions;

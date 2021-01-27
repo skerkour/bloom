@@ -132,3 +132,8 @@ pub struct GenerateQrCode {
 pub struct Markdown {
     pub markdown: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct GetGroup {
+    pub path: String,
+}

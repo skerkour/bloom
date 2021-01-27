@@ -37,6 +37,8 @@ pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> G
         namespace_id: None,
         name: group.name,
         avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
+        path: group.path,
+        description: group.description,
     };
 
     if private_details {
@@ -195,6 +197,8 @@ pub struct Group {
     pub avatar_url: String,
     pub namespace_id: Option<Id>,
     pub name: String,
+    pub path: String,
+    pub description: String,
 }
 
 #[derive(Serialize, Deserialize)]

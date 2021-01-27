@@ -150,6 +150,9 @@ pub async fn run(
                                     .service(
                                         web::resource("/my_sessions")
                                             .route(web::post().to(api::kernel::queries::my_sessions)),
+                                    )
+                                    .service(
+                                        web::resource("/group").route(web::post().to(api::kernel::queries::group)),
                                     ),
                             ),
                     )
