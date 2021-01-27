@@ -1,7 +1,6 @@
 <template>
   <v-app :dark="darkMode">
-    <b-project-drawer v-if="projectDrawer" />
-    <b-group-drawer v-else-if="groupDrawer" />
+    <b-group-drawer v-if="groupDrawer" />
     <b-user-preferences-drawer v-if="userPreferencesDrawer" />
     <b-tools-drawer v-if="toolsDrawer" />
     <b-admin-drawer v-if="adminDrawer" />
@@ -130,7 +129,6 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import BProjectDrawer from '@/ui/components/projects/drawer.vue';
 import BGroupDrawer from '@/ui/components/groups/drawer.vue';
 import BUserPreferencesDrawer from '@/ui/components/kernel/preferences_drawer.vue';
 import BFooter from '@/ui/components/kernel/footer.vue';
@@ -145,7 +143,6 @@ import { Mutation } from '@/app/store';
 export default VueApp.extend({
   name: 'BDefaultLayout',
   components: {
-    BProjectDrawer,
     BGroupDrawer,
     BUserPreferencesDrawer,
     BFooter,
@@ -166,12 +163,6 @@ export default VueApp.extend({
     avatarUrl(): string {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.$store.state.me!.avatar_url;
-    },
-    projectDrawer(): boolean {
-      if (this.$route.meta.projectDrawer) {
-        return true;
-      }
-      return false;
     },
     groupDrawer(): boolean {
       if (this.$route.meta.groupDrawer || this.$store.state.namespaceIsGroup) {
@@ -208,7 +199,7 @@ export default VueApp.extend({
       // eslint-disable-next-line no-unneeded-ternary
       return (this.$store.state.me ? true : false)
         // eslint-disable-next-line max-len
-        && (this.projectDrawer || this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
+        && (this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
           || this.inboxDrawer || this.filesDrawer || this.newsletterDrawer);
     },
   },
