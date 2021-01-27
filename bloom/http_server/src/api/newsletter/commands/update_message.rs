@@ -12,7 +12,7 @@ pub async fn update_message(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::UpdateMessage>,
     actor: Actor,
-) -> Result<api::Response<model::Message>, kernel::Error> {
+) -> Result<api::Response<model::MessageWithLists>, kernel::Error> {
     let input = input.into_inner();
     let service_input = UpdateNewsletterMessageInput {
         message_id: input.message_id,

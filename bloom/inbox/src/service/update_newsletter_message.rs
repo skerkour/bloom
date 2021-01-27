@@ -1,5 +1,5 @@
 use super::UpdateNewsletterMessageInput;
-use crate::{entities::NewsletterMessage, Error, Service};
+use crate::{service::NewsletterMessageWithLists, Error, Service};
 use kernel::Actor;
 use stdx::chrono::Utc;
 
@@ -8,7 +8,7 @@ impl Service {
         &self,
         actor: Actor,
         input: UpdateNewsletterMessageInput,
-    ) -> Result<NewsletterMessage, kernel::Error> {
+    ) -> Result<NewsletterMessageWithLists, kernel::Error> {
         let actor = self.kernel_service.current_user(actor)?;
 
         let mut message = self
@@ -50,6 +50,15 @@ impl Service {
         message.list_id = list.id;
         self.repo.update_newsletter_message(&self.db, &message).await?;
 
-        Ok(message)
+        let lists = self
+            .repo
+            .find_newsletter_lists_for_namespace(&self.db, message.namespace_id)
+            .await?;
+
+        Ok(NewsletterMessageWithLists {
+            message,
+            list,
+            lists,
+        })
     }
 }
