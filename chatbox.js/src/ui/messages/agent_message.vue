@@ -1,6 +1,6 @@
 <template>
   <div class="agent-message" :style="style">
-    <span v-html="message.bodyHtml">
+    <span v-html="message.body_html">
     </span>
   </div>
 </template>
@@ -8,8 +8,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
-import { ChatboxMessage } from '@/api/graphql/model';
-
+import { ChatboxMessage } from '@/domain/chatbox/model';
 
 export default VueApp.extend({
   name: 'AgentMessage',

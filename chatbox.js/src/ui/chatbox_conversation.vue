@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { ChatboxMessage } from '@/api/graphql/model';
+import { ChatboxMessage } from '@/domain/chatbox/model';
 import AgentMessage from './messages/agent_message.vue';
 import UserMessage from './messages/user_message.vue';
 
@@ -37,11 +37,12 @@ export default VueApp.extend({
       return this.$store.state.messages;
     },
     welcomeMessage(): ChatboxMessage | null {
-      if (this.$store.state.preferences?.welcomeMessage) {
+      if (this.$store.state.preferences?.welcome_message) {
         return {
           id: 'chatbox.welcomeMessage',
-          createdAt: new Date().toISOString(),
-          bodyHtml: this.$store.state.preferences.welcomeMessage,
+          received_at: new Date().toISOString(),
+          body_html: this.$store.state.preferences.welcome_message,
+          author: null,
         };
       }
       return null;

@@ -56,28 +56,36 @@ export default VueApp.extend({
       };
     },
     avatarUrl(): string {
-      return this.$store.state.preferences!.avatarUrl;
+      return ''; // TODO
+      // return this.$store.state.preferences!.avatarUrl;
     },
     homepageUrl(): string {
-      return this.$store.state.preferences!.homepageUrl;
+      return ''; // TODO
+      // return this.$store.state.preferences!.homepageUrl;
     },
     twitterUrl(): string {
-      return this.$store.state.preferences!.twitterUrl;
+      return ''; // TODO
+      // return this.$store.state.preferences!.twitterUrl;
     },
     whatsappUrl(): string {
-      return `https://api.whatsapp.com/send?phone=${this.$store.state.preferences!.whatsappNumber}`;
+      return ''; // TODO
+      // return `https://api.whatsapp.com/send?phone=${this.$store.state.preferences!.whatsappNumber}`;
     },
     whatsappNumber(): string {
-      return this.$store.state.preferences!.whatsappNumber;
+      return ''; // TODO
+      // return this.$store.state.preferences!.whatsappNumber;
     },
     instagramUrl(): string | null {
-      return this.$store.state.preferences!.instagramUrl;
+      return ''; // TODO
+      // return this.$store.state.preferences!.instagramUrl;
     },
     publicEmail(): string | null {
-      return this.$store.state.preferences!.publicEmail;
+      return ''; // TODO
+      // return this.$store.state.preferences!.publicEmail;
     },
     publicEmailUrl(): string | null {
-      return `mailto:${this.$store.state.preferences!.publicEmail}`;
+      return ''; // TODO
+      // return `mailto:${this.$store.state.preferences!.publicEmail}`;
     },
   },
   methods: {

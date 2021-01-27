@@ -1,10 +1,15 @@
+/* eslint-disable max-len */
 /* eslint-disable max-classes-per-file */
 
 import APIClient from '@/api/client';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
-import { SendChatboxMessageInput, Chatbox, ChatboxMessage } from '@/api/graphql/model';
 import { BloomService } from '../bloom';
+import {
+  ChatboxPreferences, GetChatboxMessages, GetChatboxPreferences, Chatbox,
+  ChatboxMessage, SendChatboxMessage,
+} from './model';
+import { Commands, Queries } from './routes';
 
 const CLOSED_MESSAGES_TIMEOUT = 15000; // 15 secs
 const LIVE_MESSAGES_TIMEOUT = 1500; // 1.5 secs
@@ -23,62 +28,33 @@ export class ChatboxService {
   }
 
   async fetchChatbox(): Promise<Chatbox> {
-    const query = `query($projectId: ID!) {
-      chatbox(projectId: $projectId) {
-        preferences {
-          color
-          name
-          avatarUrl
-          twitterUrl
-          facebookUrl
-          publicEmail
-          instagramUrl
-          whatsappNumber
-          mastodonUrl
-          homepageUrl
-          branding
-          welcomeMessage
-        }
-        messages {
-          id
-          createdAt
-          author {
-            name
-            avatarUrl
-          }
-          bodyHtml
-        }
-      }
-    }`;
-    const variables = { projectId: this.bloomService.projectId };
+    const inputPref: GetChatboxPreferences = {
+      namespace_id: this.bloomService.namespaceId,
+    };
+    const chatboxPrefPromise: Promise<ChatboxPreferences> = this.apiClient.post(Queries.chatboxPreferences, inputPref);
 
-    const res: { chatbox: Chatbox } = await this.apiClient.query(query, variables);
-    return res.chatbox;
+    const inputMessages: GetChatboxMessages = {
+      namespace_id: this.bloomService.namespaceId,
+    };
+    const chatboxMessagesPromise: Promise<ChatboxMessage[]> = this.apiClient.post(Queries.chatboxMessages, inputMessages);
+
+    const res = await Promise.all([chatboxPrefPromise, chatboxMessagesPromise]);
+
+    const ret: Chatbox = {
+      messages: res[1],
+      preferences: res[0],
+    };
+    return ret;
   }
 
-  async sendMessage(messageBody: string): Promise<void> {
-    const query = `
-      mutation($input:SendChatboxMessageInput!) {
-        sendChatboxMessage(input:$input) {
-          id
-          createdAt
-          author {
-            name
-            avatarUrl
-          }
-          bodyHtml
-        }
-      }
-    `;
-    const input: SendChatboxMessageInput = {
-      body: messageBody,
-      projectId: this.bloomService.projectId,
+  async sendMessage(body: string): Promise<void> {
+    const input: SendChatboxMessage = {
+      body,
+      namespace_id: this.bloomService.namespaceId,
     };
-    const variables = { input };
+    const message: ChatboxMessage = await this.apiClient.post(Commands.sendChatboxMessages, input);
 
-    // eslint-disable-next-line max-len
-    const message: { sendChatboxMessage: ChatboxMessage } = await this.apiClient.query(query, variables);
-    this.store.commit(Mutation.MESSAGE_RECEIVED, message.sendChatboxMessage);
+    this.store.commit(Mutation.MESSAGE_RECEIVED, message);
   }
 
   subscribeToChatboxMessages(): void {
@@ -91,33 +67,21 @@ export class ChatboxService {
   }
 
   async fetchMessages(): Promise<void> {
-    let res: { chatbox: Chatbox } | null = null;
+    let messages: ChatboxMessage[] = [];
 
     if (this.messagesTimeout === 0) {
       return;
     }
 
     try {
-      const query = `query($projectId: ID!) {
-        chatbox(projectId: $projectId) {
-          messages {
-            id
-            createdAt
-            author {
-              name
-              avatarUrl
-            }
-            bodyHtml
-          }
-        }
-      }`;
-      const variables = { projectId: this.bloomService.projectId };
-
-      res = await this.apiClient.query(query, variables);
+      const input: GetChatboxMessages = {
+        namespace_id: this.bloomService.namespaceId,
+      };
+      messages = await this.apiClient.post(Queries.chatboxMessages, input);
     } catch (err) {
       console.error(err);
     }
-    res?.chatbox.messages.forEach((message: ChatboxMessage) => {
+    messages.forEach((message) => {
       this.store.commit(Mutation.MESSAGE_RECEIVED, message);
     });
 

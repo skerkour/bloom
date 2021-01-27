@@ -9,14 +9,14 @@ import { LocalStorageService } from '@/app/local_storage';
 export class BloomService {
   localStorage: LocalStorageService;
   anonymousId: string;
-  projectId: string;
+  namespaceId: string;
   publicUrl: string;
   apiUrl: string;
 
   constructor(localStorage: LocalStorageService) {
     this.localStorage = localStorage;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this.projectId = (window as any).$bloom.project;
+    this.namespaceId = (window as any).$bloom.project;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.publicUrl = (window as any).$bloom.url;
     this.apiUrl = `${this.publicUrl}/api`;

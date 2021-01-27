@@ -12,7 +12,7 @@ export default VueApp.extend({
   name: 'ChatboxFooter',
   computed: {
     branding(): boolean {
-      return this.$store.state.preferences?.branding ?? true;
+      return this.$store.state.preferences?.show_branding ?? true;
     },
   },
 });

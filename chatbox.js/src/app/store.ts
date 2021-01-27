@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { ChatboxMessage, ChatboxPreferences, Chatbox } from '@/api/graphql/model';
+import { ChatboxMessage, ChatboxPreferences, Chatbox } from '@/domain/chatbox/model';
 
 Vue.use(Vuex);
 
