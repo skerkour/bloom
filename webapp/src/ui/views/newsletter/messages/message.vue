@@ -19,7 +19,8 @@
     </v-row>
 
     <v-row v-if="message">
-      <b-outbound-message :message="message" @updated="onMessageUpdated" :projectLists="lists" />
+      <b-newsletter-message :message="message.message"
+        @updated="onMessageUpdated" :lists="message.lists" :list="message.list" />
     </v-row>
   </v-container>
 </template>
@@ -27,26 +28,20 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { List, OutboundMessage } from '@/api/graphql/model';
-import BOutboundMessage from '@/ui/components/growth/outbound_message.vue';
+import { MessageWithLists } from '@/domain/newsletter/model';
+import BNewsletterMessage from '@/ui/components/newsletter/message.vue';
 
 export default VueApp.extend({
-  name: 'BOutboundMessageView',
+  name: 'BNewsletterMessageView',
   components: {
-    BOutboundMessage,
+    BNewsletterMessage,
   },
   data() {
     return {
       loading: false,
       error: '',
-      message: null as OutboundMessage | null,
-      lists: [] as List[],
+      message: null as MessageWithLists | null,
     };
-  },
-  computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -57,19 +52,15 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        const res = await this.$growthService.fetchOutboundMessageWithLists(
-          this.projectFullPath,
-          this.$route.params.messageId,
-        );
-        this.message = res.outboundMessage;
-        this.lists = res.project.lists;
+        this.message = await this.$newsletterService.fetchMessage(this.$route.params.messageId);
       } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
       }
     },
-    onMessageUpdated(message: OutboundMessage) {
+    onMessageUpdated(message: MessageWithLists) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.message = message;
     },
   },

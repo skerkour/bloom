@@ -78,7 +78,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.bodyHtml = await this.$collaborationService.renderMarkdown(this.body);
+        this.bodyHtml = await this.$kernelService.markdown(this.body);
       } catch (err) {
         this.error = err.message;
       } finally {

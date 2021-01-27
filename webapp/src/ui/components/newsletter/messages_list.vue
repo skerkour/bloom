@@ -44,7 +44,7 @@ import { calendar } from '@/app/filters';
 
 
 export default VueApp.extend({
-  name: 'BOutboundMessagesList',
+  name: 'BNewsletterMessagesList',
   props: {
     messages: {
       type: Array as PropType<OutboundMessage[]>,

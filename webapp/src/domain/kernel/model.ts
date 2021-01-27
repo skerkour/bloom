@@ -66,6 +66,14 @@ export type GroupInvitation = {
   group: Group;
 }
 
+export type Markdown = {
+  markdown: string;
+}
+
+export type MarkdownHtml = {
+  html: string;
+}
+
 export type Me = {
   user: User;
   session: Session;

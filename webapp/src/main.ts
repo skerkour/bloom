@@ -46,7 +46,7 @@ const growthService = new GrowthService(apiClient, router);
 const operationsService = new OperationsService(apiClient, router);
 const toolsService = new ToolsService(apiClient);
 const filesService = new FilesService(apiClient, store);
-const newsletterService = new NewsletterService(apiClient, store);
+const newsletterService = new NewsletterService(apiClient, store, router);
 
 if (config.env === 'production') {
   Vue.config.productionTip = false;

@@ -18,8 +18,8 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="project">
-      <b-outbound-message :projectLists="lists" />
+    <v-row v-if="loaded">
+      <b-newsletter-message :lists="lists" />
     </v-row>
   </v-container>
 </template>
@@ -27,28 +27,21 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { List, Project } from '@/api/graphql/model';
-import BOutboundMessage from '@/ui/components/growth/outbound_message.vue';
+import { List } from '@/domain/newsletter/model';
+import BNewsletterMessage from '@/ui/components/newsletter/message.vue';
 
 export default VueApp.extend({
   name: 'BNewOutboundMessageView',
   components: {
-    BOutboundMessage,
+    BNewsletterMessage,
   },
   data() {
     return {
       loading: false,
+      loaded: false,
       error: '',
-      project: null as Project | null,
+      lists: [] as List[],
     };
-  },
-  computed: {
-    lists(): List[] {
-      return this.project ? this.project.lists : [];
-    },
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -59,8 +52,8 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        const res = await this.$growthService.fetchLists(this.projectFullPath);
-        this.project = res;
+        this.lists = await this.$newsletterService.fetchLists();
+        this.loaded = true;
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -21,7 +21,17 @@
       <v-col cols="12" class="ma-0 py-0">
         <v-app-bar dense color="white" flat>
           <v-spacer />
-          <v-btn to="/newsletter/messages/new" color="success" depressed>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn disabled color="success" depressed v-if="lists.length === 0"
+                v-bind="attrs" v-on="on">
+                <v-icon left>mdi-plus</v-icon>
+                New message
+              </v-btn>
+            </template>
+            <span>Please create a list before a message</span>
+          </v-tooltip>
+          <v-btn to="/newsletter/messages/new" color="success" depressed v-if="lists.length > 0">
             <v-icon left>mdi-plus</v-icon>
             New message
           </v-btn>
@@ -29,7 +39,7 @@
       </v-col>
 
       <v-col cols="12" class="ma-0 py-0">
-        <b-outbound-messages-list :messages="messages" :loading="loading" />
+        <b-newsletter-messages-list :messages="messages" :loading="loading" />
       </v-col>
     </v-row>
 
@@ -39,32 +49,22 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import {
-  Project,
-  OutboundMessage,
-} from '@/api/graphql/model';
-import BOutboundMessagesList from '@/ui/components/growth/outbound_messages_list.vue';
+import BNewsletterMessagesList from '@/ui/components/newsletter/messages_list.vue';
+import { Message, List } from '@/domain/newsletter/model';
 
 
 export default VueApp.extend({
-  name: 'BOutboundMessagesView',
+  name: 'BNewsletterMessagesView',
   components: {
-    BOutboundMessagesList,
+    BNewsletterMessagesList,
   },
   data() {
     return {
       loading: false,
       error: '',
-      project: null as Project | null,
+      messages: [] as Message[],
+      lists: [] as List[],
     };
-  },
-  computed: {
-    messages(): OutboundMessage[] {
-      return this.project?.outboundMessages ?? [];
-    },
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
   },
   created() {
     this.fetchData();
@@ -75,7 +75,9 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.project = await this.$growthService.fetchOutboundMessages(this.projectFullPath);
+        // TODO: merge into only one api request
+        this.messages = await this.$newsletterService.fetchMessages();
+        this.lists = await this.$newsletterService.fetchLists();
       } catch (err) {
         this.error = err.message;
       } finally {

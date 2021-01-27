@@ -54,31 +54,13 @@
       <v-col cols="12" sm="6">
         <v-text-field v-model="name" label="Name" />
       </v-col>
-      <v-col cols="12" sm="6">
-        <v-select
-          :items="messageTypeItems"
-          label="Type"
-          value="Email"
-        />
-      </v-col>
-
-
-      <v-col cols="12" sm="6">
-        <v-text-field v-model="fromName" label="From (name)" />
-      </v-col>
-      <v-col cols="12" sm="6">
-        <v-text-field v-model="fromAddress" label="From (email address)" />
-      </v-col>
 
       <v-col cols="12">
         <v-text-field v-model="subject" label="Subject" />
       </v-col>
 
       <v-col cols="12">
-        <b-select-lists v-model="list" :items="projectLists" />
-        <p>
-          Select the default list if you want to send your message to all your contacts
-        </p>
+        <b-select-lists v-model="selectedList" :items="lists" />
       </v-col>
 
       <v-col cols="12">
@@ -94,28 +76,31 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
-import {
-  OutboundMessage, DeleteOutboundMessageInput, SendTestOutboundMessageInput,
-  CreateOutboundMessageInput, OutboundMessageType, UpdateOutboundMessageInput,
-  SendOutboundMessageInput, List,
-} from '@/api/graphql/model';
 import BMarkdownEditor from '@/ui/components/kernel/markdown_editor.vue';
 import BSelectLists from '@/ui/components/growth/select_lists.vue';
+import {
+  CreateMessage, List, Message, UpdateMessage,
+} from '@/domain/newsletter/model';
 
 
 export default VueApp.extend({
-  name: 'BOutboundMessage',
+  name: 'BNewsletterMessage',
   components: {
     BMarkdownEditor,
     BSelectLists,
   },
   props: {
     message: {
-      type: Object as PropType<OutboundMessage | null>,
+      type: Object as PropType<Message | null>,
       required: false,
       default: null,
     },
-    projectLists: {
+    list: {
+      type: Object as PropType<List>,
+      required: false,
+      default: null,
+    },
+    lists: {
       type: Array as PropType<List[]>,
       required: true,
     },
@@ -126,20 +111,13 @@ export default VueApp.extend({
       error: '',
 
       name: '',
-      fromName: '',
-      fromAddress: '',
       subject: '',
       body: '',
       bodyHtml: '',
-      type: OutboundMessageType.Standard,
-      list: null as List | null,
-      messageTypeItems: ['Email'],
+      selectedList: null as List | null,
     };
   },
   computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
-    },
     canCreate(): boolean {
       return this.name.length !== 0;
     },
@@ -149,51 +127,35 @@ export default VueApp.extend({
   },
   methods: {
     cancel() {
-      this.$router.push({ path: `/${this.projectFullPath}/-/outbound` });
+      this.$router.push({ path: '/newsletter/messages' });
     },
     clearFields() {
       if (this.message) {
         this.name = this.message.name;
         this.subject = this.message.subject;
-        this.fromName = this.message.fromName;
-        this.fromAddress = this.message.fromAddress;
         this.body = this.message.body;
-        this.bodyHtml = this.message.bodyHtml;
-        this.type = this.message.type;
-        if (this.message.lists.length === 1) {
-          [this.list] = this.message.lists;
-        } else {
-          this.list = null;
-        }
+        this.bodyHtml = this.message.body_html;
       } else {
         this.name = '';
-        this.fromName = '';
-        this.fromAddress = '';
         this.subject = '';
         this.body = '';
         this.bodyHtml = '';
-        this.type = OutboundMessageType.Standard;
-        this.list = null;
+        [this.selectedList] = this.lists;
       }
     },
     async createMessage() {
       this.loading = true;
       this.error = '';
-      const listIds = this.list === null ? [] : [this.list.id];
-      const input: CreateOutboundMessageInput = {
-        projectFullPath: this.projectFullPath,
+      const input: CreateMessage = {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        list_id: this.selectedList!.id,
         name: this.name,
-        fromName: this.fromName,
-        fromAddress: this.fromAddress,
         subject: this.subject,
         body: this.body,
-        sendAt: null,
-        type: this.type,
-        lists: listIds,
       };
 
       try {
-        await this.$growthService.createOutboundMessage(input);
+        await this.$newsletterService.createMessage(input);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -203,22 +165,18 @@ export default VueApp.extend({
     async updateMessage() {
       this.loading = true;
       this.error = '';
-      const listIds = this.list === null ? [] : [this.list.id];
-      const input: UpdateOutboundMessageInput = {
+      const input: UpdateMessage = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        messageId: this.message!.id,
+        message_id: this.message!.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        list_id: this.selectedList!.id,
         name: this.name,
-        fromName: this.fromName,
-        fromAddress: this.fromAddress,
         subject: this.subject,
         body: this.body,
-        sendAt: null,
-        type: this.type,
-        lists: listIds,
       };
 
       try {
-        const message = await this.$growthService.updateOutboundMessage(input);
+        const message = await this.$newsletterService.updateMessage(input);
         this.$emit('updated', message);
       } catch (err) {
         this.error = err.message;
@@ -234,13 +192,9 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: DeleteOutboundMessageInput = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        messageId: this.message!.id,
-      };
-
       try {
-        await this.$growthService.deleteOutboundMessage(this.projectFullPath, input);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.$newsletterService.deleteMessage(this.message!.id);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -255,13 +209,10 @@ export default VueApp.extend({
 
       this.loading = true;
       this.error = '';
-      const input: SendOutboundMessageInput = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        messageId: this.message!.id,
-      };
 
       try {
-        await this.$growthService.sendOutboundMessage(input);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.$newsletterService.sendMessage(this.message!.id);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -271,13 +222,10 @@ export default VueApp.extend({
     async sendTestMessage() {
       this.loading = true;
       this.error = '';
-      const input: SendTestOutboundMessageInput = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        messageId: this.message!.id,
-      };
 
       try {
-        await this.$growthService.sendTestOutboundMessage(input);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.$newsletterService.sendTestMessage(this.message!.id);
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -12,7 +12,7 @@ import { Commands, Queries } from './routes';
 import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
-  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
+  CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
   User,
 } from './model';
 
@@ -129,6 +129,15 @@ export class KernelService {
     const res: QrCode = await this.apiClient.post(Queries.generateQrCode, apiInput);
 
     return res;
+  }
+
+  async markdown(markdown: string): Promise<string> {
+    const input: Markdown = {
+      markdown,
+    };
+    const res: MarkdownHtml = await this.apiClient.post(Queries.markdown, input);
+
+    return res.html;
   }
 
   async register(input: Register): Promise<void> {

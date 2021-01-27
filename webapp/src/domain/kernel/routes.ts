@@ -23,6 +23,7 @@ export const Commands = {
 export const Queries = {
   generateQrCode: `/${prefix}/${queries}/generate_qr_code`,
   myGroupInvitations: `/${prefix}/${queries}/my_group_invitations`,
+  markdown: `/${prefix}/${queries}/markdown`,
   me: `/${prefix}/${queries}/me`,
   mySessions: `/${prefix}/${queries}/my_sessions`,
   signedUploadUrl: `/${prefix}/${queries}/signed_upload_url`,
