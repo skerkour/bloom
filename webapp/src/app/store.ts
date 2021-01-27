@@ -85,6 +85,7 @@ export function newStore(storage: Storage): Store<AppState> {
         }];
         state.namespaces = namespaces;
         [state.currentNamespace] = namespaces;
+        storage.set(storage.keyCurrentNamespace, state.currentNamespace.path);
 
         storage.set(storage.keyToken, state.sessionToken);
 
@@ -93,6 +94,7 @@ export function newStore(storage: Storage): Store<AppState> {
       },
       [Mutation.INIT](state: AppState, me: Me) {
         state.session = me.session;
+        state.me = me.user;
 
         const namespaces: Namespace[] = [{
           id: me.user.namespace_id!,
@@ -116,6 +118,7 @@ export function newStore(storage: Storage): Store<AppState> {
         state.namespaces = namespaces;
         if (!state.currentNamespace) {
           [state.currentNamespace] = namespaces;
+          storage.set(storage.keyCurrentNamespace, state.currentNamespace.path);
         }
       },
       [Mutation.SIGN_OUT](state: AppState) {
@@ -147,6 +150,7 @@ export function newStore(storage: Storage): Store<AppState> {
         state.namespaces = state.namespaces.filter((namespace) => namespace.path !== path);
         if (state.currentNamespace!.path === path) {
           [state.currentNamespace] = state.namespaces;
+          storage.set(storage.keyCurrentNamespace, state.currentNamespace.path);
         }
       },
       [Mutation.UPDATE_NAMESPACE](state: AppState, namespace: Namespace) {
@@ -160,6 +164,13 @@ export function newStore(storage: Storage): Store<AppState> {
           }
           return n;
         });
+
+        // profile updated
+        if (namespace.id === state.me?.namespace_id) {
+          state.me.name = namespace.name;
+          state.me.username = namespace.path;
+          state.me.avatar_url = namespace.avatar_url;
+        }
       },
     },
     actions: {

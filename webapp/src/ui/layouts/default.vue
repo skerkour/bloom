@@ -72,18 +72,20 @@
 
         <v-card>
           <v-list>
-            <v-list-item @click="setCurrentNamespace(namespace)" class="pt-3 pb-3"
-              v-for="namespace in $store.state.namespaces" :key="namespace.id"
-              color="primary">
-              <v-list-item-avatar>
-                <img :src="namespace.avatar_url">
-              </v-list-item-avatar>
+            <v-list-item-group :value="currentNamespaceIndex" color="primary">
+              <v-list-item @click="setCurrentNamespace(namespace, index)" class="pt-3 pb-3"
+                v-for="(namespace, index) in $store.state.namespaces" :key="namespace.id"
+                color="primary">
+                <v-list-item-avatar>
+                  <img :src="namespace.avatar_url">
+                </v-list-item-avatar>
 
-              <v-list-item-content>
-                <v-list-item-title>{{ namespace.name }}</v-list-item-title>
-                <v-list-item-subtitle>@{{ namespace.path }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>{{ namespace.name }}</v-list-item-title>
+                  <v-list-item-subtitle>@{{ namespace.path }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
 
             <v-divider />
 
@@ -157,6 +159,16 @@ export default VueApp.extend({
     BNewsletterDrawer,
   },
   computed: {
+    currentNamespaceIndex(): number {
+      const currentPath = this.$store.state.currentNamespace?.path;
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.$store.state.namespaces.length; i++) {
+        if (this.$store.state.namespaces[i].path === currentPath) {
+          return i;
+        }
+      }
+      return 0;
+    },
     darkMode(): boolean {
       return this.$store.state.darkMode;
     },
@@ -242,8 +254,7 @@ export default VueApp.extend({
   methods: {
     setCurrentNamespace(namespace: Namespace) {
       this.$store.commit(Mutation.SET_CURRENT_NAMESPACE, namespace);
-      // refresh page
-      // this.$router.go(0);
+      this.$router.push({ path: '/' });
     },
     toggleDrawer() {
       this.$store.commit(Mutation.SET_DRAWER, !this.$store.state.drawer);

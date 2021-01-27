@@ -126,8 +126,7 @@ export default VueApp.extend({
   },
   computed: {
     currentUserUsername(): string {
-      return ''; // TODO
-      // return this.$store.state.me!.username!;
+      return this.$store.state.me!.username!;
     },
     groupPath(): string {
       return this.$route.params.groupPath;
