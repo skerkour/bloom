@@ -12,17 +12,9 @@
     <v-row>
       <v-col class="d-flex">
         <v-btn @click="cancel" depressed :loading="loading" class="mr-auto">
-          Cancel
+          Back
         </v-btn>
 
-        <v-btn class="mr-3"
-          @click="deleteContact"
-          depressed
-          color="error"
-          :loading="loading"
-          v-if="contact">
-          Delete contact
-        </v-btn>
         <v-btn @click="update" depressed color="success" :loading="loading"
           v-if="contact">
           Save changes
@@ -30,6 +22,23 @@
         <v-btn @click="create" depressed color="success" :loading="loading" v-else>
           Create contact
         </v-btn>
+
+        <v-menu bottom v-if="contact">
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item @click="deleteContact">
+              <v-list-item-icon>
+                <v-icon>mdi-delete</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Delete contact</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-col>
     </v-row>
 
