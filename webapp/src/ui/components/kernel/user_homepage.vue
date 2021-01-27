@@ -6,12 +6,6 @@
           <v-img :src="user.avatarUrl" />
         </v-avatar>
       </v-col>
-      <v-col cols="10" v-if="showEditProfileButton">
-        <v-btn depressed color="primary" to="/preferences/profile">
-          <v-icon left>mdi-pencil</v-icon>
-          Edit profile
-        </v-btn>
-      </v-col>
       <v-col cols="10">
         <h2 class="text-h5">{{ user.name }}</h2>
         <h3 class="text-subtitle-1">@{{ user.username }}</h3>
@@ -38,11 +32,6 @@ export default VueApp.extend({
     user: {
       type: Object as PropType<User>,
       required: true,
-    },
-  },
-  computed: {
-    showEditProfileButton(): boolean {
-      return this.$store.state.me?.username === this.user.username ?? false;
     },
   },
 });

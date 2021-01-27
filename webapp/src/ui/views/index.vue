@@ -1,5 +1,5 @@
 <template>
-  <b-redirect v-if="$store.state.me" :to="'/inbox'"/>
+  <b-redirect v-if="$store.state.session" :to="'/inbox'"/>
   <b-landing v-else />
 </template>
 

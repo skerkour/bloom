@@ -35,7 +35,7 @@ export default VueApp.extend({
   },
   computed: {
     namespaceId(): string {
-      return this.$store.state.currentNamespaceId!;
+      return this.$store.state.currentNamespace!.id!;
     },
     baseUrl(): string {
       return this.preferences.base_url;

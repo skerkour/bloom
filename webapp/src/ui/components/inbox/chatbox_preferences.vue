@@ -99,7 +99,7 @@ export default VueApp.extend({
 
       const input: UpdateChatboxPreferences = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        namespace_id: this.$store.state.currentNamespaceId!,
+        namespace_id: this.$store.state.currentNamespace!.id!,
         color: this.color,
         name: this.name,
         show_branding: this.branding,

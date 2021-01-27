@@ -230,7 +230,7 @@ export class KernelService {
   async signedUploadUrl(filesize: number): Promise<SignedUploadUrl> {
     const input: GetSignedUploadUrl = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
       filesize,
     };
     const res: SignedUploadUrl = await this.apiClient.post(Queries.signedUploadUrl, input);
@@ -243,7 +243,7 @@ export class KernelService {
 
     const namespace: Namespace = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: group.namespace_id!,
+      id: group.namespace_id!,
       name: group.name,
       path: group.path,
       avatar_url: group.avatar_url,
@@ -254,11 +254,18 @@ export class KernelService {
   }
 
   async updateMyProfile(input: UpdateMyProfile): Promise<User> {
-    const res: User = await this.apiClient.post(Commands.updateMyProfile, input);
+    const user: User = await this.apiClient.post(Commands.updateMyProfile, input);
 
-    this.store.commit(Mutation.UPDATE_MY_PROFILE, res);
+    const namespace: Namespace = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      id: user.namespace_id!,
+      name: user.name,
+      path: user.username,
+      avatar_url: user.avatar_url,
+    };
+    this.store.commit(Mutation.UPDATE_NAMESPACE, namespace);
 
-    return res;
+    return user;
   }
 
   // eslint-disable-next-line spaced-comment
@@ -299,7 +306,7 @@ export class KernelService {
     formData.append('0', file);
 
     const res: { updateMyProfile: User } = await this.apiClient.upload(formData);
-    this.store.commit(Mutation.UPDATE_MY_PROFILE, res.updateMyProfile);
+    // this.store.commit(Mutation.UPDATE_MY_PROFILE, res.updateMyProfile);
     return res.updateMyProfile.avatar_url;
   }
 

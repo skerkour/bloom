@@ -15,10 +15,10 @@ export interface AppState {
   sessionToken: string | null;
   pendingUserId: string | null;
   pendingSessionId: string | null;
-  namespaceIsGroup: boolean;
   drawer: boolean;
-  currentNamespaceId: string | null,
+  currentNamespace: Namespace | null,
   namespaces: Namespace[],
+  isAdmin: boolean,
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [state: string]: any;
@@ -31,8 +31,7 @@ export enum Mutation {
   SIGN_OUT = 'SIGN_OUT',
   SET_PENDING_USER_ID = 'SET_PENDING_USER_ID',
   SET_PENDING_SESSION_ID = 'SET_PENDING_SESSION_ID',
-  UPDATE_MY_PROFILE = 'UPDATE_MY_PROFILE',
-  SET_CURRENT_NAMESPACE_ID = 'SET_CURRENT_NAMESPACE_ID',
+  SET_CURRENT_NAMESPACE = 'SET_CURRENT_NAMESPACE',
   SET_DRAWER = 'SET_DRAWER',
   ADD_NAMESPACE = 'ADD_NAMESPACE',
   REMOVE_NAMESPACE = 'REMOVE_NAMESPACE',
@@ -47,10 +46,10 @@ function defaultAppState(): AppState {
     sessionToken: null,
     pendingUserId: null,
     pendingSessionId: null,
-    namespaceIsGroup: false,
     drawer: true,
-    currentNamespaceId: null,
+    currentNamespace: null,
     namespaces: [],
+    isAdmin: false,
   };
 }
 
@@ -63,15 +62,12 @@ export function newStore(storage: Storage): Store<AppState> {
     baseAppState.darkMode = storedDarkMode;
   }
 
-  // const storedMe = storage.get(storage.keyMe);
-  // if (storedMe) {
-  //   baseAppState.me = storedMe;
-  // }
-
   const storedToken = storage.get(storage.keyToken);
   if (storedToken) {
     baseAppState.sessionToken = storedToken;
   }
+
+  const storedNamespace = storage.get(storage.keyCurrentNamespace);
 
   return new Store<AppState>({
     state: baseAppState,
@@ -79,11 +75,17 @@ export function newStore(storage: Storage): Store<AppState> {
       [Mutation.SIGN_IN](state: AppState, params: SignedIn) {
         state.session = params.me.session;
         state.sessionToken = params.token;
-        state.me = params.me.user;
-        state.groups = params.me.groups;
-        state.currentNamespaceId = params.me.user.namespace_id;
+        state.isAdmin = params.me.user.is_admin!;
 
-        // storage.set(storage.keyMe, state.me);
+        const namespaces: Namespace[] = [{
+          id: params.me.user.namespace_id!,
+          name: params.me.user.name,
+          path: params.me.user.username,
+          avatar_url: params.me.user.avatar_url,
+        }];
+        state.namespaces = namespaces;
+        [state.currentNamespace] = namespaces;
+
         storage.set(storage.keyToken, state.sessionToken);
 
         state.pendingSessionId = null;
@@ -91,12 +93,9 @@ export function newStore(storage: Storage): Store<AppState> {
       },
       [Mutation.INIT](state: AppState, me: Me) {
         state.session = me.session;
-        state.me = me.user;
-        state.groups = me.groups;
-        state.currentNamespaceId = me.user.namespace_id;
 
         const namespaces: Namespace[] = [{
-          namespace_id: me.user.namespace_id!,
+          id: me.user.namespace_id!,
           name: me.user.name,
           path: me.user.username,
           avatar_url: me.user.avatar_url,
@@ -104,17 +103,20 @@ export function newStore(storage: Storage): Store<AppState> {
 
         me.groups.forEach((group) => {
           const namespace: Namespace = {
-            namespace_id: group.namespace_id!,
+            id: group.namespace_id!,
             name: group.name,
             path: group.path,
             avatar_url: group.avatar_url,
           };
+          if (storedNamespace === namespace.path) {
+            state.currentNamespace = namespace;
+          }
           namespaces.push(namespace);
         });
-
         state.namespaces = namespaces;
-
-        // storage.set(storage.keyMe, state.me);
+        if (!state.currentNamespace) {
+          [state.currentNamespace] = namespaces;
+        }
       },
       [Mutation.SIGN_OUT](state: AppState) {
         const emptyState = defaultAppState();
@@ -131,27 +133,29 @@ export function newStore(storage: Storage): Store<AppState> {
       [Mutation.SET_PENDING_SESSION_ID](state: AppState, pendingSessionId: string) {
         state.pendingSessionId = pendingSessionId;
       },
-      [Mutation.UPDATE_MY_PROFILE](state: AppState, me: User) {
-        state.me!.username = me.username;
-        state.me!.name = me.name;
-        state.me!.avatar_url = me.avatar_url;
-        // storage.set(storage.keyMe, state.me);
-      },
       [Mutation.SET_DRAWER](state: AppState, value: boolean) {
         state.drawer = value;
       },
-      [Mutation.SET_CURRENT_NAMESPACE_ID](state: AppState, namespaceId: string) {
-        state.currentNamespaceId = namespaceId;
+      [Mutation.SET_CURRENT_NAMESPACE](state: AppState, namespace: Namespace) {
+        state.currentNamespace = namespace;
+        storage.set(storage.keyCurrentNamespace, namespace.path);
       },
       [Mutation.ADD_NAMESPACE](state: AppState, namespace: Namespace) {
         state.namespaces.push(namespace);
       },
       [Mutation.REMOVE_NAMESPACE](state: AppState, path: string) {
         state.namespaces = state.namespaces.filter((namespace) => namespace.path !== path);
+        if (state.currentNamespace!.path === path) {
+          [state.currentNamespace] = state.namespaces;
+        }
       },
       [Mutation.UPDATE_NAMESPACE](state: AppState, namespace: Namespace) {
         state.namespaces = state.namespaces.map((n) => {
-          if (n.namespace_id === namespace.namespace_id) {
+          if (n.id === namespace.id) {
+            if (namespace.id === state.currentNamespace!.id) {
+              state.currentNamespace = namespace;
+              storage.set(storage.keyCurrentNamespace, namespace.path);
+            }
             return namespace;
           }
           return n;

@@ -19,7 +19,7 @@ export class AnalyticsService {
   async fetchAnalytics(): Promise<Analytics> {
     const input: GetAnalytics = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id,
     };
     const analytics: Analytics = await this.apiClient.post(Queries.analytics, input);
 

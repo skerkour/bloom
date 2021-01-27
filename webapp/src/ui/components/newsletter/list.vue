@@ -150,7 +150,7 @@ export default VueApp.extend({
       this.error = '';
       const input: CreateList = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        namespace_id: this.$store.state.currentNamespaceId!,
+        namespace_id: this.$store.state.currentNamespace!.id!,
         name: this.name,
         description: this.description,
       };

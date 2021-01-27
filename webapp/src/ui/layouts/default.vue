@@ -72,14 +72,16 @@
 
         <v-card>
           <v-list>
-            <v-list-item :to="`/${$store.state.me.username}`" class="pt-3 pb-3">
+            <v-list-item @click="setCurrentNamespace(namespace)" class="pt-3 pb-3"
+              v-for="namespace in $store.state.namespaces" :key="namespace.id"
+              color="primary">
               <v-list-item-avatar>
-                <img :src="avatarUrl">
+                <img :src="namespace.avatar_url">
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title>{{ $store.state.me.name }}</v-list-item-title>
-                <v-list-item-subtitle>@{{ $store.state.me.username }}</v-list-item-subtitle>
+                <v-list-item-title>{{ namespace.name }}</v-list-item-title>
+                <v-list-item-subtitle>@{{ namespace.path }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
 
@@ -104,7 +106,7 @@
                 <v-list-item-title>Preferences</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/admin" v-if="$store.state.me.isAdmin">
+            <v-list-item to="/admin" v-if="$store.state.isAdmin">
               <v-list-item-icon>
                 <v-icon>mdi-shield-account</v-icon>
               </v-list-item-icon>
@@ -139,6 +141,7 @@ import BFilesDrawer from '@/ui/components/files/drawer.vue';
 import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';
 import BNewsletterDrawer from '@/ui/components/newsletter/drawer.vue';
 import { Mutation } from '@/app/store';
+import { Namespace } from '@/domain/kernel/model';
 
 export default VueApp.extend({
   name: 'BDefaultLayout',
@@ -162,7 +165,7 @@ export default VueApp.extend({
     },
     avatarUrl(): string {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.$store.state.me!.avatar_url;
+      return this.$store.state.currentNamespace!.avatar_url;
     },
     groupDrawer(): boolean {
       return this.$route.path.startsWith('/groups') && this.$route.path !== '/groups/new';
@@ -194,7 +197,7 @@ export default VueApp.extend({
     },
     showDrawerButton(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
-      return (this.$store.state.me ? true : false)
+      return (this.$store.state.session ? true : false)
         // eslint-disable-next-line max-len
         && (this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
           || this.inboxDrawer || this.filesDrawer || this.newsletterDrawer);
@@ -237,6 +240,11 @@ export default VueApp.extend({
     };
   },
   methods: {
+    setCurrentNamespace(namespace: Namespace) {
+      this.$store.commit(Mutation.SET_CURRENT_NAMESPACE, namespace);
+      // refresh page
+      // this.$router.go(0);
+    },
     toggleDrawer() {
       this.$store.commit(Mutation.SET_DRAWER, !this.$store.state.drawer);
     },

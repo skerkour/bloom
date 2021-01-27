@@ -133,7 +133,7 @@ name,email`,
       this.loading = true;
       this.error = '';
       const input: ImportContacts = {
-        namespace_id: this.$store.state.currentNamespaceId!,
+        namespace_id: this.$store.state.currentNamespace!.id!,
         contacts_csv: this.contactsToImport,
         list_id: null,
       };

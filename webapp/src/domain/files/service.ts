@@ -46,7 +46,7 @@ export class FilesService {
   async emptyTrash(): Promise<void> {
     const input: EmptyTrash = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     await this.apiClient.post(Commands.emptyTrash, input);
   }
@@ -54,7 +54,7 @@ export class FilesService {
   async fetchFile(fileId: string | null): Promise<File> {
     const input: GetFile = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
       file_id: fileId,
     };
     const res: File = await this.apiClient.post(Queries.file, input);
@@ -65,7 +65,7 @@ export class FilesService {
   async fetchTrash(): Promise<File[]> {
     const input: GetTrash = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: File[] = await this.apiClient.post(Queries.trash, input);
 

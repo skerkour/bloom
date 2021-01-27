@@ -5,8 +5,8 @@ import localStorage from 'store';
 
 export class Storage {
   keyToken = 'bloom_token';
-  // keyMe = 'bloom_me';
   keyDarkMode = 'bloom_dark_mode';
+  keyCurrentNamespace = 'current_namespace';
 
   set(key: string, value: any) {
     localStorage.set(key, value);

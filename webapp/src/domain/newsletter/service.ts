@@ -67,7 +67,7 @@ export class NewsletterService {
   async fetchLists(): Promise<List[]> {
     const input: GetLists = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id,
     };
     const res: List[] = await this.apiClient.post(Queries.lists, input);
 
@@ -86,7 +86,7 @@ export class NewsletterService {
   async fetchMessages(): Promise<Message[]> {
     const input: GetMessages = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id,
     };
     const res: Message[] = await this.apiClient.post(Queries.messages, input);
 

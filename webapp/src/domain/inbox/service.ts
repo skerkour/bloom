@@ -60,7 +60,7 @@ export class InboxService {
 
   async fetchArchive(): Promise<Inbox> {
     const input: GetArchive = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: Inbox = await this.apiClient.post(Queries.archive, input);
 
@@ -69,7 +69,7 @@ export class InboxService {
 
   async fetchChatboxPreferences(): Promise<ChatboxPreferences> {
     const input: GetChatboxPreferences = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: ChatboxPreferences = await this.apiClient.post(Queries.chatboxPreferences, input);
 
@@ -84,7 +84,7 @@ export class InboxService {
 
   async fetchContacts(): Promise<Contact[]> {
     const input: GetContacts = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: Contact[] = await this.apiClient.post(Queries.contacts, input);
 
@@ -93,7 +93,7 @@ export class InboxService {
 
   async fetchInbox(): Promise<Inbox> {
     const input: GetInbox = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: Inbox = await this.apiClient.post(Queries.inbox, input);
 
@@ -126,7 +126,7 @@ export class InboxService {
 
   async fetchSpam(): Promise<Inbox> {
     const input: GetSpam = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: Inbox = await this.apiClient.post(Queries.spam, input);
 
@@ -135,7 +135,7 @@ export class InboxService {
 
   async fetchTrash(): Promise<Inbox> {
     const input: GetTrash = {
-      namespace_id: this.store.state.currentNamespaceId!,
+      namespace_id: this.store.state.currentNamespace!.id!,
     };
     const res: Inbox = await this.apiClient.post(Queries.trash, input);
 

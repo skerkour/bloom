@@ -118,7 +118,7 @@ export type Me = {
 
 
 export type Namespace = {
-  namespace_id: string;
+  id: string;
   name: string;
   path: string;
   avatar_url: string;
