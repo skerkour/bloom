@@ -141,6 +141,11 @@ export type RegistrationStarted = {
   pending_user_id: string;
 }
 
+export type RemoveMemberFromGroup = {
+  group_id: string;
+  username: string;
+}
+
 export type RevokeSession = {
   session_id: string;
 }
@@ -173,9 +178,8 @@ export type SignInStarted = {
   pending_session_id: string;
 }
 
-export type RemoveMemberFromGroup = {
-  group_id: string;
-  username: string;
+export type StripePublicKey = {
+  stripe_public_key: string;
 }
 
 export type UpdateGroupProfile = {

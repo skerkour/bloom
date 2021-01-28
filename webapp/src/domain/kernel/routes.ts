@@ -35,4 +35,5 @@ export const Queries = {
   me: `/${prefix}/${queries}/me`,
   mySessions: `/${prefix}/${queries}/my_sessions`,
   signedUploadUrl: `/${prefix}/${queries}/signed_upload_url`,
+  stripePublicKey: `/${prefix}/${queries}/stripe_public_key`,
 }
