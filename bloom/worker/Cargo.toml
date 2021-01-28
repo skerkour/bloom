@@ -13,5 +13,4 @@ analytics = { path = "../analytics" }
 inbox = { path = "../inbox" }
 
 tokio = { version = "0.2", features = ["full"] }
-reqwest = { version = "0.10", features = ["json", "rustls-tls"] }
 sentry = "0.21"

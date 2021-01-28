@@ -15,6 +15,7 @@ pub mod sync;
 pub mod ulid;
 pub mod uuid;
 pub mod validator;
+pub mod vat;
 
 pub use base64;
 pub use byteorder;
@@ -28,6 +29,7 @@ pub use lazy_static;
 pub use log;
 pub use num_cpus;
 pub use regex;
+pub use reqwest;
 pub use sqlx;
 pub use tokio;
 pub use tryhard as retry;
