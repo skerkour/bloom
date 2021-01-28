@@ -20,7 +20,7 @@ use crate::{
     repository::Repository,
 };
 use std::{collections::HashSet, fmt::Debug, sync::Arc};
-use stdx::uuid::Uuid;
+use stdx::{stripe, uuid::Uuid};
 
 mod accept_group_invitation;
 mod cancel_group_invitation;
@@ -65,6 +65,7 @@ mod send_sign_in_email;
 mod send_verify_email_email;
 mod setup_two_fa;
 mod sign_in;
+mod update_billing_information;
 mod update_group_profile;
 mod update_my_profile;
 mod update_namespace;
@@ -87,6 +88,7 @@ pub struct Service {
     files_service: Option<Arc<dyn files::Service>>,
     inbox_service: Option<Arc<dyn inbox::Service>>,
     xss: Arc<dyn drivers::XssSanitizer>,
+    stripe_client: stripe::Client,
 }
 
 impl Service {
@@ -135,6 +137,8 @@ impl Service {
 
         let valid_namespace_alphabet = consts::NAMESPACE_ALPHABET.chars().collect();
 
+        let stripe_client = stripe::Client::new(config.stripe.secret_key.clone());
+
         let config = Arc::new(config);
 
         Service {
@@ -150,6 +154,7 @@ impl Service {
             files_service: None,
             inbox_service: None,
             xss,
+            stripe_client,
         }
     }
 }
@@ -246,7 +251,7 @@ pub struct GetCheckoutSessionInput {
 
 #[derive(Debug, Clone)]
 pub struct UpdateBillingInformationInput {
-    pub namespace: String,
+    pub namespace_id: Uuid,
     pub name: String,
     pub email: String,
     pub country_code: String,

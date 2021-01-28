@@ -13,6 +13,7 @@ pub enum Error {
     UploadNotFound,
     QrCodeInputIsTooLong,
     MarkdownIsTooLong,
+    CountryNotValid,
 
     // User
     UserNotFound,
@@ -68,6 +69,20 @@ pub enum Error {
     // Billing
     CustomerNotFound,
     SubscriptionIsActive,
+    VatDoesNotMatchCountry,
+    TaxIdIsAcceptedOnlyForEu,
+    CustomerNameRequired,
+    CustomerNameIsTooLong,
+    CustomerEmailRequired,
+    CustomerEmailIsTooLong,
+    CustomerCityRequired,
+    CustomerCityIsTooLong,
+    CustomerPostalCodeRequired,
+    CustomerPostalCodeIsTooLong,
+    CustomerStateRequired,
+    CustomerStateIsTooLong,
+    CustomerAddressRequired,
+    CustomerAddressIsTooLong,
 }
 
 impl std::convert::From<Error> for crate::Error {
@@ -159,6 +174,28 @@ impl std::convert::From<Error> for crate::Error {
             Error::SubscriptionIsActive => crate::Error::InvalidArgument(String::from(
                 "A subscription is active. Please cancel your subscription before deleting your namespace.",
             )),
+            Error::VatDoesNotMatchCountry => {
+                crate::Error::InvalidArgument(String::from("VAT number does not match country."))
+            }
+            Error::TaxIdIsAcceptedOnlyForEu => {
+                crate::Error::InvalidArgument(String::from("Tax IDs are accepted only for EU companies"))
+            }
+            Error::CustomerNameRequired => crate::Error::InvalidArgument(String::from("Name is required.")),
+            Error::CustomerNameIsTooLong => crate::Error::InvalidArgument(String::from("Name is too long")),
+            Error::CustomerEmailRequired => crate::Error::InvalidArgument(String::from("Email is required.")),
+            Error::CustomerEmailIsTooLong => crate::Error::InvalidArgument(String::from("Email is too long.")),
+            Error::CustomerCityRequired => crate::Error::InvalidArgument(String::from("City is required.")),
+            Error::CustomerCityIsTooLong => crate::Error::InvalidArgument(String::from("City is too long.")),
+            Error::CustomerPostalCodeRequired => {
+                crate::Error::InvalidArgument(String::from("Postal code is required."))
+            }
+            Error::CustomerPostalCodeIsTooLong => {
+                crate::Error::InvalidArgument(String::from("Postal code is too long."))
+            }
+            Error::CustomerStateRequired => crate::Error::InvalidArgument(String::from("State is required.")),
+            Error::CustomerStateIsTooLong => crate::Error::InvalidArgument(String::from("State is too long.")),
+            Error::CustomerAddressRequired => crate::Error::InvalidArgument(String::from("Address is required.")),
+            Error::CustomerAddressIsTooLong => crate::Error::InvalidArgument(String::from("Address is too long.")),
 
             // Other
             Error::FileSizeIsNegative => crate::Error::InvalidArgument("File size can't be negative.".into()),
@@ -173,6 +210,7 @@ impl std::convert::From<Error> for crate::Error {
             Error::UploadNotFound => crate::Error::NotFound(String::from("Upload not found.")),
             Error::QrCodeInputIsTooLong => crate::Error::InvalidArgument(String::from("QR code input is too long.")),
             Error::MarkdownIsTooLong => crate::Error::InvalidArgument(String::from("Markdown is too long.")),
+            Error::CountryNotValid => crate::Error::InvalidArgument(String::from("Country is not valid.")),
         }
     }
 }

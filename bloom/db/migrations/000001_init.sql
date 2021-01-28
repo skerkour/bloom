@@ -162,6 +162,39 @@ CREATE TABLE kernel_uploads (
 CREATE INDEX index_kernel_uploads_on_created_at ON kernel_uploads (created_at);
 
 
+CREATE TABLE kernel_customers (
+  id UUID PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  subscription_updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  plan TEXT NOT NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  country TEXT NOT NULL,
+  country_code TEXT NOT NULL,
+  city TEXT NOT NULL,
+  postal_code TEXT NOT NULL,
+  address_line1 TEXT NOT NULL,
+  address_line2 TEXT NOT NULL,
+  state TEXT NOT NULL,
+  tax_id_type TEXT,
+  tax_id TEXT,
+
+  stripe_customer_id TEXT NOT NULL,
+  stripe_subscription_id TEXT,
+  stripe_product_id TEXT,
+  stripe_price_id TEXT,
+  stripe_tax_id TEXT,
+  stripe_default_payment_method_id TEXT,
+
+  namespace_id UUID REFERENCES kernel_namespaces(id)
+);
+CREATE INDEX index_kernel_customers_on_namespace_id ON kernel_customers (namespace_id);
+CREATE INDEX index_kernel_customers_on_stripe_customer_id ON kernel_customers (stripe_customer_id);
+CREATE INDEX index_kernel_customers_on_plan ON kernel_customers (plan);
+
+
 -- #################################################################################################
 -- Files
 -- #################################################################################################

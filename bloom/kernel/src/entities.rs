@@ -208,7 +208,8 @@ pub struct GroupMember {
     pub role: GroupRole,
 }
 
-// type NamespaceAndCustomer struct {
-// 	Customer
-// 	Namespace
-// }
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct NamespaceAndCustomer {
+    pub namespace: Namespace,
+    pub customer: Customer,
+}

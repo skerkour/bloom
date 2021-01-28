@@ -72,6 +72,7 @@ pub const GROUP_NAME_MAX_LENGTH: usize = 42;
 pub const STORAGE_FREE: i64 = 100_000_000; // 100MB
 pub const STORAGE_STARTER: i64 = 100_000_000_000; // 100GB
 pub const STORAGE_PRO: i64 = 500_000_000_000; // 500GB
+pub const CUSTOMER_PROPERTY_MAX_LENGTH: usize = 200;
 
 // Other
 pub const SLEEP_MIN: Duration = Duration::from_millis(200);

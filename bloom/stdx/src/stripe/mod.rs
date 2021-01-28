@@ -22,15 +22,22 @@ impl Client {
         }
     }
 
-    pub async fn create_customer(&self, _params: &model::CustomerParams) -> Result<model::Customer, Error> {
+    pub async fn create_customer(&self, params: model::CustomerParams) -> Result<model::Customer, Error> {
         todo!();
     }
 
-    pub async fn update_customer(&self, _params: &model::CustomerParams) -> Result<model::Customer, Error> {
+    pub async fn update_customer(&self, id: String, params: model::CustomerParams) -> Result<model::Customer, Error> {
         todo!();
     }
 
-    pub async fn get_customer(&self, _params: &model::CustomerParams) -> Result<model::Customer, Error> {
+    pub async fn get_customer(&self, params: model::CustomerParams) -> Result<model::Customer, Error> {
+        todo!();
+    }
+
+    pub async fn new_billing_portal_session(
+        &self,
+        params: &model::BillingPortalSessionParams,
+    ) -> Result<model::BillingPortalSession, Error> {
         todo!();
     }
 }

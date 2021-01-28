@@ -141,4 +141,76 @@ impl Service {
 
         Ok(())
     }
+
+    pub fn validate_customer_email(&self, email: &str) -> Result<(), Error> {
+        if email.is_empty() {
+            return Err(Error::CustomerEmailRequired);
+        }
+
+        if email.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerEmailIsTooLong);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_customer_name(&self, name: &str) -> Result<(), Error> {
+        if name.is_empty() {
+            return Err(Error::CustomerNameRequired);
+        }
+
+        if name.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerNameIsTooLong);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_customer_city(&self, city: &str) -> Result<(), Error> {
+        if city.is_empty() {
+            return Err(Error::CustomerCityRequired);
+        }
+
+        if city.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerCityIsTooLong);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_customer_postal_code(&self, postal_code: &str) -> Result<(), Error> {
+        if postal_code.is_empty() {
+            return Err(Error::CustomerPostalCodeRequired);
+        }
+
+        if postal_code.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerPostalCodeIsTooLong);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_customer_state(&self, state: &str) -> Result<(), Error> {
+        if state.is_empty() {
+            return Err(Error::CustomerStateRequired);
+        }
+
+        if state.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerStateIsTooLong);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_customer_address(&self, line1: &str, line2: &str) -> Result<(), Error> {
+        if line1.is_empty() {
+            return Err(Error::CustomerAddressRequired);
+        }
+
+        if line1.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH || line2.len() > consts::CUSTOMER_PROPERTY_MAX_LENGTH {
+            return Err(Error::CustomerAddressIsTooLong);
+        }
+
+        Ok(())
+    }
 }

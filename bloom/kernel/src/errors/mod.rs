@@ -149,3 +149,15 @@ impl std::convert::From<stdx::crypto::Error> for Error {
         Error::Internal(err.to_string())
     }
 }
+
+impl std::convert::From<stdx::stripe::Error> for Error {
+    fn from(err: stdx::stripe::Error) -> Self {
+        Error::Internal(err.to_string())
+    }
+}
+
+impl std::convert::From<stdx::vat::Error> for Error {
+    fn from(err: stdx::vat::Error) -> Self {
+        Error::Internal(err.to_string())
+    }
+}

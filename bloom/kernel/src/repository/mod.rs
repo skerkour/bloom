@@ -1,3 +1,4 @@
+mod create_customer;
 mod create_group;
 mod create_group_invitation;
 mod create_group_membership;
