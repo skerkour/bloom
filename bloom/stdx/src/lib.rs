@@ -11,6 +11,7 @@ pub mod markdown;
 pub mod otp;
 pub mod qrcode;
 pub mod rand;
+pub mod stripe;
 pub mod sync;
 pub mod ulid;
 pub mod uuid;
