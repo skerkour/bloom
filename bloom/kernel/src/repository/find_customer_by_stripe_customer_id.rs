@@ -12,7 +12,7 @@ impl Repository {
         const QUERY: &str = "SELECT * FROM kernel_customers WHERE stripe_customer_id = $1";
 
         match sqlx::query_as::<_, entities::Customer>(QUERY)
-            .bind(namespace_id)
+            .bind(stripe_customer_id)
             .fetch_optional(db)
             .await
         {

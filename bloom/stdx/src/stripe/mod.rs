@@ -36,7 +36,7 @@ impl Client {
 
     pub async fn new_billing_portal_session(
         &self,
-        params: &model::BillingPortalSessionParams,
+        params: model::BillingPortalSessionParams,
     ) -> Result<model::BillingPortalSession, Error> {
         todo!();
     }
