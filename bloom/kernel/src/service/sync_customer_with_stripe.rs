@@ -1,5 +1,5 @@
-use crate::{Actor, Service};
-use stdx::{stripe, uuid::Uuid};
+use crate::{consts::BillingPlan, errors::kernel::Error, Actor, Service};
+use stdx::{chrono::Utc, stripe, uuid::Uuid};
 
 impl Service {
     pub async fn sync_customer_with_stripe(
@@ -58,14 +58,14 @@ impl Service {
         let stripe_customer = self.stripe_client.get_customer(stripe_customer_params).await?;
 
         if stripe_customer.subscriptions.len() == 1 {
-            let subscription = stripe_customer.subscriptions[0];
+            let subscription = stripe_customer.subscriptions[0].clone();
             customer.stripe_subscription_id = Some(subscription.id);
             customer.stripe_price_id = Some(subscription.plan.id);
             customer.stripe_product_id = Some(subscription.plan.product.id);
 
-            if customer.stripe_product_id == stripe_data.products.starter {
+            if customer.stripe_product_id == Some(stripe_data.products.starter) {
                 customer.plan = BillingPlan::Starter;
-            } else if customer.stripe_product_id == stripe_data.products.pro {
+            } else if customer.stripe_product_id == Some(stripe_data.products.pro) {
                 customer.plan = BillingPlan::Pro;
             } else {
                 customer.plan = BillingPlan::Free;
@@ -77,32 +77,20 @@ impl Service {
             customer.stripe_product_id = None;
         }
 
-        // if stripeCustomer.InvoiceSettings != nil && stripeCustomer.InvoiceSettings.DefaultPaymentMethod != nil {
-        //     customer.StripeDefaultPaymentMethodID = &stripeCustomer.InvoiceSettings.DefaultPaymentMethod.ID
-        // } else {
-        //     customer.StripeDefaultPaymentMethodID = nil
-        // }
+        if let Some(ref default_payment_method) = stripe_customer.invoice_settings.default_payment_method {
+            customer.stripe_default_payment_method_id = Some(default_payment_method.id.clone());
+        } else {
+            customer.stripe_default_payment_method_id = None;
+        }
 
-        // namespace.Plan = customer.Plan
+        namespace.plan = customer.plan;
 
-        // err = service.db.Transaction(ctx, func(tx db.Queryer) (err error) {
-        //     err = service.kernelRepo.UpdateNamespace(ctx, tx, namespace)
-        //     if err != nil {
-        //         return
-        //     }
+        let mut tx = self.db.begin().await?;
+        self.repo.update_namespace(&mut tx, &namespace).await?;
+        self.repo.update_customer(&mut tx, &customer).await?;
 
-        //     err = service.kernelRepo.UpdateCustomer(ctx, tx, customer)
-        //     if err != nil {
-        //         return
-        //     }
+        tx.commit().await?;
 
-        //     return
-        // })
-        // if err != nil {
-        //     return
-        // }
-        // return
-
-        todo!();
+        Ok(())
     }
 }

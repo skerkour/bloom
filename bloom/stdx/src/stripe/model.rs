@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AddressParams {
     pub city: String,
     pub country: String,
@@ -11,13 +11,13 @@ pub struct AddressParams {
     pub state: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct BillingPortalSessionParams {
     pub customer: String,
     pub return_url: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct BillingPortalSession {
     pub created: i64,
     pub customer: String,
@@ -27,13 +27,13 @@ pub struct BillingPortalSession {
     pub url: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CheckoutSessionLineItemParams {
     pub price: String,
     pub quantity: i64,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CheckoutSessionParams {
     pub customer: String,
     pub payment_method_type: Vec<String>,
@@ -44,12 +44,12 @@ pub struct CheckoutSessionParams {
     pub subscription_data: Option<CheckoutSessionSubscriptionDataParams>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CheckoutSessionSubscriptionDataParams {
     pub default_tax_rates: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Customer {
     pub id: String,
     pub subscriptions: Vec<Subscription>,
@@ -66,45 +66,45 @@ pub struct CustomerParams {
     pub expands: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CustomerTaxIdDataParams {
     pub r#type: TaxIdType,
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CustomerInvoiceSettings {
     pub default_payment_method: Option<PaymentMethod>,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct PaymentMethod {
     pub id: String,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Plan {
     pub id: String,
     pub product: Product,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Product {
     pub id: String,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Subscription {
     pub id: String,
     pub plan: Plan,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum TaxIdType {
     EuVat,
