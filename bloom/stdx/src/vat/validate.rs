@@ -114,4 +114,12 @@ L-2338  LUXEMBOURG</address></checkVatResponse></soap:Body></soap:Envelope>
             "38, AVENUE JOHN F. KENNEDY\nL-1855  LUXEMBOURG".to_string()
         );
     }
+
+    #[tokio::test]
+    async fn test_query_vies_invalid() {
+        // Amazon europe vat number
+        let result = validate_vat_number("LU26365246").await;
+        println!("{:?}", result);
+        assert!(result.is_err());
+    }
 }
