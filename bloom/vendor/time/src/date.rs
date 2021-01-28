@@ -542,11 +542,11 @@ impl Date {
         };
 
         let raw_weekday =
-            (day as i32 + (13 * (month as i32 + 1)) / 5 + adjusted_year + adjusted_year / 4
+            ((day as i32 + (13 * (month as i32 + 1)) / 5 + adjusted_year + adjusted_year / 4
                 - adjusted_year / 100
                 + adjusted_year / 400)
-                % 7
-                - 2;
+                - 2)
+                % 7;
 
         if raw_weekday < 0 {
             (raw_weekday + 7) as u8
@@ -586,7 +586,7 @@ impl Date {
             6 => Weekday::Sunday,
             // FIXME The compiler isn't able to optimize this away. See
             // rust-lang/rust#66993.
-            _ => unreachable!("A value mod 7 is always in the range 0..7"),
+            n => unreachable!("A value mod 7 is always in the range 0..7 (was {})", n),
         }
     }
 

@@ -266,7 +266,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.13"
+    html_root_url = "https://docs.rs/log/0.4.14"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations)]
@@ -288,7 +288,6 @@ use std::error;
 use std::fmt;
 use std::mem;
 use std::str::FromStr;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[macro_use]
 mod macros;
@@ -296,6 +295,54 @@ mod serde;
 
 #[cfg(feature = "kv_unstable")]
 pub mod kv;
+
+#[cfg(has_atomics)]
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+#[cfg(not(has_atomics))]
+use std::cell::Cell;
+#[cfg(not(has_atomics))]
+use std::sync::atomic::Ordering;
+
+#[cfg(not(has_atomics))]
+struct AtomicUsize {
+    v: Cell<usize>,
+}
+
+#[cfg(not(has_atomics))]
+impl AtomicUsize {
+    const fn new(v: usize) -> AtomicUsize {
+        AtomicUsize { v: Cell::new(v) }
+    }
+
+    fn load(&self, _order: Ordering) -> usize {
+        self.v.get()
+    }
+
+    fn store(&self, val: usize, _order: Ordering) {
+        self.v.set(val)
+    }
+
+    #[cfg(atomic_cas)]
+    fn compare_exchange(
+        &self,
+        current: usize,
+        new: usize,
+        _success: Ordering,
+        _failure: Ordering,
+    ) -> Result<usize, usize> {
+        let prev = self.v.get();
+        if current == prev {
+            self.v.set(new);
+        }
+        Ok(prev)
+    }
+}
+
+// Any platform without atomics is unlikely to have multiple cores, so
+// writing via Cell will not be a race condition.
+#[cfg(not(has_atomics))]
+unsafe impl Sync for AtomicUsize {}
 
 // The LOGGER static holds a pointer to the global logger. It is protected by
 // the STATE static which determines whether LOGGER has been initialized yet.
@@ -479,7 +526,7 @@ impl FromStr for Level {
 
 impl fmt::Display for Level {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.pad(LOG_LEVEL_NAMES[*self as usize])
+        fmt.pad(self.as_str())
     }
 }
 
@@ -505,6 +552,13 @@ impl Level {
     #[inline]
     pub fn to_level_filter(&self) -> LevelFilter {
         LevelFilter::from_usize(*self as usize).unwrap()
+    }
+
+    /// Returns the string representation of the `Level`.
+    ///
+    /// This returns the same string as the `fmt::Display` implementation.
+    pub fn as_str(&self) -> &'static str {
+        LOG_LEVEL_NAMES[*self as usize]
     }
 }
 
@@ -632,7 +686,7 @@ impl FromStr for LevelFilter {
 
 impl fmt::Display for LevelFilter {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.pad(LOG_LEVEL_NAMES[*self as usize])
+        fmt.pad(self.as_str())
     }
 }
 
@@ -660,6 +714,13 @@ impl LevelFilter {
     #[inline]
     pub fn to_level(&self) -> Option<Level> {
         Level::from_usize(*self as usize)
+    }
+
+    /// Returns the string representation of the `LevelFilter`.
+    ///
+    /// This returns the same string as the `fmt::Display` implementation.
+    pub fn as_str(&self) -> &'static str {
+        LOG_LEVEL_NAMES[*self as usize]
     }
 }
 
@@ -1153,6 +1214,23 @@ impl Log for NopLogger {
     fn flush(&self) {}
 }
 
+#[cfg(feature = "std")]
+impl<T> Log for std::boxed::Box<T>
+where
+    T: ?Sized + Log,
+{
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        self.as_ref().enabled(metadata)
+    }
+
+    fn log(&self, record: &Record) {
+        self.as_ref().log(record)
+    }
+    fn flush(&self) {
+        self.as_ref().flush()
+    }
+}
+
 /// Sets the global maximum log level.
 ///
 /// Generally, this should only be called by the active logging implementation.
@@ -1266,7 +1344,15 @@ fn set_logger_inner<F>(make_logger: F) -> Result<(), SetLoggerError>
 where
     F: FnOnce() -> &'static dyn Log,
 {
-    match STATE.compare_and_swap(UNINITIALIZED, INITIALIZING, Ordering::SeqCst) {
+    let old_state = match STATE.compare_exchange(
+        UNINITIALIZED,
+        INITIALIZING,
+        Ordering::SeqCst,
+        Ordering::SeqCst,
+    ) {
+        Ok(s) | Err(s) => s,
+    };
+    match old_state {
         UNINITIALIZED => {
             unsafe {
                 LOGGER = make_logger();
@@ -1385,25 +1471,6 @@ pub fn __private_api_log(
 
 // WARNING: this is not part of the crate's public API and is subject to change at any time
 #[doc(hidden)]
-pub fn __private_api_log_lit(
-    message: &str,
-    level: Level,
-    &(target, module_path, file, line): &(&str, &'static str, &'static str, u32),
-) {
-    logger().log(
-        &Record::builder()
-            .args(format_args!("{}", message))
-            .level(level)
-            .target(target)
-            .module_path_static(Some(module_path))
-            .file_static(Some(file))
-            .line(Some(line))
-            .build(),
-    );
-}
-
-// WARNING: this is not part of the crate's public API and is subject to change at any time
-#[doc(hidden)]
 pub fn __private_api_enabled(level: Level, target: &str) -> bool {
     logger().enabled(&Metadata::builder().level(level).target(target).build())
 }
@@ -1497,6 +1564,20 @@ mod tests {
     }
 
     #[test]
+    fn test_level_as_str() {
+        let tests = &[
+            (Level::Error, "ERROR"),
+            (Level::Warn, "WARN"),
+            (Level::Info, "INFO"),
+            (Level::Debug, "DEBUG"),
+            (Level::Trace, "TRACE"),
+        ];
+        for (input, expected) in tests {
+            assert_eq!(*expected, input.as_str());
+        }
+    }
+
+    #[test]
     fn test_level_show() {
         assert_eq!("INFO", Level::Info.to_string());
         assert_eq!("ERROR", Level::Error.to_string());
@@ -1533,6 +1614,21 @@ mod tests {
     fn test_to_level_filter() {
         assert_eq!(LevelFilter::Error, Level::Error.to_level_filter());
         assert_eq!(LevelFilter::Trace, Level::Trace.to_level_filter());
+    }
+
+    #[test]
+    fn test_level_filter_as_str() {
+        let tests = &[
+            (LevelFilter::Off, "OFF"),
+            (LevelFilter::Error, "ERROR"),
+            (LevelFilter::Warn, "WARN"),
+            (LevelFilter::Info, "INFO"),
+            (LevelFilter::Debug, "DEBUG"),
+            (LevelFilter::Trace, "TRACE"),
+        ];
+        for (input, expected) in tests {
+            assert_eq!(*expected, input.as_str());
+        }
     }
 
     #[test]

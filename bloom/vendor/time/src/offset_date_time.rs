@@ -297,6 +297,7 @@ impl OffsetDateTime {
     ///     0,
     /// );
     /// ```
+    #[allow(clippy::missing_const_for_fn)]
     pub fn unix_timestamp(self) -> i64 {
         let days = (self.utc_datetime.date.julian_day()
             - internals::Date::from_yo_unchecked(1970, 1).julian_day())

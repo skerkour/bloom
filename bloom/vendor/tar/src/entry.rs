@@ -563,7 +563,7 @@ impl<'a> EntryFields<'a> {
         // is attackable; if an existing file is found unlink it.
         fn open(dst: &Path) -> io::Result<std::fs::File> {
             OpenOptions::new().write(true).create_new(true).open(dst)
-        };
+        }
         let mut f = (|| -> io::Result<std::fs::File> {
             let mut f = open(dst).or_else(|err| {
                 if err.kind() != ErrorKind::AlreadyExists {

@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "web-sys"
-version = "0.3.46"
+version = "0.3.47"
 authors = ["The wasm-bindgen Developers"]
 description = "Bindings for all Web APIs, a procedurally generated crate from WebIDL\n"
 homepage = "https://rustwasm.github.io/wasm-bindgen/web-sys/index.html"
@@ -29,10 +29,10 @@ rustdoc-args = ["--cfg=web_sys_unstable_apis"]
 test = false
 doctest = false
 [dependencies.js-sys]
-version = "0.3.46"
+version = "0.3.47"
 
 [dependencies.wasm-bindgen]
-version = "0.2.69"
+version = "0.2.70"
 
 [features]
 AbortController = []
@@ -274,6 +274,7 @@ DeviceRotationRateInit = []
 DhKeyDeriveParams = []
 DirectionSetting = []
 Directory = []
+DisplayMediaStreamConstraints = []
 DisplayNameOptions = []
 DisplayNameResult = []
 DistanceModelType = []
@@ -1399,7 +1400,7 @@ XsltProcessor = []
 console = []
 css = []
 [target."cfg(target_arch = \"wasm32\")".dev-dependencies.wasm-bindgen-futures]
-version = "0.4.19"
+version = "0.4.20"
 
 [target."cfg(target_arch = \"wasm32\")".dev-dependencies.wasm-bindgen-test]
-version = "0.3.19"
+version = "0.3.20"

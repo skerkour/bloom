@@ -1,10 +1,10 @@
-use std::borrow::Cow;
 use std::fs;
 use std::io;
 use std::io::prelude::*;
 use std::path::Path;
+use std::str;
 
-use crate::header::{bytes2path, path2bytes, HeaderMode};
+use crate::header::{path2bytes, HeaderMode};
 use crate::{other, EntryType, Header};
 
 /// A structure for building archives
@@ -204,7 +204,7 @@ impl<W: Write> Builder<W> {
     /// operation then this may corrupt the archive.
     ///
     /// Note if the `path` is a directory. This will just add an entry to the archive,
-    /// rather than contents of the directory.  
+    /// rather than contents of the directory.
     ///
     /// Also note that after all files have been written to an archive the
     /// `finish` function needs to be called to finish writing the archive.
@@ -457,8 +457,8 @@ fn prepare_header_path(dst: &mut dyn Write, header: &mut Header, path: &Path) ->
     if let Err(e) = header.set_path(path) {
         let data = path2bytes(&path)?;
         let max = header.as_old().name.len();
-        //  Since e isn't specific enough to let us know the path is indeed too
-        //  long, verify it first before using the extension.
+        // Since `e` isn't specific enough to let us know the path is indeed too
+        // long, verify it first before using the extension.
         if data.len() < max {
             return Err(e);
         }
@@ -466,10 +466,17 @@ fn prepare_header_path(dst: &mut dyn Write, header: &mut Header, path: &Path) ->
         // null-terminated string
         let mut data2 = data.chain(io::repeat(0).take(1));
         append(dst, &header2, &mut data2)?;
+
         // Truncate the path to store in the header we're about to emit to
-        // ensure we've got something at least mentioned.
-        let path = bytes2path(Cow::Borrowed(&data[..max]))?;
-        header.set_path(&path)?;
+        // ensure we've got something at least mentioned. Note that we use
+        // `str`-encoding to be compatible with Windows, but in general the
+        // entry in the header itself shouldn't matter too much since extraction
+        // doesn't look at it.
+        let truncated = match str::from_utf8(&data[..max]) {
+            Ok(s) => s,
+            Err(e) => str::from_utf8(&data[..e.valid_up_to()]).unwrap(),
+        };
+        header.set_path(truncated)?;
     }
     Ok(())
 }

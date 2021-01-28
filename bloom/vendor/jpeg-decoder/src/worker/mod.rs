@@ -1,8 +1,8 @@
-mod threaded;
 mod immediate;
+mod multithreaded;
 
 #[cfg(not(any(target_arch = "asmjs", target_arch = "wasm32")))]
-pub use self::threaded::ThreadedWorker as PlatformWorker;
+pub use self::multithreaded::MultiThreadedWorker as PlatformWorker;
 #[cfg(any(target_arch = "asmjs", target_arch = "wasm32"))]
 pub use self::immediate::ImmediateWorker as PlatformWorker;
 

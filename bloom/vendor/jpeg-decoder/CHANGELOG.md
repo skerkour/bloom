@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## v0.1.21 (2021-01-23)
+
+- Fix incorrect order of MCUs in non-interleaved streams
+- DCT Progressive images with incomplete coefficient blocks are now rendered
+- Fix a panic on invalid dimensions
+- Reduce allocations and runtime of decoding
+- Rework multi-threading to run a thread per component
+
 ## v0.1.20 (2020-07-04)
 
 - Fix decoding of some progressive images failing

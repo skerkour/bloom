@@ -150,6 +150,7 @@
     clippy::cast_sign_loss,
     clippy::enum_glob_use,
     clippy::inline_always,
+    clippy::map_err_ignore,
     clippy::missing_errors_doc,
     clippy::module_name_repetitions,
     clippy::must_use_candidate,
@@ -234,7 +235,11 @@ macro_rules! assert_value_in_range {
 /// Returns `Err(error::ComponentRange)` if the value is not in range.
 macro_rules! ensure_value_in_range {
     ($value:ident in $start:expr => $end:expr) => {{
-        #![allow(trivial_numeric_casts, unused_comparisons)]
+        #![allow(
+            trivial_numeric_casts,
+            unused_comparisons,
+            clippy::manual_range_contains
+        )]
         if $value < $start || $value > $end {
             return Err(crate::error::ComponentRange {
                 name: stringify!($value),
@@ -249,7 +254,11 @@ macro_rules! ensure_value_in_range {
     }};
 
     ($value:ident conditionally in $start:expr => $end:expr) => {{
-        #![allow(trivial_numeric_casts, unused_comparisons)]
+        #![allow(
+            trivial_numeric_casts,
+            unused_comparisons,
+            clippy::manual_range_contains
+        )]
         if $value < $start || $value > $end {
             return Err(crate::error::ComponentRange {
                 name: stringify!($value),

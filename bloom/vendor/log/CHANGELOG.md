@@ -2,9 +2,31 @@
 
 ## [Unreleased]
 
+## [0.4.14] - 2021-01-27
+
+* Remove the `__private_api_log_lit` special case.
+* Fixed incorrect combination of `kv_unstable` and `std` features causing compile failures.
+* Remove unstable `Value::to_*` conversions that were incorrectly using `as`.
+* Rename unstable `Value::to_error` to `Value::to_borrowed_error`.
+
 ## [0.4.13] - 2021-01-11
 
 * This is the same as `0.4.11`, except with a `kv_unstable_std` feature added to aid migrating current dependents to `0.4.14` (which was originally going to be `0.4.13` until it was decided to create a patch from `0.4.11` to minimize disruption).
+
+## [0.4.12] - 2020-12-24
+
+### New
+
+* Support platforms without atomics by racing instead of failing to compile
+* Implement `Log` for `Box<T: Log>`
+* Update `cfg-if` to `1.0`
+* Internal reworks of the structured logging API. Removed the `Fill` API
+and added `source::as_map` and `source::as_list` to easily serialize a `Source`
+as either a map of `{key: value, ..}` or as a list of `[(key, value), ..]`.
+
+### Fixed
+
+* Fixed deserialization of `LevelFilter` to use their `u64` index variants
 
 ## [0.4.11] - 2020-07-09
 
@@ -174,8 +196,10 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.13...HEAD
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.14...HEAD
+[0.4.14]: https://github.com/rust-lang-nursery/log/compare/0.4.13...0.4.14
 [0.4.13]: https://github.com/rust-lang-nursery/log/compare/0.4.11...0.4.13
+[0.4.12]: https://github.com/rust-lang-nursery/log/compare/0.4.11...0.4.12
 [0.4.11]: https://github.com/rust-lang-nursery/log/compare/0.4.10...0.4.11
 [0.4.10]: https://github.com/rust-lang-nursery/log/compare/0.4.9...0.4.10
 [0.4.9]: https://github.com/rust-lang-nursery/log/compare/0.4.8...0.4.9

@@ -1122,3 +1122,16 @@ fn unpack_path_larger_than_windows_max_path() {
     // should unpack path greater than windows MAX_PATH length of 260 characters
     assert!(ar.unpack(td.path()).is_ok());
 }
+
+#[test]
+fn append_long_multibyte() {
+    let mut x = tar::Builder::new(Vec::new());
+    let mut name = String::new();
+    let data: &[u8] = &[];
+    for _ in 0..512 {
+        name.push('a');
+        name.push('𑢮');
+        x.append_data(&mut Header::new_gnu(), &name, data).unwrap();
+        name.pop();
+    }
+}

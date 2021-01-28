@@ -29,7 +29,6 @@
 #![deny(missing_docs)]
 #![forbid(unsafe_code)]
 
-extern crate byteorder;
 #[cfg(feature="rayon")]
 extern crate rayon;
 
@@ -44,3 +43,15 @@ mod marker;
 mod parser;
 mod upsampler;
 mod worker;
+
+fn read_u8<R: std::io::Read>(reader: &mut R) -> std::io::Result<u8> {
+    let mut buf = [0];
+    reader.read_exact(&mut buf)?;
+    Ok(buf[0])
+}
+
+fn read_u16_from_be<R: std::io::Read>(reader: &mut R) -> std::io::Result<u16> {
+    let mut buf = [0, 0];
+    reader.read_exact(&mut buf)?;
+    Ok(u16::from_be_bytes(buf))
+}

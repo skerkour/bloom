@@ -129,7 +129,7 @@ impl PrimitiveDateTime {
     /// assert_eq!(PrimitiveDateTime::unix_epoch().timestamp(), 0);
     /// assert_eq!(date!(2019-01-01).midnight().timestamp(), 1_546_300_800);
     /// ```
-    #[allow(deprecated)]
+    #[allow(deprecated, clippy::missing_const_for_fn)]
     #[deprecated(since = "0.2.7", note = "This method assumes an offset of UTC.")]
     pub fn timestamp(self) -> i64 {
         let days = (self.date.julian_day()

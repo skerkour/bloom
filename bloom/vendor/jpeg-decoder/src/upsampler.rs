@@ -128,9 +128,7 @@ impl Upsample for UpsamplerH1V1 {
                     output: &mut [u8]) {
         let input = &input[row * row_stride ..];
 
-        for i in 0 .. output_width {
-            output[i] = input[i];
-        }
+        output[..output_width].copy_from_slice(&input[..output_width]);
     }
 }
 

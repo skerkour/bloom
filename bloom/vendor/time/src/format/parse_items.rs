@@ -5,7 +5,7 @@ use crate::format::{FormatItem, Padding, Specifier};
 use alloc::{format, string::String, vec::Vec};
 
 /// Parse the formatting string. Panics if not valid.
-pub(crate) fn parse_fmt_string<'a>(s: &'a str) -> Vec<FormatItem<'a>> {
+pub(crate) fn parse_fmt_string(s: &str) -> Vec<FormatItem<'_>> {
     match try_parse_fmt_string(s) {
         Ok(items) => items,
         Err(err) => panic!("{}", err),
@@ -14,7 +14,7 @@ pub(crate) fn parse_fmt_string<'a>(s: &'a str) -> Vec<FormatItem<'a>> {
 
 /// Attempt to parse the formatting string.
 #[allow(clippy::too_many_lines)]
-pub(crate) fn try_parse_fmt_string<'a>(s: &'a str) -> Result<Vec<FormatItem<'a>>, String> {
+pub(crate) fn try_parse_fmt_string(s: &str) -> Result<Vec<FormatItem<'_>>, String> {
     let mut items = Vec::new();
     let mut literal_start = 0;
     let mut chars = s.char_indices().peekable();

@@ -20,6 +20,7 @@ pub type rlim_t = ::c_ulong;
 pub type speed_t = ::c_uint;
 pub type tcflag_t = ::c_uint;
 pub type time_t = ::c_long;
+pub type timer_t = ::c_int;
 pub type wchar_t = ::c_int;
 pub type nfds_t = ::c_ulong;
 pub type projid_t = ::c_int;
@@ -118,6 +119,11 @@ s! {
         pub ifa_netmask: *mut ::sockaddr,
         pub ifa_dstaddr: *mut ::sockaddr,
         pub ifa_data: *mut ::c_void
+    }
+
+    pub struct itimerspec {
+        pub it_interval: ::timespec,
+        pub it_value: ::timespec,
     }
 
     pub struct tm {
@@ -362,6 +368,11 @@ s! {
         pub portev_pad: ::c_ushort,
         pub portev_object: ::uintptr_t,
         pub portev_user: *mut ::c_void,
+    }
+
+    pub struct port_notify {
+        pub portnfy_port: ::c_int,
+        pub portnfy_user: *mut ::c_void,
     }
 
     pub struct exit_status {
@@ -2655,6 +2666,21 @@ extern "C" {
 
     pub fn ntp_adjtime(buf: *mut timex) -> ::c_int;
     pub fn ntp_gettime(buf: *mut ntptimeval) -> ::c_int;
+
+    pub fn timer_create(
+        clock_id: clockid_t,
+        evp: *mut sigevent,
+        timerid: *mut timer_t,
+    ) -> ::c_int;
+    pub fn timer_delete(timerid: timer_t) -> ::c_int;
+    pub fn timer_getoverrun(timerid: timer_t) -> ::c_int;
+    pub fn timer_gettime(timerid: timer_t, value: *mut itimerspec) -> ::c_int;
+    pub fn timer_settime(
+        timerid: timer_t,
+        flags: ::c_int,
+        value: *const itimerspec,
+        ovalue: *mut itimerspec,
+    ) -> ::c_int;
 
     pub fn ucred_get(pid: ::pid_t) -> *mut ucred_t;
     pub fn getpeerucred(fd: ::c_int, ucred: *mut *mut ucred_t) -> ::c_int;

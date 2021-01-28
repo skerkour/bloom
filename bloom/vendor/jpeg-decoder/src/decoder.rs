@@ -1,9 +1,10 @@
-use byteorder::ReadBytesExt;
+use crate::read_u8;
 use error::{Error, Result, UnsupportedFeature};
 use huffman::{fill_default_mjpeg_tables, HuffmanDecoder, HuffmanTable};
 use marker::Marker;
 use parser::{AdobeColorTransform, AppData, CodingProcess, Component, Dimensions, EntropyCoding, FrameInfo,
-             parse_app, parse_com, parse_dht, parse_dqt, parse_dri, parse_sof, parse_sos, ScanInfo};
+             parse_app, parse_com, parse_dht, parse_dqt, parse_dri, parse_sof, parse_sos, IccChunk,
+             ScanInfo};
 use upsampler::Upsampler;
 use std::cmp;
 use std::io::Read;
@@ -72,6 +73,8 @@ pub struct Decoder<R> {
     is_jfif: bool,
     is_mjpeg: bool,
 
+    icc_markers: Vec<IccChunk>,
+
     // Used for progressive JPEGs.
     coefficients: Vec<Vec<i16>>,
     // Bitmask of which coefficients has been completely decoded.
@@ -91,6 +94,7 @@ impl<R: Read> Decoder<R> {
             color_transform: None,
             is_jfif: false,
             is_mjpeg: false,
+            icc_markers: Vec::new(),
             coefficients: Vec::new(),
             coefficients_finished: [0; MAX_COMPONENTS],
         }
@@ -120,6 +124,39 @@ impl<R: Read> Decoder<R> {
         }
     }
 
+    /// Returns the embeded icc profile if the image contains one.
+    pub fn icc_profile(&self) -> Option<Vec<u8>> {
+        let mut marker_present: [Option<&IccChunk>; 256] = [None; 256];
+        let num_markers = self.icc_markers.len();
+        if num_markers == 0 && num_markers < 256 {
+            return None;
+        }
+        // check the validity of the markers
+        for chunk in &self.icc_markers {
+            if usize::from(chunk.num_markers) != num_markers {
+                // all the lengths must match
+                return None;
+            }
+            if chunk.seq_no == 0 {
+                return None;
+            }
+            if marker_present[usize::from(chunk.seq_no)].is_some() {
+                // duplicate seq_no
+                return None;
+            } else {
+                marker_present[usize::from(chunk.seq_no)] = Some(chunk);
+            }
+        }
+
+        // assemble them together by seq_no failing if any are missing
+        let mut data = Vec::new();
+        // seq_no's start at 1
+        for &chunk in marker_present.get(1..=num_markers)? {
+            data.extend_from_slice(&chunk?.data);
+        }
+        Some(data)
+    }
+
     /// Tries to read metadata from the image without decoding it.
     ///
     /// If successful, the metadata can be obtained using the `info` method.
@@ -128,19 +165,19 @@ impl<R: Read> Decoder<R> {
     }
 
     /// Configure the decoder to scale the image during decoding.
-    /// 
+    ///
     /// This efficiently scales the image by the smallest supported scale
     /// factor that produces an image larger than or equal to the requested
     /// size in at least one axis. The currently implemented scale factors
     /// are 1/8, 1/4, 1/2 and 1.
-    /// 
+    ///
     /// To generate a thumbnail of an exact size, pass the desired size and
     /// then scale to the final size using a traditional resampling algorithm.
     pub fn scale(&mut self, requested_width: u16, requested_height: u16) -> Result<(u16, u16)> {
         self.read_info()?;
         let frame = self.frame.as_mut().unwrap();
         let idct_size = crate::idct::choose_idct_size(frame.image_size, Dimensions{ width: requested_width, height: requested_height });
-        frame.update_idct_size(idct_size);
+        frame.update_idct_size(idct_size)?;
         Ok((frame.output_size.width, frame.output_size.height))
     }
 
@@ -154,8 +191,8 @@ impl<R: Read> Decoder<R> {
             // The metadata has already been read.
             return Ok(Vec::new());
         }
-        else if self.frame.is_none() && (self.reader.read_u8()? != 0xFF || Marker::from_u8(self.reader.read_u8()?) != Some(Marker::SOI)) {
-            return Err(Error::Format("first two bytes is not a SOI marker".to_owned()));
+        else if self.frame.is_none() && (read_u8(&mut self.reader)? != 0xFF || Marker::from_u8(read_u8(&mut self.reader)?) != Some(Marker::SOI)) {
+            return Err(Error::Format("first two bytes are not an SOI marker".to_owned()));
         }
 
         let mut previous_marker = Marker::SOI;
@@ -195,9 +232,6 @@ impl<R: Read> Decoder<R> {
                     }
                     if frame.precision != 8 {
                         return Err(Error::Unsupported(UnsupportedFeature::SamplePrecision(frame.precision)));
-                    }
-                    if frame.image_size.height == 0 {
-                        return Err(Error::Unsupported(UnsupportedFeature::DNL));
                     }
                     if component_count != 1 && component_count != 3 && component_count != 4 {
                         return Err(Error::Unsupported(UnsupportedFeature::ComponentCount(component_count as u8)));
@@ -339,6 +373,7 @@ impl<R: Read> Decoder<R> {
                                 self.is_jfif = true;
                             },
                             AppData::Avi1 => self.is_mjpeg = true,
+                            AppData::Icc(icc) => self.icc_markers.push(icc),
                         }
                     }
                 },
@@ -374,11 +409,47 @@ impl<R: Read> Decoder<R> {
             previous_marker = marker;
         }
 
-        if planes.is_empty() || planes.iter().any(|plane| plane.is_empty()) {
-            return Err(Error::Format("no data found".to_owned()));
+        let frame = self.frame.as_ref().unwrap();
+
+        // If we're decoding a progressive jpeg and a component is unfinished, render what we've got
+        if frame.coding_process == CodingProcess::DctProgressive && self.coefficients.len() == frame.components.len() {
+            for (i, component) in frame.components.iter().enumerate() {
+                // Only dealing with unfinished components
+                if self.coefficients_finished[i] == !0 {
+                    continue;
+                }
+
+                let quantization_table = match self.quantization_tables[component.quantization_table_index].clone() {
+                    Some(quantization_table) => quantization_table,
+                    None => continue,
+                };
+
+                // Get the worker prepared
+                if worker.is_none() {
+                    worker = Some(PlatformWorker::new()?);
+                }
+                let worker = worker.as_mut().unwrap();
+                let row_data = RowData {
+                    index: i,
+                    component: component.clone(),
+                    quantization_table,
+                };
+                worker.start(row_data)?;
+
+                // Send the rows over to the worker and collect the result
+                let coefficients_per_mcu_row = usize::from(component.block_size.width) * usize::from(component.vertical_sampling_factor) * 64;
+                for mcu_y in 0..frame.mcu_size.height {
+                    let row_coefficients = {
+                        let offset = usize::from(mcu_y) * coefficients_per_mcu_row;
+                        self.coefficients[i][offset .. offset + coefficients_per_mcu_row].to_vec()
+                    };
+
+                    worker.append_row((i, row_coefficients))?;
+                }
+                planes[i] = worker.get_result(i)?;
+            }
         }
 
-        let frame = self.frame.as_ref().unwrap();
         compute_image(&frame.components, planes, frame.output_size, self.is_jfif, self.color_transform)
     }
 
@@ -388,21 +459,21 @@ impl<R: Read> Decoder<R> {
             // libjpeg allows this though and there are images in the wild utilising it, so we are
             // forced to support this behavior.
             // Sony Ericsson P990i is an example of a device which produce this sort of JPEGs.
-            while self.reader.read_u8()? != 0xFF {}
+            while read_u8(&mut self.reader)? != 0xFF {}
 
             // Section B.1.1.2
             // All markers are assigned two-byte codes: an X’FF’ byte followed by a
             // byte which is not equal to 0 or X’FF’ (see Table B.1). Any marker may
             // optionally be preceded by any number of fill bytes, which are bytes
             // assigned code X’FF’.
-            let mut byte = self.reader.read_u8()?;
+            let mut byte = read_u8(&mut self.reader)?;
 
             // Section B.1.1.2
             // "Any marker may optionally be preceded by any number of fill bytes, which are bytes assigned code X’FF’."
             while byte == 0xFF {
-                byte = self.reader.read_u8()?;
+                byte = read_u8(&mut self.reader)?;
             }
-            
+
             if byte != 0x00 && byte != 0xFF {
                 return Ok(Marker::from_u8(byte).unwrap());
             }
@@ -453,9 +524,6 @@ impl<R: Read> Decoder<R> {
             }
         }
 
-        let blocks_per_mcu: Vec<u16> = components.iter()
-                                                 .map(|c| c.horizontal_sampling_factor as u16 * c.vertical_sampling_factor as u16)
-                                                 .collect();
         let is_progressive = frame.coding_process == CodingProcess::DctProgressive;
         let is_interleaved = components.len() > 1;
         let mut dummy_block = [0i16; 64];
@@ -473,70 +541,37 @@ impl<R: Read> Decoder<R> {
             }
         }
 
-        for mcu_y in 0 .. frame.mcu_size.height {
-            for mcu_x in 0 .. frame.mcu_size.width {
-                for (i, component) in components.iter().enumerate() {
-                    for j in 0 .. blocks_per_mcu[i] {
-                        let (block_x, block_y) = if is_interleaved {
-                            // Section A.2.3
-                            (mcu_x * component.horizontal_sampling_factor as u16 + j % component.horizontal_sampling_factor as u16,
-                             mcu_y * component.vertical_sampling_factor as u16 + j / component.horizontal_sampling_factor as u16)
-                        }
-                        else {
-                            // Section A.2.2
+        // 4.8.2
+        // When reading from the stream, if the data is non-interleaved then an MCU consists of
+        // exactly one block (effectively a 1x1 sample).
+        let (mcu_horizontal_samples, mcu_vertical_samples) = if is_interleaved {
+            let horizontal = components.iter().map(|component| component.horizontal_sampling_factor as u16).collect::<Vec<_>>();
+            let vertical = components.iter().map(|component| component.vertical_sampling_factor as u16).collect::<Vec<_>>();
+            (horizontal, vertical)
+        } else {
+            (vec![1], vec![1])
+        };
 
-                            let blocks_per_row = component.block_size.width as usize;
-                            let block_num = (mcu_y as usize * frame.mcu_size.width as usize +
-                                mcu_x as usize) * blocks_per_mcu[i] as usize + j as usize;
+        // This also affects how many MCU values we read from stream. If it's a non-interleaved stream,
+        // the MCUs will be exactly the block count.
+        let (max_mcu_x, max_mcu_y) = if is_interleaved {
+            (frame.mcu_size.width, frame.mcu_size.height)
+        } else {
+            (components[0].block_size.width, components[0].block_size.height)
+        };
 
-                            let x = (block_num % blocks_per_row) as u16;
-                            let y = (block_num / blocks_per_row) as u16;
+        for mcu_y in 0..max_mcu_y {
+            if mcu_y * 8 >= frame.image_size.height {
+                break;
+            }
 
-                            if x * component.dct_scale as u16 >= component.size.width || y * component.dct_scale as u16 >= component.size.height {
-                                continue;
-                            }
-
-                            (x, y)
-                        };
-
-                        let block_offset = (block_y as usize * component.block_size.width as usize + block_x as usize) * 64;
-                        let mcu_row_offset = mcu_y as usize * component.block_size.width as usize * component.vertical_sampling_factor as usize * 64;
-                        let coefficients = if is_progressive {
-                            &mut self.coefficients[scan.component_indices[i]][block_offset .. block_offset + 64]
-                        } else if finished[i] {
-                            &mut mcu_row_coefficients[i][block_offset - mcu_row_offset .. block_offset - mcu_row_offset + 64]
-                        } else {
-                            &mut dummy_block[..]
-                        };
-
-                        if scan.successive_approximation_high == 0 {
-                            decode_block(&mut self.reader,
-                                         coefficients,
-                                         &mut huffman,
-                                         self.dc_huffman_tables[scan.dc_table_indices[i]].as_ref(),
-                                         self.ac_huffman_tables[scan.ac_table_indices[i]].as_ref(),
-                                         scan.spectral_selection.clone(),
-                                         scan.successive_approximation_low,
-                                         &mut eob_run,
-                                         &mut dc_predictors[i])?;
-                        }
-                        else {
-                            decode_block_successive_approximation(&mut self.reader,
-                                                                  coefficients,
-                                                                  &mut huffman,
-                                                                  self.ac_huffman_tables[scan.ac_table_indices[i]].as_ref(),
-                                                                  scan.spectral_selection.clone(),
-                                                                  scan.successive_approximation_low,
-                                                                  &mut eob_run)?;
-                        }
-                    }
+            for mcu_x in 0..max_mcu_x {
+                if mcu_x * 8 >= frame.image_size.width {
+                    break;
                 }
 
                 if self.restart_interval > 0 {
-                    let is_last_mcu = mcu_x == frame.mcu_size.width - 1 && mcu_y == frame.mcu_size.height - 1;
-                    mcus_left_until_restart -= 1;
-
-                    if mcus_left_until_restart == 0 && !is_last_mcu {
+                    if mcus_left_until_restart == 0 {
                         match huffman.take_marker(&mut self.reader)? {
                             Some(Marker::RST(n)) => {
                                 if n != expected_rst_num {
@@ -556,16 +591,86 @@ impl<R: Read> Decoder<R> {
                             None => return Err(Error::Format(format!("no marker found where RST{} was expected", expected_rst_num))),
                         }
                     }
+
+                    mcus_left_until_restart -= 1;
+                }
+
+                for (i, component) in components.iter().enumerate() {
+                    for v_pos in 0..mcu_vertical_samples[i] {
+                        for h_pos in 0..mcu_horizontal_samples[i] {
+                            let coefficients = if is_progressive {
+                                let block_y = (mcu_y * mcu_vertical_samples[i] + v_pos) as usize;
+                                let block_x = (mcu_x * mcu_horizontal_samples[i] + h_pos) as usize;
+                                let block_offset = (block_y * component.block_size.width as usize + block_x) * 64;
+                                &mut self.coefficients[scan.component_indices[i]][block_offset..block_offset + 64]
+                            } else if finished[i] {
+                                // Because the worker thread operates in batches as if we were always interleaved, we
+                                // need to distinguish between a single-shot buffer and one that's currently in process
+                                // (for a non-interleaved) stream
+                                let mcu_batch_current_row = if is_interleaved {
+                                    0
+                                } else {
+                                    mcu_y % component.vertical_sampling_factor as u16
+                                };
+
+                                let block_y = (mcu_batch_current_row * mcu_vertical_samples[i] + v_pos) as usize;
+                                let block_x = (mcu_x * mcu_horizontal_samples[i] + h_pos) as usize;
+                                let block_offset = (block_y * component.block_size.width as usize + block_x) * 64;
+                                &mut mcu_row_coefficients[i][block_offset..block_offset + 64]
+                            } else {
+                                &mut dummy_block[..]
+                            };
+
+                            if scan.successive_approximation_high == 0 {
+                                decode_block(&mut self.reader,
+                                            coefficients,
+                                            &mut huffman,
+                                            self.dc_huffman_tables[scan.dc_table_indices[i]].as_ref(),
+                                            self.ac_huffman_tables[scan.ac_table_indices[i]].as_ref(),
+                                            scan.spectral_selection.clone(),
+                                            scan.successive_approximation_low,
+                                            &mut eob_run,
+                                            &mut dc_predictors[i])?;
+                            }
+                            else {
+                                decode_block_successive_approximation(&mut self.reader,
+                                                                    coefficients,
+                                                                    &mut huffman,
+                                                                    self.ac_huffman_tables[scan.ac_table_indices[i]].as_ref(),
+                                                                    scan.spectral_selection.clone(),
+                                                                    scan.successive_approximation_low,
+                                                                    &mut eob_run)?;
+                            }
+                        }
+                    }
                 }
             }
 
             // Send the coefficients from this MCU row to the worker thread for dequantization and idct.
             for (i, component) in components.iter().enumerate() {
                 if finished[i] {
+                    // In the event of non-interleaved streams, if we're still building the buffer out,
+                    // keep going; don't send it yet. We also need to ensure we don't skip over the last
+                    // row(s) of the image.
+                    if !is_interleaved && (mcu_y + 1) * 8 < frame.image_size.height {
+                        if (mcu_y + 1) % component.vertical_sampling_factor as u16 > 0 {
+                            continue;
+                        }
+                    }
+
                     let coefficients_per_mcu_row = component.block_size.width as usize * component.vertical_sampling_factor as usize * 64;
 
                     let row_coefficients = if is_progressive {
-                        let offset = mcu_y as usize * coefficients_per_mcu_row;
+                        // Because non-interleaved streams will have multiple MCU rows concatenated together,
+                        // the row for calculating the offset is different.
+                        let worker_mcu_y = if is_interleaved {
+                            mcu_y
+                        } else {
+                            // Explicitly doing floor-division here
+                            mcu_y / component.vertical_sampling_factor as u16
+                        };
+
+                        let offset = worker_mcu_y as usize * coefficients_per_mcu_row;
                         self.coefficients[scan.component_indices[i]][offset .. offset + coefficients_per_mcu_row].to_vec()
                     } else {
                         mem::replace(&mut mcu_row_coefficients[i], vec![0i16; coefficients_per_mcu_row])
@@ -616,14 +721,11 @@ fn decode_block<R: Read>(reader: &mut R,
         let value = huffman.decode(reader, dc_table.unwrap())?;
         let diff = match value {
             0 => 0,
+            1..=11 => huffman.receive_extend(reader, value)?,
             _ => {
                 // Section F.1.2.1.1
                 // Table F.1
-                if value > 11 {
-                    return Err(Error::Format("invalid DC difference magnitude category".to_owned()));
-                }
-
-                huffman.receive_extend(reader, value)?
+                return Err(Error::Format("invalid DC difference magnitude category".to_owned()));
             },
         };
 
@@ -812,8 +914,8 @@ fn compute_image(components: &[Component],
                  output_size: Dimensions,
                  is_jfif: bool,
                  color_transform: Option<AdobeColorTransform>) -> Result<Vec<u8>> {
-    if data.iter().any(|data| data.is_empty()) {
-        return Err(Error::Format("not all components has data".to_owned()));
+    if data.is_empty() || data.iter().any(Vec::is_empty) {
+        return Err(Error::Format("not all components have data".to_owned()));
     }
 
     if components.len() == 1 {
@@ -911,7 +1013,7 @@ fn choose_color_convert_func(component_count: usize,
             match color_transform {
                 Some(AdobeColorTransform::Unknown) => Ok(color_convert_line_cmyk),
                 Some(_) => Ok(color_convert_line_ycck),
-                None => Err(Error::Format("4 components without Adobe APP14 metadata to tell color space".to_owned())),
+                None => Err(Error::Format("4 components without Adobe APP14 metadata to indicate color space".to_owned())),
             }
         },
         _ => panic!(),
@@ -974,6 +1076,5 @@ fn ycbcr_to_rgb(y: u8, cb: u8, cr: u8) -> (u8, u8, u8) {
 
 fn clamp_to_u8(value: i32) -> i32 {
     let value = std::cmp::max(value, 0);
-    let value = std::cmp::min(value, 255);
-    value
+    std::cmp::min(value, 255)
 }

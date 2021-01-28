@@ -7,6 +7,12 @@ Versioning].
 
 ---
 
+## 0.2.25 [2021-01-24]
+
+### Fixed
+
+- Fix #309, which can cause panics in certain situations.
+
 ## 0.2.24 [2021-01-08]
 
 ### Fixed

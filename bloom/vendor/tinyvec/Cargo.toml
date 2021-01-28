@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "tinyvec"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Lokathor <zefria@gmail.com>"]
 description = "`tinyvec` provides 100% safe vec-like data structures."
 keywords = ["vec", "no_std", "no-std"]

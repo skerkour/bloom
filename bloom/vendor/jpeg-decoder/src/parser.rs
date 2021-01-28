@@ -1,5 +1,5 @@
-use byteorder::{BigEndian, ReadBytesExt};
-use error::{Error, Result};
+use crate::{read_u16_from_be, read_u8};
+use error::{Error, Result, UnsupportedFeature};
 use huffman::{HuffmanTable, HuffmanTableClass};
 use marker::Marker;
 use marker::Marker::*;
@@ -70,6 +70,7 @@ pub enum AppData {
     Adobe(AdobeColorTransform),
     Jfif,
     Avi1,
+    Icc(IccChunk),
 }
 
 // http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/JPEG.html#Adobe
@@ -81,19 +82,27 @@ pub enum AdobeColorTransform {
     // YCbCrK
     YCCK,
 }
+#[derive(Debug)]
+pub struct IccChunk {
+    pub num_markers: u8,
+    pub seq_no: u8,
+    pub data: Vec<u8>,
+}
 
 impl FrameInfo {
-    pub(crate) fn update_idct_size(&mut self, idct_size: usize) {
+    pub(crate) fn update_idct_size(&mut self, idct_size: usize) -> Result<()> {
         for component in &mut self.components {
             component.dct_scale = idct_size;
         }
 
-        update_component_sizes(self.image_size, &mut self.components);
+        update_component_sizes(self.image_size, &mut self.components)?;
 
         self.output_size = Dimensions {
             width: (self.image_size.width as f32 * idct_size as f32 / 8.0).ceil() as u16,
             height: (self.image_size.height as f32 * idct_size as f32 / 8.0).ceil() as u16
         };
+
+        Ok(())
     }
 }
 
@@ -101,7 +110,7 @@ fn read_length<R: Read>(reader: &mut R, marker: Marker) -> Result<usize> {
     assert!(marker.has_length());
 
     // length is including itself.
-    let length = reader.read_u16::<BigEndian>()? as usize;
+    let length = usize::from(read_u16_from_be(reader)?);
 
     if length < 2 {
         return Err(Error::Format(format!("encountered {:?} with invalid length {}", marker, length)));
@@ -147,7 +156,7 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
         _ => panic!(),
     };
 
-    let precision = reader.read_u8()?;
+    let precision = read_u8(reader)?;
 
     match precision {
         8 => {},
@@ -163,18 +172,21 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
         },
     }
 
-    let height = reader.read_u16::<BigEndian>()?;
-    let width = reader.read_u16::<BigEndian>()?;
+    let height = read_u16_from_be(reader)?;
+    let width = read_u16_from_be(reader)?;
 
     // height:
     // "Value 0 indicates that the number of lines shall be defined by the DNL marker and
     //     parameters at the end of the first scan (see B.2.5)."
+    if height == 0 {
+        return Err(Error::Unsupported(UnsupportedFeature::DNL));
+    }
 
     if width == 0 {
         return Err(Error::Format("zero width in frame header".to_owned()));
     }
 
-    let component_count = reader.read_u8()?;
+    let component_count = read_u8(reader)?;
 
     if component_count == 0 {
         return Err(Error::Format("zero component count in frame header".to_owned()));
@@ -190,14 +202,14 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
     let mut components: Vec<Component> = Vec::with_capacity(component_count as usize);
 
     for _ in 0 .. component_count {
-        let identifier = reader.read_u8()?;
+        let identifier = read_u8(reader)?;
 
         // Each component's identifier must be unique.
         if components.iter().any(|c| c.identifier == identifier) {
             return Err(Error::Format(format!("duplicate frame component identifier {}", identifier)));
         }
 
-        let byte = reader.read_u8()?;
+        let byte = read_u8(reader)?;
         let horizontal_sampling_factor = byte >> 4;
         let vertical_sampling_factor = byte & 0x0f;
 
@@ -208,7 +220,7 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
             return Err(Error::Format(format!("invalid vertical sampling factor {}", vertical_sampling_factor)));
         }
 
-        let quantization_table_index = reader.read_u8()?;
+        let quantization_table_index = read_u8(reader)?;
 
         if quantization_table_index > 3 || (coding_process == CodingProcess::Lossless && quantization_table_index != 0) {
             return Err(Error::Format(format!("invalid quantization table index {}", quantization_table_index)));
@@ -225,7 +237,7 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
         });
     }
 
-    let mcu_size = update_component_sizes(Dimensions { width, height }, &mut components);
+    let mcu_size = update_component_sizes(Dimensions { width, height }, &mut components)?;
 
     Ok(FrameInfo {
         is_baseline: is_baseline,
@@ -241,29 +253,33 @@ pub fn parse_sof<R: Read>(reader: &mut R, marker: Marker) -> Result<FrameInfo> {
 }
 
 /// Returns ceil(x/y), requires x>0
-fn ceil_div(x: u32, y: u32) -> u16 {
-    assert!(x>0 && y>0, "invalid dimensions");
-    (1 + ((x - 1) / y)) as u16
+fn ceil_div(x: u32, y: u32) -> Result<u16> {
+    if x == 0 || y == 0 {
+        // TODO Determine how this error is reached. Can we validate input
+        // earlier and error out then?
+        return Err(Error::Format("invalid dimensions".to_owned()));
+    }
+    Ok((1 + ((x - 1) / y)) as u16)
 }
 
-fn update_component_sizes(size: Dimensions, components: &mut [Component]) -> Dimensions {
+fn update_component_sizes(size: Dimensions, components: &mut [Component]) -> Result<Dimensions> {
     let h_max = components.iter().map(|c| c.horizontal_sampling_factor).max().unwrap() as u32;
     let v_max = components.iter().map(|c| c.vertical_sampling_factor).max().unwrap() as u32;
 
     let mcu_size = Dimensions {
-        width: ceil_div(size.width as u32, h_max * 8),
-        height: ceil_div(size.height as u32, v_max * 8),
+        width: ceil_div(size.width as u32, h_max * 8)?,
+        height: ceil_div(size.height as u32, v_max * 8)?,
     };
 
     for component in components {
-        component.size.width = ceil_div(size.width as u32 * component.horizontal_sampling_factor as u32 * component.dct_scale as u32, h_max * 8);
-        component.size.height = ceil_div(size.height as u32 * component.vertical_sampling_factor as u32 * component.dct_scale as u32, v_max * 8);
+        component.size.width = ceil_div(size.width as u32 * component.horizontal_sampling_factor as u32 * component.dct_scale as u32, h_max * 8)?;
+        component.size.height = ceil_div(size.height as u32 * component.vertical_sampling_factor as u32 * component.dct_scale as u32, v_max * 8)?;
 
         component.block_size.width = mcu_size.width * component.horizontal_sampling_factor as u16;
         component.block_size.height = mcu_size.height * component.vertical_sampling_factor as u16;
     }
 
-    mcu_size
+    Ok(mcu_size)
 }
 
 #[test]
@@ -279,7 +295,7 @@ fn test_update_component_sizes() {
     }];
     let mcu = update_component_sizes(
         Dimensions { width: 800, height: 280 },
-        &mut components);
+        &mut components).unwrap();
     assert_eq!(mcu, Dimensions { width: 50, height: 18 });
     assert_eq!(components[0].block_size, Dimensions { width: 100, height: 36 });
     assert_eq!(components[0].size, Dimensions { width: 800, height: 280 });
@@ -292,7 +308,7 @@ pub fn parse_sos<R: Read>(reader: &mut R, frame: &FrameInfo) -> Result<ScanInfo>
         return Err(Error::Format("zero length in SOS".to_owned()));
     }
 
-    let component_count = reader.read_u8()?;
+    let component_count = read_u8(reader)?;
 
     if component_count == 0 || component_count > 4 {
         return Err(Error::Format(format!("invalid component count {} in scan header", component_count)));
@@ -307,7 +323,7 @@ pub fn parse_sos<R: Read>(reader: &mut R, frame: &FrameInfo) -> Result<ScanInfo>
     let mut ac_table_indices = Vec::with_capacity(component_count as usize);
 
     for _ in 0 .. component_count {
-        let identifier = reader.read_u8()?;
+        let identifier = read_u8(reader)?;
 
         let component_index = match frame.components.iter().position(|c| c.identifier == identifier) {
             Some(value) => value,
@@ -324,7 +340,7 @@ pub fn parse_sos<R: Read>(reader: &mut R, frame: &FrameInfo) -> Result<ScanInfo>
             return Err(Error::Format("the scan component order does not follow the order in the frame header".to_owned()));
         }
 
-        let byte = reader.read_u8()?;
+        let byte = read_u8(reader)?;
         let dc_table_index = byte >> 4;
         let ac_table_index = byte & 0x0f;
 
@@ -348,10 +364,10 @@ pub fn parse_sos<R: Read>(reader: &mut R, frame: &FrameInfo) -> Result<ScanInfo>
         return Err(Error::Format("scan with more than one component and more than 10 blocks per MCU".to_owned()));
     }
 
-    let spectral_selection_start = reader.read_u8()?;
-    let spectral_selection_end = reader.read_u8()?;
+    let spectral_selection_start = read_u8(reader)?;
+    let spectral_selection_end = read_u8(reader)?;
 
-    let byte = reader.read_u8()?;
+    let byte = read_u8(reader)?;
     let successive_approximation_high = byte >> 4;
     let successive_approximation_low = byte & 0x0f;
 
@@ -404,7 +420,7 @@ pub fn parse_dqt<R: Read>(reader: &mut R) -> Result<[Option<[u16; 64]>; 4]> {
 
     // Each DQT segment may contain multiple quantization tables.
     while length > 0 {
-        let byte = reader.read_u8()?;
+        let byte = read_u8(reader)?;
         let precision = (byte >> 4) as usize;
         let index = (byte & 0x0f) as usize;
 
@@ -428,10 +444,10 @@ pub fn parse_dqt<R: Read>(reader: &mut R) -> Result<[Option<[u16; 64]>; 4]> {
 
         let mut table = [0u16; 64];
 
-        for i in 0 .. 64 {
-            table[i] = match precision {
-                0 => reader.read_u8()? as u16,
-                1 => reader.read_u16::<BigEndian>()?,
+        for item in table.iter_mut() {
+            *item = match precision {
+                0 => u16::from(read_u8(reader)?),
+                1 => read_u16_from_be(reader)?,
                 _ => unreachable!(),
             };
         }
@@ -455,7 +471,7 @@ pub fn parse_dht<R: Read>(reader: &mut R, is_baseline: Option<bool>) -> Result<(
 
     // Each DHT segment may contain multiple huffman tables.
     while length > 17 {
-        let byte = reader.read_u8()?;
+        let byte = read_u8(reader)?;
         let class = byte >> 4;
         let index = (byte & 0x0f) as usize;
 
@@ -511,7 +527,7 @@ pub fn parse_dri<R: Read>(reader: &mut R) -> Result<u16> {
         return Err(Error::Format("DRI with invalid length".to_owned()));
     }
 
-    Ok(reader.read_u16::<BigEndian>()?)
+    Ok(read_u16_from_be(reader)?)
 }
 
 // Section B.2.4.5
@@ -545,7 +561,27 @@ pub fn parse_app<R: Read>(reader: &mut R, marker: Marker) -> Result<Option<AppDa
                     result = Some(AppData::Avi1);
                 }
             }
-        },
+        }
+        APP(2) => {
+            if length > 14 {
+                let mut buffer = [0u8; 14];
+                reader.read_exact(&mut buffer)?;
+                bytes_read = buffer.len();
+
+                // http://www.color.org/ICC_Minor_Revision_for_Web.pdf
+                // B.4 Embedding ICC profiles in JFIF files
+                if &buffer[0..12] == b"ICC_PROFILE\0" {
+                    let mut data = vec![0; length - bytes_read];
+                    reader.read_exact(&mut data)?;
+                    bytes_read += data.len();
+                    result = Some(AppData::Icc(IccChunk {
+                        seq_no: buffer[12],
+                        num_markers: buffer[13],
+                        data,
+                    }));
+                }
+            }
+        }
         APP(14) => {
             if length >= 12 {
                 let mut buffer = [0u8; 12];
