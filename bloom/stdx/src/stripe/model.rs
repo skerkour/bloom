@@ -52,13 +52,15 @@ pub struct CheckoutSessionSubscriptionDataParams {
 #[derive(Serialize, Deserialize)]
 pub struct Customer {
     pub id: String,
+    pub subscriptions: Vec<Subscription>,
+    pub invoice_settings: CustomerInvoiceSettings,
     // TODO
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct CustomerParams {
     pub email: String,
-    pub address: AddressParams,
+    pub address: Option<AddressParams>,
     pub tax_id_data: Vec<CustomerTaxIdDataParams>,
     pub metadata: Option<HashMap<String, String>>,
     pub expands: Option<Vec<String>>,
@@ -68,6 +70,38 @@ pub struct CustomerParams {
 pub struct CustomerTaxIdDataParams {
     pub r#type: TaxIdType,
     pub value: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CustomerInvoiceSettings {
+    pub default_payment_method: Option<PaymentMethod>,
+    // TODO
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct PaymentMethod {
+    pub id: String,
+    // TODO
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Plan {
+    pub id: String,
+    pub product: Product,
+    // TODO
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Product {
+    pub id: String,
+    // TODO
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Subscription {
+    pub id: String,
+    pub plan: Plan,
+    // TODO
 }
 
 #[derive(Serialize, Deserialize)]

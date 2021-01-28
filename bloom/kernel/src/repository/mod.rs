@@ -20,6 +20,7 @@ mod delete_pending_user;
 mod delete_session;
 mod delete_upload;
 mod find_customer_by_namespace_id;
+mod find_customer_by_stripe_customer_id;
 mod find_group_by_id;
 mod find_group_by_path;
 mod find_group_invitation_by_id;

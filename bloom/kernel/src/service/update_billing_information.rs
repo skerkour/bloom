@@ -101,14 +101,14 @@ impl Service {
                 // update stripe customer
                 let customer_params = stripe::model::CustomerParams {
                     email: customer.email.clone(),
-                    address: stripe::model::AddressParams {
+                    address: Some(stripe::model::AddressParams {
                         city: customer.city.clone(),
                         country: customer.country.clone(),
                         line1: customer.address_line1.clone(),
                         line2: customer.address_line2.clone(),
                         postal_code: customer.postal_code.clone(),
                         state: customer.state.clone(),
-                    },
+                    }),
                     tax_id_data: stripe_customer_tax_data,
                     metadata: None,
                     expands: None,
@@ -162,14 +162,14 @@ impl Service {
 
                 let customer_params = stripe::model::CustomerParams {
                     email: customer.email.clone(),
-                    address: stripe::model::AddressParams {
+                    address: Some(stripe::model::AddressParams {
                         city: customer.city.clone(),
                         country: customer.country.clone(),
                         line1: customer.address_line1.clone(),
                         line2: customer.address_line2.clone(),
                         postal_code: customer.postal_code.clone(),
                         state: customer.state.clone(),
-                    },
+                    }),
                     tax_id_data: stripe_customer_tax_data,
                     metadata: Some(customer_metadata),
                     expands: None,
