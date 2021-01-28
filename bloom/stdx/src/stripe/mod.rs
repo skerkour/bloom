@@ -40,4 +40,11 @@ impl Client {
     ) -> Result<model::BillingPortalSession, Error> {
         todo!();
     }
+
+    pub async fn new_checkout_session(
+        &self,
+        params: model::CheckoutSessionParams,
+    ) -> Result<model::CheckoutSession, Error> {
+        todo!();
+    }
 }

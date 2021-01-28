@@ -8,7 +8,6 @@ impl Service {
         self.check_namespace_membership(&self.db, &actor, namespace_id).await?;
 
         let namespace = self.repo.find_namespace_by_id(&self.db, namespace_id).await?;
-
         let customer = self.repo.find_customer_by_namespace_id(&self.db, namespace_id).await?;
 
         let return_url = format!("{}/group/{}/billing/sync", &self.config.base_url, &namespace.path);

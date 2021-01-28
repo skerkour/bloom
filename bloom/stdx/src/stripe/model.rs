@@ -28,6 +28,12 @@ pub struct BillingPortalSession {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CheckoutSession {
+    pub id: String,
+    // TODO
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CheckoutSessionLineItemParams {
     pub price: String,
     pub quantity: i64,

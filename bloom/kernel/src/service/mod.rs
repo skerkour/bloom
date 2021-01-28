@@ -48,6 +48,7 @@ mod find_my_sessions;
 mod find_namespace_and_membership;
 mod find_upload;
 mod get_signed_upload_url;
+mod get_stripe_checkout_session;
 mod get_stripe_customer_portal_url;
 mod get_stripe_public_key;
 mod invite_people_in_group;
@@ -246,8 +247,8 @@ pub struct ChangeSubscriptionInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct GetCheckoutSessionInput {
-    pub namespace: String,
+pub struct GetStripeCheckoutSessionInput {
+    pub namespace_id: Uuid,
     pub plan: BillingPlan,
 }
 
