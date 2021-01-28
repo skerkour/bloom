@@ -154,7 +154,11 @@ pub async fn run(
                                     .service(web::resource("/group").route(web::post().to(api::kernel::queries::group)))
                                     .service(web::resource("/group_with_members_and_invitations").route(
                                         web::post().to(api::kernel::queries::group_with_members_and_invitations),
-                                    )),
+                                    ))
+                                    .service(
+                                        web::resource("/stripe_public_key")
+                                            .route(web::post().to(api::kernel::queries::stripe_public_key)),
+                                    ),
                             ),
                     )
                     // files

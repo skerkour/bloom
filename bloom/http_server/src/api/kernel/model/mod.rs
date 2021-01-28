@@ -287,3 +287,8 @@ impl From<kernel::service::GroupWithMembersAndInvitations> for GroupWithMembersA
         }
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct StripePublicKey {
+    pub stripe_public_key: String,
+}
