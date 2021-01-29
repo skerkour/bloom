@@ -158,6 +158,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/stripe_public_key")
                                             .route(web::post().to(api::kernel::queries::stripe_public_key)),
+                                    )
+                                    .service(
+                                        web::resource("/billing_information")
+                                            .route(web::post().to(api::kernel::queries::billing_information)),
                                     ),
                             ),
                     )

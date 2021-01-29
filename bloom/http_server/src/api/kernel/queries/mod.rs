@@ -16,3 +16,5 @@ mod group_with_members_and_invitations;
 pub use group_with_members_and_invitations::group_with_members_and_invitations;
 mod stripe_public_key;
 pub use stripe_public_key::stripe_public_key;
+mod billing_information;
+pub use billing_information::billing_information;

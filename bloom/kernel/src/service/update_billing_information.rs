@@ -16,7 +16,7 @@ impl Service {
         &self,
         actor: Actor,
         input: UpdateBillingInformationInput,
-    ) -> Result<entities::NamespaceAndCustomer, crate::Error> {
+    ) -> Result<entities::BillingInformation, crate::Error> {
         let actor = self.current_user(actor)?;
 
         self.check_namespace_membership(&self.db, &actor, input.namespace_id)
@@ -184,9 +184,9 @@ impl Service {
             Err(err) => Err(err),
         }?;
 
-        Ok(entities::NamespaceAndCustomer {
+        Ok(entities::BillingInformation {
             namespace,
-            customer,
+            customer: Some(customer),
         })
     }
 }

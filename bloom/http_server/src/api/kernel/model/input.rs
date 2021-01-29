@@ -137,3 +137,8 @@ pub struct Markdown {
 pub struct GetGroup {
     pub path: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct GetBillingInformation {
+    pub namespace_id: Id,
+}

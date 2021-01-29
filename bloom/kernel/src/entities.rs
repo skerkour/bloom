@@ -209,7 +209,7 @@ pub struct GroupMember {
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]
-pub struct NamespaceAndCustomer {
+pub struct BillingInformation {
     pub namespace: Namespace,
-    pub customer: Customer,
+    pub customer: Option<Customer>,
 }

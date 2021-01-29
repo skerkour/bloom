@@ -1,6 +1,6 @@
 use crate::api::scalars::{Id, Time};
 use consts::GroupRole;
-use kernel::consts;
+use kernel::consts::{self, BillingPlan};
 use serde::{Deserialize, Serialize};
 
 pub mod input;
@@ -63,6 +63,64 @@ pub struct User {
     pub is_admin: Option<bool>,
     pub email: Option<String>,
     pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BillingInformation {
+    pub namespace_id: Id,
+    pub path: String,
+    pub used_storage: i64,
+    pub total_storage: i64,
+    pub customer: Option<Customer>,
+}
+
+impl From<kernel::entities::BillingInformation> for BillingInformation {
+    fn from(info: kernel::entities::BillingInformation) -> Self {
+        let customer = match info.customer {
+            Some(customer) => Some(customer.into()),
+            None => None,
+        };
+        BillingInformation {
+            namespace_id: info.namespace.id,
+            path: info.namespace.path,
+            used_storage: info.namespace.used_storage,
+            total_storage: 10000000, // TODO
+            customer,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Customer {
+    pub plan: BillingPlan,
+    pub name: String,
+    pub email: String,
+    pub country: String,
+    pub country_code: String,
+    pub city: String,
+    pub postal_code: String,
+    pub address_line1: String,
+    pub address_line2: String,
+    pub state: String,
+    pub tax_id: Option<String>,
+}
+
+impl From<kernel::entities::Customer> for Customer {
+    fn from(customer: kernel::entities::Customer) -> Self {
+        Customer {
+            plan: customer.plan,
+            name: customer.name,
+            email: customer.email,
+            country: customer.country,
+            country_code: customer.country_code,
+            city: customer.city,
+            postal_code: customer.postal_code,
+            address_line1: customer.address_line1,
+            address_line2: customer.address_line2,
+            state: customer.state,
+            tax_id: customer.tax_id,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
