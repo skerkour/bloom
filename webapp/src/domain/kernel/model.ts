@@ -67,6 +67,10 @@ export type Customer = {
   tax_id: Option<string>;
 }
 
+export type CustomerPortal = {
+  customer_portal_url: string;
+}
+
 export type DeclineGroupInvitation = {
   invitation_id: string;
 }
@@ -94,6 +98,10 @@ export type GetBillingInformation = {
 export type GetCheckoutSession = {
   namespace_id: string;
   plan: BillingPlan;
+}
+
+export type GetCustomerPortal = {
+  namespace_id: string;
 }
 
 export type GetGroup = {
