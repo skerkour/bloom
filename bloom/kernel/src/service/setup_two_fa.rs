@@ -4,15 +4,7 @@ use crate::{
     errors::kernel::Error,
     Actor,
 };
-use stdx::{
-    base64,
-    chrono::Utc,
-    crypto,
-    image::{self, imageops::FilterType},
-    log::error,
-    otp::totp,
-    sync::threadpool::spawn_blocking,
-};
+use stdx::{base64, chrono::Utc, crypto, image, log::error, otp::totp, sync::threadpool::spawn_blocking};
 
 impl Service {
     pub async fn setup_two_fa(&self, actor: Actor) -> Result<String, crate::Error> {
@@ -51,12 +43,6 @@ impl Service {
                 return Err(err.into());
             }
         };
-
-        let qr_code_image = qr_code_image.resize(
-            consts::TOTP_QR_CODE_SIZE,
-            consts::TOTP_QR_CODE_SIZE,
-            FilterType::Lanczos3,
-        );
 
         let mut qr_code_buffer: Vec<u8> = Vec::new();
         qr_code_image.write_to(

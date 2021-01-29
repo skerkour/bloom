@@ -8,30 +8,46 @@ use ring::hmac;
 use std::io::Cursor;
 
 const DIGITS: usize = 6;
-const SECRET_SIZE: usize = crypto::KEY_SIZE_512;
+const SECRET_SIZE: usize = 20; // 20 bytes: sha1 size
 const PERIOD: usize = 30;
 const ALGORITHM: &str = "SHA1";
 const DISCREPANCY: i64 = 1;
 
 pub async fn validate(code: String, secret: String) -> Result<bool, Error> {
-    Ok(spawn_blocking(move || {
+    spawn_blocking(move || {
         if code.len() != DIGITS {
-            return false;
+            return Ok(false);
         }
+
+        // Support for TOTP secrets that are
+        // missing their padding.
+        let mut secret = secret.trim().to_uppercase();
+        let secret_padding = secret.len() % 8;
+        if secret_padding != 0 {
+            secret = secret + "=".repeat(secret_padding).as_str();
+        }
+
+        let secret = base32::decode(
+            base32::Alphabet::RFC4648 {
+                padding: true,
+            },
+            &secret,
+        )
+        .ok_or(Error::DecodingSecret)?;
 
         let curr_time_slice = Utc::now().timestamp() / 30;
         let start_time = curr_time_slice.saturating_sub(DISCREPANCY) as u64;
         let end_time = curr_time_slice.saturating_add(DISCREPANCY + 1) as u64;
 
         for time_slice in start_time..end_time {
-            let valid_code = generate_code(secret.as_bytes(), time_slice);
+            let valid_code = generate_code(&secret, time_slice);
             if crypto::constant_time_compare(code.as_bytes(), valid_code.as_bytes()) {
-                return true;
+                return Ok(true);
             }
         }
-        false
+        Ok(false)
     })
-    .await?)
+    .await?
 }
 
 // url format: otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example

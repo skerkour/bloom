@@ -1,5 +1,5 @@
 use crate::qrcode::QrCode;
-use image::{DynamicImage, Luma};
+use image::{imageops::FilterType, DynamicImage, Luma};
 
 pub mod totp;
 
@@ -7,6 +7,9 @@ pub mod totp;
 pub enum Error {
     #[error("otp: GeneratingQRCode")]
     GeneratingQRCode,
+
+    #[error("otp: DecodingSecret")]
+    DecodingSecret,
 
     #[error("otp: JoinError")]
     JoinError,
@@ -38,11 +41,14 @@ impl Key {
         self.secret.clone()
     }
 
-    pub fn image(&self, _width: u32, _height: u32) -> Result<image::DynamicImage, Error> {
+    pub fn image(&self, width: u32, height: u32) -> Result<image::DynamicImage, Error> {
         let code = QrCode::new(self.url.as_bytes()).map_err(|_| Error::GeneratingQRCode)?;
 
         // Render the bits into an image.
-        let image = code.render::<Luma<u8>>().build();
-        Ok(DynamicImage::ImageLuma8(image))
+        let image = code.render::<Luma<u8>>().min_dimensions(width, height).build();
+        let image = DynamicImage::ImageLuma8(image);
+        let image = image.resize(width, height, FilterType::Lanczos3);
+
+        Ok(image)
     }
 }
