@@ -22,6 +22,7 @@ export const Commands = {
   revokeSession: `/${prefix}/${commands}/revoke_session`,
   signIn: `/${prefix}/${commands}/sign_in`,
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
+  updateBillingInformation: `/${prefix}/${commands}/update_billing_information`,
   updateGroupProfile: `/${prefix}/${commands}/update_group_profile`,
   updateMyProfile: `/${prefix}/${commands}/update_my_profile`,
 }

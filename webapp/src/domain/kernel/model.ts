@@ -209,6 +209,19 @@ export type StripePublicKey = {
   stripe_public_key: string;
 }
 
+export type UpdateBillingInformation = {
+  namespace_id: string;
+  name: string;
+  email: string;
+  country_code: string;
+  city: string;
+  postal_code: string;
+  address_line1: string;
+  address_line2: string;
+  state: string;
+  tax_id: Option<string>;
+}
+
 export type UpdateGroupProfile = {
   group_id: string;
   name: Option<string>;

@@ -14,7 +14,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -245,6 +245,11 @@ export class KernelService {
     const res: SignedUploadUrl = await this.apiClient.post(Queries.signedUploadUrl, input);
 
     return res;
+  }
+
+  async updateBillingInformation(input: UpdateBillingInformation): Promise<BillingInformation> {
+    const info: BillingInformation = await this.apiClient.post(Commands.updateBillingInformation, input);
+    return info;
   }
 
   async updateGroupProfile(input: UpdateGroupProfile): Promise<Group> {
