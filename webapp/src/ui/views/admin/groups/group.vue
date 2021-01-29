@@ -47,7 +47,7 @@
         <p v-else>
           <b>Plan</b>: free
         </p>
-        <b-billing-information :value="group.billing" :loading="loading" readonly
+        <b-customer :value="group.billing" :loading="loading" readonly
           v-if="group.billing" />
       </v-col>
 
@@ -66,13 +66,13 @@ import { Group, GroupMember } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import date from '@/app/filters/date';
 import BGroupMembersList from '@/ui/components/groups/members_list.vue';
-import BBillingInformation from '@/ui/components/kernel/billing_information.vue';
+import BCustomer from '@/ui/components/kernel/customer.vue';
 
 export default VueApp.extend({
   name: 'BAdminGroupView',
   components: {
     BGroupMembersList,
-    BBillingInformation,
+    BCustomer,
   },
   data() {
     return {

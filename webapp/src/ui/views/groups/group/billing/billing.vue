@@ -72,7 +72,7 @@
       </v-col>
 
       <v-col cols="10" xl="8">
-        <v-btn text @click="resetCustomer(group.billing)" :loading="loading">
+        <v-btn text @click="resetCustomer(customer)" :loading="loading">
           Cancel
         </v-btn>
 
@@ -83,7 +83,7 @@
       </v-col>
 
       <v-col cols="10" xl="8" class="px-5">
-        <b-billing-information v-model="billingInformation" :loading="loading" />
+        <b-customer v-model="customer" :loading="loading" />
       </v-col>
     </v-row>
 
@@ -97,7 +97,7 @@
           <v-alert icon="mdi-alert-circle" :value="error !== ''" type="error" dismissible>
             {{ error }}
           </v-alert>
-          <b-billing-information v-model="billingInformation" :loading="loading" />
+          <b-customer v-model="customer" :loading="loading" />
         </v-card-text>
 
         <v-card-actions>
@@ -123,7 +123,7 @@
 /* eslint-disable max-len, @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
 import BPricingTable from '@/ui/components/kernel/pricing_table.vue';
-import BBillingInformation from '@/ui/components/kernel/billing_information.vue';
+import BCustomer from '@/ui/components/kernel/customer.vue';
 import {
   Customer, BillingPlan, Group,
   UpdateBillingInformation, GetCheckoutSession, BillingInformation,
@@ -135,7 +135,7 @@ export default VueApp.extend({
   name: 'BGroupBilling',
   components: {
     BPricingTable,
-    BBillingInformation,
+    BCustomer,
   },
   data() {
     return {

@@ -24,7 +24,7 @@
       <v-select
         :items="countrySelectItems"
         label="Country"
-        :value="value.countryCode"
+        :value="value.country_code"
         @input="updateCountry"
         :disabled="loading"
         :readonly="readonly"
@@ -43,7 +43,7 @@
       <v-col cols="12" sm="4">
         <v-text-field
           label="Postal or Zip code"
-          :value="value.postalCode"
+          :value="value.postal_code"
           @input="updateValue('postalCode', $event)"
           :disabled="loading"
           :readonly="readonly"
@@ -53,7 +53,7 @@
       <v-col cols="12">
         <v-text-field
           label="Address line 1"
-          :value="value.addressLine1"
+          :value="value.address_line1"
           @input="updateValue('addressLine1', $event)"
           :disabled="loading"
           :readonly="readonly"
@@ -63,7 +63,7 @@
       <v-col cols="12" sm="8">
         <v-text-field
           label="Address line 2 (optional)"
-          :value="value.addressLine2"
+          :value="value.address_line2"
           @input="updateValue('addressLine2', $event)"
           :disabled="loading"
           :readonly="readonly"
@@ -83,7 +83,7 @@
       <v-col cols="12" sm="6" v-if="isEu">
         <v-text-field
           label="VAT number (Optional)"
-          :value="value.taxId"
+          :value="value.tax_ld"
           @input="updateValue('taxId', $event)"
           :disabled="loading"
           :readonly="readonly"
@@ -98,7 +98,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { BillingInformation } from '@/domain/groups/service';
+import { Customer } from '@/domain/kernel/model';
 import { PropType } from 'vue';
 import countries from '@/app/utils/countries';
 import { isEu } from '@/app/utils/eu';
@@ -107,7 +107,7 @@ export default VueApp.extend({
   name: 'BBillingInformation',
   props: {
     value: {
-      type: Object as PropType<BillingInformation>,
+      type: Object as PropType<Customer>,
       required: true,
     },
     loading: {
@@ -132,7 +132,7 @@ export default VueApp.extend({
       });
     },
     isEu(): boolean {
-      return isEu(this.value.countryCode);
+      return isEu(this.value.country_code);
     },
   },
   methods: {
