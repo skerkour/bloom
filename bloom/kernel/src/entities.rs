@@ -212,4 +212,5 @@ pub struct GroupMember {
 pub struct BillingInformation {
     pub namespace: Namespace,
     pub customer: Option<Customer>,
+    pub total_storage: i64,
 }

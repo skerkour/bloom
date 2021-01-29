@@ -1,11 +1,12 @@
 use super::{DecodedSessionToken, Service};
 use crate::{
-    consts,
+    consts::{self, BillingPlan},
     domain::{files, inbox},
     entities::{Session, User},
     errors::kernel::Error,
     Actor,
 };
+use consts::{STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER, STORAGE_ULTRA};
 use std::sync::Arc;
 use stdx::{
     base64, crypto,
@@ -168,6 +169,15 @@ impl Service {
         let mut token_bytes: Vec<u8> = session_id_bytes[..].into();
         token_bytes.extend(secret);
         Ok(base64::encode(token_bytes))
+    }
+
+    pub fn get_storage_for_plan(&self, plan: BillingPlan) -> i64 {
+        match plan {
+            BillingPlan::Free => STORAGE_FREE,
+            BillingPlan::Starter => STORAGE_STARTER,
+            BillingPlan::Pro => STORAGE_PRO,
+            BillingPlan::Ultra => STORAGE_ULTRA,
+        }
     }
 }
 

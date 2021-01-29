@@ -185,6 +185,7 @@ impl Service {
         }?;
 
         Ok(entities::BillingInformation {
+            total_storage: self.get_storage_for_plan(namespace.plan),
             namespace,
             customer: Some(customer),
         })

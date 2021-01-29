@@ -84,7 +84,7 @@ impl From<kernel::entities::BillingInformation> for BillingInformation {
             namespace_id: info.namespace.id,
             path: info.namespace.path,
             used_storage: info.namespace.used_storage,
-            total_storage: 10000000, // TODO
+            total_storage: info.total_storage,
             customer,
         }
     }
