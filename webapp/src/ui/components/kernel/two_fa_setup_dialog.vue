@@ -87,6 +87,13 @@ export default VueApp.extend({
       return this.qrcode ? 'success' : 'error';
     },
   },
+  watch: {
+    value(value: boolean) {
+      if (!value) {
+        this.code = '';
+      }
+    },
+  },
   methods: {
     cancel() {
       this.code = '';
@@ -95,10 +102,8 @@ export default VueApp.extend({
     enableDisable() {
       if (this.qrcode) {
         this.$emit('enable', this.code);
-        this.code = '';
       } else {
         this.$emit('disable', this.code);
-        this.code = '';
       }
     },
   },

@@ -11,7 +11,7 @@ const DIGITS: usize = 6;
 const SECRET_SIZE: usize = 20; // 20 bytes: sha1 size
 const PERIOD: usize = 30;
 const ALGORITHM: &str = "SHA1";
-const DISCREPANCY: i64 = 1;
+const DISCREPANCY: i64 = 0;
 
 pub async fn validate(code: String, secret: String) -> Result<bool, Error> {
     spawn_blocking(move || {

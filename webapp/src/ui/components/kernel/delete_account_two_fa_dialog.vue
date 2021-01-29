@@ -21,6 +21,7 @@
           :loading="loading"
           outlined
           counter="6"
+          @keyup.enter.native="deleteMyAccount"
         />
       </v-card-text>
 
@@ -74,6 +75,13 @@ export default VueApp.extend({
       set(value: boolean) {
         this.$emit('input', value);
       },
+    },
+  },
+  watch: {
+    value(value: boolean) {
+      if (!value) {
+        this.code = '';
+      }
     },
   },
   methods: {
