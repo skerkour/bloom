@@ -2,6 +2,12 @@
 export type Option<T> = T | null;
 export type Empty = {};
 
+export enum BillingPlan {
+  FREE = 'free',
+  STARTER = 'starter',
+  PRO = 'pro',
+}
+
 export type AcceptGroupInvitation = {
   invitation_id: string;
 }
@@ -14,9 +20,12 @@ export type BillingInformation = {
   customer: Option<Customer>,
 }
 
-
 export type CancelGroupInvitation = {
   invitation_id: string;
+}
+
+export type CheckoutSession = {
+  session_id: string;
 }
 
 export type CompleteRegistration = {
@@ -45,7 +54,7 @@ export type CreateGroup = {
 }
 
 export type Customer = {
-  plan: string;
+  plan: BillingPlan;
   name: string;
   email: string;
   country: string;
@@ -80,6 +89,11 @@ export type GenerateQrCode = {
 
 export type GetBillingInformation = {
   namespace_id: string;
+}
+
+export type GetCheckoutSession = {
+  namespace_id: string;
+  plan: BillingPlan;
 }
 
 export type GetGroup = {

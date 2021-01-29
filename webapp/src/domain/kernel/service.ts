@@ -14,7 +14,7 @@ import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithprovider,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithprovider, GetCheckoutSession, CheckoutSession,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -171,6 +171,12 @@ export class KernelService {
       input,
     };
     const res: QrCode = await this.apiClient.post(Queries.generateQrCode, apiInput);
+
+    return res;
+  }
+
+  async getCheckoutSession(input: GetCheckoutSession): Promise<CheckoutSession> {
+    const res: CheckoutSession = await this.apiClient.post(Queries.checkoutSession, input);
 
     return res;
   }
