@@ -31,10 +31,12 @@
     },
     "products": {
         "starter": "prod_XXX",
-        "pro": "XXX"
+        "pro": "XXX",
+        "ultra": "XXX"
     },
     "prices": {
         "starter": "price_XXX",
-        "pro": "XXX"
+        "pro": "XXX",
+        "ultra": "XXX"
     }
 }

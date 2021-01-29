@@ -1,5 +1,6 @@
 use super::{GroupInvitationWithDetails, InvitePeopleInGroupInput, Service};
 use crate::{
+    consts::BillingPlan,
     consts::{self, GroupRole},
     entities::GroupInvitation,
     errors::kernel::Error,
@@ -60,16 +61,15 @@ impl Service {
         if !self.config.self_hosted {
             let members_count_after_invites = current_group_members_count + number_of_users_to_invite;
             match namespace.plan {
-                crate::consts::BillingPlan::Free if members_count_after_invites > consts::MAX_MEMBERS_PLAN_FREE => {
+                BillingPlan::Free if members_count_after_invites > consts::MAX_MEMBERS_PLAN_FREE => {
                     Err(Error::MembersLimitReachedForPlan)
                 }
-                crate::consts::BillingPlan::Starter
-                    if members_count_after_invites > consts::MAX_MEMBERS_PLAN_STARTER =>
+                BillingPlan::Starter if members_count_after_invites > consts::MAX_MEMBERS_PLAN_STARTER => {
+                    Err(Error::MembersLimitReachedForPlan)
+                }
+                BillingPlan::Pro | BillingPlan::Ultra
+                    if members_count_after_invites > consts::MAX_MEMBERS_SOFT_LIMIT =>
                 {
-                    Err(Error::MembersLimitReachedForPlan)
-                }
-                // Pro
-                crate::consts::BillingPlan::Pro if members_count_after_invites > consts::MAX_MEMBERS_SOFT_LIMIT => {
                     Err(Error::SoftLimitReached)
                 }
                 _ => Ok(()),

@@ -32,6 +32,7 @@ pub enum BillingPlan {
     Free,
     Starter,
     Pro,
+    Ultra,
 }
 
 #[derive(sqlx::Type, Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Copy)]
@@ -70,8 +71,9 @@ pub const GROUP_NAME_MAX_LENGTH: usize = 42;
 
 // Billing
 pub const STORAGE_FREE: i64 = 100_000_000; // 100MB
-pub const STORAGE_STARTER: i64 = 100_000_000_000; // 100GB
+pub const STORAGE_STARTER: i64 = 50_000_000_000; // 50GB
 pub const STORAGE_PRO: i64 = 500_000_000_000; // 500GB
+pub const STORAGE_ULTRA: i64 = 5_000_000_000_000; // 5TB
 pub const CUSTOMER_PROPERTY_MAX_LENGTH: usize = 200;
 
 // Other
