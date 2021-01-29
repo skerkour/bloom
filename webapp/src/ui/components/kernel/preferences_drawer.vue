@@ -12,6 +12,15 @@
         </v-list-item-content>
       </v-list-item>
 
+      <v-list-item exact link to="/preferences/billing">
+        <v-list-item-icon>
+          <v-icon>mdi-credit-card</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>Billing</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
       <v-list-item exact link to="/preferences/invitations">
         <v-list-item-icon>
           <v-icon>mdi-email-outline</v-icon>
