@@ -72,7 +72,7 @@
       </v-col>
 
       <v-col cols="10" xl="8">
-        <v-btn text @click="resetBillingInformation(group.billing)" :loading="loading">
+        <v-btn text @click="resetCustomer(group.billing)" :loading="loading">
           Cancel
         </v-btn>
 
@@ -120,14 +120,14 @@
 
 
 <script lang="ts">
-import {
-  BillingPlan, Group, UpdateBillingInformationInput,
-  BillingInformation as ApiBillingInformation, CheckoutSessionInput,
-} from '@/api/graphql/model';
+/* eslint-disable max-len, @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
 import BPricingTable from '@/ui/components/kernel/pricing_table.vue';
 import BBillingInformation from '@/ui/components/kernel/billing_information.vue';
-import { BillingInformation } from '@/domain/groups/service';
+import {
+  Customer, BillingPlan, Group,
+  UpdateBillingInformation, GetCheckoutSession, BillingInformation,
+} from '@/domain/kernel/model';
 import { isEu } from '@/app/utils/eu';
 import filesize from '@/app/filters/filesize';
 
@@ -142,24 +142,24 @@ export default VueApp.extend({
       loading: false,
       error: '',
       showBillingInformationDialog: false,
-      selectedPlan: BillingPlan.Free,
+      selectedPlan: BillingPlan.FREE,
       group: null as Group | null,
-      actorEmail: '',
-      billingInformation: {
-        plan: '',
+      customer: {
+        plan: BillingPlan.FREE,
         name: '',
         email: '',
         country: '',
-        countryCode: '',
+        country_code: '',
         city: '',
-        postalCode: '',
-        addressLine1: '',
-        addressLine2: '',
+        postal_code: '',
+        address_line1: '',
+        address_line2: '',
         state: '',
-        taxId: '',
-        usedStorage: 0,
-        totalStorage: 0,
-      } as BillingInformation,
+        tax_id: '',
+      } as Customer,
+      billing: null as BillingInformation | null,
+      usedStorage: 0,
+      totalStorage: 0,
     };
   },
   computed: {
@@ -167,18 +167,18 @@ export default VueApp.extend({
       return this.$route.params.groupPath;
     },
     currentPlan(): string {
-      return this.group?.billing ? this.group?.billing.plan : BillingPlan.Free;
+      return this.customer?.plan ?? BillingPlan.FREE;
     },
     showBillingInformation(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
-      return this.group?.billing ? true : false;
+      return this.customer ? true : false;
     },
     showPlans(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
       if (!this.group) {
         return false;
-      } if (this.group.billing) {
-        return this.group.billing.plan === BillingPlan.Free;
+      } if (this.customer) {
+        return this.customer.plan === BillingPlan.FREE;
       }
 
       // if group has not customer attached
@@ -189,12 +189,6 @@ export default VueApp.extend({
         return 0;
       }
       return Math.round((this.usedStorage / this.totalStorage) * 100);
-    },
-    usedStorage(): number {
-      return this.group?.billing?.usedStorage ?? 0;
-    },
-    totalStorage(): number {
-      return this.group?.billing?.totalStorage ?? 100000000;
     },
   },
   created() {
@@ -207,11 +201,11 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        const res = await this.$groupsService.fetchGroupBilling(this.groupPath);
-        this.group = res.group;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.actorEmail = res.me.email!;
-        this.resetBillingInformation(this.group.billing);
+        this.group = await this.$kernelService.fetchGroup(this.groupPath);
+        this.billing = await this.$kernelService.fetchBillingInformation(this.group.namespace_id!);
+        this.usedStorage = this.billing.used_storage;
+        this.totalStorage = this.billing.total_storage;
+        this.resetCustomer(this.billing.customer);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -222,27 +216,27 @@ export default VueApp.extend({
       this.loading = true;
       this.error = '';
       // eslint-disable-next-line prefer-destructuring
-      let taxId: string | null = this.billingInformation.taxId;
-      if (taxId === '' || !isEu(this.billingInformation.countryCode)) {
+      let taxId: string | null = this.customer.tax_id;
+      if (taxId === '' || !isEu(this.customer.country_code)) {
         taxId = null;
       }
-      const input: UpdateBillingInformationInput = {
-        namespace: this.groupPath,
-        name: this.billingInformation.name,
-        email: this.billingInformation.email,
-        countryCode: this.billingInformation.countryCode,
-        city: this.billingInformation.city,
-        postalCode: this.billingInformation.postalCode,
-        addressLine1: this.billingInformation.addressLine1,
-        addressLine2: this.billingInformation.addressLine2,
-        state: this.billingInformation.state,
-        taxId,
+      const input: UpdateBillingInformation = {
+        namespace_id: this.group!.namespace_id!,
+        name: this.customer.name,
+        email: this.customer.email,
+        country_code: this.customer.country_code,
+        city: this.customer.city,
+        postal_code: this.customer.postal_code,
+        address_line1: this.customer.address_line1,
+        address_line2: this.customer.address_line2,
+        state: this.customer.state,
+        tax_id: taxId,
       };
 
       try {
-        const billingInformation = await this.$groupsService.updateBillingInformation(input);
-        this.resetBillingInformation(billingInformation);
-        if (this.selectedPlan !== BillingPlan.Free) {
+        const billingInformation = await this.$kernelService.updateBillingInformation(input);
+        this.resetCustomer(billingInformation.customer);
+        if (this.selectedPlan !== BillingPlan.FREE) {
           await this.gotoCheckoutSession(this.selectedPlan);
         }
       } catch (err) {
@@ -255,51 +249,47 @@ export default VueApp.extend({
       this.loading = true;
       this.error = '';
 
-      const input: CheckoutSessionInput = {
-        namespace: this.groupPath,
+      const input: GetCheckoutSession = {
+        namespace_id: this.group!.namespace_id!,
         plan,
       };
 
       try {
-        await this.$groupsService.gotoCheckoutSession(input);
+        await this.$kernelService.gotoCheckoutSession(input);
       } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
       }
     },
-    resetBillingInformation(billingInformation: ApiBillingInformation | null | undefined) {
-      if (billingInformation) {
-        this.billingInformation = {
-          plan: billingInformation.plan,
-          name: billingInformation.name,
-          email: billingInformation.email,
-          country: billingInformation.country,
-          countryCode: billingInformation.countryCode,
-          city: billingInformation.city,
-          postalCode: billingInformation.postalCode,
-          addressLine1: billingInformation.addressLine1,
-          addressLine2: billingInformation.addressLine2,
-          state: billingInformation.state,
-          taxId: billingInformation.taxId ?? '',
-          usedStorage: billingInformation.usedStorage ?? 0,
-          totalStorage: billingInformation.totalStorage ?? 0,
+    resetCustomer(customer: Customer | null) {
+      if (customer) {
+        this.customer = {
+          plan: customer.plan,
+          name: customer.name,
+          email: customer.email,
+          country: customer.country,
+          country_code: customer.country_code,
+          city: customer.city,
+          postal_code: customer.postal_code,
+          address_line1: customer.address_line1,
+          address_line2: customer.address_line2,
+          state: customer.state,
+          tax_id: customer.tax_id ?? '',
         };
       } else {
-        this.billingInformation = {
-          plan: '',
+        this.customer = {
+          plan: BillingPlan.FREE,
           name: '',
-          email: this.actorEmail ?? '',
+          email: this.$store.state.me?.email ?? '',
           country: '',
-          countryCode: '',
+          country_code: '',
           city: '',
-          postalCode: '',
-          addressLine1: '',
-          addressLine2: '',
+          postal_code: '',
+          address_line1: '',
+          address_line2: '',
           state: '',
-          taxId: '',
-          usedStorage: 0,
-          totalStorage: 0,
+          tax_id: '',
         };
       }
     },
@@ -307,8 +297,7 @@ export default VueApp.extend({
       // get billing information
       // then, get checkoutSession
       this.selectedPlan = plan;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!this.group!.billing) {
+      if (!this.billing?.customer) {
         this.showBillingInformationDialog = true;
       } else {
         this.gotoCheckoutSession(this.selectedPlan);
@@ -319,7 +308,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        await this.$groupsService.gotoBillingPortal(this.groupPath);
+        await this.$kernelService.gotoCustomerPortal(this.group!.namespace_id!);
       } catch (err) {
         this.error = err.message;
       } finally {

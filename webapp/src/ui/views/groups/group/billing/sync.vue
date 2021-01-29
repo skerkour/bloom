@@ -27,8 +27,8 @@
 
 
 <script lang="ts">
-import { SyncBillingWithProviderInput } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
+import { SyncCustomerWithProvider } from '@/domain/kernel/model';
 
 export default VueApp.extend({
   name: 'BGroupBillingSyncView',
@@ -50,12 +50,16 @@ export default VueApp.extend({
     async syncData(): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: SyncBillingWithProviderInput = {
-        namespace: this.groupPath,
-      };
+
 
       try {
-        await this.$groupsService.syncBillingWithProvider(input);
+        const group = await this.$kernelService.fetchGroup(this.groupPath);
+
+        const input: SyncCustomerWithProvider = {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          namespace_id: group.namespace_id!,
+        };
+        await this.$kernelService.syncCustomerWithProvider(input, this.groupPath);
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -1,6 +1,6 @@
 <template>
   <div :class="{'agent-message': isAgentMessage, 'user-message': isUserMessage}">
-    <span v-html="message.bodyHtml" >
+    <span v-html="message.body_html" >
     </span>
   </div>
 </template>

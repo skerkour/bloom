@@ -9,12 +9,13 @@ import {
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
+import { loadStripe } from '@stripe/stripe-js';
 import { Commands, Queries } from './routes';
 import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithprovider, GetCheckoutSession, CheckoutSession, GetCustomerPortal, CustomerPortal,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithProvider, GetCheckoutSession, CheckoutSession, GetCustomerPortal, CustomerPortal,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -175,19 +176,20 @@ export class KernelService {
     return res;
   }
 
-  async getCheckoutSession(input: GetCheckoutSession): Promise<CheckoutSession> {
+  async gotoCheckoutSession(input: GetCheckoutSession): Promise<void> {
     const res: CheckoutSession = await this.apiClient.post(Queries.checkoutSession, input);
 
-    return res;
+    const stripe = await loadStripe(res.stripe_public_key);
+    stripe?.redirectToCheckout({ sessionId: res.checkout_session_id });
   }
 
-  async getCustomerPortal(namespaceId: string): Promise<CustomerPortal> {
+  async gotoCustomerPortal(namespaceId: string): Promise<void> {
     const input: GetCustomerPortal = {
       namespace_id: namespaceId,
     };
     const res: CustomerPortal = await this.apiClient.post(Queries.customerPortal, input);
 
-    return res;
+    window.location.href = res.customer_portal_url;
   }
 
   async invitePeopleInGroup(input: InvitePeopleInGroup): Promise<GroupInvitation[]> {
@@ -262,8 +264,9 @@ export class KernelService {
     return res;
   }
 
-  async syncCustomerWithProvider(input: SyncCustomerWithprovider): Promise<void> {
+  async syncCustomerWithProvider(input: SyncCustomerWithProvider, namespace: string): Promise<void> {
     await this.apiClient.post(Commands.syncCustomerWithProvider, input);
+    this.router.push({ path: `/groups/${namespace}/billing` });
   }
 
   async updateBillingInformation(input: UpdateBillingInformation): Promise<BillingInformation> {

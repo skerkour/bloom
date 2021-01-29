@@ -25,7 +25,8 @@ export type CancelGroupInvitation = {
 }
 
 export type CheckoutSession = {
-  session_id: string;
+  checkout_session_id: string;
+  stripe_public_key: string;
 }
 
 export type CompleteRegistration = {
@@ -231,7 +232,7 @@ export type StripePublicKey = {
   stripe_public_key: string;
 }
 
-export type SyncCustomerWithprovider = {
+export type SyncCustomerWithProvider = {
   namespace_id: string;
 }
 
