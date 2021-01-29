@@ -105,7 +105,7 @@ impl Email {
         }
 
         // TODO: single / multipart builder?
-        let email = builder.body(&self.html)?;
+        let email = builder.body(self.html.clone())?;
 
         Ok(email.formatted())
     }
