@@ -350,3 +350,8 @@ impl From<kernel::service::GroupWithMembersAndInvitations> for GroupWithMembersA
 pub struct StripePublicKey {
     pub stripe_public_key: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CheckoutSession {
+    pub session_id: String,
+}

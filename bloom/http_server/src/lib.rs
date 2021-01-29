@@ -170,6 +170,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/billing_information")
                                             .route(web::post().to(api::kernel::queries::billing_information)),
+                                    )
+                                    .service(
+                                        web::resource("/checkout_session")
+                                            .route(web::post().to(api::kernel::queries::checkout_session)),
                                     ),
                             ),
                     )

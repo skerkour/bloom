@@ -10,7 +10,7 @@ pub async fn sync_customer_with_provider(
 ) -> Result<api::Response<model::Success>, kernel::Error> {
     let input = input.into_inner();
     ctx.kernel_service
-        .sync_customer_with_stripe(actor, Some(input.namespace_id), None)
+        .sync_customer_with_stripe(Some(actor), Some(input.namespace_id), None)
         .await?;
 
     Ok(api::Response::ok(true.into()))

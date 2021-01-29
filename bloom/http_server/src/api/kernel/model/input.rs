@@ -1,4 +1,5 @@
 use crate::api::scalars::Id;
+use kernel::consts::BillingPlan;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -160,4 +161,10 @@ pub struct UpdateBillingInformation {
 #[derive(Serialize, Deserialize)]
 pub struct SyncCustomerWithProvider {
     pub namespace_id: Id,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GetCheckoutSession {
+    pub namespace_id: Id,
+    pub plan: BillingPlan,
 }

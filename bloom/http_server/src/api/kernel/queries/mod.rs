@@ -18,3 +18,5 @@ mod stripe_public_key;
 pub use stripe_public_key::stripe_public_key;
 mod billing_information;
 pub use billing_information::billing_information;
+mod checkout_session;
+pub use checkout_session::checkout_session;
