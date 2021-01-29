@@ -130,6 +130,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/remove_member_from_group")
                                             .route(web::post().to(api::kernel::commands::remove_member_from_group)),
+                                    )
+                                    .service(
+                                        web::resource("/update_billing_information")
+                                            .route(web::post().to(api::kernel::commands::update_billing_information)),
                                     ),
                             )
                             .service(

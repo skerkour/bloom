@@ -142,3 +142,17 @@ pub struct GetGroup {
 pub struct GetBillingInformation {
     pub namespace_id: Id,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateBillingInformation {
+    pub namespace_id: Id,
+    pub name: String,
+    pub email: String,
+    pub country_code: String,
+    pub city: String,
+    pub postal_code: String,
+    pub address_line1: String,
+    pub address_line2: String,
+    pub state: String,
+    pub tax_id: Option<String>,
+}

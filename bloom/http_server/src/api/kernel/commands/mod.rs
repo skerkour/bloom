@@ -22,7 +22,6 @@ mod complete_two_fa_challenge;
 pub use complete_two_fa_challenge::complete_two_fa_challenge;
 mod update_my_profile;
 pub use update_my_profile::update_my_profile;
-
 mod create_group;
 pub use create_group::create_group;
 mod delete_group;
@@ -41,3 +40,5 @@ mod cancel_group_invitation;
 pub use cancel_group_invitation::cancel_group_invitation;
 mod remove_member_from_group;
 pub use remove_member_from_group::remove_member_from_group;
+mod update_billing_information;
+pub use update_billing_information::update_billing_information;
