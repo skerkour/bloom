@@ -209,6 +209,10 @@ export type StripePublicKey = {
   stripe_public_key: string;
 }
 
+export type SyncCustomerWithprovider = {
+  namespace_id: string;
+}
+
 export type UpdateBillingInformation = {
   namespace_id: string;
   name: string;
