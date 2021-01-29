@@ -24,18 +24,20 @@ lazy_static! {
         m.insert("DK".to_string(), 25);
         // Estonia
         m.insert("EE".to_string(), 20);
-        // Greece
-        m.insert("EL".to_string(), 24);
         // Spain
         m.insert("ES".to_string(), 21);
         // Finland
         m.insert("FI".to_string(), 24);
         // France
         m.insert("FR".to_string(), 20);
-        // Hungary
-        m.insert("HU".to_string(), 27);
+        // United Kingdom
+        m.insert("GB".to_string(), 20);
+        // Greece
+        m.insert("GR".to_string(), 24);
         // Croatia
         m.insert("HR".to_string(), 25);
+        // Hungary
+        m.insert("HU".to_string(), 27);
         // Ireland
         m.insert("IE".to_string(), 23);
         // Italy
@@ -62,8 +64,6 @@ lazy_static! {
         m.insert("SI".to_string(), 22);
         // Slovak Republic
         m.insert("SK".to_string(), 20);
-        // United Kingdom
-        m.insert("GB".to_string(), 20);
 
         m
     };
