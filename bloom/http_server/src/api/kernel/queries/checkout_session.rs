@@ -13,12 +13,15 @@ pub async fn checkout_session(
         namespace_id: input.namespace_id,
         plan: input.plan,
     };
-    let session_id = ctx
+    let checkout_session_id = ctx
         .kernel_service
-        .get_stripe_checkout_session(actor, service_input)
+        .get_stripe_checkout_session(actor.clone(), service_input)
         .await?;
 
+    let stripe_public_key = ctx.kernel_service.get_stripe_public_key(actor)?;
+
     Ok(api::Response::ok(model::CheckoutSession {
-        session_id,
+        checkout_session_id,
+        stripe_public_key,
     }))
 }
