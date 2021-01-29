@@ -134,6 +134,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/update_billing_information")
                                             .route(web::post().to(api::kernel::commands::update_billing_information)),
+                                    )
+                                    .service(
+                                        web::resource("/sync_customer_with_provider")
+                                            .route(web::post().to(api::kernel::commands::sync_customer_with_provider)),
                                     ),
                             )
                             .service(

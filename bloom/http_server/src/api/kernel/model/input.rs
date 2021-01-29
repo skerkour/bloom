@@ -156,3 +156,8 @@ pub struct UpdateBillingInformation {
     pub state: String,
     pub tax_id: Option<String>,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct SyncCustomerWithProvider {
+    pub namespace_id: Id,
+}

@@ -42,3 +42,5 @@ mod remove_member_from_group;
 pub use remove_member_from_group::remove_member_from_group;
 mod update_billing_information;
 pub use update_billing_information::update_billing_information;
+mod sync_customer_with_provider;
+pub use sync_customer_with_provider::sync_customer_with_provider;
