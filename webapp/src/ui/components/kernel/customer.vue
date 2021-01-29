@@ -83,7 +83,7 @@
       <v-col cols="12" sm="6" v-if="isEu">
         <v-text-field
           label="VAT number (Optional)"
-          :value="value.tax_ld"
+          :value="value.tax_id"
           @input="updateValue('tax_id', $event)"
           :disabled="loading"
           :readonly="readonly"
