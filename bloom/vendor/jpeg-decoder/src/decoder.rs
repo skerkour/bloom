@@ -409,6 +409,10 @@ impl<R: Read> Decoder<R> {
             previous_marker = marker;
         }
 
+        if self.frame.is_none() {
+            return Err(Error::Format("end of image encountered before frame".to_owned()));
+        }
+
         let frame = self.frame.as_ref().unwrap();
 
         // If we're decoding a progressive jpeg and a component is unfinished, render what we've got

@@ -12,7 +12,7 @@
 
 [package]
 name = "jpeg-decoder"
-version = "0.1.21"
+version = "0.1.22"
 authors = ["Ulf Nilsson <kaksmet@gmail.com>"]
 exclude = ["tests/*"]
 description = "JPEG decoder"

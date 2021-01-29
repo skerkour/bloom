@@ -19,7 +19,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let mut sender = StubTransport::new_ok();
 //! let result = sender.send(&email);
@@ -57,7 +57,7 @@ pub struct StubTransport {
 }
 
 impl StubTransport {
-    /// Creates aResult new transport that always returns the given response
+    /// Creates a new transport that always returns the given Result
     pub fn new(response: Result<(), Error>) -> StubTransport {
         StubTransport { response }
     }

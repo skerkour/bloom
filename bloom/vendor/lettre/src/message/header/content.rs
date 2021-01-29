@@ -9,6 +9,11 @@ use std::{
 
 header! { (ContentId, "Content-ID") => [String] }
 
+/// `Content-Transfer-Encoding` of the body
+///
+/// The `Message` builder takes care of choosing the most
+/// efficient encoding based on the chosen body, so in most
+/// use-caches this header shouldn't be set manually.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ContentTransferEncoding {
     SevenBit,
@@ -21,19 +26,18 @@ pub enum ContentTransferEncoding {
 
 impl Default for ContentTransferEncoding {
     fn default() -> Self {
-        ContentTransferEncoding::SevenBit
+        ContentTransferEncoding::Base64
     }
 }
 
 impl Display for ContentTransferEncoding {
     fn fmt(&self, f: &mut FmtFormatter<'_>) -> FmtResult {
-        use self::ContentTransferEncoding::*;
         f.write_str(match *self {
-            SevenBit => "7bit",
-            QuotedPrintable => "quoted-printable",
-            Base64 => "base64",
-            EightBit => "8bit",
-            Binary => "binary",
+            Self::SevenBit => "7bit",
+            Self::QuotedPrintable => "quoted-printable",
+            Self::Base64 => "base64",
+            Self::EightBit => "8bit",
+            Self::Binary => "binary",
         })
     }
 }
@@ -41,13 +45,12 @@ impl Display for ContentTransferEncoding {
 impl FromStr for ContentTransferEncoding {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        use self::ContentTransferEncoding::*;
         match s {
-            "7bit" => Ok(SevenBit),
-            "quoted-printable" => Ok(QuotedPrintable),
-            "base64" => Ok(Base64),
-            "8bit" => Ok(EightBit),
-            "binary" => Ok(Binary),
+            "7bit" => Ok(Self::SevenBit),
+            "quoted-printable" => Ok(Self::QuotedPrintable),
+            "base64" => Ok(Self::Base64),
+            "8bit" => Ok(Self::EightBit),
+            "binary" => Ok(Self::Binary),
             _ => Err(s.into()),
         }
     }

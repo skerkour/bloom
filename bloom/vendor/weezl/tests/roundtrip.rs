@@ -14,7 +14,7 @@ fn roundtrip_all() {
 
     for &flavor in &[Flavor::Gif, Flavor::Tiff] {
         for &bit_order in &[BitOrder::Lsb, BitOrder::Msb] {
-            for bit_width in (2..8).rev() {
+            for bit_width in 2..8 {
                 let data: Vec<_> = data
                     .iter()
                     .copied()
@@ -55,5 +55,12 @@ fn assert_roundtrips(data: &[u8], flavor: Flavor, bit_width: u8, bit_order: BitO
         bit_width,
         result.status
     );
-    assert!(data == &*compare, "{:?}, {}", bit_order, bit_width);
+    assert!(
+        data == &*compare,
+        "{:?}, {}\n{:?}\n{:?}",
+        bit_order,
+        bit_width,
+        data,
+        compare
+    );
 }

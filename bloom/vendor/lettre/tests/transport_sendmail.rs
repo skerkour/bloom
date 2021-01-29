@@ -15,7 +15,7 @@ mod test {
             .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
             .to("Hei <hei@domain.tld>".parse().unwrap())
             .subject("Happy new year")
-            .body("Be happy!")
+            .body(String::from("Be happy!"))
             .unwrap();
 
         let result = sender.send(&email);
@@ -24,7 +24,7 @@ mod test {
     }
 
     #[cfg(feature = "async-std1")]
-    #[async_attributes::test]
+    #[async_std::test]
     async fn sendmail_transport_asyncstd1() {
         use lettre::AsyncStd1Transport;
 
@@ -35,10 +35,11 @@ mod test {
             .to("Hei <hei@domain.tld>".parse().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
-            .body("Be happy!")
+            .body(String::from("Be happy!"))
             .unwrap();
 
         let result = sender.send(email).await;
+        println!("{:?}", result);
         assert!(result.is_ok());
     }
 
@@ -54,10 +55,11 @@ mod test {
             .to("Hei <hei@domain.tld>".parse().unwrap())
             .subject("Happy new year")
             .date("Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap())
-            .body("Be happy!")
+            .body(String::from("Be happy!"))
             .unwrap();
 
         let result = sender.send(email).await;
+        println!("{:?}", result);
         assert!(result.is_ok());
     }
 }

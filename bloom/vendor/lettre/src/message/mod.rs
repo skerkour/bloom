@@ -1,16 +1,24 @@
 //! Provides a strongly typed way to build emails
 //!
-//! ### Creating messages
-//!
-//! This section explains how to create emails.
-//!
 //! ## Usage
 //!
-//! ### Format email messages
+//! This section demonstrates how to build messages.
 //!
-//! #### With string body
+//! <!--
+//! style for <details><summary>Blablabla</summary> Lots of stuff</details>
+//! borrowed from https://docs.rs/time/0.2.23/src/time/lib.rs.html#49-54
+//! -->
+//! <style>
+//! summary, details:not([open]) { cursor: pointer; }
+//! summary { display: list-item; }
+//! summary::marker { content: '▶ '; }
+//! details[open] summary::marker { content: '▼ '; }
+//! </style>
 //!
-//! The easiest way how we can create email message with simple string.
+//!
+//! ### Plain body
+//!
+//! The easiest way of creating a message, which uses a plain text body.
 //!
 //! ```rust
 //! use lettre::message::Message;
@@ -22,74 +30,41 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //! # Ok(())
 //! # }
 //! ```
 //!
-//! Will produce:
+//! Which produces:
+//! <details>
+//! <summary>Click to expand</summary>
 //!
 //! ```sh
 //! From: NoBody <nobody@domain.tld>
 //! Reply-To: Yuin <yuin@domain.tld>
 //! To: Hei <hei@domain.tld>
 //! Subject: Happy new year
+//! Date: Sat, 12 Dec 2020 16:33:19 GMT
+//! Content-Transfer-Encoding: 7bit
 //!
 //! Be happy!
 //! ```
+//! </details>
+//! <br />
 //!
-//! The unicode header data will be encoded using _UTF8-Base64_ encoding.
+//! The unicode header data is encoded using _UTF8-Base64_ encoding, when necessary.
 //!
-//! ### With MIME body
+//! The `Content-Transfer-Encoding` is chosen based on the best encoding
+//! available for the given body, between `7bit`, `quoted-printable` and `base64`.
 //!
-//! ##### Single part
+//! ### Plain and HTML body
 //!
-//! The more complex way is using MIME contents.
-//!
-//! ```rust
-//! use lettre::message::{header, Message, SinglePart, Part};
-//!
-//! # use std::error::Error;
-//! # fn main() -> Result<(), Box<dyn Error>> {
-//! let m = Message::builder()
-//!     .from("NoBody <nobody@domain.tld>".parse()?)
-//!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
-//!     .to("Hei <hei@domain.tld>".parse()?)
-//!     .subject("Happy new year")
-//!     .singlepart(
-//!         SinglePart::builder()
-//!             .header(header::ContentType(
-//!                 "text/plain; charset=utf8".parse()?,
-//!             )).header(header::ContentTransferEncoding::QuotedPrintable)
-//!             .body("Привет, мир!"),
-//!     )?;
-//! # Ok(())
-//! # }
-//! ```
-//!
-//! The body will be encoded using selected `Content-Transfer-Encoding`.
-//!
-//! ```sh
-//! From: NoBody <nobody@domain.tld>
-//! Reply-To: Yuin <yuin@domain.tld>
-//! To: Hei <hei@domain.tld>
-//! Subject: Happy new year
-//! MIME-Version: 1.0
-//! Content-Type: text/plain; charset=utf8
-//! Content-Transfer-Encoding: quoted-printable
-//!
-//! =D0=9F=D1=80=D0=B8=D0=B2=D0=B5=D1=82, =D0=BC=D0=B8=D1=80!
-//!
-//! ```
-//!
-//! ##### Multiple parts
-//!
-//! And more advanced way of building message by using multipart MIME contents.
+//! Uses a MIME body to include both plain text and HTML versions of the body.
 //!
 //! ```rust
-//! use lettre::message::{header, Message, MultiPart, SinglePart, Part};
-//!
 //! # use std::error::Error;
+//! use lettre::message::{header, Message, MultiPart, Part, SinglePart};
+//!
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let m = Message::builder()
 //!     .from("NoBody <nobody@domain.tld>".parse()?)
@@ -97,50 +72,27 @@
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
 //!     .multipart(
-//!         MultiPart::mixed()
-//!         .multipart(
-//!             MultiPart::alternative()
+//!         MultiPart::alternative()
 //!             .singlepart(
-//!                 SinglePart::quoted_printable()
-//!                 .header(header::ContentType("text/plain; charset=utf8".parse()?))
-//!                 .body("Привет, мир!")
+//!                 SinglePart::builder()
+//!                     .header(header::ContentType("text/plain; charset=utf8".parse()?))
+//!                     .body(String::from("Hello, world! :)")),
 //!             )
-//!             .multipart(
-//!                MultiPart::related()
-//!                 .singlepart(
-//!                     SinglePart::eight_bit()
+//!             .singlepart(
+//!                 SinglePart::builder()
 //!                     .header(header::ContentType("text/html; charset=utf8".parse()?))
-//!                     .body("<p><b>Hello</b>, <i>world</i>! <img src=smile.png></p>")
-//!                 )
-//!                 .singlepart(
-//!                     SinglePart::base64()
-//!                     .header(header::ContentType("image/png".parse()?))
-//!                     .header(header::ContentDisposition {
-//!                         disposition: header::DispositionType::Inline,
-//!                         parameters: vec![],
-//!                     })
-//!                     .body("<smile-raw-image-data>")
-//!                 )
-//!             )
-//!         )
-//!         .singlepart(
-//!             SinglePart::seven_bit()
-//!             .header(header::ContentType("text/plain; charset=utf8".parse()?))
-//!             .header(header::ContentDisposition {
-//!                 disposition: header::DispositionType::Attachment,
-//!                 parameters: vec![
-//!                     header::DispositionParam::Filename(
-//!                         header::Charset::Ext("utf-8".into()),
-//!                         None, "example.c".as_bytes().into()
-//!                     )
-//!                 ]
-//!             })
-//!             .body("int main() { return 0; }")
-//!         )
+//!                     .body(String::from(
+//!                         "<p><b>Hello</b>, <i>world</i>! <img src=\"cid:123\"></p>",
+//!                     )),
+//!             ),
 //!     )?;
 //! # Ok(())
 //! # }
 //! ```
+//!
+//! Which produces:
+//! <details>
+//! <summary>Click to expand</summary>
 //!
 //! ```sh
 //! From: NoBody <nobody@domain.tld>
@@ -148,60 +100,168 @@
 //! To: Hei <hei@domain.tld>
 //! Subject: Happy new year
 //! MIME-Version: 1.0
-//! Content-Type: multipart/mixed; boundary="RTxPCn9p31oAAAAAeQxtr1FbXr/i5vW1hFlH9oJqZRMWxRMK1QLjQ4OPqFk9R+0xUb/m"
+//! Date: Sat, 12 Dec 2020 16:33:19 GMT
+//! Content-Type: multipart/alternative; boundary="0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1"
 //!
-//! --RTxPCn9p31oAAAAAeQxtr1FbXr/i5vW1hFlH9oJqZRMWxRMK1QLjQ4OPqFk9R+0xUb/m
-//! Content-Type: multipart/alternative; boundary="qW9QCn9p31oAAAAAodFBg1L1Qrraa5hEl0bDJ6kfJMUcRT2LLSWEoeyhSEbUBIqbjWqy"
-//!
-//! --qW9QCn9p31oAAAAAodFBg1L1Qrraa5hEl0bDJ6kfJMUcRT2LLSWEoeyhSEbUBIqbjWqy
-//! Content-Transfer-Encoding: quoted-printable
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1
 //! Content-Type: text/plain; charset=utf8
-//!
-//! =D0=9F=D1=80=D0=B8=D0=B2=D0=B5=D1=82, =D0=BC=D0=B8=D1=80!
-//! --qW9QCn9p31oAAAAAodFBg1L1Qrraa5hEl0bDJ6kfJMUcRT2LLSWEoeyhSEbUBIqbjWqy
-//! Content-Type: multipart/related; boundary="BV5RCn9p31oAAAAAUt42E9bYMDEAGCOWlxEz89Bv0qFA5Xsy6rOC3zRahMQ39IFZNnp8"
-//!
-//! --BV5RCn9p31oAAAAAUt42E9bYMDEAGCOWlxEz89Bv0qFA5Xsy6rOC3zRahMQ39IFZNnp8
-//! Content-Transfer-Encoding: 8bit
-//! Content-Type: text/html; charset=utf8
-//!
-//! <p><b>Hello</b>, <i>world</i>! <img src=smile.png></p>
-//! --BV5RCn9p31oAAAAAUt42E9bYMDEAGCOWlxEz89Bv0qFA5Xsy6rOC3zRahMQ39IFZNnp8
-//! Content-Transfer-Encoding: base64
-//! Content-Type: image/png
-//! Content-Disposition: inline
-//!
-//! PHNtaWxlLXJhdy1pbWFnZS1kYXRhPg==
-//! --BV5RCn9p31oAAAAAUt42E9bYMDEAGCOWlxEz89Bv0qFA5Xsy6rOC3zRahMQ39IFZNnp8--
-//! --qW9QCn9p31oAAAAAodFBg1L1Qrraa5hEl0bDJ6kfJMUcRT2LLSWEoeyhSEbUBIqbjWqy--
-//! --RTxPCn9p31oAAAAAeQxtr1FbXr/i5vW1hFlH9oJqZRMWxRMK1QLjQ4OPqFk9R+0xUb/m
 //! Content-Transfer-Encoding: 7bit
-//! Content-Type: text/plain; charset=utf8
-//! Content-Disposition: attachment; filename="example.c"
 //!
-//! int main() { return 0; }
-//! --RTxPCn9p31oAAAAAeQxtr1FbXr/i5vW1hFlH9oJqZRMWxRMK1QLjQ4OPqFk9R+0xUb/m--
+//! Hello, world! :)
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1
+//! Content-Type: text/html; charset=utf8
+//! Content-Transfer-Encoding: 7bit
+//!
+//! <p><b>Hello</b>, <i>world</i>! <img src="cid:123"></p>
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1--
 //!
 //! ```
+//! </details>
+//!
+//! ### Complex MIME body
+//!
+//! This example shows how to include both plain and HTML versions of the body,
+//! attachments and inlined images.
+//!
+//! ```rust
+//! # use std::error::Error;
+//! use std::fs;
+//! use lettre::message::{Body, header, Message, MultiPart, Part, SinglePart};
+//!
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! let image = fs::read("docs/lettre.png")?;
+//! // this image_body can be cloned and reused between emails.
+//! // since `Body` holds a pre-encoded body, reusing it means avoiding having
+//! // to re-encode the same body for every email (this clearly only applies
+//! // when sending multiple emails with the same attachment).
+//! let image_body = Body::new(image);
+//!
+//! let m = Message::builder()
+//!     .from("NoBody <nobody@domain.tld>".parse()?)
+//!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
+//!     .to("Hei <hei@domain.tld>".parse()?)
+//!     .subject("Happy new year")
+//!     .multipart(
+//!         MultiPart::mixed()
+//!             .multipart(
+//!                 MultiPart::alternative()
+//!                     .singlepart(
+//!                         SinglePart::builder()
+//!                             .header(header::ContentType("text/plain; charset=utf8".parse()?))
+//!                             .body(String::from("Hello, world! :)")),
+//!                     )
+//!                     .multipart(
+//!                         MultiPart::related()
+//!                             .singlepart(
+//!                                 SinglePart::builder()
+//!                                     .header(header::ContentType(
+//!                                         "text/html; charset=utf8".parse()?,
+//!                                     ))
+//!                                     .body(String::from(
+//!                                         "<p><b>Hello</b>, <i>world</i>! <img src=cid:123></p>",
+//!                                     )),
+//!                             )
+//!                             .singlepart(
+//!                                 SinglePart::builder()
+//!                                     .header(header::ContentType("image/png".parse()?))
+//!                                     .header(header::ContentDisposition {
+//!                                         disposition: header::DispositionType::Inline,
+//!                                         parameters: vec![],
+//!                                     })
+//!                                     .header(header::ContentId("<123>".into()))
+//!                                     .body(image_body),
+//!                             ),
+//!                     ),
+//!             )
+//!             .singlepart(
+//!                 SinglePart::builder()
+//!                     .header(header::ContentType("text/plain; charset=utf8".parse()?))
+//!                     .header(header::ContentDisposition {
+//!                         disposition: header::DispositionType::Attachment,
+//!                         parameters: vec![header::DispositionParam::Filename(
+//!                             header::Charset::Ext("utf-8".into()),
+//!                             None,
+//!                             "example.rs".as_bytes().into(),
+//!                         )],
+//!                     })
+//!                     .body(String::from("fn main() { println!(\"Hello, World!\") }")),
+//!             ),
+//!     )?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! Which produces:
+//! <details>
+//! <summary>Click to expand</summary>
+//!
+//! ```sh
+//! From: NoBody <nobody@domain.tld>
+//! Reply-To: Yuin <yuin@domain.tld>
+//! To: Hei <hei@domain.tld>
+//! Subject: Happy new year
+//! MIME-Version: 1.0
+//! Date: Sat, 12 Dec 2020 16:30:45 GMT
+//! Content-Type: multipart/mixed; boundary="0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1"
+//!
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1
+//! Content-Type: multipart/alternative; boundary="EyXdAZIgZuyUjAounq4Aj44a6MpJfqCKhm6pE1zk"
+//!
+//! --EyXdAZIgZuyUjAounq4Aj44a6MpJfqCKhm6pE1zk
+//! Content-Type: text/plain; charset=utf8
+//! Content-Transfer-Encoding: 7bit
+//!
+//! Hello, world! :)
+//! --EyXdAZIgZuyUjAounq4Aj44a6MpJfqCKhm6pE1zk
+//! Content-Type: multipart/related; boundary="eM5Z18WZVOQsqi5GQ71XGAXk6NNvHUA1Xv1FWrXr"
+//!
+//! --eM5Z18WZVOQsqi5GQ71XGAXk6NNvHUA1Xv1FWrXr
+//! Content-Type: text/html; charset=utf8
+//! Content-Transfer-Encoding: 7bit
+//!
+//! <p><b>Hello</b>, <i>world</i>! <img src=cid:123></p>
+//! --eM5Z18WZVOQsqi5GQ71XGAXk6NNvHUA1Xv1FWrXr
+//! Content-Type: image/png
+//! Content-Disposition: inline
+//! Content-ID: <123>
+//! Content-Transfer-Encoding: base64
+//!
+//! PHNtaWxlLXJhdy1pbWFnZS1kYXRhPg==
+//! --eM5Z18WZVOQsqi5GQ71XGAXk6NNvHUA1Xv1FWrXr--
+//! --EyXdAZIgZuyUjAounq4Aj44a6MpJfqCKhm6pE1zk--
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1
+//! Content-Type: text/plain; charset=utf8
+//! Content-Disposition: attachment; filename="example.rs"
+//! Content-Transfer-Encoding: 7bit
+//!
+//! fn main() { println!("Hello, World!") }
+//! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1--
+//!
+//! ```
+//! </details>
 
+pub use body::{Body, IntoBody, MaybeString};
 pub use mailbox::*;
 pub use mimebody::*;
 
 pub use mime;
 
-mod encoder;
+mod body;
 pub mod header;
 mod mailbox;
 mod mimebody;
 mod utf8_b;
 
+use std::convert::TryFrom;
+use std::time::SystemTime;
+
+use uuid::Uuid;
+
 use crate::{
     address::Envelope,
-    message::header::{EmailDate, Header, Headers, MailboxesHeader},
+    message::header::{ContentTransferEncoding, EmailDate, Header, Headers, MailboxesHeader},
     Error as EmailError,
 };
-use std::{convert::TryFrom, time::SystemTime};
-use uuid::Uuid;
 
 const DEFAULT_MESSAGE_ID_DOMAIN: &str = "localhost";
 
@@ -374,7 +434,7 @@ impl MessageBuilder {
     // TODO: High-level methods for attachments and embedded files
 
     /// Create message from body
-    fn build(self, body: Body) -> Result<Message, EmailError> {
+    fn build(self, body: MessageBody) -> Result<Message, EmailError> {
         // Check for missing required headers
         // https://tools.ietf.org/html/rfc5322#section-3.6
 
@@ -409,32 +469,27 @@ impl MessageBuilder {
         })
     }
 
-    // In theory having a body is optional
-
-    /// Plain ASCII body
+    /// Create [`Message`] using a [`Vec<u8>`], [`String`], or [`Body`] body
     ///
-    /// *WARNING*: Generally not what you want
-    pub fn body<T: Into<String>>(self, body: T) -> Result<Message, EmailError> {
-        // 998 chars by line
-        // CR and LF MUST only occur together as CRLF; they MUST NOT appear
-        //  independently in the body.
-        let body = body.into();
+    /// Automatically gets encoded with `7bit`, `quoted-printable` or `base64`
+    /// `Content-Transfer-Encoding`, based on the most efficient and valid encoding
+    /// for `body`.
+    pub fn body<T: IntoBody>(mut self, body: T) -> Result<Message, EmailError> {
+        let maybe_encoding = self.headers.get::<ContentTransferEncoding>().copied();
+        let body = body.into_body(maybe_encoding);
 
-        if !&body.is_ascii() {
-            return Err(EmailError::NonAsciiChars);
-        }
-
-        self.build(Body::Raw(body))
+        self.headers.set(body.encoding());
+        self.build(MessageBody::Raw(body.into_vec()))
     }
 
     /// Create message using mime body ([`MultiPart`][self::MultiPart])
     pub fn multipart(self, part: MultiPart) -> Result<Message, EmailError> {
-        self.mime_1_0().build(Body::Mime(Part::Multi(part)))
+        self.mime_1_0().build(MessageBody::Mime(Part::Multi(part)))
     }
 
     /// Create message using mime body ([`SinglePart`][self::SinglePart])
     pub fn singlepart(self, part: SinglePart) -> Result<Message, EmailError> {
-        self.mime_1_0().build(Body::Mime(Part::Single(part)))
+        self.mime_1_0().build(MessageBody::Mime(Part::Single(part)))
     }
 }
 
@@ -442,14 +497,14 @@ impl MessageBuilder {
 #[derive(Clone, Debug)]
 pub struct Message {
     headers: Headers,
-    body: Body,
+    body: MessageBody,
     envelope: Envelope,
 }
 
 #[derive(Clone, Debug)]
-enum Body {
+enum MessageBody {
     Mime(Part),
-    Raw(String),
+    Raw(Vec<u8>),
 }
 
 impl Message {
@@ -479,11 +534,12 @@ impl Message {
 impl EmailFormat for Message {
     fn format(&self, out: &mut Vec<u8>) {
         out.extend_from_slice(self.headers.to_string().as_bytes());
+
         match &self.body {
-            Body::Mime(p) => p.format(out),
-            Body::Raw(r) => {
+            MessageBody::Mime(p) => p.format(out),
+            MessageBody::Raw(r) => {
                 out.extend_from_slice(b"\r\n");
-                out.extend(r.as_bytes())
+                out.extend_from_slice(&r)
             }
         }
     }
@@ -497,11 +553,13 @@ impl Default for MessageBuilder {
 
 #[cfg(test)]
 mod test {
-    use crate::message::{header, mailbox::Mailbox, Message};
+    use crate::message::{header, mailbox::Mailbox, Message, MultiPart, SinglePart};
 
     #[test]
     fn email_missing_originator() {
-        assert!(Message::builder().body("Happy new year!").is_err());
+        assert!(Message::builder()
+            .body(String::from("Happy new year!"))
+            .is_err());
     }
 
     #[test]
@@ -509,7 +567,7 @@ mod test {
         assert!(Message::builder()
             .from("NoBody <nobody@domain.tld>".parse().unwrap())
             .to("NoBody <nobody@domain.tld>".parse().unwrap())
-            .body("Happy new year!")
+            .body(String::from("Happy new year!"))
             .is_ok());
     }
 
@@ -518,7 +576,7 @@ mod test {
         assert!(Message::builder()
             .from("NoBody <nobody@domain.tld>".parse().unwrap())
             .from("AnyBody <anybody@domain.tld>".parse().unwrap())
-            .body("Happy new year!")
+            .body(String::from("Happy new year!"))
             .is_err());
     }
 
@@ -539,7 +597,7 @@ mod test {
                 vec!["Pony O.P. <pony@domain.tld>".parse().unwrap()].into(),
             ))
             .header(header::Subject("яңа ел белән!".into()))
-            .body("Happy new year!")
+            .body(String::from("Happy new year!"))
             .unwrap();
 
         assert_eq!(
@@ -549,9 +607,57 @@ mod test {
                 "From: =?utf-8?b?0JrQsNC4?= <kayo@example.com>\r\n",
                 "To: Pony O.P. <pony@domain.tld>\r\n",
                 "Subject: =?utf-8?b?0Y/So9CwINC10Lsg0LHQtdC705nQvSE=?=\r\n",
+                "Content-Transfer-Encoding: 7bit\r\n",
                 "\r\n",
                 "Happy new year!"
             )
         );
+    }
+
+    #[test]
+    fn email_with_png() {
+        let date = "Tue, 15 Nov 1994 08:12:31 GMT".parse().unwrap();
+        let img = std::fs::read("./docs/lettre.png").unwrap();
+        let m = Message::builder()
+            .date(date)
+            .from("NoBody <nobody@domain.tld>".parse().unwrap())
+            .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
+            .to("Hei <hei@domain.tld>".parse().unwrap())
+            .subject("Happy new year")
+            .multipart(
+                MultiPart::related()
+                    .singlepart(
+                        SinglePart::builder()
+                            .header(header::ContentType(
+                                "text/html; charset=utf8".parse().unwrap(),
+                            ))
+                            .body(String::from(
+                                "<p><b>Hello</b>, <i>world</i>! <img src=cid:123></p>",
+                            )),
+                    )
+                    .singlepart(
+                        SinglePart::builder()
+                            .header(header::ContentType("image/png".parse().unwrap()))
+                            .header(header::ContentDisposition {
+                                disposition: header::DispositionType::Inline,
+                                parameters: vec![],
+                            })
+                            .header(header::ContentId("<123>".into()))
+                            .body(img),
+                    ),
+            )
+            .unwrap();
+
+        let output = String::from_utf8(m.formatted()).unwrap();
+        let file_expected = std::fs::read("./testdata/email_with_png.eml").unwrap();
+        let expected = String::from_utf8(file_expected).unwrap();
+
+        for (i, line) in output.lines().zip(expected.lines()).enumerate() {
+            if i == 6 || i == 8 || i == 13 || i == 232 {
+                continue;
+            }
+
+            assert_eq!(line.0, line.1)
+        }
     }
 }

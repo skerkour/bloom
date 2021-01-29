@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "lettre"
-version = "0.10.0-alpha.4"
+version = "0.10.0-alpha.5"
 authors = ["Alexis Mousset <contact@amousset.me>", "Paolo Barbolini <paolo@paolo565.org>"]
 description = "Email client"
 homepage = "https://lettre.rs"
@@ -25,6 +25,14 @@ repository = "https://github.com/lettre/lettre"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name = "basic_html"
+required-features = ["file-transport", "builder"]
+
+[[example]]
+name = "maud_html"
+required-features = ["file-transport", "builder"]
 
 [[example]]
 name = "smtp"
@@ -51,22 +59,30 @@ name = "tokio02_smtp_starttls"
 required-features = ["smtp-transport", "tokio02", "tokio02-native-tls", "builder"]
 
 [[example]]
-name = "tokio03_smtp_tls"
-required-features = ["smtp-transport", "tokio03", "tokio03-native-tls", "builder"]
+name = "tokio1_smtp_tls"
+required-features = ["smtp-transport", "tokio1", "tokio1-native-tls", "builder"]
 
 [[example]]
-name = "tokio03_smtp_starttls"
-required-features = ["smtp-transport", "tokio03", "tokio03-native-tls", "builder"]
+name = "tokio1_smtp_starttls"
+required-features = ["smtp-transport", "tokio1", "tokio1-native-tls", "builder"]
+
+[[example]]
+name = "asyncstd1_smtp_tls"
+required-features = ["smtp-transport", "async-std1", "async-std1-rustls-tls", "builder"]
+
+[[example]]
+name = "asyncstd1_smtp_starttls"
+required-features = ["smtp-transport", "async-std1", "async-std1-rustls-tls", "builder"]
 
 [[bench]]
 name = "transport_smtp"
 harness = false
-[dependencies.async-attributes]
-version = "1.1"
+[dependencies.async-rustls]
+version = "0.2"
 optional = true
 
 [dependencies.async-std]
-version = "1.5"
+version = "1.8"
 features = ["unstable"]
 optional = true
 
@@ -86,6 +102,7 @@ optional = true
 version = "0.3.7"
 features = ["io"]
 optional = true
+default-features = false
 
 [dependencies.hostname]
 version = "0.3"
@@ -125,14 +142,16 @@ version = "0.8"
 optional = true
 
 [dependencies.rand]
-version = "0.7"
+version = "0.8"
 optional = true
 
 [dependencies.regex]
 version = "1"
+features = ["std", "unicode-case"]
+default-features = false
 
 [dependencies.rustls]
-version = "0.18"
+version = "0.19"
 features = ["dangerous_configuration"]
 optional = true
 
@@ -157,23 +176,23 @@ optional = true
 package = "tokio-native-tls"
 
 [dependencies.tokio02_rustls]
-version = "0.14"
+version = "0.15"
 optional = true
 package = "tokio-rustls"
 
-[dependencies.tokio03_crate]
-version = "0.3"
+[dependencies.tokio1_crate]
+version = "1"
 features = ["fs", "process", "net", "io-util"]
 optional = true
 package = "tokio"
 
-[dependencies.tokio03_native_tls_crate]
-version = "0.2"
+[dependencies.tokio1_native_tls_crate]
+version = "0.3"
 optional = true
 package = "tokio-native-tls"
 
-[dependencies.tokio03_rustls]
-version = "0.20"
+[dependencies.tokio1_rustls]
+version = "0.22"
 optional = true
 package = "tokio-rustls"
 
@@ -192,21 +211,31 @@ version = "0.21"
 optional = true
 
 [dependencies.webpki-roots]
-version = "0.20"
+version = "0.21"
 optional = true
+[dev-dependencies.async-std]
+version = "1.8"
+features = ["attributes"]
+
 [dev-dependencies.criterion]
 version = "0.3"
 
 [dev-dependencies.glob]
 version = "0.3"
 
+[dev-dependencies.maud]
+version = "0.22.1"
+
+[dev-dependencies.serde_json]
+version = "1"
+
 [dev-dependencies.tokio02_crate]
 version = "0.2.7"
 features = ["macros", "rt-threaded"]
 package = "tokio"
 
-[dev-dependencies.tokio03_crate]
-version = "0.3"
+[dev-dependencies.tokio1_crate]
+version = "1"
 features = ["macros", "rt-multi-thread"]
 package = "tokio"
 
@@ -217,19 +246,21 @@ version = "0.2.10"
 version = "2"
 
 [features]
-async-std1 = ["async-std", "async-trait", "async-attributes"]
+async-std1 = ["async-std", "async-trait", "futures-io", "futures-util"]
+async-std1-rustls-tls = ["async-std1", "rustls-tls", "async-rustls"]
 builder = ["mime", "base64", "hyperx", "rand", "quoted_printable"]
-default = ["file-transport", "smtp-transport", "native-tls", "hostname", "r2d2", "sendmail-transport", "builder"]
-file-transport = ["serde", "serde_json"]
+default = ["file-transport", "file-transport-envelope", "smtp-transport", "native-tls", "hostname", "r2d2", "sendmail-transport", "builder"]
+file-transport = []
+file-transport-envelope = ["serde", "serde_json", "file-transport"]
 rustls-tls = ["webpki", "webpki-roots", "rustls"]
 sendmail-transport = []
 smtp-transport = ["base64", "nom"]
 tokio02 = ["tokio02_crate", "async-trait", "futures-io", "futures-util"]
 tokio02-native-tls = ["tokio02", "native-tls", "tokio02_native_tls_crate"]
 tokio02-rustls-tls = ["tokio02", "rustls-tls", "tokio02_rustls"]
-tokio03 = ["tokio03_crate", "async-trait", "futures-io", "futures-util"]
-tokio03-native-tls = ["tokio03", "native-tls", "tokio03_native_tls_crate"]
-tokio03-rustls-tls = ["tokio03", "rustls-tls", "tokio03_rustls"]
+tokio1 = ["tokio1_crate", "async-trait", "futures-io", "futures-util"]
+tokio1-native-tls = ["tokio1", "native-tls", "tokio1_native_tls_crate"]
+tokio1-rustls-tls = ["tokio1", "rustls-tls", "tokio1_rustls"]
 [badges.is-it-maintained-issue-resolution]
 repository = "lettre/lettre"
 

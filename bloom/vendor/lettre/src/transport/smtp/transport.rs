@@ -41,7 +41,7 @@ impl Transport for SmtpTransport {
 }
 
 impl SmtpTransport {
-    /// Simple and secure transport, using TLS connections to comunicate with the SMTP server
+    /// Simple and secure transport, using TLS connections to communicate with the SMTP server
     ///
     /// The right option for most SMTP servers.
     ///
@@ -96,8 +96,10 @@ impl SmtpTransport {
     /// [`SmtpTransport::starttls_relay`](#method.starttls_relay) instead,
     /// if possible.
     pub fn builder_dangerous<T: Into<String>>(server: T) -> SmtpTransportBuilder {
-        let mut new = SmtpInfo::default();
-        new.server = server.into();
+        let new = SmtpInfo {
+            server: server.into(),
+            ..Default::default()
+        };
 
         SmtpTransportBuilder {
             info: new,
@@ -107,7 +109,8 @@ impl SmtpTransport {
     }
 }
 
-/// Contains client configuration
+/// Contains client configuration.
+/// Instances of this struct can be created using functions of [`SmtpTransport`].
 #[allow(missing_debug_implementations)]
 #[derive(Clone)]
 pub struct SmtpTransportBuilder {

@@ -1,3 +1,11 @@
+## Version 0.1.4
+
+- Added `IntoAsync` adapters for asynchronous de- and encoding. The interface
+  is implemented only in terms of `futures = 0.3` traits at the moment.
+- Code sizes smaller than 2 are now allowed for decoding. Since they do not
+  roundtrip it is still an error to use them in the decoder but this avoids
+  accidental panicking, i.e. denial of service, in parsers.
+
 ## Version 0.1.3
 
 - Fixes an issue in compression that caused some data to be lost around clear

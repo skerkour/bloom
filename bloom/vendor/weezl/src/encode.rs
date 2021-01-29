@@ -37,6 +37,19 @@ pub struct IntoStream<'d, W> {
     default_size: usize,
 }
 
+/// An async decoding sink.
+///
+/// See [`Encoder::into_async`] on how to create this type.
+///
+/// [`Encoder::into_async`]: struct.Encoder.html#method.into_async
+#[cfg(feature = "async")]
+pub struct IntoAsync<'d, W> {
+    encoder: &'d mut Encoder,
+    writer: W,
+    buffer: Option<StreamBuf<'d>>,
+    default_size: usize,
+}
+
 trait Stateful {
     fn advance(&mut self, inp: &[u8], out: &mut [u8]) -> BufferResult;
     fn mark_ended(&mut self) -> bool;
@@ -149,7 +162,7 @@ impl Encoder {
     /// The `size` needs to be in the interval `2..=12`.
     pub fn new(order: BitOrder, size: u8) -> Self {
         type Boxed = Box<dyn Stateful + Send + 'static>;
-        super::assert_code_size(size);
+        super::assert_encode_size(size);
         let state = match order {
             BitOrder::Lsb => Box::new(EncodeState::<LsbBuffer>::new(size)) as Boxed,
             BitOrder::Msb => Box::new(EncodeState::<MsbBuffer>::new(size)) as Boxed,
@@ -169,7 +182,7 @@ impl Encoder {
     /// The `size` needs to be in the interval `2..=12`.
     pub fn with_tiff_size_switch(order: BitOrder, size: u8) -> Self {
         type Boxed = Box<dyn Stateful + Send + 'static>;
-        super::assert_code_size(size);
+        super::assert_encode_size(size);
         let state = match order {
             BitOrder::Lsb => {
                 let mut state = Box::new(EncodeState::<LsbBuffer>::new(size));
@@ -206,6 +219,17 @@ impl Encoder {
     #[cfg(feature = "std")]
     pub fn into_stream<W: Write>(&mut self, writer: W) -> IntoStream<'_, W> {
         IntoStream {
+            encoder: self,
+            writer,
+            buffer: None,
+            default_size: STREAM_BUF_SIZE,
+        }
+    }
+
+    /// Construct a encoder into an async writer.
+    #[cfg(feature = "async")]
+    pub fn into_async<W: futures::io::AsyncWrite>(&mut self, writer: W) -> IntoAsync<'_, W> {
+        IntoAsync {
             encoder: self,
             writer,
             buffer: None,
@@ -361,6 +385,13 @@ impl<'d, W: Write> IntoStream<'d, W> {
         }
     }
 }
+
+// This is implemented in a separate file, so that 1.34.2 does not parse it. Otherwise, it would
+// trip over the usage of await, which is a reserved keyword in that edition/version. It only
+// contains an impl block.
+#[cfg(feature = "async")]
+#[path = "encode_into_async.rs"]
+mod impl_encode_into_async;
 
 impl<B: Buffer> EncodeState<B> {
     fn new(min_size: u8) -> Self {

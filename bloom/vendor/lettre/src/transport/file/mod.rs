@@ -1,5 +1,5 @@
 //! The file transport writes the emails to the given directory. The name of the file will be
-//! `message_id.json`.
+//! `message_id.eml`.
 //! It can be useful for testing purposes, or if you want to keep track of sent messages.
 //!
 //! ## Sync example
@@ -19,7 +19,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let result = sender.send(&email);
 //! assert!(result.is_ok());
@@ -30,16 +30,47 @@
 //! # fn main() {}
 //! ```
 //!
+//! ## Sync example with envelope
 //!
-//! ## Async tokio 0.2
+//! It is possible to also write the envelope content in a separate JSON file
+//! by using the `with_envelope` builder. The JSON file will be written in the
+//! target directory with same name and a `json` extension.
+//!
+//! ```rust
+//! # use std::error::Error;
+//!
+//! # #[cfg(all(feature = "file-transport-envelope", feature = "builder"))]
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! use std::env::temp_dir;
+//! use lettre::{Transport, Message, FileTransport};
+//!
+//! // Write to the local temp directory
+//! let sender = FileTransport::with_envelope(temp_dir());
+//! let email = Message::builder()
+//!     .from("NoBody <nobody@domain.tld>".parse()?)
+//!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
+//!     .to("Hei <hei@domain.tld>".parse()?)
+//!     .subject("Happy new year")
+//!     .body(String::from("Be happy!"))?;
+//!
+//! let result = sender.send(&email);
+//! assert!(result.is_ok());
+//! # Ok(())
+//! # }
+//!
+//! # #[cfg(not(all(feature = "file-transport-envelope", feature = "builder")))]
+//! # fn main() {}
+//! ```
+//!
+//! ## Async tokio 1.x
 //!
 //! ```rust,no_run
 //! # use std::error::Error;
 //!
-//! # #[cfg(all(feature = "tokio02", feature = "file-transport", feature = "builder"))]
+//! # #[cfg(all(feature = "tokio1", feature = "file-transport", feature = "builder"))]
 //! # async fn run() -> Result<(), Box<dyn Error>> {
 //! use std::env::temp_dir;
-//! use lettre::{Tokio02Transport, Message, FileTransport};
+//! use lettre::{Tokio1Transport, Message, FileTransport};
 //!
 //! // Write to the local temp directory
 //! let sender = FileTransport::new(temp_dir());
@@ -48,7 +79,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let result = sender.send(email).await;
 //! assert!(result.is_ok());
@@ -73,7 +104,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let result = sender.send(email).await;
 //! assert!(result.is_ok());
@@ -83,19 +114,22 @@
 //!
 //! ---
 //!
-//! Example result
+//! Example email content result
+//!
+//! ```eml
+//! From: NoBody <nobody@domain.tld>
+//! Reply-To: Yuin <yuin@domain.tld>
+//! To: Hei <hei@domain.tld>
+//! Subject: Happy new year
+//! Date: Tue, 18 Aug 2020 22:50:17 GMT
+//!
+//! Be happy!
+//! ```
+//!
+//! Example envelope result
 //!
 //! ```json
-//! {
-//!   "envelope": {
-//!     "forward_path": [
-//!       "hei@domain.tld"
-//!     ],
-//!     "reverse_path": "nobody@domain.tld"
-//!   },
-//!   "raw_message": null,
-//!   "message": "From: NoBody <nobody@domain.tld>\r\nReply-To: Yuin <yuin@domain.tld>\r\nTo: Hei <hei@domain.tld>\r\nSubject: Happy new year\r\nDate: Tue, 18 Aug 2020 22:50:17 GMT\r\n\r\nBe happy!"
-//! }
+//! {"forward_path":["hei@domain.tld"],"reverse_path":"nobody@domain.tld"}
 //! ```
 
 pub use self::error::Error;
@@ -104,10 +138,10 @@ use crate::address::Envelope;
 use crate::AsyncStd1Transport;
 #[cfg(feature = "tokio02")]
 use crate::Tokio02Transport;
-#[cfg(feature = "tokio03")]
-use crate::Tokio03Transport;
+#[cfg(feature = "tokio1")]
+use crate::Tokio1Transport;
 use crate::Transport;
-#[cfg(any(feature = "async-std1", feature = "tokio02", feature = "tokio03"))]
+#[cfg(any(feature = "async-std1", feature = "tokio02", feature = "tokio1"))]
 use async_trait::async_trait;
 use std::{
     path::{Path, PathBuf},
@@ -124,49 +158,37 @@ type Id = String;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FileTransport {
     path: PathBuf,
+    #[cfg(feature = "file-transport-envelope")]
+    save_envelope: bool,
 }
 
 impl FileTransport {
     /// Creates a new transport to the given directory
+    ///
+    /// Writes the email content in eml format.
     pub fn new<P: AsRef<Path>>(path: P) -> FileTransport {
         FileTransport {
             path: PathBuf::from(path.as_ref()),
+            #[cfg(feature = "file-transport-envelope")]
+            save_envelope: false,
         }
     }
-}
 
-#[derive(PartialEq, Eq, Clone, Debug)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-struct SerializableEmail<'a> {
-    envelope: Envelope,
-    raw_message: Option<&'a [u8]>,
-    message: Option<&'a str>,
-}
+    /// Creates a new transport to the given directory
+    ///
+    /// Writes the email content in eml format and the envelope
+    /// in json format.
+    #[cfg(feature = "file-transport-envelope")]
+    pub fn with_envelope<P: AsRef<Path>>(path: P) -> FileTransport {
+        FileTransport {
+            path: PathBuf::from(path.as_ref()),
+            #[cfg(feature = "file-transport-envelope")]
+            save_envelope: true,
+        }
+    }
 
-impl FileTransport {
-    fn send_raw_impl(
-        &self,
-        envelope: &Envelope,
-        email: &[u8],
-    ) -> Result<(Uuid, PathBuf, String), serde_json::Error> {
-        let email_id = Uuid::new_v4();
-        let file = self.path.join(format!("{}.json", email_id));
-
-        let serialized = match str::from_utf8(email) {
-            // Serialize as UTF-8 string if possible
-            Ok(m) => serde_json::to_string(&SerializableEmail {
-                envelope: envelope.clone(),
-                message: Some(m),
-                raw_message: None,
-            }),
-            Err(_) => serde_json::to_string(&SerializableEmail {
-                envelope: envelope.clone(),
-                message: None,
-                raw_message: Some(email),
-            }),
-        }?;
-
-        Ok((email_id, file, serialized))
+    fn path(&self, email_id: &Uuid, extension: &str) -> PathBuf {
+        self.path.join(format!("{}.{}", email_id, extension))
     }
 }
 
@@ -177,9 +199,21 @@ impl Transport for FileTransport {
     fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
         use std::fs;
 
-        let (email_id, file, serialized) = self.send_raw_impl(envelope, email)?;
+        let email_id = Uuid::new_v4();
 
-        fs::write(file, serialized)?;
+        let file = self.path(&email_id, "eml");
+        fs::write(file, email)?;
+
+        #[cfg(feature = "file-transport-envelope")]
+        {
+            if self.save_envelope {
+                let file = self.path(&email_id, "json");
+                fs::write(file, serde_json::to_string(&envelope)?)?;
+            }
+        }
+        // use envelope anyway
+        let _ = envelope;
+
         Ok(email_id.to_string())
     }
 }
@@ -193,9 +227,21 @@ impl AsyncStd1Transport for FileTransport {
     async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
         use async_std::fs;
 
-        let (email_id, file, serialized) = self.send_raw_impl(envelope, email)?;
+        let email_id = Uuid::new_v4();
 
-        fs::write(file, serialized).await?;
+        let file = self.path(&email_id, "eml");
+        fs::write(file, email).await?;
+
+        #[cfg(feature = "file-transport-envelope")]
+        {
+            if self.save_envelope {
+                let file = self.path(&email_id, "json");
+                fs::write(file, serde_json::to_string(&envelope)?).await?;
+            }
+        }
+        // use envelope anyway
+        let _ = envelope;
+
         Ok(email_id.to_string())
     }
 }
@@ -209,25 +255,48 @@ impl Tokio02Transport for FileTransport {
     async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
         use tokio02_crate::fs;
 
-        let (email_id, file, serialized) = self.send_raw_impl(envelope, email)?;
+        let email_id = Uuid::new_v4();
+        let file = self.path(&email_id, "eml");
+        fs::write(file, email).await?;
 
-        fs::write(file, serialized).await?;
+        #[cfg(feature = "file-transport-envelope")]
+        {
+            if self.save_envelope {
+                let file = self.path(&email_id, "json");
+                fs::write(file, serde_json::to_string(&envelope)?).await?;
+            }
+        }
+        // use envelope anyway
+        let _ = envelope;
+
         Ok(email_id.to_string())
     }
 }
 
-#[cfg(feature = "tokio03")]
+#[cfg(feature = "tokio1")]
 #[async_trait]
-impl Tokio03Transport for FileTransport {
+impl Tokio1Transport for FileTransport {
     type Ok = Id;
     type Error = Error;
 
     async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
-        use tokio03_crate::fs;
+        use tokio1_crate::fs;
 
-        let (email_id, file, serialized) = self.send_raw_impl(envelope, email)?;
+        let email_id = Uuid::new_v4();
 
-        fs::write(file, serialized).await?;
+        let file = self.path(&email_id, "eml");
+        fs::write(file, email).await?;
+
+        #[cfg(feature = "file-transport-envelope")]
+        {
+            if self.save_envelope {
+                let file = self.path(&email_id, "json");
+                fs::write(file, serde_json::to_string(&envelope)?).await?;
+            }
+        }
+        // use envelope anyway
+        let _ = envelope;
+
         Ok(email_id.to_string())
     }
 }

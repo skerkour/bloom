@@ -34,6 +34,19 @@ pub struct IntoStream<'d, W> {
     default_size: usize,
 }
 
+/// An async decoding sink.
+///
+/// See [`Decoder::into_async`] on how to create this type.
+///
+/// [`Decoder::into_async`]: struct.Decoder.html#method.into_async
+#[cfg(feature = "async")]
+pub struct IntoAsync<'d, W> {
+    decoder: &'d mut Decoder,
+    writer: W,
+    buffer: Option<StreamBuf<'d>>,
+    default_size: usize,
+}
+
 trait Stateful {
     fn advance(&mut self, inp: &[u8], out: &mut [u8]) -> BufferResult;
     fn has_ended(&self) -> bool;
@@ -130,10 +143,10 @@ impl Decoder {
     ///
     /// # Panics
     ///
-    /// The `size` needs to be in the interval `2..=12`.
+    /// The `size` needs to be in the interval `0..=12`.
     pub fn new(order: BitOrder, size: u8) -> Self {
         type Boxed = Box<dyn Stateful + Send + 'static>;
-        super::assert_code_size(size);
+        super::assert_decode_size(size);
         let state = match order {
             BitOrder::Lsb => Box::new(DecodeState::<LsbBuffer>::new(size)) as Boxed,
             BitOrder::Msb => Box::new(DecodeState::<MsbBuffer>::new(size)) as Boxed,
@@ -150,10 +163,10 @@ impl Decoder {
     ///
     /// # Panics
     ///
-    /// The `size` needs to be in the interval `2..=12`.
+    /// The `size` needs to be in the interval `0..=12`.
     pub fn with_tiff_size_switch(order: BitOrder, size: u8) -> Self {
         type Boxed = Box<dyn Stateful + Send + 'static>;
-        super::assert_code_size(size);
+        super::assert_decode_size(size);
         let state = match order {
             BitOrder::Lsb => {
                 let mut state = Box::new(DecodeState::<LsbBuffer>::new(size));
@@ -192,6 +205,17 @@ impl Decoder {
     #[cfg(feature = "std")]
     pub fn into_stream<W: Write>(&mut self, writer: W) -> IntoStream<'_, W> {
         IntoStream {
+            decoder: self,
+            writer,
+            buffer: None,
+            default_size: STREAM_BUF_SIZE,
+        }
+    }
+
+    /// Construct a decoder into an async writer.
+    #[cfg(feature = "async")]
+    pub fn into_async<W: futures::io::AsyncWrite>(&mut self, writer: W) -> IntoAsync<'_, W> {
+        IntoAsync {
             decoder: self,
             writer,
             buffer: None,
@@ -364,6 +388,13 @@ impl<'d, W: Write> IntoStream<'d, W> {
         }
     }
 }
+
+// This is implemented in a separate file, so that 1.34.2 does not parse it. Otherwise, it would
+// trip over the usage of await, which is a reserved keyword in that edition/version. It only
+// contains an impl block.
+#[cfg(feature = "async")]
+#[path = "decode_into_async.rs"]
+mod impl_decode_into_async;
 
 impl<C: CodeBuffer> DecodeState<C> {
     fn new(min_size: u8) -> Self {
@@ -1038,8 +1069,8 @@ mod tests {
     use crate::{decode::Decoder, BitOrder};
 
     #[test]
-    #[should_panic]
     fn invalid_code_size_low() {
+        let _ = Decoder::new(BitOrder::Msb, 0);
         let _ = Decoder::new(BitOrder::Msb, 1);
     }
 

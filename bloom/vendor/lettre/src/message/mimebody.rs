@@ -1,7 +1,6 @@
 use crate::message::{
-    encoder::codec,
     header::{ContentTransferEncoding, ContentType, Header, Headers},
-    EmailFormat,
+    EmailFormat, IntoBody,
 };
 use mime::Mime;
 use rand::Rng;
@@ -69,10 +68,15 @@ impl SinglePartBuilder {
     }
 
     /// Build singlepart using body
-    pub fn body<T: Into<Vec<u8>>>(self, body: T) -> SinglePart {
+    pub fn body<T: IntoBody>(mut self, body: T) -> SinglePart {
+        let maybe_encoding = self.headers.get::<ContentTransferEncoding>().copied();
+        let body = body.into_body(maybe_encoding);
+
+        self.headers.set(body.encoding());
+
         SinglePart {
             headers: self.headers,
-            body: body.into(),
+            body: body.into_vec(),
         }
     }
 }
@@ -94,8 +98,7 @@ impl Default for SinglePartBuilder {
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let part = SinglePart::builder()
 ///      .header(header::ContentType("text/plain; charset=utf8".parse()?))
-///      .header(header::ContentTransferEncoding::Binary)
-///      .body("Текст письма в уникоде");
+///      .body(String::from("Текст письма в уникоде"));
 /// # Ok(())
 /// # }
 /// ```
@@ -107,57 +110,49 @@ pub struct SinglePart {
 }
 
 impl SinglePart {
-    /// Creates a default builder for singlepart
+    /// Creates a builder for singlepart
+    #[inline]
     pub fn builder() -> SinglePartBuilder {
         SinglePartBuilder::new()
     }
 
-    /// Creates a singlepart builder with 7bit encoding
-    ///
-    /// Shortcut for `SinglePart::builder().header(ContentTransferEncoding::SevenBit)`.
+    #[doc(hidden)]
+    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
     pub fn seven_bit() -> SinglePartBuilder {
         Self::builder().header(ContentTransferEncoding::SevenBit)
     }
 
-    /// Creates a singlepart builder with quoted-printable encoding
-    ///
-    /// Shortcut for `SinglePart::builder().header(ContentTransferEncoding::QuotedPrintable)`.
+    #[doc(hidden)]
+    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
     pub fn quoted_printable() -> SinglePartBuilder {
         Self::builder().header(ContentTransferEncoding::QuotedPrintable)
     }
 
-    /// Creates a singlepart builder with base64 encoding
-    ///
-    /// Shortcut for `SinglePart::builder().header(ContentTransferEncoding::Base64)`.
+    #[doc(hidden)]
+    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
     pub fn base64() -> SinglePartBuilder {
         Self::builder().header(ContentTransferEncoding::Base64)
     }
 
-    /// Creates a singlepart builder with 8-bit encoding
-    ///
-    /// Shortcut for `SinglePart::builder().header(ContentTransferEncoding::EightBit)`.
+    #[doc(hidden)]
+    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
     pub fn eight_bit() -> SinglePartBuilder {
         Self::builder().header(ContentTransferEncoding::EightBit)
     }
 
-    /// Creates a singlepart builder with binary encoding
-    ///
-    /// Shortcut for `SinglePart::builder().header(ContentTransferEncoding::Binary)`.
-    pub fn binary() -> SinglePartBuilder {
-        Self::builder().header(ContentTransferEncoding::Binary)
-    }
-
     /// Get the headers from singlepart
+    #[inline]
     pub fn headers(&self) -> &Headers {
         &self.headers
     }
 
-    /// Read the body from singlepart
-    pub fn body_ref(&self) -> &[u8] {
+    /// Get the encoded body
+    #[inline]
+    pub fn raw_body(&self) -> &[u8] {
         &self.body
     }
 
-    /// Get message content formatted for SMTP
+    /// Get message content formatted for sending
     pub fn formatted(&self) -> Vec<u8> {
         let mut out = Vec::new();
         self.format(&mut out);
@@ -169,11 +164,7 @@ impl EmailFormat for SinglePart {
     fn format(&self, out: &mut Vec<u8>) {
         out.extend_from_slice(self.headers.to_string().as_bytes());
         out.extend_from_slice(b"\r\n");
-
-        let encoding = self.headers.get::<ContentTransferEncoding>();
-        let mut encoder = codec(encoding);
-
-        out.extend_from_slice(&encoder.encode(&self.body));
+        out.extend_from_slice(&self.body);
         out.extend_from_slice(b"\r\n");
     }
 }
@@ -207,8 +198,9 @@ pub enum MultiPartKind {
 /// Create a random MIME boundary.
 fn make_boundary() -> String {
     rand::thread_rng()
-        .sample_iter(&rand::distributions::Alphanumeric)
-        .take(68)
+        .sample_iter(rand::distributions::Alphanumeric)
+        .take(40)
+        .map(char::from)
         .collect()
 }
 
@@ -604,11 +596,13 @@ mod test {
                            "\r\n",
                            "--F2mTKN843loAAAAA8porEdAjCKhArPxGeahYoZYSftse1GT/84tup+O0bs8eueVuAlMK\r\n",
                            "Content-Type: application/pgp-encrypted\r\n",
+                           "Content-Transfer-Encoding: 7bit\r\n",
                            "\r\n",
                            "Version: 1\r\n",
                            "--F2mTKN843loAAAAA8porEdAjCKhArPxGeahYoZYSftse1GT/84tup+O0bs8eueVuAlMK\r\n",
                            "Content-Type: application/octet-stream; name=\"encrypted.asc\"\r\n",
                            "Content-Disposition: inline; filename=\"encrypted.asc\"\r\n",
+                           "Content-Transfer-Encoding: 7bit\r\n",
                            "\r\n",
                            "-----BEGIN PGP MESSAGE-----\r\n",
                            "wV4D0dz5vDXklO8SAQdA5lGX1UU/eVQqDxNYdHa7tukoingHzqUB6wQssbMfHl8w\r\n",
@@ -663,11 +657,13 @@ mod test {
                            "\r\n",
                            "--F2mTKN843loAAAAA8porEdAjCKhArPxGeahYoZYSftse1GT/84tup+O0bs8eueVuAlMK\r\n",
                            "Content-Type: text/plain\r\n",
+                           "Content-Transfer-Encoding: 7bit\r\n",
                            "\r\n",
                            "Test email for signature\r\n",
                            "--F2mTKN843loAAAAA8porEdAjCKhArPxGeahYoZYSftse1GT/84tup+O0bs8eueVuAlMK\r\n",
                            "Content-Type: application/pgp-signature; name=\"signature.asc\"\r\n",
                            "Content-Disposition: attachment; filename=\"signature.asc\"\r\n",
+                           "Content-Transfer-Encoding: 7bit\r\n",
                            "\r\n",
                            "-----BEGIN PGP SIGNATURE-----\r\n",
                             "\r\n",
@@ -777,7 +773,7 @@ mod test {
 
         // Ensure correct length
         for boundary in boundaries {
-            assert_eq!(68, boundary.len());
+            assert_eq!(40, boundary.len());
         }
     }
 }

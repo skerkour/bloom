@@ -14,7 +14,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let sender = SendmailTransport::new();
 //! let result = sender.send(&email);
@@ -40,7 +40,30 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
+//!
+//! let sender = SendmailTransport::new();
+//! let result = sender.send(email).await;
+//! assert!(result.is_ok());
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! ## Async tokio 1.x example
+//!
+//! ```rust,no_run
+//! # use std::error::Error;
+//!
+//! # #[cfg(all(feature = "tokio1", feature = "sendmail-transport", feature = "builder"))]
+//! # async fn run() -> Result<(), Box<dyn Error>> {
+//! use lettre::{Message, Tokio1Transport, SendmailTransport};
+//!
+//! let email = Message::builder()
+//!     .from("NoBody <nobody@domain.tld>".parse()?)
+//!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
+//!     .to("Hei <hei@domain.tld>".parse()?)
+//!     .subject("Happy new year")
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let sender = SendmailTransport::new();
 //! let result = sender.send(email).await;
@@ -63,7 +86,7 @@
 //!     .reply_to("Yuin <yuin@domain.tld>".parse()?)
 //!     .to("Hei <hei@domain.tld>".parse()?)
 //!     .subject("Happy new year")
-//!     .body("Be happy!")?;
+//!     .body(String::from("Be happy!"))?;
 //!
 //! let sender = SendmailTransport::new();
 //! let result = sender.send(email).await;
@@ -78,10 +101,10 @@ use crate::address::Envelope;
 use crate::AsyncStd1Transport;
 #[cfg(feature = "tokio02")]
 use crate::Tokio02Transport;
-#[cfg(feature = "tokio03")]
-use crate::Tokio03Transport;
+#[cfg(feature = "tokio1")]
+use crate::Tokio1Transport;
 use crate::Transport;
-#[cfg(any(feature = "async-std1", feature = "tokio02", feature = "tokio03"))]
+#[cfg(any(feature = "async-std1", feature = "tokio02", feature = "tokio1"))]
 use async_trait::async_trait;
 use std::{
     ffi::OsString,
@@ -147,12 +170,31 @@ impl SendmailTransport {
         c
     }
 
-    #[cfg(feature = "tokio03")]
-    fn tokio03_command(&self, envelope: &Envelope) -> tokio03_crate::process::Command {
-        use tokio03_crate::process::Command;
+    #[cfg(feature = "tokio1")]
+    fn tokio1_command(&self, envelope: &Envelope) -> tokio1_crate::process::Command {
+        use tokio1_crate::process::Command;
 
         let mut c = Command::new(&self.command);
         c.kill_on_drop(true);
+        c.arg("-i");
+        if let Some(from) = envelope.from() {
+            c.arg("-f").arg(from);
+        }
+        c.arg("--")
+            .args(envelope.to())
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        c
+    }
+
+    #[cfg(feature = "async-std1")]
+    fn async_std_command(&self, envelope: &Envelope) -> async_std::process::Command {
+        use async_std::process::Command;
+
+        let mut c = Command::new(&self.command);
+        // TODO: figure out why enabling this kills it earlier
+        // c.kill_on_drop(true);
         c.arg("-i");
         if let Some(from) = envelope.from() {
             c.arg("-f").arg(from);
@@ -198,18 +240,15 @@ impl AsyncStd1Transport for SendmailTransport {
     type Error = Error;
 
     async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
-        let mut command = self.command(envelope);
-        let email = email.to_vec();
+        use async_std::io::prelude::WriteExt;
 
-        // TODO: Convert to real async, once async-std has a process implementation.
-        let output = async_std::task::spawn_blocking(move || {
-            // Spawn the sendmail command
-            let mut process = command.spawn()?;
+        let mut command = self.async_std_command(envelope);
 
-            process.stdin.as_mut().unwrap().write_all(&email)?;
-            process.wait_with_output()
-        })
-        .await?;
+        // Spawn the sendmail command
+        let mut process = command.spawn()?;
+
+        process.stdin.as_mut().unwrap().write_all(&email).await?;
+        let output = process.output().await?;
 
         if output.status.success() {
             Ok(())
@@ -244,16 +283,16 @@ impl Tokio02Transport for SendmailTransport {
     }
 }
 
-#[cfg(feature = "tokio03")]
+#[cfg(feature = "tokio1")]
 #[async_trait]
-impl Tokio03Transport for SendmailTransport {
+impl Tokio1Transport for SendmailTransport {
     type Ok = ();
     type Error = Error;
 
     async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error> {
-        use tokio03_crate::io::AsyncWriteExt;
+        use tokio1_crate::io::AsyncWriteExt;
 
-        let mut command = self.tokio03_command(envelope);
+        let mut command = self.tokio1_command(envelope);
 
         // Spawn the sendmail command
         let mut process = command.spawn()?;

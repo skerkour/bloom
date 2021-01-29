@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## v0.1.22 (2021-01-27)
+
+- Fix panic on jpeg without frames.
+
 ## v0.1.21 (2021-01-23)
 
 - Fix incorrect order of MCUs in non-interleaved streams
