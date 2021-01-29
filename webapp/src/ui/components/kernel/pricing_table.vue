@@ -66,7 +66,7 @@
 
 
 <script lang="ts">
-import { BillingPlan } from '@/api/graphql/model';
+import { BillingPlan } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
 
@@ -83,16 +83,16 @@ export default VueApp.extend({
     currentPlan: {
       type: String as PropType<string>,
       required: false,
-      default: BillingPlan.Free,
+      default: BillingPlan.FREE,
     },
   },
   data() {
     const plans = [];
-    let planCardCols = 4;
+    const planCardCols = 4;
     if (this.selectable) {
       plans.push({
         name: 'Free',
-        value: BillingPlan.Free,
+        value: BillingPlan.FREE,
         bestFor: 'For testing and MVPs',
         price: 0,
         description: `
@@ -111,7 +111,7 @@ export default VueApp.extend({
           </ul>
           `,
       });
-      planCardCols = 3;
+      // planCardCols = 3;
     }
     return {
       planCardCols,
@@ -119,9 +119,9 @@ export default VueApp.extend({
         ...plans,
         {
           name: 'Starter',
-          value: BillingPlan.Starter,
+          value: BillingPlan.STARTER,
           bestFor: 'For individuals, families and small teams',
-          price: 20,
+          price: 10,
           description: `
           <ul>
             <li>Remove branding</li>
@@ -136,7 +136,7 @@ export default VueApp.extend({
         },
         {
           name: 'Pro',
-          value: BillingPlan.Pro,
+          value: BillingPlan.PRO,
           bestFor: 'For companies of any size',
           price: 100,
           description: `
@@ -155,7 +155,7 @@ export default VueApp.extend({
         },
         {
           name: 'Ultra',
-          value: BillingPlan.Ultra,
+          value: BillingPlan.ULTRA,
           bestFor: 'For enterprises and unicorns',
           price: 1000,
           description: `
@@ -163,7 +163,7 @@ export default VueApp.extend({
               <li><b>All features from Pro +</b></li>
 
               <li>4 TB storage</li>
-              <li>6 months events data retention</li>
+              <li>5 months events data retention</li>
               <li><b>Platinium support</b></li>
               <!--  <li>1000GB storage</li>
               <li>4 parallel Bitflow downloads</li>
