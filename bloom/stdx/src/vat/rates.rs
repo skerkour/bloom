@@ -2,6 +2,8 @@ use super::Error;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 
+pub const RATES_NUMBER: usize = 28;
+
 lazy_static! {
     // very basic and only contains the main rate
     static ref VAT_RATES: HashMap<String, u8> = {
@@ -98,6 +100,6 @@ mod tests {
     #[test]
     fn number_of_vat_rates_countries() {
         let rates = get_all_rates();
-        assert_eq!(28, rates.len());
+        assert_eq!(RATES_NUMBER, rates.len());
     }
 }

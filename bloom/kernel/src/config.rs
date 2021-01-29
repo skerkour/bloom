@@ -8,7 +8,7 @@ use std::{
     fs::OpenOptions,
     io::{BufRead, BufReader},
 };
-use stdx::{crypto, dotenv, encoding::base64, mail, url::Url};
+use stdx::{crypto, dotenv, encoding::base64, mail, url::Url, vat};
 
 const ENV_APP_ENV: &str = "APP_ENV";
 const ENV_APP_BASE_URL: &str = "APP_BASE_URL";
@@ -48,7 +48,6 @@ const POSTGRES_SCHEME: &str = "postgres";
 const STRIPE_PRODUCT_PREFIX: &str = "prod_";
 const STRIPE_PRICE_PREFIX: &str = "price_";
 const STRIPE_TAX_PREFIX: &str = "txr_";
-const STRIPE_EXPECTED_TAXES_NUMBER: usize = 28;
 const STRIPE_PUBLIC_KEY_PREFIX: &str = "pk_";
 const STRIPE_SECRET_KEY_PREFIX: &str = "sk_";
 
@@ -575,7 +574,7 @@ impl Config {
             return Err(Error::InvalidArgument(String::from("config: invalid product")));
         }
 
-        if self.stripe.data.taxes.len() != STRIPE_EXPECTED_TAXES_NUMBER {
+        if self.stripe.data.taxes.len() != vat::RATES_NUMBER {
             return Err(Error::InvalidArgument(String::from(
                 "config: invalid number of stripe taxes",
             )));
