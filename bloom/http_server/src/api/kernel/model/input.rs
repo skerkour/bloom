@@ -168,3 +168,8 @@ pub struct GetCheckoutSession {
     pub namespace_id: Id,
     pub plan: BillingPlan,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct GetCustomerPortal {
+    pub namespace_id: Id,
+}

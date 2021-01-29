@@ -355,3 +355,8 @@ pub struct StripePublicKey {
 pub struct CheckoutSession {
     pub session_id: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CustomerPortal {
+    pub customer_portal_url: String,
+}

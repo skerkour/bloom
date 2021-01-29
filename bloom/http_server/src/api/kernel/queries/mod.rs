@@ -20,3 +20,5 @@ mod billing_information;
 pub use billing_information::billing_information;
 mod checkout_session;
 pub use checkout_session::checkout_session;
+mod customer_portal;
+pub use customer_portal::customer_portal;
