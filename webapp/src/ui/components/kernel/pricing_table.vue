@@ -88,7 +88,7 @@ export default VueApp.extend({
   },
   data() {
     const plans = [];
-    const planCardCols = 4;
+    let planCardCols = 4;
     if (this.selectable) {
       plans.push({
         name: 'Free',
@@ -111,7 +111,7 @@ export default VueApp.extend({
           </ul>
           `,
       });
-      // planCardCols = 3;
+      planCardCols = 3;
     }
     return {
       planCardCols,
