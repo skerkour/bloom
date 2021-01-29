@@ -55,7 +55,7 @@
       </v-col>
       <v-col cols="12" class="text-center">
         <p class="text-body-1">
-          Your plan <b>{{ billingInformation.plan }}</b>
+          Your plan <b>{{ customer.plan }}</b>
         </p>
       </v-col>
     </v-row>
@@ -234,8 +234,8 @@ export default VueApp.extend({
       };
 
       try {
-        const billingInformation = await this.$kernelService.updateBillingInformation(input);
-        this.resetCustomer(billingInformation.customer);
+        this.billing = await this.$kernelService.updateBillingInformation(input);
+        this.resetCustomer(this.billing.customer);
         if (this.selectedPlan !== BillingPlan.FREE) {
           await this.gotoCheckoutSession(this.selectedPlan);
         }

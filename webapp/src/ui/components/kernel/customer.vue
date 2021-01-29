@@ -44,7 +44,7 @@
         <v-text-field
           label="Postal or Zip code"
           :value="value.postal_code"
-          @input="updateValue('postalCode', $event)"
+          @input="updateValue('postal_code', $event)"
           :disabled="loading"
           :readonly="readonly"
         />
@@ -54,7 +54,7 @@
         <v-text-field
           label="Address line 1"
           :value="value.address_line1"
-          @input="updateValue('addressLine1', $event)"
+          @input="updateValue('address_line1', $event)"
           :disabled="loading"
           :readonly="readonly"
         />
@@ -64,7 +64,7 @@
         <v-text-field
           label="Address line 2 (optional)"
           :value="value.address_line2"
-          @input="updateValue('addressLine2', $event)"
+          @input="updateValue('address_line2', $event)"
           :disabled="loading"
           :readonly="readonly"
         />
@@ -84,7 +84,7 @@
         <v-text-field
           label="VAT number (Optional)"
           :value="value.tax_ld"
-          @input="updateValue('taxId', $event)"
+          @input="updateValue('tax_id', $event)"
           :disabled="loading"
           :readonly="readonly"
         />
@@ -104,7 +104,7 @@ import countries from '@/app/utils/countries';
 import { isEu } from '@/app/utils/eu';
 
 export default VueApp.extend({
-  name: 'BBillingInformation',
+  name: 'BCustomer',
   props: {
     value: {
       type: Object as PropType<Customer>,
@@ -142,7 +142,7 @@ export default VueApp.extend({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateCountry(selectedCountry: any) {
       const countryCode = selectedCountry;
-      this.$emit('input', { ...this.value, countryCode });
+      this.$emit('input', { ...this.value, country_code: countryCode });
     },
   },
 });
