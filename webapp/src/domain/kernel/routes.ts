@@ -27,6 +27,7 @@ export const Commands = {
 }
 
 export const Queries = {
+  billingInformation: `/${prefix}/${queries}/billing_information`,
   generateQrCode: `/${prefix}/${queries}/generate_qr_code`,
   group: `/${prefix}/${queries}/group`,
   groupWithMembersAndInvitations: `/${prefix}/${queries}/group_with_members_and_invitations`,

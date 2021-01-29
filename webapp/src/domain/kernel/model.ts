@@ -6,6 +6,15 @@ export type AcceptGroupInvitation = {
   invitation_id: string;
 }
 
+export type BillingInformation = {
+  namespace_id: string;
+  path: string;
+  used_storage: number;
+  total_storage: number;
+  customer: Option<Customer>,
+}
+
+
 export type CancelGroupInvitation = {
   invitation_id: string;
 }
@@ -35,6 +44,20 @@ export type CreateGroup = {
   description: string;
 }
 
+export type Customer = {
+  plan: string;
+  name: string;
+  email: string;
+  country: string;
+  country_code: string;
+  city: string;
+  postal_code: string;
+  address_line1: string;
+  address_line2: string;
+  state: string;
+  tax_id: Option<string>;
+}
+
 export type DeclineGroupInvitation = {
   invitation_id: string;
 }
@@ -53,6 +76,10 @@ export type DisableTwoFa = {
 
 export type GenerateQrCode = {
   input: string;
+}
+
+export type GetBillingInformation = {
+  namespace_id: string;
 }
 
 export type GetGroup = {
