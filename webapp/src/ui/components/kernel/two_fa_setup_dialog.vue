@@ -22,6 +22,7 @@
           :loading="loading"
           outlined
           counter="6"
+          @keyup.enter.native="enableDisable"
         />
       </v-card-text>
 
@@ -94,8 +95,10 @@ export default VueApp.extend({
     enableDisable() {
       if (this.qrcode) {
         this.$emit('enable', this.code);
+        this.code = '';
       } else {
         this.$emit('disable', this.code);
+        this.code = '';
       }
     },
   },
