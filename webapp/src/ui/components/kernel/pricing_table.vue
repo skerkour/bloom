@@ -125,7 +125,8 @@ export default VueApp.extend({
           <ul>
             <li>Remove branding</li>
             <li>5 workspace members</li>
-            <li>75 GB storage</li>
+            <li>100 GB storage</li>
+            <li>10 000 newsletter contacts</li>
             <li>30 days events data retention</li>
             <li><b>Silver support</b></li>
           </ul>
@@ -141,8 +142,9 @@ export default VueApp.extend({
             <li><b>All features from Starter +</b></li>
 
             <li>Unlimited workspace members</li>
-            <li>500 GB storage</li>
-            <li>60 days events data retention</li>
+            <li>Unlimited newsletter contacts</li>
+            <li>1 TB storage</li>
+            <li>6 months events data retention</li>
             <li><b>Gold support</b></li>
             <!-- <li>400GB storage</li>
             <li>2 parallel Bitflow downloads</li> -->
