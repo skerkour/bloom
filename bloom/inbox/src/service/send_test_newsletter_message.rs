@@ -22,7 +22,7 @@ impl Service {
             .map_err(|_| Error::NewsletterMessageNotFound)?;
 
         // TODO: correct email of the sender
-        let from = self.kernel_service.config().mail.notify_address.clone();
+        let from = self.kernel_service.config().mail.newsletter_address.clone();
         let to = mail::Address {
             name: actor.name,
             address: actor.email,

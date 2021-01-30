@@ -22,6 +22,7 @@ const ENV_HTTP_ACCESS_LOGS: &str = "HTTP_ACCESS_LOGS";
 const ENV_HTTP_PUBLIC_DIRECTORY: &str = "HTTP_PUBLIC_DIRECTORY";
 const ENV_MAIL_DRIVER: &str = "MAIL_DRIVER";
 const ENV_MAIL_NOTIFY_ADDRESS: &str = "MAIL_NOTIFY_ADDRESS";
+const ENV_MAIL_NEWSLETTER_ADDRESS: &str = "MAIL_NEWSLETTER_ADDRESS";
 const ENV_MAIL_BLOCKLIST: &str = "MAIL_BLOCKLIST";
 const ENV_STORAGE_DRIVER: &str = "STORAGE_DRIVER";
 const ENV_STORAGE_BASE_DIRECTORY: &str = "STORAGE_BASE_DIRECTORY";
@@ -151,6 +152,7 @@ const DEFAULT_HTTP_PUBLIC_DIRECTORY: &str = "public";
 pub struct Mail {
     pub driver: MailDriver,
     pub notify_address: mail::Address,
+    pub newsletter_address: mail::Address,
     pub domains_blocklist_file: String,
     pub domains_blocklist: HashSet<String>,
     // 	OutboundAddress  mail.Address `env:"MAIL_OUTBOUND_ADDRESS"`
@@ -382,6 +384,9 @@ impl Config {
         let mail_notify_address = std::env::var(ENV_MAIL_NOTIFY_ADDRESS)
             .map_err(|_| env_not_found(ENV_MAIL_NOTIFY_ADDRESS))?
             .parse::<mail::Address>()?;
+        let mail_newsletter_address = std::env::var(ENV_MAIL_NEWSLETTER_ADDRESS)
+            .map_err(|_| env_not_found(ENV_MAIL_NEWSLETTER_ADDRESS))?
+            .parse::<mail::Address>()?;
         let mail_domains_blocklist_file =
             std::env::var(ENV_MAIL_BLOCKLIST).unwrap_or(String::from(DEFAULT_MAIL_BLOCKLIST_FILE));
 
@@ -402,6 +407,7 @@ impl Config {
         let mail = Mail {
             driver: mail_driver,
             notify_address: mail_notify_address,
+            newsletter_address: mail_newsletter_address,
             domains_blocklist_file: mail_domains_blocklist_file,
             domains_blocklist: mail_domains_blocklist,
         };

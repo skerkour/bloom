@@ -22,7 +22,7 @@ impl Service {
         self.repo.update_newsletter_message(&self.db, &message).await?;
 
         // TODO: correct email of the sender
-        let from = self.kernel_service.config().mail.notify_address.clone();
+        let from = self.kernel_service.config().mail.newsletter_address.clone();
 
         for contact in contacts.into_iter().filter(|c| !c.email.is_empty()) {
             let to = mail::Address {
