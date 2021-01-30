@@ -252,14 +252,14 @@ pub struct StripeData {
 pub struct StripeProducts {
     pub starter: String,
     pub pro: String,
-    pub ultra: String,
+    // pub ultra: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StripePrices {
     pub starter: String,
     pub pro: String,
-    pub ultra: String,
+    // pub ultra: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -572,14 +572,14 @@ impl Config {
 
         if !self.stripe.data.prices.starter.starts_with(STRIPE_PRICE_PREFIX)
             || !self.stripe.data.prices.pro.starts_with(STRIPE_PRICE_PREFIX)
-            || !self.stripe.data.prices.ultra.starts_with(STRIPE_PRICE_PREFIX)
+        // || !self.stripe.data.prices.ultra.starts_with(STRIPE_PRICE_PREFIX)
         {
             return Err(Error::InvalidArgument(String::from("config: invalid price")));
         }
 
         if !self.stripe.data.products.starter.starts_with(STRIPE_PRODUCT_PREFIX)
             || !self.stripe.data.products.pro.starts_with(STRIPE_PRODUCT_PREFIX)
-            || !self.stripe.data.products.ultra.starts_with(STRIPE_PRODUCT_PREFIX)
+        // || !self.stripe.data.products.ultra.starts_with(STRIPE_PRODUCT_PREFIX)
         {
             return Err(Error::InvalidArgument(String::from("config: invalid product")));
         }

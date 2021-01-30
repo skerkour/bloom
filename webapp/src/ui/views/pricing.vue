@@ -9,7 +9,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="justify-center text-left">
+    <v-row class="justify-center text-center">
       <v-col cols="12" md="10" xl="8" class="px-5 pt-5 pb-0">
         <p class="text-body-1 blm-free-tier">
           We offer an <b>eternal free tier</b> for your personal projects and MVPs.
