@@ -52,7 +52,7 @@
       </v-col>
 
       <v-col cols="12" sm="3" class="text-center">
-        <a href="https://kerkour.fr" target="_blank" rel="noopener">
+        <a href="https://kerkour.com" target="_blank" rel="noopener">
           <v-avatar size="100px" color="grey lighten-4">
             <img src="/assets/imgs/sylvain.jpg" alt="Sylvain Kerkour picture">
           </v-avatar>
@@ -73,7 +73,7 @@
         <p class="text-body-1">
           We share strong opinions and crazy ideas about Open Source, minimalism and sustainability
           on the blog
-      <a href="https://kerkour.fr" target="_blank" rel="noopener">kerkour.fr</a>.
+      <a href="https://kerkour.com" target="_blank" rel="noopener">kerkour.com</a>.
         </p>
       </v-col>
 

@@ -20,7 +20,7 @@
             <li><router-link class="nav-link" to="/features">Features</router-link></li>
             <li><router-link class="nav-link" to="/faq">F.A.Q</router-link></li>
             <li><router-link class="nav-link" to="/licensing">Licensing</router-link></li>
-            <li><a class="nav-link" href="https://bloom.sh/status/bloom/bloom" target="_blank" rel="noopener">Status</a></li>
+            <!-- <li><a class="nav-link" href="https://bloom.sh/status/bloom/bloom" target="_blank" rel="noopener">Status</a></li> -->
           </ul>
         </v-col>
 
@@ -28,7 +28,7 @@
           <h4 class="text-h5 pb-3">Community</h4>
           <ul>
             <!-- <li><a class="nav-link" href="https://github.com/bloom42/bloom/projects" target="_blank" rel="noopener">Roadmap</a></li> -->
-            <li><a class="nav-link" href="https://kerkour.fr" target="_blank" rel="noopener">Blog</a></li>
+            <li><a class="nav-link" href="https://kerkour.com" target="_blank" rel="noopener">Blog</a></li>
             <li><a class="nav-link" href="https://twitter.com/42bloom" target="_blank" rel="noopener">Twitter</a></li>
             <li><a class="nav-link" href="https://github.com/skerkour/bloom" target="_blank" rel="noopener">GitHub</a></li>
             <li><a class="nav-link" href="https://mastodon.social/@42bloom" target="_blank" rel="me noopener">Mastodon</a></li>
