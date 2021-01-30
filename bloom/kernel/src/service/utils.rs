@@ -6,7 +6,7 @@ use crate::{
     errors::kernel::Error,
     Actor,
 };
-use consts::{STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER, STORAGE_ULTRA};
+use consts::{STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER};
 use std::sync::Arc;
 use stdx::{
     base64, crypto,
@@ -176,7 +176,7 @@ impl Service {
             BillingPlan::Free => STORAGE_FREE,
             BillingPlan::Starter => STORAGE_STARTER,
             BillingPlan::Pro => STORAGE_PRO,
-            BillingPlan::Ultra => STORAGE_ULTRA,
+            // BillingPlan::Ultra => STORAGE_ULTRA,
         }
     }
 }

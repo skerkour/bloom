@@ -1,7 +1,7 @@
 use super::{CompleteFileUploadInput, Service};
 use crate::{consts, entities::File, Error};
 use kernel::{
-    consts::{BillingPlan, STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER, STORAGE_ULTRA},
+    consts::{BillingPlan, STORAGE_FREE, STORAGE_PRO, STORAGE_STARTER},
     Actor,
 };
 use stdx::{chrono::Utc, ulid::Ulid};
@@ -76,7 +76,7 @@ impl Service {
             if (namespace.plan == BillingPlan::Free && namespace.used_storage > STORAGE_FREE)
                 || (namespace.plan == BillingPlan::Starter && namespace.used_storage > STORAGE_STARTER)
                 || (namespace.plan == BillingPlan::Pro && namespace.used_storage > STORAGE_PRO)
-                || (namespace.plan == BillingPlan::Ultra && namespace.used_storage > STORAGE_ULTRA)
+                // || (namespace.plan == BillingPlan::Ultra && namespace.used_storage > STORAGE_ULTRA)
                 || namespace.used_storage < 0
                 || size < 0
             {

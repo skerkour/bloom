@@ -88,7 +88,7 @@ export default VueApp.extend({
   },
   data() {
     const plans = [];
-    let planCardCols = 4;
+    const planCardCols = 4;
     if (this.selectable) {
       plans.push({
         name: 'Free',
@@ -97,8 +97,7 @@ export default VueApp.extend({
         price: 0,
         description: `
           <ul>
-            <li>2 group members</li>
-            <li>3 projects</li>
+            <li>2 workspace members</li>
             <li>7 days data retention</li>
             <li>100 MB storage</li>
 
@@ -111,7 +110,7 @@ export default VueApp.extend({
           </ul>
           `,
       });
-      planCardCols = 3;
+      // planCardCols = 3;
     }
     return {
       planCardCols,
@@ -120,15 +119,13 @@ export default VueApp.extend({
         {
           name: 'Starter',
           value: BillingPlan.STARTER,
-          bestFor: 'For individuals, families and small teams',
+          bestFor: 'For individuals and families',
           price: 10,
           description: `
           <ul>
             <li>Remove branding</li>
-            <li>5 group members</li>
-            <li>8 projects</li>
+            <li>5 workspace members</li>
             <li>75 GB storage</li>
-            <li>5 monitors / project</li>
             <li>30 days events data retention</li>
             <li><b>Silver support</b></li>
           </ul>
@@ -137,14 +134,13 @@ export default VueApp.extend({
         {
           name: 'Pro',
           value: BillingPlan.PRO,
-          bestFor: 'For companies of any size',
+          bestFor: 'For companies of all sizes',
           price: 100,
           description: `
           <ul>
             <li><b>All features from Starter +</b></li>
 
-            <li>Unlimited group members</li>
-            <li>Unlimited projects</li>
+            <li>Unlimited workspace members</li>
             <li>500 GB storage</li>
             <li>60 days events data retention</li>
             <li><b>Gold support</b></li>
@@ -153,25 +149,25 @@ export default VueApp.extend({
           </ul>
           `,
         },
-        {
-          name: 'Ultra',
-          value: BillingPlan.ULTRA,
-          bestFor: 'For enterprises and unicorns',
-          price: 1000,
-          description: `
-            <ul>
-              <li><b>All features from Pro +</b></li>
+        // {
+        //   name: 'Ultra',
+        //   value: BillingPlan.ULTRA,
+        //   bestFor: 'For enterprises and unicorns',
+        //   price: 1000,
+        //   description: `
+        //     <ul>
+        //       <li><b>All features from Pro +</b></li>
 
-              <li>4 TB storage</li>
-              <li>5 months events data retention</li>
-              <li><b>Platinium support</b></li>
-              <!--  <li>1000GB storage</li>
-              <li>4 parallel Bitflow downloads</li>
-              <li>Priority Support</li>
-              -->
-            </ul>
-          `,
-        },
+        //       <li>4 TB storage</li>
+        //       <li>5 months events data retention</li>
+        //       <li><b>Platinium support</b></li>
+        //       <!--  <li>1000GB storage</li>
+        //       <li>4 parallel Bitflow downloads</li>
+        //       <li>Priority Support</li>
+        //       -->
+        //     </ul>
+        //   `,
+        // },
       ],
     };
   },

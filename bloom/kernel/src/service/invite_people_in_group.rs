@@ -67,7 +67,7 @@ impl Service {
                 BillingPlan::Starter if members_count_after_invites > consts::MAX_MEMBERS_PLAN_STARTER => {
                     Err(Error::MembersLimitReachedForPlan)
                 }
-                BillingPlan::Pro | BillingPlan::Ultra
+                BillingPlan::Pro // | BillingPlan::Ultra
                     if members_count_after_invites > consts::MAX_MEMBERS_SOFT_LIMIT =>
                 {
                     Err(Error::SoftLimitReached)

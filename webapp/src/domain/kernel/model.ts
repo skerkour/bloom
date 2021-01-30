@@ -6,7 +6,7 @@ export enum BillingPlan {
   FREE = 'free',
   STARTER = 'starter',
   PRO = 'pro',
-  ULTRA = 'ultra',
+  // ULTRA = 'ultra',
 }
 
 export type AcceptGroupInvitation = {

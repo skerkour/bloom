@@ -67,8 +67,8 @@ impl Service {
                 customer.plan = BillingPlan::Starter;
             } else if customer.stripe_product_id == Some(stripe_data.products.pro) {
                 customer.plan = BillingPlan::Pro;
-            } else if customer.stripe_product_id == Some(stripe_data.products.ultra) {
-                customer.plan = BillingPlan::Ultra;
+            // } else if customer.stripe_product_id == Some(stripe_data.products.ultra) {
+            //     customer.plan = BillingPlan::Ultra;
             } else {
                 customer.plan = BillingPlan::Free;
             }

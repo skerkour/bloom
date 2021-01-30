@@ -34,7 +34,7 @@ impl Service {
         let stripe_price = match input.plan {
             BillingPlan::Starter => stripe_data.prices.starter,
             BillingPlan::Pro => stripe_data.prices.pro,
-            BillingPlan::Ultra => stripe_data.prices.ultra,
+            // BillingPlan::Ultra => stripe_data.prices.ultra,
             _ => return Err(Error::PermissionDenied.into()),
         };
 
