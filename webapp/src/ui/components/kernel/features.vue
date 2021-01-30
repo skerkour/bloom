@@ -7,6 +7,20 @@
         Universal Inbox
       </h4>
 
+
+      <h4 class="text-h4">
+        Simplified Newsletter
+      </h4>
+
+      <h4 class="text-h4">
+        Shared files
+      </h4>
+
+
+      <h4 class="text-h4">
+        Privacy-focused analytics
+      </h4>
+
       </v-col>
 
 
