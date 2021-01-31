@@ -15,13 +15,15 @@
   <v-container fluid>
     <v-row class="text-center" justify="center" align="center">
       <v-col cols="12" md="6">
-        <h2 class="text-h3 mb-5">
+        <h2 class="text-h3 mb-5 mt-5 pt-4">
           All-in-one workspace
         </h2>
         <h3 class="text-h4">
-          Take back control of your productivity! <br />
-          Bloom is designed for remote work and effectiveness.
+          Take back control of your productivity!
         </h3>
+        <h4 class="text-h5">
+          Bloom is designed for remote work and effectiveness.
+        </h4>
 
         <v-row class="text-center text--darken-1 grey--text pt-4 mt-5"
           align="center" justify="center" >
@@ -62,11 +64,11 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <b-register-form />
+        <b-register-form class="pt-5"/>
       </v-col>
     </v-row>
 
-    <b-features class="mt-5" />
+    <b-features class="b-features" />
 
 
     <b-footer />
@@ -92,4 +94,7 @@ export default VueApp.extend({
 
 
 <style lang="scss" scoped>
+.b-features {
+  margin-top: 30px;
+}
 </style>

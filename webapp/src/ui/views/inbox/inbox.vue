@@ -9,7 +9,7 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
+    <v-row justify="center ma-0 pa-0">
       <v-col cols="4" lg="3" class="pa-0 bloom-left-col">
         <div class="overflow-y-auto b-conversations-list">
           <v-list-item-group

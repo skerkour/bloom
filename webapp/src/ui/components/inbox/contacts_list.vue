@@ -57,13 +57,14 @@ export default VueApp.extend({
           align: 'start',
           sortable: true,
           value: 'name',
-          width: '50%',
+          width: '40%',
         },
         {
           text: 'Email',
           align: 'start',
           sortable: true,
           value: 'email',
+          width: '40%',
         },
         {
           text: 'Created at',
