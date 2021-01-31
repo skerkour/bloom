@@ -14,7 +14,9 @@
               Universal Inbox
             </h4>
             <p class="mt-5">
-              description
+              Our unified inbox let you be always present when your customers or your relatives
+              need you. <br />
+              Spam free.
             </p>
           </v-col>
         </v-row>
@@ -26,7 +28,9 @@
               Shared files
             </h4>
             <p class="mt-5">
-              description
+              Keep photos, stories, designs, drawings, recordings, videos, and more. <br />
+              Your files in Files can be reached from any smartphone, tablet, or computer.
+                So wherever you go, your files follow.
             </p>
           </v-col>
 
@@ -46,7 +50,8 @@
               Simplified Newsletter
             </h4>
             <p class="mt-5">
-              description
+              Bloom makes it easy for content creators send newsletters
+              and build an engaged audience.
             </p>
           </v-col>
         </v-row>
@@ -58,7 +63,7 @@
               Privacy-focused Analytics
             </h4>
             <p class="mt-5">
-              description
+              Bloom provides a simple, light-weight and focused alternative to Google Analytics.
             </p>
           </v-col>
 
