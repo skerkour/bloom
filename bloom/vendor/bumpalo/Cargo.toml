@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "bumpalo"
-version = "3.5.0"
+version = "3.6.0"
 authors = ["Nick Fitzgerald <fitzgen@gmail.com>"]
 description = "A fast bump allocation arena for Rust."
 documentation = "https://docs.rs/bumpalo"

@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "sha2"
-version = "0.9.2"
+version = "0.9.3"
 authors = ["RustCrypto Developers"]
 description = "Pure Rust implementation of the SHA-2 hash function family\nincluding SHA-224, SHA-256, SHA-384, and SHA-512.\n"
 documentation = "https://docs.rs/sha2"
@@ -52,7 +52,7 @@ default = ["std"]
 force-soft = []
 std = ["digest/std"]
 [target."cfg(all(target_arch = \"aarch64\", target_os = \"linux\"))".dependencies.libc]
-version = "0.2.80"
+version = "0.2.84"
 optional = true
 [target."cfg(any(target_arch = \"x86\", target_arch = \"x86_64\"))".dependencies.cpuid-bool]
 version = "0.1"
