@@ -29,7 +29,7 @@
             </h4>
             <p class="mt-5">
               Keep photos, stories, designs, drawings, recordings, videos, and more. <br />
-              Your files in Files can be reached from any smartphone, tablet, or computer.
+              In Files, your data can be reached from any smartphone, tablet, or computer.
                 So wherever you go, your files follow.
             </p>
           </v-col>
