@@ -226,7 +226,9 @@ where
 
             req.extensions_mut().insert(actor);
 
-            service.borrow_mut().call(req).await
+            // Ensure `borrow_mut()` and `.await` are on separate lines or else a panic occurs.
+            let call_future = service.borrow_mut().call(req);
+            call_future.await
         })
     }
 }
