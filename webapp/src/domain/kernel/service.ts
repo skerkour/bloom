@@ -51,6 +51,9 @@ export class KernelService {
     const res: SignedIn = await this.apiClient.post(Commands.completeRegistration, input);
 
     this.store.commit(Mutation.SIGN_IN, res);
+    const me = await this.fetchMe();
+    this.store.commit(Mutation.INIT, me);
+
     window.location.href = '/';
   }
 
@@ -63,8 +66,12 @@ export class KernelService {
       return;
     }
 
+
     // otherwise, complete sign-in flow
     this.store.commit(Mutation.SIGN_IN, res);
+    const me = await this.fetchMe();
+    this.store.commit(Mutation.INIT, me);
+
     this.router.push({ path: '/' });
   }
 
@@ -73,6 +80,9 @@ export class KernelService {
 
     // complete sign-in flow
     this.store.commit(Mutation.SIGN_IN, res);
+    const me = await this.fetchMe();
+    this.store.commit(Mutation.INIT, me);
+
     this.router.push({ path: '/' });
   }
 
