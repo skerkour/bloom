@@ -52,6 +52,22 @@
         </v-row>
 
 
+        <v-row justify="center" class="mt-5 mb-5">
+          <v-col cols="12" sm="6" class="text-center" order="2" order-sm="0">
+            <h4 class="text-h4">
+              Privacy-focused Analytics
+            </h4>
+            <p class="mt-5">
+              description
+            </p>
+          </v-col>
+
+          <v-col cols="12" sm="6" class="text-center">
+            <img alt="secure" src="/assets/imgs/landing/analytics.png" height="200" />
+          </v-col>
+        </v-row>
+
+
       </v-col>
     </v-row>
   </v-container>
