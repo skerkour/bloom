@@ -43,6 +43,10 @@ impl Service {
             .clean_namespace(&mut tx, group.namespace_id)
             .await?;
 
+        self.repo
+            .detach_uploads_for_namespace(&mut tx, group.namespace_id)
+            .await?;
+
         self.repo.delete_namespace(&mut tx, group.namespace_id).await?;
 
         tx.commit().await?;
