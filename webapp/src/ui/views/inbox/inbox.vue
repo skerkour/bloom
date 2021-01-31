@@ -1,15 +1,7 @@
 <template>
   <v-container fill-height fluid class="pa-0">
 
-    <v-row justify="center">
-      <v-col cols="12" md="8" lg="6" xl="4" v-if="error !== ''">
-        <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''">
-          {{ error }}
-        </v-alert>
-      </v-col>
-    </v-row>
-
-    <v-row justify="center ma-0 pa-0">
+    <v-row justify="center" class="ma-0 pa-0">
       <v-col cols="4" lg="3" class="pa-0 bloom-left-col">
         <div class="overflow-y-auto b-conversations-list">
           <v-list-item-group
@@ -73,12 +65,13 @@
             </router-link> -->
             Title
           </v-toolbar-title>
-
         </v-app-bar>
+
         <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" v-if="error !== ''">
           {{ error }}
         </v-alert>
-        <div class="conversation overflow-y-auto" ref="conversation">
+
+        <div class="conversation overflow-y-auto" ref="conversation" v-if="selectedConversation">
           <v-progress-circular
             v-if="loading"
             :size="50"
@@ -90,13 +83,17 @@
             <b-message :message="message" :key="i" />
           </template>
         </div>
+        <div v-else-if="!selectedConversation && chatboxPreferences">
+          <b-chatbox-setup-card class="ma-5 pa-5" :preferences="chatboxPreferences" />
+        </div>
+
         <v-textarea
           class="conversation-input pa-0"
           placeholder="Compose your message..."
           v-model="message"
           hide-details
           @keydown="onInputKeyDown"
-        />
+          v-if="selectedConversation"/>
       </v-col>
     </v-row>
 
@@ -110,13 +107,16 @@ import BMessage from '@/ui/components/inbox/message.vue';
 import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions } from '@/domain/inbox/service';
 import {
+  ChatboxPreferences,
   ConversationWithContactsAndMessages, Message, SendMessage,
 } from '@/domain/inbox/model';
+import BChatboxSetupCard from '@/ui/components/inbox/chatbox_setup_card.vue';
 
 export default VueApp.extend({
   name: 'BInboxView',
   components: {
     BMessage,
+    BChatboxSetupCard,
   },
   data() {
     return {
@@ -131,6 +131,8 @@ export default VueApp.extend({
       seenMessages: new Set<string>(),
       seenConversations: new Set<string>(),
       baseUrl: '',
+      chatboxPreferences: null as ChatboxPreferences | null,
+
     };
   },
   computed: {
@@ -157,8 +159,12 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        const inbox = await this.$inboxService.fetchInbox();
+        const [inbox, chatboxPreferences] = await Promise.all([
+          this.$inboxService.fetchInbox(),
+          this.$inboxService.fetchChatboxPreferences(),
+        ]);
 
+        this.chatboxPreferences = chatboxPreferences;
         this.conversations = inbox.conversations;
 
         this.conversations.forEach((conversation) => {
