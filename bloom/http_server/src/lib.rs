@@ -147,6 +147,7 @@ pub async fn run(
                                             .route(web::post().to(api::kernel::queries::signed_upload_url)),
                                     )
                                     .service(web::resource("/me").route(web::post().to(api::kernel::queries::me)))
+                                    .service(web::resource("/markdown").route(web::post().to(api::kernel::queries::markdown)))
                                     .service(
                                         web::resource("/generate_qr_code")
                                             .route(web::post().to(api::kernel::queries::generate_qr_code)),
