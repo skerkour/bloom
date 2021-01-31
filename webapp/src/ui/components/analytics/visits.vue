@@ -69,12 +69,14 @@ export default VueApp.extend({
             data: viewsData,
             areaStyle: {},
             type: 'line',
+            color: '#99ff66',
           },
           {
             name: 'Visitors',
             data: visitorsData,
             areaStyle: {},
             type: 'line',
+            color: '#cc66ff',
           },
         ],
       });
