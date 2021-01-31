@@ -39,7 +39,7 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
-import { OutboundMessage } from '@/api/graphql/model';
+import { Message } from '@/domain/newsletter/model';
 import { calendar } from '@/app/filters';
 
 
@@ -47,7 +47,7 @@ export default VueApp.extend({
   name: 'BNewsletterMessagesList',
   props: {
     messages: {
-      type: Array as PropType<OutboundMessage[]>,
+      type: Array as PropType<Message[]>,
       required: true,
     },
     loading: {
@@ -95,8 +95,9 @@ export default VueApp.extend({
   },
   methods: {
     calendar,
-    gotoMessage(message: OutboundMessage) {
-      this.$router.push({ path: `/newsletter/message/${message.id}` });
+    gotoMessage(message: Message) {
+      console.log(message);
+      this.$router.push({ path: `/newsletter/messages/${message.id}` });
     },
   },
 });

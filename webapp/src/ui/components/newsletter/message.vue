@@ -134,7 +134,7 @@ export default VueApp.extend({
     if (this.message) {
       this.autoSaveInterval = setInterval(() => {
         this.autosave();
-      }, 1000);
+      }, 700);
     }
   },
   beforeDestroy() {
@@ -154,6 +154,7 @@ export default VueApp.extend({
         this.subject = this.message.subject;
         this.body = this.message.body;
         this.bodyHtml = this.message.body_html;
+        this.selectedList = this.list;
       } else {
         this.name = '';
         this.subject = '';
@@ -167,7 +168,7 @@ export default VueApp.extend({
         && (this.name !== this.message.name
         || this.subject !== this.message.subject
         || this.body !== this.message.body)) {
-        this.updateMessage();
+        this.updateMessage(true);
       }
     },
     async createMessage() {
@@ -189,9 +190,11 @@ export default VueApp.extend({
         this.loading = false;
       }
     },
-    async updateMessage() {
-      this.loading = true;
-      this.error = '';
+    async updateMessage(autosave: boolean) {
+      if (!autosave) {
+        this.loading = true;
+        this.error = '';
+      }
       const input: UpdateMessage = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         message_id: this.message!.id,

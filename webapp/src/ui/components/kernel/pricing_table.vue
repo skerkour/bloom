@@ -127,7 +127,7 @@ export default VueApp.extend({
             <li>5 workspace members</li>
             <li>100 GB storage</li>
             <li>10 000 newsletter contacts</li>
-            <li>30 days events data retention</li>
+            <li>30 days analytics data retention</li>
             <li><b>Silver support</b></li>
           </ul>
           `,
@@ -143,8 +143,8 @@ export default VueApp.extend({
 
             <li>Unlimited workspace members</li>
             <li>Unlimited newsletter contacts</li>
+            <li>Unlimited analytics data retention</li>
             <li>1 TB storage</li>
-            <li>6 months events data retention</li>
             <li><b>Gold support</b></li>
             <!-- <li>400GB storage</li>
             <li>2 parallel Bitflow downloads</li> -->
