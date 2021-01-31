@@ -61,7 +61,7 @@
         Register for free
       </v-btn>
 
-      <v-menu left bottom v-if="authenticated">
+      <v-menu left bottom v-if="authenticated" v-model="namespaceMenu">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
           <v-avatar size="35">
@@ -73,16 +73,26 @@
         <v-card>
           <v-list>
             <v-list-item-group :value="currentNamespaceIndex" color="primary">
-              <v-list-item @click="setCurrentNamespace(namespace, index)" class="pt-3 pb-3"
+              <v-list-item class="pt-3 pb-3"
                 v-for="(namespace, index) in $store.state.namespaces" :key="namespace.id"
-                color="primary">
+                color="primary" @click="setCurrentNamespace(namespace, index)">
                 <v-list-item-avatar>
                   <img :src="namespace.avatar_url">
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>{{ namespace.name }}</v-list-item-title>
-                  <v-list-item-subtitle>@{{ namespace.path }}</v-list-item-subtitle>
+                  <v-list-item-title>
+                    {{ namespace.name }}</v-list-item-title>
+                  <v-list-item-subtitle>
+                    @{{ namespace.path }}</v-list-item-subtitle>
+
+                  <div class="text-xs-center">
+                    <v-btn depressed small
+                      @click.stop="goToNamespacePreferences(index, namespace)">
+                      <v-icon small left>mdi-cog</v-icon>
+                      Preferences
+                    </v-btn>
+                  </div>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -98,16 +108,8 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-divider />
+            <v-divider v-if="$store.state.isAdmin" />
 
-            <v-list-item to="/preferences">
-              <v-list-item-icon>
-                <v-icon>mdi-cog</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Preferences</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
             <v-list-item to="/admin" v-if="$store.state.isAdmin">
               <v-list-item-icon>
                 <v-icon>mdi-shield-account</v-icon>
@@ -217,6 +219,7 @@ export default VueApp.extend({
   },
   data() {
     return {
+      namespaceMenu: false,
       apps: [
         {
           name: 'Inbox',
@@ -258,6 +261,11 @@ export default VueApp.extend({
     },
     toggleDrawer() {
       this.$store.commit(Mutation.SET_DRAWER, !this.$store.state.drawer);
+    },
+    goToNamespacePreferences(index: number, namespace: Namespace) {
+      const route = index === 0 ? '/preferences' : `/groups/${namespace.path}/preferences`;
+      this.$router.push({ path: route });
+      this.namespaceMenu = false;
     },
   },
 });
