@@ -22,7 +22,7 @@
           Take back control of your productivity!
         </h3>
         <h4 class="text-h5">
-          Bloom is the simplest way to de-Google your life and team.
+          Bloom is the simplest way to de-Google your life and business.
         </h4>
 
         <v-row class="text-center text--darken-1 grey--text pt-4 mt-5"

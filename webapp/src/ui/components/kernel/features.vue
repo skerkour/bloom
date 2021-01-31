@@ -50,7 +50,7 @@
               Simplified Newsletter
             </h4>
             <p class="mt-5">
-              Bloom makes it easy for content creators send newsletters
+              Bloom makes it easy for content creators to send newsletters
               and build an engaged audience.
             </p>
           </v-col>
