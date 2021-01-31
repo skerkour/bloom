@@ -6,6 +6,10 @@ use stdx::{chrono::Utc, log::error, mail, uuid::Uuid};
 impl Service {
     pub async fn job_dispatch_send_newsletter_message(&self, message_id: Uuid) -> Result<(), kernel::Error> {
         let mut message = self.repo.find_newsletter_message_by_id(&self.db, message_id).await?;
+        let namespace = self
+            .kernel_service
+            .find_namespace(&self.db, message.namespace_id)
+            .await?;
 
         let list = self.repo.find_newsletter_list_by_id(&self.db, message.list_id).await?;
 
@@ -22,7 +26,8 @@ impl Service {
         self.repo.update_newsletter_message(&self.db, &message).await?;
 
         // TODO: correct email of the sender
-        let from = self.kernel_service.config().mail.newsletter_address.clone();
+        let mut from = self.kernel_service.config().mail.newsletter_address.clone();
+        from.name = namespace.path;
 
         for contact in contacts.into_iter().filter(|c| !c.email.is_empty()) {
             let to = mail::Address {

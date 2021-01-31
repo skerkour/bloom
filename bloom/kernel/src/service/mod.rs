@@ -45,6 +45,7 @@ mod find_group_and_membership;
 mod find_group_members_and_invitations;
 mod find_my_group_invitations;
 mod find_my_sessions;
+mod find_namespace;
 mod find_namespace_and_membership;
 mod find_upload;
 mod get_billing_information;
