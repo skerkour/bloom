@@ -13,11 +13,11 @@ pub struct Contact {
 }
 
 impl From<inbox::entities::Contact> for Contact {
-    fn from(list: inbox::entities::Contact) -> Self {
+    fn from(contact: inbox::entities::Contact) -> Self {
         Contact {
-            id: list.id,
-            name: list.name,
-            email: list.email,
+            id: contact.id,
+            name: contact.name,
+            email: contact.email,
         }
     }
 }

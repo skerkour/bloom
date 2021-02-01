@@ -15,8 +15,8 @@ impl Repository {
 
         match sqlx::query(QUERY)
             .bind(subscription.id)
+            .bind(subscription.created_at)
             .bind(subscription.updated_at)
-            .bind(subscription.list_id)
             .bind(subscription.list_id)
             .bind(subscription.contact_id)
             .execute(db)

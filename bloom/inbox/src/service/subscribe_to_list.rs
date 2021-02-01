@@ -68,21 +68,22 @@ impl Service {
             .await;
         match subscription_res {
             Ok(_) => return Ok(()),
-            Err(Error::ContactNotFound) => {}
-            Err(err) => return Err(err.into()),
-        };
-
-        // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
-        let subscription = NewsletterListSubscription {
-            id: Uuid::new_v4(),
-            created_at: now,
-            updated_at: now,
-            list_id: list.id,
-            contact_id: contact.id,
-        };
-        self.repo
-            .create_newsletter_list_subscription(&mut tx, &subscription)
-            .await?;
+            Err(Error::NewsletterSubscriptionNotFound) => {
+                // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
+                let subscription = NewsletterListSubscription {
+                    id: Uuid::new_v4(),
+                    created_at: now,
+                    updated_at: now,
+                    list_id: list.id,
+                    contact_id: contact.id,
+                };
+                self.repo
+                    .create_newsletter_list_subscription(&mut tx, &subscription)
+                    .await?;
+                Ok(())
+            }
+            Err(err) => Err(err),
+        }?;
 
         tx.commit().await?;
 

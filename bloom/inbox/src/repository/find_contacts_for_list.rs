@@ -9,7 +9,7 @@ impl Repository {
         db: C,
         list_id: Uuid,
     ) -> Result<Vec<entities::Contact>, Error> {
-        const QUERY: &str = "SELECT * FROM inbox_contacts
+        const QUERY: &str = "SELECT inbox_contacts.* FROM inbox_contacts
             INNER JOIN newsletter_lists_subscriptions
                 ON newsletter_lists_subscriptions.contact_id = inbox_contacts.id
             WHERE newsletter_lists_subscriptions.list_id = $1";
