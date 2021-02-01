@@ -32,8 +32,9 @@
 
 
 <script lang="ts">
-import { UnsubscribeFromListInput } from '@/api/graphql/model';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
+import { UnsubscribeFromList } from '@/domain/inbox/model';
 
 export default VueApp.extend({
   name: 'BConfirmListSubscriptionView',
@@ -49,20 +50,21 @@ export default VueApp.extend({
   },
   methods: {
     async fetchData(): Promise<void> {
-      const { contact } = this.$route.query;
-      if (!contact || !this.$route.params.listId) {
+      const { subscription } = this.$route.query;
+      if (!subscription) {
+        // || !this.$route.params.listId) {
         this.error = 'Link is broken';
+        return;
       }
-      const input: UnsubscribeFromListInput = {
-        id: this.$route.params.listId,
-        contactId: contact as string,
+      const input: UnsubscribeFromList = {
+        subscription_id: subscription! as string,
       };
 
       this.loading = true;
       this.error = '';
 
       try {
-        await this.$growthService.unsubscribeFromList(input);
+        await this.$inboxService.unsubscribeFromList(input);
         this.success = 'Successfully unsubscribed';
       } catch (err) {
         this.error = err.message;

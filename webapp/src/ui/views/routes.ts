@@ -47,7 +47,7 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: '/unsubscribe/:listId',
+    path: '/unsubscribe',
     component: UnsubscribeView,
     meta: {
       auth: false,

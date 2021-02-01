@@ -8,6 +8,8 @@ export const Commands = {
   deleteContact: `/${prefix}/${commands}/delete_contact`,
   importContacts: `/${prefix}/${commands}/import_contacts`,
   sendMessage: `/${prefix}/${commands}/send_message`,
+  subscribeToList: `/${prefix}/${queries}/subscribe_to_list`,
+  unsubscribeFromList: `/${prefix}/${queries}/unsubscribe_from_list`,
   updateChetboxPreferences:  `/${prefix}/${commands}/update_chatbox_preferences`,
   updateContact:  `/${prefix}/${commands}/update_contact`,
 }
