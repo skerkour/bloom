@@ -10,11 +10,14 @@
 
       <v-col cols="12" sm="10" md="8" class="text-center">
         <p class="font-weight-regular">
+          We believe that everyone has a right to privacy, whether it be individuals or
+          businesses. <br />
+          By thinking privacy and sustainability first we are creating a path to exit the
+            exploitative business practices of today's internet giants, based on attention
+            monetization and behavior manipulaiton. <br /><br />
+
           We believe that sharing and collaboration is the only way to build a
-          sustainable future in a finite world.
-          We create the open infrastructure to change all
-          work from read-only to read-write. When everyone can contribute, users
-          become contributors and we greatly improve the quality of global human life.
+          sustainable future in a finite world, and we are building this future today.
         </p>
       </v-col>
 
