@@ -10,7 +10,7 @@ import {
   DeleteList,
   DeleteMessage,
   GetList, GetLists, GetMessage, GetMessages, List, ListWithContacts, Message, MessageWithLists,
-  SendMessage, SendTestMessage, UpdateList, UpdateMessage,
+  SendMessage, SendTestMessage, SubscribeToList, UpdateList, UpdateMessage, UnsubscribeFromList,
 } from './model';
 import { Commands, Queries } from './routes';
 
@@ -105,6 +105,14 @@ export class NewsletterService {
       message_id: messageId,
     };
     await this.apiClient.post(Commands.sendTestMessage, input);
+  }
+
+  async subscribeToList(input: SubscribeToList): Promise<void> {
+    await this.apiClient.post(Commands.subscribeToList, input);
+  }
+
+  async unsubscribeFromList(input: UnsubscribeFromList): Promise<void> {
+    await this.apiClient.post(Commands.unsubscribeFromList, input);
   }
 
   async updateList(input: UpdateList): Promise<List> {

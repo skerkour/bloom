@@ -19,7 +19,8 @@
     </v-row>
 
     <v-row v-if="list">
-      <b-list :list="list.list" :contacts="list.contacts" @updated="onListUpdated" />
+      <b-list :list="list.list" :contacts="list.contacts" @updated="onListUpdated"
+        @subscribed="onSubscribed" />
     </v-row>
   </v-container>
 </template>
@@ -61,6 +62,9 @@ export default VueApp.extend({
     onListUpdated(list: List) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.list!.list = list;
+    },
+    onSubscribed() {
+      this.fetchData();
     },
   },
 });

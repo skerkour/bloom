@@ -18,8 +18,6 @@ import {
   UpdateContact,
   DeleteContact,
   CreateContact,
-  SubscribeToList,
-  UnsubscribeFromList,
 } from './model';
 
 
@@ -161,16 +159,8 @@ export class InboxService {
     this.fetchInboxMessages(options);
   }
 
-  async subscribeToList(input: SubscribeToList): Promise<void> {
-    await this.apiClient.post(Commands.subscribeToList, input);
-  }
-
   unsubscribeFromInbox(): void {
     this.subscriptionTimeout = 0;
-  }
-
-  async unsubscribeFromList(input: UnsubscribeFromList): Promise<void> {
-    await this.apiClient.post(Commands.unsubscribeFromList, input);
   }
 
   async updateChatboxPreferences(input: UpdateChatboxPreferences): Promise<ChatboxPreferences> {

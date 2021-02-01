@@ -16,14 +16,6 @@
       </v-col>
 
       <v-col class="text-right">
-        <v-btn class="mr-3"
-          @click="deleteList"
-          depressed
-          color="error"
-          :loading="loading"
-          v-if="list">
-          Delete list
-        </v-btn>
         <v-btn
           @click="updateList" depressed color="success" :loading="loading" :disabled="!canCreate"
           v-if="list" >
@@ -34,6 +26,31 @@
           v-else >
           Create list
         </v-btn>
+
+        <v-menu bottom v-if="list">
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item @click="addContact">
+              <v-list-item-icon>
+                <v-icon>mdi-account-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Add contact</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item @click="deleteList">
+              <v-list-item-icon>
+                <v-icon>mdi-delete</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Delete list</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
       </v-col>
     </v-row>
 
@@ -51,7 +68,7 @@
       <v-col cols="12">
         <v-data-table
           :headers="contactsHeaders"
-          :items="list.contacts"
+          :items="contacts"
           item-key="id"
           hide-default-footer
           :loading="loading"
@@ -84,7 +101,7 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import {
-  List, Contact, CreateList, UpdateList,
+  List, Contact, CreateList, UpdateList, SubscribeToList,
 } from '@/domain/newsletter/model';
 
 export default VueApp.extend({
@@ -110,7 +127,7 @@ export default VueApp.extend({
       description: '',
       contactsHeaders: [
         {
-          text: 'Contact',
+          text: 'Name',
           align: 'start',
           sortable: true,
           value: 'name',
@@ -202,6 +219,32 @@ export default VueApp.extend({
     },
     gotoContact(contact: Contact) {
       this.$router.push({ path: `/inbox/contacts/${contact.id}` });
+    },
+    async addContact() {
+      // eslint-disable-next-line no-alert, no-restricted-globals
+      const email = prompt('Contact email');
+
+      if (!email) {
+        return;
+      }
+
+      this.loading = true;
+      this.error = '';
+      const input: SubscribeToList = {
+        name: null,
+        email,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        list_id: this.list!.id,
+      };
+
+      try {
+        await this.$newsletterService.subscribeToList(input);
+        this.$emit('subscribed');
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

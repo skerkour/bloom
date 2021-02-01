@@ -10,6 +10,8 @@ export const Commands = {
   deleteMessage: `/${prefix}/${commands}/delete_message`,
   sendMessage: `/${prefix}/${commands}/send_message`,
   sendTestMessage: `/${prefix}/${commands}/send_test_message`,
+  subscribeToList: `/${prefix}/${commands}/subscribe_to_list`,
+  unsubscribeFromList: `/${prefix}/${commands}/unsubscribe_from_list`,
   updateList: `/${prefix}/${commands}/update_list`,
   updateMessage: `/${prefix}/${commands}/update_message`,
 }

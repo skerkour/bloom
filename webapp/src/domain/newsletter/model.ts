@@ -84,6 +84,16 @@ export type SendTestMessage = {
   message_id: string;
 };
 
+export type SubscribeToList = {
+  name: Option<string>;
+  email: string;
+  list_id: string;
+};
+
+export type UnsubscribeFromList = {
+  subscription_id: string;
+};
+
 export type UpdateList = {
   list_id: string;
   name: string;
