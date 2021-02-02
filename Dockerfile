@@ -29,8 +29,8 @@ COPY ./ .
 WORKDIR /bloom/bloom
 
 # there is problem building static due to transitive dependency openssl (hyper-tls)
-# RUN make build_static
-RUN make build
+RUN make build_static
+# RUN make build
 
 ####################################################################################################
 ## Build webapp, chatbox, bloom.js
@@ -64,12 +64,12 @@ RUN make build
 ####################################################################################################
 ## Final image
 ####################################################################################################
-# FROM scratch
-FROM debian:buster-slim
+FROM scratch
+# FROM debian:buster-slim
 
 # Import from builder.
 # We kept the next step from Go's scratch images, not sure if it's required for Rust
-# COPY --from=builder_rust /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder_rust /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder_rust /etc/passwd /etc/passwd
 COPY --from=builder_rust /etc/group /etc/group
 
