@@ -26,16 +26,15 @@ jobs:
           rustc --version
           cargo clippy --version
 
-      - name: Go to directory
-        run: cd bloom
-
       # - name: Lint
       #   run: |
       #     cd bloom && make lint
 
       - name: Test
         # make test
-        run: make check
+        run: |
+          cd bloom
+          make check
 
   build_bloom:
     runs-on: ubuntu-latest
@@ -56,15 +55,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Go to directory
-        run: cd webapp
-
-      - name: Install dependencies
-        run: make install
-
       # todo: tests, lint
       - name: Build
         run: |
+          cd webapp
+          make install
           make build
 
 
@@ -73,27 +68,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Go to directory
-        run: cd chatbox.js
-
-      - name: Install dependencies
-        run: make install
-
       # todo: tests, lint
       - name: Build
-        run: make build
+        run: |
+          cd chatbox.js
+          make install
+          make build
 
   build_bloom-js:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Go to directory
-        run: cd bloom.js
-
-      - name: Install dependencies
-        run: make install
-
       # todo: tests, lint
       - name: Build
-        run: make build
+        run: |
+          cd bloom.js
+          make install
+          make build
