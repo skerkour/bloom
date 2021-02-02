@@ -93,7 +93,9 @@
           v-model="message"
           hide-details
           @keydown="onInputKeyDown"
-          v-if="selectedConversation"/>
+          v-if="selectedConversation"
+          :loading="loadingSend"
+        />
       </v-col>
     </v-row>
 
@@ -121,6 +123,7 @@ export default VueApp.extend({
   data() {
     return {
       loading: false,
+      loadingSend: false,
       error: '',
       selected: 'All',
       selectedConversationIndex: 0,
@@ -197,7 +200,7 @@ export default VueApp.extend({
         return;
       }
 
-      this.loading = true;
+      this.loadingSend = true;
       this.error = '';
       const input: SendMessage = {
         conversation_id: this.conversations[this.selectedConversationIndex].conversation.id,
@@ -211,7 +214,7 @@ export default VueApp.extend({
       } catch (err) {
         this.error = err.message;
       } finally {
-        this.loading = false;
+        this.loadingSend = false;
       }
     },
     onConversation(conversation: ConversationWithContactsAndMessages): void {
