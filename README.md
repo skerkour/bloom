@@ -20,116 +20,28 @@ much more.
 
 --------------------------------
 
-
 Why? How? What? 👉 Read the launch post: https://kerkour.com/blog/bloom-a-free-and-open-source-google/
 
 
 ## Documentation
 
-
 See [docs/README.md](docs/README.md)
+
 
 
 ## Community
 
-Breaking changes may happen anytime without prior notics until 1.0. Self host at your own risks
+Hey! Want to report a Bug or participate to the development of Bloom? Please [open an issue](https://github.com/skerkour/bloom/issues). Pull requests will be accepted without prior discussion only for typos.
 
+For general questions, PLease use the [Dicussions tab](https://github.com/skerkour/bloom/discussions).
 
 * Blog / Newsletter: [kerkour.com](https://kerkour.com)
 * Twitter: [@sylvain_kerkour](https://twitter.com/@sylvain_kerkour)
 * Mastodon: [@42bloom@mastodon.social](https://mastodon.social/@42bloom)
 
 
-## Security
 
+## Security
 
 If you find a security issue affecting this project, please do not open a public issue and refer to our
 [dedicated security page](https://bloom.sh/security) instead. Thank you!
-
-<!-- # Supported stacks
-
-* Go
-* JS/TS
-* Flutter
-
-# Install
-
-```sh
-$ cargo install --git https://github.com/bloom42/bloom.git bloom
-```
-
-# Webapp
-
-## Sidebar
-
-* Project overview
-* Bots
-  * Dashboard -> last history + chiffres
-  * Bots
-  * history
-* Growth
-  * Contacts
-  * email campaigns
-  * Analytics
-  * Forms
-* Community
-  * Blog
-  * Forums / discussions
-* Support
-  * Inboxes (livechat, email)
-* Monitor
-  * Status page
-  * error tracking
-* Settings
-  * General
-
-
-explore: groups, users, projects, bots
-
-
-# Server
-
-## Architecture
-
-The architecture of the server is layered:
-
-### Infrastructure (Delivery & 3rd party services)
-
-HTTP, SSH, Stripe...
-
-
-### API
-
-GraphQL, GitHTTP...
-
-In the `api` folder.
-
-### Application services
-
-The is where our business logic lives.
-
-They are in the `domain/[xxx]/service` folders.
-
-
-### Repositories
-
-This is our abstraction over data storage and access.
-
-They are in the `domain/[xxx]/repository` folders.
-
-
-## Folders
-
-`driver`: contains interfaces and implementations for external services like email and caching
-
-`api`: contains the implementation of the differents apis (graphql...)
-
-`app`: contains the logic to have the other components running as a program
-
-`db`: contains interfaces and implementation to interact with a database
-
-`domain`: contains all the data structures and interfaces to modelize the domain, organized byt its bounded contextes.
-
-`errors`: contains the error types of the application
-
-`http`: contains the implementation of the http delivery layer -->
