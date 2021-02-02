@@ -157,6 +157,7 @@ pub const INVALID_NAMESPACES: &[&str] = &[
     "groups",
     "group-invitation",
     "group-invitations",
+    "hello",
     "help",
     "img",
     "imgs",
