@@ -9,7 +9,7 @@ on:
 
 jobs:
 
-  test bloom:
+  test_bloom:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
         run: |
           make check
 
-  build bloom:
+  build_bloom:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -49,7 +49,7 @@ jobs:
           docker images
 
 
-  build webapp:
+  build_webapp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
           make build
 
 
-  build chatbox.js:
+  build_chatbox-js:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -74,7 +74,7 @@ jobs:
           make install
           make build
 
-  build bloom.js:
+  build_bloom-js:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

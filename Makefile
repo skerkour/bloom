@@ -2,17 +2,10 @@ NAME = bloom
 COMMIT = $(shell git rev-parse HEAD)
 DATE := $(shell date +"%Y-%m-%d")
 DIST_DIR = dist
-DOCKER_IMAGE = ghcr.io/bloom42/bloom
+DOCKER_IMAGE = ghcr.io/skerkour/bloom
 TARGET_DIR = target
 RELEASE_BINARY = target/release/$(NAME)
 PUBLIC_DIR = public
-
-DEFAULT_CONFIG_FILE = env.example
-DIST_CONFIG_FILE = .env
-COUNTRIES_FILE = countries.json
-STRIPE_FILE = stripe.example.json
-DIST_STRIPE_FILE = stripe.json
-EMAILS_BLOCKLIST_FILE = email_domains_blocklist.txt
 
 
 .PHONY: all
