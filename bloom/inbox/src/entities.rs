@@ -42,8 +42,10 @@ pub struct Message {
     pub received_at: DateTime<Utc>,
     // Body     string `db:"body"`
     pub body_html: String,
+    pub from_operator: bool,
 
     pub conversation_id: Uuid,
+    pub author_id: Option<Uuid>,
     // AuthorID       *uuid.UUID `db:"author_id"`
 }
 

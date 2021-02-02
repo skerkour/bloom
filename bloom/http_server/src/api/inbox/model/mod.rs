@@ -65,6 +65,8 @@ pub struct Message {
     pub id: Id,
     pub received_at: Time,
     pub body_html: String,
+    pub from_operator: bool,
+    pub conversation_id: Id,
 }
 
 impl From<inbox::entities::Message> for Message {
@@ -73,6 +75,8 @@ impl From<inbox::entities::Message> for Message {
             id: message.id,
             received_at: message.received_at,
             body_html: message.body_html,
+            from_operator: message.from_operator,
+            conversation_id: message.conversation_id,
         }
     }
 }
@@ -82,6 +86,7 @@ pub struct ChatboxMessage {
     pub id: Id,
     pub received_at: Time,
     pub body_html: String,
+    pub from_operator: bool,
 }
 
 impl From<inbox::entities::Message> for ChatboxMessage {
@@ -90,6 +95,7 @@ impl From<inbox::entities::Message> for ChatboxMessage {
             id: message.id,
             received_at: message.received_at,
             body_html: message.body_html,
+            from_operator: message.from_operator,
         }
     }
 }

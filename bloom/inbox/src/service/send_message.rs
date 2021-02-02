@@ -37,6 +37,8 @@ impl Service {
             received_at: now,
             body_html,
             conversation_id: conversation.id,
+            author_id: Some(actor.id),
+            from_operator: true,
         };
         self.repo.create_inbox_message(&self.db, &message).await?;
 

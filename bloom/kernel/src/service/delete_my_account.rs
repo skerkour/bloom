@@ -64,6 +64,12 @@ impl Service {
             .clean_namespace(&mut tx, actor.namespace_id)
             .await?;
 
+        self.inbox_service
+            .as_ref()
+            .expect("kernel.delete_my_account: unwrapping inbox_service")
+            .clean_user(&mut tx, actor.id)
+            .await?;
+
         self.repo
             .detach_uploads_for_namespace(&mut tx, actor.namespace_id)
             .await?;

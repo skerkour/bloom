@@ -12,6 +12,7 @@ use stdx::{
     uuid::Uuid,
 };
 
+mod clean_user;
 mod create_contact;
 mod create_newsletter_list;
 mod create_newsletter_message;
@@ -100,6 +101,10 @@ impl kernel::domain::inbox::Service for Service {
             name: input.name,
         };
         self.init_namespace(tx, input).await
+    }
+
+    async fn clean_user<'c>(&self, tx: &mut Transaction<'c, Postgres>, user_id: Uuid) -> Result<(), kernel::Error> {
+        self.clean_user(tx, user_id).await
     }
 }
 

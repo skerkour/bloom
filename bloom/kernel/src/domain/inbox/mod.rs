@@ -11,6 +11,8 @@ pub trait Service: Send + Sync + Debug {
         tx: &mut Transaction<'c, Postgres>,
         input: InitNamespaceInput,
     ) -> Result<(), crate::Error>;
+
+    async fn clean_user<'c>(&self, tx: &mut Transaction<'c, Postgres>, user_id: Uuid) -> Result<(), crate::Error>;
 }
 
 #[derive(Debug, Clone)]

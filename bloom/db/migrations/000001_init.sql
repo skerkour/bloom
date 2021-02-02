@@ -334,8 +334,10 @@ CREATE TABLE inbox_messages (
 
   received_at TIMESTAMP WITH TIME ZONE NOT NULL,
   body_html TEXT NOT NULL,
+  from_operator BOOLEAN NOT NULL,
 
-  conversation_id UUID NOT NULL REFERENCES inbox_conversations (id) ON DELETE CASCADE
+  conversation_id UUID NOT NULL REFERENCES inbox_conversations (id) ON DELETE CASCADE,
+  author_id UUID REFERENCES kernel_users (id)
 );
 CREATE INDEX index_inbox_messages_on_conversation_id ON inbox_messages (conversation_id);
 
