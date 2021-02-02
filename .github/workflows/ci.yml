@@ -28,7 +28,8 @@ jobs:
 
       # - name: Lint
       #   run: |
-      #     cd bloom && make lint
+      #     cd bloom
+      #     make lint
 
       - name: Test
         # make test
@@ -37,18 +38,18 @@ jobs:
           make check
 
 
-  build_bloom:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # build_bloom:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Build Docker
-        run: |
-          make docker
+  #     - name: Build Docker
+  #       run: |
+  #         make docker
 
-      - name: Docker image info
-        run: |
-          docker images
+  #     - name: Docker image info
+  #       run: |
+  #         docker images
 
 
   build_webapp:
