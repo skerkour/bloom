@@ -34,6 +34,7 @@ dev_scheduler:
 
 .PHONY: build
 build:
+	mkdir -p $(DIST_DIR)
 	cargo build --release
 	cp -r $(RELEASE_BINARY) $(DIST_DIR)/
 	cp $(EMAILS_BLOCKLIST_FILE) $(DIST_DIR)/$(EMAILS_BLOCKLIST_FILE)
@@ -46,6 +47,7 @@ build_dev:
 
 .PHONY: build_static
 build_static:
+	mkdir -p $(DIST_DIR)
 	cargo build --target x86_64-unknown-linux-musl --release
 	mv target/x86_64-unknown-linux-musl/release/$(NAME) $(RELEASE_BINARY)
 	cp -r $(RELEASE_BINARY) $(DIST_DIR)/
