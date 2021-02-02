@@ -208,6 +208,11 @@ impl<S> MidHandshakeSslStream<S> {
         self.error.code() == errSSLWouldBlock
     }
 
+    /// Deprecated
+    pub fn reason(&self) -> OSStatus {
+        self.error.code()
+    }
+
     /// Returns the error which caused the handshake interruption.
     pub fn error(&self) -> &Error {
         &self.error
@@ -314,7 +319,7 @@ impl<S> MidHandshakeClientBuilder<S> {
                 }
             }
 
-            let err = Error::from_code(stream.error().code());
+            let err = Error::from_code(stream.reason());
             return Err(ClientHandshakeError::Failure(err));
         }
     }
@@ -424,7 +429,7 @@ declare_TCFType! {
 impl_TCFType!(SslContext, SSLContextRef, SSLContextGetTypeID);
 
 impl fmt::Debug for SslContext {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let mut builder = fmt.debug_struct("SslContext");
         if let Ok(state) = self.state() {
             builder.field("state", &state);
@@ -646,6 +651,16 @@ impl SslContext {
         }
     }
 
+    #[allow(missing_docs)]
+    #[deprecated(since = "0.2.1", note = "use peer_trust2 instead")]
+    pub fn peer_trust(&self) -> Result<SecTrust> {
+        match self.peer_trust2() {
+            Ok(Some(trust)) => Ok(trust),
+            Ok(None) => panic!("no trust available"),
+            Err(e) => Err(e),
+        }
+    }
+
     /// Returns the state of the session.
     pub fn state(&self) -> Result<SessionState> {
         unsafe {
@@ -783,7 +798,6 @@ impl SslContext {
     /// `set_protocol_version_min`, although if you're working with OSX 10.8 or before you may have
     /// to use this API instead.
     #[cfg(target_os = "macos")]
-    #[deprecated(note = "use `set_protocol_version_max`")]
     pub fn set_protocol_version_enabled(
         &mut self,
         protocol: SslProtocol,
@@ -971,7 +985,7 @@ pub struct SslStream<S> {
 }
 
 impl<S: fmt::Debug> fmt::Debug for SslStream<S> {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.debug_struct("SslStream")
             .field("context", &self.ctx)
             .field("stream", self.get_ref())
@@ -1405,7 +1419,7 @@ impl ServerBuilder {
         ctx.set_certificate(&self.identity, &self.certs)?;
         match ctx.handshake(stream) {
             Ok(stream) => Ok(stream),
-            Err(HandshakeError::Interrupted(stream)) => Err(stream.error().clone()),
+            Err(HandshakeError::Interrupted(stream)) => Err(Error::from_code(stream.reason())),
             Err(HandshakeError::Failure(err)) => Err(err),
         }
     }

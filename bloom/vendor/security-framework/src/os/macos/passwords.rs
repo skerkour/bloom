@@ -28,7 +28,7 @@ pub struct SecKeychainItemPassword {
 }
 
 impl fmt::Debug for SecKeychainItemPassword {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for _ in 0..self.data_len {
             f.write_char('•')?;
         }

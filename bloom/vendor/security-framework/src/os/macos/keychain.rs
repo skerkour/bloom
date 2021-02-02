@@ -22,6 +22,37 @@ impl_TCFType!(SecKeychain, SecKeychainRef, SecKeychainGetTypeID);
 unsafe impl Sync for SecKeychain {}
 unsafe impl Send for SecKeychain {}
 
+/// Deprecated.
+#[deprecated]
+pub trait SecKeychainExt {
+    /// Deprecated.
+    #[deprecated]
+    fn default() -> Result<SecKeychain>;
+
+    /// Deprecated.
+    #[deprecated]
+    fn open<P: AsRef<Path>>(path: P) -> Result<SecKeychain>;
+
+    /// Deprecated.
+    #[deprecated]
+    fn unlock(&mut self, password: Option<&str>) -> Result<()>;
+}
+
+#[allow(deprecated)]
+impl SecKeychainExt for SecKeychain {
+    fn default() -> Result<Self> {
+        Self::default()
+    }
+
+    fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
+        Self::open(path)
+    }
+
+    fn unlock(&mut self, password: Option<&str>) -> Result<()> {
+        Self::unlock(self, password)
+    }
+}
+
 impl SecKeychain {
     /// Creates a `SecKeychain` object corresponding to the user's default
     /// keychain.

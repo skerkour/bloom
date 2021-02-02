@@ -93,6 +93,15 @@ impl ItemSearchOptions {
         self
     }
 
+    /// Deprecated.
+    ///
+    /// Replaced by `os::macos::item::ItemSearchOptionsExt::keychains`.
+    #[cfg(target_os = "macos")]
+    #[deprecated(note = "Replaced by `os::macos::item::ItemSearchOptionsExt::keychains`")]
+    pub fn keychains(&mut self, keychains: &[SecKeychain]) -> &mut Self {
+        self.keychains = Some(CFArray::from_CFTypes(keychains));
+        self
+    }
 
     /// Load Security Framework objects (`SecCertificate`, `SecKey`, etc) for
     /// the results.
@@ -285,7 +294,7 @@ pub enum SearchResult {
 }
 
 impl fmt::Debug for SearchResult {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Self::Ref(ref reference) => fmt
                 .debug_struct("SearchResult::Ref")

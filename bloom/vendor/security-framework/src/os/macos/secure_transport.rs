@@ -203,7 +203,7 @@ pub trait MidHandshakeSslStreamExt {
 impl<S> MidHandshakeSslStreamExt for MidHandshakeSslStream<S> {
     #[cfg(feature = "OSX_10_11")]
     fn client_hello_received(&self) -> bool {
-        self.error().code() == errSSLClientHelloReceived
+        self.reason() == errSSLClientHelloReceived
     }
 }
 

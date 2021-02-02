@@ -11,9 +11,8 @@
 # will likely look very different (and much more reasonable)
 
 [package]
-edition = "2018"
 name = "security-framework"
-version = "2.0.0"
+version = "0.4.4"
 authors = ["Steven Fackler <sfackler@gmail.com>", "Kornel <kornel@geekhood.net>"]
 exclude = ["test/*"]
 description = "Security.framework bindings for macOS and iOS"
@@ -39,17 +38,16 @@ name = "set_internet_password"
 version = "1.2.1"
 
 [dependencies.core-foundation]
-version = "0.9"
+version = "0.7"
 
 [dependencies.core-foundation-sys]
-version = "0.8"
+version = "0.7"
 
 [dependencies.libc]
 version = "0.2.68"
 
 [dependencies.security-framework-sys]
-version = "2.0.0"
-default-features = false
+version = "0.4.3"
 [dev-dependencies.hex]
 version = "0.4.2"
 
@@ -63,7 +61,6 @@ OSX_10_12 = ["OSX_10_11", "security-framework-sys/OSX_10_12"]
 OSX_10_13 = ["OSX_10_12", "security-framework-sys/OSX_10_13", "alpn", "session-tickets"]
 OSX_10_9 = ["security-framework-sys/OSX_10_9"]
 alpn = []
-default = ["OSX_10_9"]
 nightly = []
 session-tickets = []
 [badges.maintenance]

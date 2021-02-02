@@ -16,6 +16,7 @@ use crate::import_export::Pkcs12ImportOptions;
 use crate::key::SecKey;
 use crate::os::macos::access::SecAccess;
 use crate::os::macos::keychain::SecKeychain;
+use crate::Pkcs12ImportOptionsInternals;
 
 /// An extension trait adding OSX specific functionality to `Pkcs12ImportOptions`.
 pub trait Pkcs12ImportOptionsExt {
@@ -30,11 +31,11 @@ pub trait Pkcs12ImportOptionsExt {
 
 impl Pkcs12ImportOptionsExt for Pkcs12ImportOptions {
     fn keychain(&mut self, keychain: SecKeychain) -> &mut Self {
-        crate::Pkcs12ImportOptionsInternals::keychain(self, keychain)
+        Pkcs12ImportOptionsInternals::keychain(self, keychain)
     }
 
     fn access(&mut self, access: SecAccess) -> &mut Self {
-        crate::Pkcs12ImportOptionsInternals::access(self, access)
+        Pkcs12ImportOptionsInternals::access(self, access)
     }
 }
 
@@ -309,9 +310,8 @@ mod test {
     }
 
     #[test]
+    #[allow(deprecated)]
     fn pkcs12_import() {
-        use super::Pkcs12ImportOptionsExt;
-
         let dir = TempDir::new("pkcs12_import").unwrap();
         let keychain = keychain::CreateOptions::new()
             .password("password")

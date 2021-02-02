@@ -64,7 +64,7 @@ fmt:
 
 .PHONY: lint
 lint:
-	cargo fmt -- --check
+	cargo +nightly fmt -- --check
 	cargo clippy -- -D warnings
 
 

@@ -70,12 +70,13 @@ impl ItemSearchOptionsExt for ItemSearchOptions {
 #[cfg(test)]
 mod test {
     use tempdir::TempDir;
-    use crate::os::macos::item::ItemSearchOptionsExt;
+
     use crate::item::*;
     use crate::os::macos::certificate::SecCertificateExt;
     use crate::os::macos::test::keychain;
 
     #[test]
+    #[allow(deprecated)]
     fn find_certificate() {
         let dir = p!(TempDir::new("find_certificate"));
         let keychain = keychain(dir.path());

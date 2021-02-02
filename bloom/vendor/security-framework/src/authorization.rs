@@ -6,7 +6,7 @@
 ///   arguments.
 /// * AuthorizationCopyRightsAsync
 /// * Provide constants for well known item names
-use crate::base::{Error, Result};
+use base::{Error, Result};
 use core_foundation::base::{CFTypeRef, TCFType};
 use core_foundation::bundle::CFBundleRef;
 use core_foundation::dictionary::{CFDictionary, CFDictionaryRef};
@@ -32,7 +32,7 @@ macro_rules! cstring_or_err {
     }};
 }
 
-bitflags::bitflags! {
+bitflags! {
     /// The flags used to specify authorization options.
     pub struct Flags: sys::AuthorizationFlags {
         /// An empty flag set that you use as a placeholder when you don't want
@@ -396,7 +396,7 @@ impl<'a> Authorization {
     pub fn set_right<T: Into<Vec<u8>>>(
         &self,
         name: T,
-        definition: RightDefinition<'_>,
+        definition: RightDefinition,
         description: Option<&str>,
         bundle: Option<CFBundleRef>,
         locale: Option<&str>,
@@ -439,7 +439,7 @@ impl<'a> Authorization {
     ///
     /// If `tag` isn't convertable to a `CString` it will return
     /// Err(errSecConversionError).
-    pub fn copy_info<T: Into<Vec<u8>>>(&self, tag: Option<T>) -> Result<AuthorizationItemSet<'_>> {
+    pub fn copy_info<T: Into<Vec<u8>>>(&self, tag: Option<T>) -> Result<AuthorizationItemSet> {
         let tag_with_nul: CString;
 
         let tag_ptr = match tag {

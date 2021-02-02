@@ -14,7 +14,7 @@ pub type Result<T> = result::Result<T, Error>;
 pub struct Error(OSStatus);
 
 impl fmt::Debug for Error {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let mut builder = fmt.debug_struct("Error");
         builder.field("code", &self.0);
         if let Some(message) = self.message() {
@@ -69,7 +69,7 @@ impl From<OSStatus> for Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         if let Some(message) = self.message() {
             write!(fmt, "{}", message)
         } else {

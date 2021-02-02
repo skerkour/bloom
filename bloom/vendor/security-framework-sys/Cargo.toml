@@ -11,9 +11,8 @@
 # will likely look very different (and much more reasonable)
 
 [package]
-edition = "2018"
 name = "security-framework-sys"
-version = "2.0.0"
+version = "0.4.3"
 authors = ["Steven Fackler <sfackler@gmail.com>", "Kornel <kornel@geekhood.net>"]
 description = "Apple `Security.framework` low-level FFI bindings"
 homepage = "https://lib.rs/crates/security-framework-sys"
@@ -26,7 +25,7 @@ repository = "https://github.com/kornelski/rust-security-framework"
 [package.metadata.docs.rs]
 targets = ["x86_64-apple-darwin", "aarch64-apple-ios"]
 [dependencies.core-foundation-sys]
-version = "0.8"
+version = "0.7"
 
 [dependencies.libc]
 version = "0.2.47"
@@ -37,6 +36,5 @@ OSX_10_11 = ["OSX_10_10"]
 OSX_10_12 = ["OSX_10_11"]
 OSX_10_13 = ["OSX_10_12"]
 OSX_10_9 = []
-default = ["OSX_10_9"]
 [badges.maintenance]
 status = "passively-maintained"
