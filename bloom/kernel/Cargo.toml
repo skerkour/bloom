@@ -16,7 +16,7 @@ actix-web = "3"
 tera = { version = "1", default-features = false }
 futures-util = "0.3"
 serde = { version = "1", features = ["derive"] }
-rusoto_core = "0.45"
+rusoto_core = { version = "0.45", features = ["rustls"] }
 rusoto_s3 = "0.45"
 rusoto_ses = "0.45"
-sentry = "0.21"
+sentry = { version = "0.21", features = ["backtrace", "contexts", "panic", "rustls"] }

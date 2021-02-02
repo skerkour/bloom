@@ -1,0 +1,3 @@
+steps:
+  - script: sudo bash integration-tests/macos.sh
+    displayName: "macOS integration tests"
