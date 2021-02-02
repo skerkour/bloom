@@ -10,7 +10,7 @@ export type ChatboxMessage = {
   id: string;
   received_at: string;
   body_html: string;
-  author: null; // TODO
+  from_operator: boolean;
 };
 
 export type ChatboxPreferences = {

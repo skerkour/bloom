@@ -5,7 +5,7 @@
     </div>
     <agent-message :message="welcomeMessage" v-if="welcomeMessage" />
     <template v-for="message in messages">
-      <agent-message :message="message" v-if="message.author" :key="message.id" />
+      <agent-message :message="message" v-if="message.from_operator" :key="message.id" />
       <user-message :message="message" v-else :key="message.id" />
     </template>
     <div class="conversation-bottom" >
@@ -39,10 +39,10 @@ export default VueApp.extend({
     welcomeMessage(): ChatboxMessage | null {
       if (this.$store.state.preferences?.welcome_message) {
         return {
-          id: 'chatbox.welcomeMessage',
+          id: 'com.bloom42.inbox.chatbox.welcome_message',
           received_at: new Date().toISOString(),
           body_html: this.$store.state.preferences.welcome_message,
-          author: null,
+          from_operator: true,
         };
       }
       return null;
