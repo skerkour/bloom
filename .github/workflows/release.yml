@@ -19,7 +19,7 @@ jobs:
       - name: Build and tag Docker image
         run: |
           make docker
-          docker tag ghcr.io/bloom42/bloom registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
+          docker tag ghcr.io/skerkour/bloom registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
           docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release -f Dockerfile.release .
 
       - name: Docker image info

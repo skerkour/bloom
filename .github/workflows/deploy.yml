@@ -14,14 +14,14 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: heroku container:login
 
-      # replace heroku pull by docker pull ghcr.io/bloom42/bloom:latest
+      # replace heroku pull by docker pull ghcr.io/skerkour/bloom:latest
       # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
       - name: Build and tag Docker image
         run: |
           docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release
           docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
-          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web ghcr.io/bloom42/bloom
-          docker tag ghcr.io/bloom42/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
+          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web ghcr.io/skerkour/bloom
+          docker tag ghcr.io/skerkour/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
           docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
 
 
