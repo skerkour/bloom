@@ -7,11 +7,9 @@ use stdx::{
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TrackEvent {
-    #[serde(skip_deserializing, default = "Uuid::new_v4")]
     pub anonymous_id: Uuid,
     pub timestamp: DateTime<Utc>,
     pub sent_at: DateTime<Utc>,
-    #[serde(skip_deserializing, default = "Utc::now")]
     pub received_at: DateTime<Utc>,
     pub namespace_id: Uuid,
 
@@ -28,11 +26,9 @@ pub struct TrackEvent {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageEvent {
-    #[serde(skip_deserializing, default = "Uuid::new_v4")]
     pub anonymous_id: Uuid,
     pub timestamp: DateTime<Utc>,
     pub sent_at: DateTime<Utc>,
-    #[serde(skip_deserializing, default = "Utc::now")]
     pub received_at: DateTime<Utc>,
     pub namespace_id: Uuid,
 
