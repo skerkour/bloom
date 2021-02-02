@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'agent-message': isAgentMessage, 'user-message': isUserMessage}">
+  <div :class="{'operator-message': isOperatorMessage, 'user-message': isUserMessage}">
     <span v-html="message.body_html" >
     </span>
   </div>
@@ -20,13 +20,11 @@ export default VueApp.extend({
     },
   },
   computed: {
-    isAgentMessage(): boolean {
-      // return this.message.author !== null;
-      return true;
+    isOperatorMessage(): boolean {
+      return this.message.from_operator;
     },
     isUserMessage(): boolean {
-      // return this.message.author === null;
-      return false;
+      return !this.message.from_operator;
     },
   },
 });
@@ -57,7 +55,7 @@ $space-small: 0.8rem;
   min-width: 1%;
 }
 
-.agent-message {
+.operator-message {
   align-items: flex-end;
   display: flex;
   flex-direction: row;

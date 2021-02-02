@@ -117,6 +117,9 @@ export type Inbox = {
 
 export type Message = {
   id: string;
+  received_at: string;
+  body_html: string;
+  from_operator: boolean;
   conversation_id: string;
 };
 
