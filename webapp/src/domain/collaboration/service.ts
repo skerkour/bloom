@@ -75,7 +75,7 @@ export class CollaborationService {
   constructor(apiClient: ApiClient, router: Router) {
     this.apiClient = apiClient;
     this.router = router;
-    this.fileTypeFolder = 'application/com.bloom42.folder';
+    this.fileTypeFolder = 'application/com.bloom42.files.folder';
   }
 
   async fetchTickets(projectFullPath: string): Promise<Project> {

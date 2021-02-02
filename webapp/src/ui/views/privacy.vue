@@ -112,7 +112,7 @@
             </i></p>
 
             <p class="mt-5 mb-3">
-              <a href="https://github.com/bloom42/bloom" target="_blank" rel="noopener">Bloom is 100% Open Source</a>.
+              <a href="https://github.com/skerkour/bloom" target="_blank" rel="noopener">Bloom is 100% Open Source</a>.
               If this privacy policy does not meet your requirements you can self-host it on your own infrastructure and in your own
               terms.
             </p>

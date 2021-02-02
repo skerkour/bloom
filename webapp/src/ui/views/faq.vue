@@ -49,7 +49,7 @@ export default VueApp.extend({
         {
           question: 'Why Bloom is more ethical than other service providers?',
           answer: `
-          Bloom is <a href="https://github.com/bloom42/bloom" target="_blank" rel="noopener"><b>100% Open Source</b></a>.
+          Bloom is <a href="https://github.com/skerkour/bloom" target="_blank" rel="noopener"><b>100% Open Source</b></a>.
           Anyone can inspect how Bloom works and even contribute to it!
           There are no ads or no creepy marketing.
           Just open technology for a fast, simple, and secure experience.`,

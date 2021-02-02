@@ -39,7 +39,7 @@ export default VueApp.extend({
     welcomeMessage(): ChatboxMessage | null {
       if (this.$store.state.preferences?.welcome_message) {
         return {
-          id: 'com.bloom42.inbox.chatbox.welcome_message',
+          id: 'com.bloom42.inbox.chatbox_welcome_message',
           received_at: new Date().toISOString(),
           body_html: this.$store.state.preferences.welcome_message,
           from_operator: true,

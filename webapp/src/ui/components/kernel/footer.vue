@@ -27,7 +27,7 @@
         <v-col cols="12" sm="4" class="pa-4">
           <h4 class="text-h5 pb-3">Community</h4>
           <ul>
-            <!-- <li><a class="nav-link" href="https://github.com/bloom42/bloom/projects" target="_blank" rel="noopener">Roadmap</a></li> -->
+            <li><a class="nav-link" href="https://github.com/skerkour/bloom/projects" target="_blank" rel="noopener">Roadmap</a></li>
             <li><a class="nav-link" href="https://kerkour.com" target="_blank" rel="noopener">Blog</a></li>
             <li><a class="nav-link" href="https://twitter.com/sylvain_kerkour" target="_blank" rel="noopener">Twitter</a></li>
             <li><a class="nav-link" href="https://github.com/skerkour/bloom" target="_blank" rel="noopener">GitHub</a></li>

@@ -24,7 +24,7 @@
             </li>
             <li>
               <span>Opening an issue on</span>&nbsp;
-              <a href="https://github.com/bloom42/bloom/issues" target="_blank" rel="noopener">GitHub</a>
+              <a href="https://github.com/skerkour/bloom/issues" target="_blank" rel="noopener">GitHub</a>
             </li>
             <li>
               <span>On the fediverse:</span>&nbsp;
