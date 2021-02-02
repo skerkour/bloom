@@ -94,10 +94,12 @@
     var pageEventEndpoint = bloomConfig.url + '/api/a/events/p';
     lastPage = window.location.pathname;
 
+    var now = new Date().toISOString();
     var event = {
-      anonymous_id: anonymousId,
-      timestamp: new Date().toISOString(),
-      sent_at: new Date().toISOString(),
+      anonymous_id: anonymousId, // will be overwritten server side
+      timestamp: now,
+      sent_at: now,
+      received_at: now, // will be overwritten server side
       namespace_id: bloomConfig.project,
       name: document.title,
       url: window.location.href,
