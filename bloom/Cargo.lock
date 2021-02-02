@@ -2992,6 +2992,7 @@ version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "933beb0343c84eefd69a368318e9291b179e09e51982d49c65d7b362b0e9466f"
 dependencies = [
+ "httpdate",
  "reqwest",
  "sentry-backtrace",
  "sentry-contexts",

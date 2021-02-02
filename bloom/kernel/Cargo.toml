@@ -19,4 +19,4 @@ serde = { version = "1", features = ["derive"] }
 rusoto_core = { version = "0.45", default-features = false, features = ["rustls"] }
 rusoto_s3 = { version = "0.45", default-features = false, features = ["rustls"] }
 rusoto_ses = { version = "0.45", default-features = false, features = ["rustls"] }
-sentry = { version = "0.21", default-features = false, features = ["backtrace", "contexts", "panic", "rustls"] }
+sentry = { version = "0.21", default-features = false, features = ["backtrace", "contexts", "panic", "reqwest", "rustls"] }
