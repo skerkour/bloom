@@ -20,7 +20,7 @@
             </li>
             <li>
               <span>By saying <i>Hi</i> on Twitter:</span>&nbsp;
-              <a href="https://twitter.com/42bloom" target="_blank" rel="noopener">@42bloom</a>
+              <a href="https://twitter.com/sylvain_kerkour" target="_blank" rel="noopener">@sylvain_kerkour</a>
             </li>
             <li>
               <span>Opening an issue on</span>&nbsp;
