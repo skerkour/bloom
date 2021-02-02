@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://bloom.sh" target="_blank" rel="noopener"><img alt="Bloom logo" src="./docs/logo.png" height="200" /></a>
   <h1 align="center">Bloom</h1>
-  <h3 align="center">The all-in-one workspace</h3>
+  <h3 align="center">The all-in-one private workspace</h3>
   <h3 align="center">
     <a href="https://bloom.sh">Try it for free!</a>
   </h3>
@@ -14,7 +14,7 @@ You are tired of being abused by Big Companies?
 
 **We too, so we built Bloom.**
 
-Bloom is an open source productivity suite: Inbox, Files, Contacts &
+Bloom is an open source and privacy-focused productivity suite: Inbox, Files, Contacts &
 much more.
 
 
