@@ -13,23 +13,6 @@
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #![cfg(any(not(target_arch = "wasm32"), feature = "wasm32_c"))]
-#![forbid(
-    anonymous_parameters,
-    box_pointers,
-    missing_copy_implementations,
-    missing_debug_implementations,
-    missing_docs,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unstable_features,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_qualifications,
-    unused_results,
-    variant_size_differences,
-    warnings
-)]
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
@@ -219,11 +202,9 @@ fn test_aead<Seal, Open>(
         };
         let mut o_in_out = vec![123u8; 4096];
 
-        for in_prefix_len in in_prefix_lengths.iter() {
+        for &in_prefix_len in in_prefix_lengths.iter() {
             o_in_out.truncate(0);
-            for _ in 0..*in_prefix_len {
-                o_in_out.push(123);
-            }
+            o_in_out.resize(in_prefix_len, 123);
             o_in_out.extend_from_slice(&ct[..]);
 
             let nonce = aead::Nonce::try_assume_unique_for_key(&nonce_bytes).unwrap();
@@ -233,7 +214,7 @@ fn test_aead<Seal, Open>(
                 nonce,
                 aead::Aad::from(&aad[..]),
                 &mut o_in_out,
-                *in_prefix_len..,
+                in_prefix_len..,
             );
             match error {
                 None => {

@@ -12,25 +12,8 @@
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-#![forbid(
-    anonymous_parameters,
-    box_pointers,
-    missing_copy_implementations,
-    missing_debug_implementations,
-    missing_docs,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unstable_features,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_qualifications,
-    unused_results,
-    variant_size_differences,
-    warnings
-)]
-
 use ring::{
+    error,
     signature::{self, Ed25519KeyPair, KeyPair},
     test, test_file,
 };
@@ -67,24 +50,49 @@ fn test_signature_ed25519() {
         assert_eq!(&expected_sig[..], actual_sig.as_ref());
 
         // Test Signature verification.
-
-        assert!(
-            signature::UnparsedPublicKey::new(&signature::ED25519, &public_key)
-                .verify(&msg, &expected_sig)
-                .is_ok()
-        );
+        test_signature_verification(&public_key, &msg, &expected_sig, Ok(()));
 
         let mut tampered_sig = expected_sig;
         tampered_sig[0] ^= 1;
 
-        assert!(
-            signature::UnparsedPublicKey::new(&signature::ED25519, &public_key)
-                .verify(&msg, &tampered_sig)
-                .is_err()
-        );
+        test_signature_verification(&public_key, &msg, &tampered_sig, Err(error::Unspecified));
 
         Ok(())
     });
+}
+
+/// Test vectors from BoringSSL.
+#[test]
+fn test_signature_ed25519_verify() {
+    test::run(
+        test_file!("ed25519_verify_tests.txt"),
+        |section, test_case| {
+            assert_eq!(section, "");
+
+            let public_key = test_case.consume_bytes("PUB");
+            let msg = test_case.consume_bytes("MESSAGE");
+            let sig = test_case.consume_bytes("SIG");
+            let expected_result = match test_case.consume_string("Result").as_str() {
+                "P" => Ok(()),
+                "F" => Err(error::Unspecified),
+                s => panic!("{:?} is not a valid result", s),
+            };
+            test_signature_verification(&public_key, &msg, &sig, expected_result);
+            Ok(())
+        },
+    );
+}
+
+fn test_signature_verification(
+    public_key: &[u8],
+    msg: &[u8],
+    sig: &[u8],
+    expected_result: Result<(), error::Unspecified>,
+) {
+    assert_eq!(
+        expected_result,
+        signature::UnparsedPublicKey::new(&signature::ED25519, public_key).verify(msg, sig)
+    );
 }
 
 #[test]
@@ -114,10 +122,7 @@ fn test_ed25519_from_pkcs8_unchecked() {
             let input = test_case.consume_bytes("Input");
             let error = test_case.consume_optional_string("Error");
 
-            match (
-                Ed25519KeyPair::from_pkcs8_maybe_unchecked(&input),
-                error.clone(),
-            ) {
+            match (Ed25519KeyPair::from_pkcs8_maybe_unchecked(&input), error) {
                 (Ok(_), None) => (),
                 (Err(e), None) => panic!("Failed with error \"{}\", but expected to succeed", e),
                 (Ok(_), Some(e)) => panic!("Succeeded, but expected error \"{}\"", e),
@@ -139,7 +144,7 @@ fn test_ed25519_from_pkcs8() {
             let input = test_case.consume_bytes("Input");
             let error = test_case.consume_optional_string("Error");
 
-            match (Ed25519KeyPair::from_pkcs8(&input), error.clone()) {
+            match (Ed25519KeyPair::from_pkcs8(&input), error) {
                 (Ok(_), None) => (),
                 (Err(e), None) => panic!("Failed with error \"{}\", but expected to succeed", e),
                 (Ok(_), Some(e)) => panic!("Succeeded, but expected error \"{}\"", e),

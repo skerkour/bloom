@@ -263,6 +263,7 @@ impl<M> Modulus<M> {
 
         // n_mod_r = n % r. As explained in the documentation for `n0`, this is
         // done by taking the lowest `N0_LIMBS_USED` limbs of `n`.
+        #[allow(clippy::useless_conversion)]
         let n0 = {
             extern "C" {
                 fn GFp_bn_neg_inv_mod_r_u64(n: u64) -> u64;

@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/httparse/1.3.4")]
+#![doc(html_root_url = "https://docs.rs/httparse/1.3.5")]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(missing_docs)]
 #![cfg_attr(test, deny(warnings))]
@@ -212,7 +212,7 @@ pub type Result<T> = result::Result<Status<T>, Error>;
 /// `Complete` is used when the buffer contained the complete value.
 /// `Partial` is used when parsing did not reach the end of the expected value,
 /// but no invalid data was found.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Status<T> {
     /// The completed result.
     Complete(T),
@@ -275,7 +275,7 @@ impl<T> Status<T> {
 ///     }
 /// }
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Request<'headers, 'buf: 'headers> {
     /// The request method, such as `GET`.
     pub method: Option<&'buf str>,
@@ -300,6 +300,8 @@ impl<'h, 'b> Request<'h, 'b> {
     }
 
     /// Try to parse a buffer of bytes into the Request.
+    /// 
+    /// Returns byte offset in `buf` to start of HTTP body.
     pub fn parse(&mut self, buf: &'b [u8]) -> Result<usize> {
         let orig_len = buf.len();
         let mut bytes = Bytes::new(buf);
@@ -342,13 +344,15 @@ fn skip_empty_lines(bytes: &mut Bytes) -> Result<()> {
 /// A parsed Response.
 ///
 /// See `Request` docs for explanation of optional values.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Response<'headers, 'buf: 'headers> {
     /// The response version, such as `HTTP/1.1`.
     pub version: Option<u8>,
     /// The response code, such as `200`.
     pub code: Option<u16>,
     /// The response reason-phrase, such as `OK`.
+    ///
+    /// Contains an empty string if the reason-phrase was missing or contained invalid characters.
     pub reason: Option<&'buf str>,
     /// The response headers.
     pub headers: &'headers mut [Header<'buf>]
@@ -407,7 +411,7 @@ impl<'h, 'b> Response<'h, 'b> {
 }
 
 /// Represents a parsed header.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct Header<'a> {
     /// The name portion of a header.
     ///
@@ -475,28 +479,38 @@ fn parse_version(bytes: &mut Bytes) -> Result<u8> {
 /// >
 /// > Non-US-ASCII content in header fields and the reason phrase
 /// > has been obsoleted and made opaque (the TEXT rule was removed).
-///
-/// Note that the following implementation deliberately rejects the obsoleted (non-US-ASCII) text range.
-///
-/// The fully compliant parser should probably just return the reason-phrase as an opaque &[u8] data
-/// and leave interpretation to user or specialized helpers (akin to .display() in std::path::Path)
 #[inline]
 fn parse_reason<'a>(bytes: &mut Bytes<'a>) -> Result<&'a str> {
+    let mut seen_obs_text = false;
     loop {
         let b = next!(bytes);
         if b == b'\r' {
             expect!(bytes.next() == b'\n' => Err(Error::Status));
             return Ok(Status::Complete(unsafe {
-                // all bytes up till `i` must have been HTAB / SP / VCHAR
-                str::from_utf8_unchecked(bytes.slice_skip(2))
+                let bytes = bytes.slice_skip(2);
+                if !seen_obs_text {
+                    // all bytes up till `i` must have been HTAB / SP / VCHAR
+                    str::from_utf8_unchecked(bytes)
+                } else {
+                    // obs-text characters were found, so return the fallback empty string
+                    ""
+                }
             }));
         } else if b == b'\n' {
             return Ok(Status::Complete(unsafe {
-                // all bytes up till `i` must have been HTAB / SP / VCHAR
-                str::from_utf8_unchecked(bytes.slice_skip(1))
+                let bytes = bytes.slice_skip(1);
+                if !seen_obs_text {
+                    // all bytes up till `i` must have been HTAB / SP / VCHAR
+                    str::from_utf8_unchecked(bytes)
+                } else {
+                    // obs-text characters were found, so return the fallback empty string
+                    ""
+                }
             }));
-        } else if !((b >= 0x20 && b <= 0x7E) || b == b'\t') {
+        } else if !(b == 0x09 || b == b' ' || (b >= 0x21 && b <= 0x7E) || b >= 0x80) {
             return Err(Error::Status);
+        } else if b >= 0x80 {
+            seen_obs_text = true;
         }
     }
 }
@@ -760,7 +774,7 @@ pub fn parse_chunk_size(buf: &[u8])
             }
             // "Linear white space" is ignored between the chunk size and the
             // extension separator token (";") due to the "implied *LWS rule".
-            b'\t' | b' ' if !in_ext & !in_chunk_size => {}
+            b'\t' | b' ' if !in_ext && !in_chunk_size => {}
             // LWS can follow the chunk size, but no more digits can come
             b'\t' | b' ' if in_chunk_size => in_chunk_size = false,
             // We allow any arbitrary octet once we are in the extension, since
@@ -1092,8 +1106,12 @@ mod tests {
     res! {
         test_response_reason_with_obsolete_text_byte,
         RESPONSE_REASON_WITH_OBS_TEXT_BYTE,
-        Err(::Error::Status),
-        |_res| {}
+        |res| {
+            assert_eq!(res.version.unwrap(), 1);
+            assert_eq!(res.code.unwrap(), 200);
+            // Empty string fallback in case of obs-text
+            assert_eq!(res.reason.unwrap(), "");
+        }
     }
 
     res! {
