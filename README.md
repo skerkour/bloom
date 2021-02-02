@@ -23,9 +23,16 @@ much more.
 Why? How? What? 👉 Read the launch post: https://kerkour.com/blog/bloom-a-free-and-open-source-google
 
 
+
 ## Documentation
 
 See [docs/README.md](docs/README.md)
+
+
+
+## Roadmap
+
+See the [Projects tab](https://github.com/skerkour/bloom/projects)
 
 
 
