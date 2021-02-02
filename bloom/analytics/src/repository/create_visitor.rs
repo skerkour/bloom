@@ -13,8 +13,8 @@ impl Repository {
             .bind(visitor.id)
             .bind(visitor.created_at)
             .bind(visitor.updated_at)
-            .bind(visitor.namespace_id)
             .bind(visitor.anonymous_id)
+            .bind(visitor.namespace_id)
             .execute(db)
             .await
         {
