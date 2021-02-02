@@ -7,6 +7,10 @@ Copyright (C) 2018-2021 Sylvain kerkour
 
 Contact: sylvain@kerkour.fr
 
+All the code that is not vendored dependencies (in the bloom/vendor fodler) is
+licensed under the AGPL v3 license.
+You can find a copy of the AGPL v3 license below.
+
 ----------------------------------------------------------------------------------------------------
 
                     GNU AFFERO GENERAL PUBLIC LICENSE
