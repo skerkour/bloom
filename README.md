@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://bloom.sh" target="_blank" rel="noopener"><img alt="Bloom logo" src="./docs/logo.png" height="300" /></a>
+  <a href="https://bloom.sh" target="_blank" rel="noopener"><img alt="Bloom logo" src="./docs/logo.png" height="200" /></a>
   <h1 align="center">Bloom</h1>
   <h3 align="center">The all-in-one workspace</h3>
   <h3 align="center">
