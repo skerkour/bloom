@@ -27,7 +27,7 @@
       </v-col>
 
       <v-col cols="12" class="mt-5">
-        <v-btn color="success" @click="completeSignIn" :loading="loading">
+        <v-btn color="success" @click="completeSignIn" :loading="loading" depressed>
           Sign in
         </v-btn>
       </v-col>
