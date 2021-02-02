@@ -1,5 +1,7 @@
 name: Deploy
 
+# This workflow deploys the docker image to production
+
 on: [workflow_dispatch]
 
 jobs:

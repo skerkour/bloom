@@ -1,5 +1,7 @@
 name: Release
 
+# This workflow releases the docker image and deploy it on staging
+
 on:
   push:
     branches:
@@ -25,7 +27,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           heroku container:login
-          echo ${{ secrets.PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo ${{ secrets.GH_PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Heroku image
         # see here for the details of the release phase https://devcenter.heroku.com/articles/container-registry-and-runtime#release-phase
