@@ -20,7 +20,7 @@ much more.
 
 --------------------------------
 
-Why? How? What? 👉 Read the launch post: https://kerkour.com/blog/bloom-a-free-and-open-source-google/
+Why? How? What? 👉 Read the launch post: https://kerkour.com/blog/bloom-a-free-and-open-source-google
 
 
 ## Documentation
@@ -33,7 +33,7 @@ See [docs/README.md](docs/README.md)
 
 Hey! Want to report a Bug or participate to the development of Bloom? Please [open an issue](https://github.com/skerkour/bloom/issues). Pull requests will be accepted without prior discussion only for typos.
 
-For general questions, PLease use the [Dicussions tab](https://github.com/skerkour/bloom/discussions).
+For general questions, please use the [Dicussions tab](https://github.com/skerkour/bloom/discussions).
 
 * Blog / Newsletter: [kerkour.com](https://kerkour.com)
 * Twitter: [@sylvain_kerkour](https://twitter.com/@sylvain_kerkour)
