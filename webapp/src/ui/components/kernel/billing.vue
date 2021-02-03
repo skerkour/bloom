@@ -66,7 +66,7 @@
       </v-col>
 
       <v-col cols="12" md="8" lg="6" xl="4" v-if="error !== ''">
-        <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''">
+        <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" dismissible>
           {{ error }}
         </v-alert>
       </v-col>
@@ -193,7 +193,7 @@ export default VueApp.extend({
     },
     showBillingInformation(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
-      return this.customer ? true : false;
+      return this.billing!.customer ? true : false;
     },
     showPlans(): boolean {
       if (this.customer) {

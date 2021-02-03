@@ -51,7 +51,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        await this.$groupsService.gotoBillingPortal(this.groupPath);
+        await this.$kernelService.gotoCustomerPortal(this.groupPath);
       } catch (err) {
         this.error = err.message;
       } finally {

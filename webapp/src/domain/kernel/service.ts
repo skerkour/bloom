@@ -274,9 +274,9 @@ export class KernelService {
     return res;
   }
 
-  async syncCustomerWithProvider(input: SyncCustomerWithProvider, namespace: string): Promise<void> {
+  async syncCustomerWithProvider(input: SyncCustomerWithProvider, returnUrl: string): Promise<void> {
     await this.apiClient.post(Commands.syncCustomerWithProvider, input);
-    this.router.push({ path: `/groups/${namespace}/billing` });
+    this.router.push({ path: returnUrl });
   }
 
   async updateBillingInformation(input: UpdateBillingInformation): Promise<BillingInformation> {

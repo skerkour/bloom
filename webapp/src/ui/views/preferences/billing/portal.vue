@@ -11,7 +11,7 @@
     <v-row justify="center" class="text-center" v-if="loading">
       <v-col cols="12">
         <h1 class="text-h4">
-          Completing setup... Please do not quit.
+          Loading Billing Portal... Please do not quit.
         </h1>
       </v-col>
       <v-col cols="12" sm="10" md="8" xl="6">
@@ -28,39 +28,26 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { SyncCustomerWithProvider } from '@/domain/kernel/model';
 
 export default VueApp.extend({
-  name: 'BGroupBillingSyncView',
+  name: 'BGroupBillingPortalView',
   data() {
     return {
       loading: false,
       error: '',
     };
   },
-  computed: {
-    groupPath(): string {
-      return this.$route.params.groupPath;
-    },
-  },
   created() {
-    this.syncData();
+    this.loadPortal();
   },
   methods: {
-    async syncData(): Promise<void> {
+    async loadPortal(): Promise<void> {
       this.loading = true;
       this.error = '';
 
-
       try {
-        const group = await this.$kernelService.fetchGroup(this.groupPath);
-
-        const input: SyncCustomerWithProvider = {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          namespace_id: group.namespace_id!,
-        };
-        const returnUrl = `/groups/${this.groupPath}/billing`;
-        await this.$kernelService.syncCustomerWithProvider(input, returnUrl);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.$kernelService.gotoCustomerPortal(this.$store.state.me!.username);
       } catch (err) {
         this.error = err.message;
       } finally {

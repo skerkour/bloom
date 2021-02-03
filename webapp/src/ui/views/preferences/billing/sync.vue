@@ -27,21 +27,17 @@
 
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { VueApp } from '@/app/vue';
 import { SyncCustomerWithProvider } from '@/domain/kernel/model';
 
 export default VueApp.extend({
-  name: 'BGroupBillingSyncView',
+  name: 'BUserBillingSyncView',
   data() {
     return {
       loading: false,
       error: '',
     };
-  },
-  computed: {
-    groupPath(): string {
-      return this.$route.params.groupPath;
-    },
   },
   created() {
     this.syncData();
@@ -50,16 +46,11 @@ export default VueApp.extend({
     async syncData(): Promise<void> {
       this.loading = true;
       this.error = '';
-
-
       try {
-        const group = await this.$kernelService.fetchGroup(this.groupPath);
-
         const input: SyncCustomerWithProvider = {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          namespace_id: group.namespace_id!,
+          namespace_id: this.$store.state.me!.namespace_id!,
         };
-        const returnUrl = `/groups/${this.groupPath}/billing`;
+        const returnUrl = '/preferences/billing';
         await this.$kernelService.syncCustomerWithProvider(input, returnUrl);
       } catch (err) {
         this.error = err.message;
