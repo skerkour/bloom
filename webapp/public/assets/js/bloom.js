@@ -7,7 +7,7 @@
   }
 
   window.$bloom = {
-    project: 'e77fcbde-b179-42f4-977e-93ffaa1bc6e0',
+    project: '01776890-92c0-a614-3490-25d136ee2abe',
     analytics: analytics,
   };
 
