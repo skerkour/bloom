@@ -19,7 +19,7 @@ jobs:
       - name: Build and tag Docker image
         run: |
           make docker
-          docker tag ghcr.io/skerkour/bloom registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
+          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
           docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release -f Dockerfile.release .
 
       - name: Docker image info
@@ -32,9 +32,10 @@ jobs:
           heroku container:login
           echo ${{ secrets.GH_PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Push Heroku image
+      - name: Push Docker images
         # see here for the details of the release phase https://devcenter.heroku.com/articles/container-registry-and-runtime#release-phase
         run: |
+          docker push ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom
           docker push registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
           docker push registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release
 
