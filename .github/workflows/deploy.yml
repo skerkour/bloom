@@ -18,11 +18,10 @@ jobs:
       # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
       - name: Build and tag Docker image
         run: |
-          docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release
-          docker pull registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web
-          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/web ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom
+          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom
+          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:release
           docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
-          docker tag registry.heroku.com/${{ secrets.HEROKU_APP_STAGING }}/release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
+          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
 
 
       - name: Tag and push Heroku image
