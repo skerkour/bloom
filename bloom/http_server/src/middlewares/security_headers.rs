@@ -38,7 +38,7 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        let mut content_security_policy_value = format!("default-src 'self' https://js.stripe.com; img-src 'self' data:; script-src 'self' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline'; object-src 'none'; connect-src 'self' https://{}.s3.{}.amazonaws.com", &self.config.s3.bucket, &self.config.s3.region);
+        let mut content_security_policy_value = format!("default-src 'self' https://js.stripe.com; img-src 'self' data:; script-src 'self' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline'; object-src 'none'; connect-src 'self' https://s3.{}.amazonaws.com https://{}.s3.{}.amazonaws.com", &self.config.s3.region, &self.config.s3.bucket, &self.config.s3.region);
         let mut expect_ct_value = String::from("max-age=86400, enforce");
 
         if let Some(ref ingest_domain) = self.config.sentry.ingest_domain {
