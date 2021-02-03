@@ -161,8 +161,9 @@ use proc_macro::TokenStream;
 /// `#[pin_project]` can be used on structs and enums.
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::pin::Pin;
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project]
 /// struct Struct<T, U> {
@@ -181,8 +182,9 @@ use proc_macro::TokenStream;
 /// ```
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::pin::Pin;
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project]
 /// struct TupleStruct<T, U>(#[pin] T, U);
@@ -200,8 +202,9 @@ use proc_macro::TokenStream;
 /// returned from the method.
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::pin::Pin;
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project(project = EnumProj)]
 /// enum Enum<T, U> {
@@ -256,8 +259,9 @@ use proc_macro::TokenStream;
 /// consuming the [`Pin`].
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::pin::Pin;
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project]
 /// struct Struct<T> {
@@ -292,8 +296,9 @@ use proc_macro::TokenStream;
 /// field.
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::marker::PhantomPinned;
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project]
 /// struct Struct<T> {
@@ -366,8 +371,9 @@ use proc_macro::TokenStream;
 /// For example:
 ///
 /// ```rust
-/// use pin_project::{pin_project, pinned_drop};
 /// use std::{fmt::Debug, pin::Pin};
+///
+/// use pin_project::{pin_project, pinned_drop};
 ///
 /// #[pin_project(PinnedDrop)]
 /// struct PrintOnDrop<T: Debug, U: Debug> {
@@ -418,8 +424,9 @@ use proc_macro::TokenStream;
 /// For example:
 ///
 /// ```rust
-/// use pin_project::pin_project;
 /// use std::{marker::PhantomData, pin::Pin};
+///
+/// use pin_project::pin_project;
 ///
 /// #[pin_project(project_replace)]
 /// struct Struct<T, U> {
@@ -508,8 +515,9 @@ pub fn pin_project(args: TokenStream, input: TokenStream) -> TokenStream {
 /// # Examples
 ///
 /// ```rust
-/// use pin_project::{pin_project, pinned_drop};
 /// use std::pin::Pin;
+///
+/// use pin_project::{pin_project, pinned_drop};
 ///
 /// #[pin_project(PinnedDrop)]
 /// struct PrintOnDrop {

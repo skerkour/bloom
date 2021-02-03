@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'trivial_bounds-feature-gate.rs' at the same time.
+// Note: If you change this test, change 'trivial_bounds-feature-gate.rs' at the same time.
 
 // trivial_bounds
 // Tracking issue: https://github.com/rust-lang/rust/issues/48214

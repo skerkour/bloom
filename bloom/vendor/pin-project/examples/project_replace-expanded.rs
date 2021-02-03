@@ -76,19 +76,20 @@ const _: () = {
         ) -> __StructProjectionOwned<T, U> {
             unsafe {
                 let __self_ptr: *mut Self = self.get_unchecked_mut();
-                let Self { pinned, unpinned } = &mut *__self_ptr;
-
-                // First, extract all the unpinned fields
-                let __result = __StructProjectionOwned {
-                    pinned: ::pin_project::__private::PhantomData,
-                    unpinned: ::pin_project::__private::ptr::read(unpinned),
-                };
 
                 // Destructors will run in reverse order, so next create a guard to overwrite
                 // `self` with the replacement value without calling destructors.
                 let __guard = ::pin_project::__private::UnsafeOverwriteGuard {
                     target: __self_ptr,
                     value: ::pin_project::__private::ManuallyDrop::new(__replacement),
+                };
+
+                let Self { pinned, unpinned } = &mut *__self_ptr;
+
+                // First, extract all the unpinned fields
+                let __result = __StructProjectionOwned {
+                    pinned: ::pin_project::__private::PhantomData,
+                    unpinned: ::pin_project::__private::ptr::read(unpinned),
                 };
 
                 // Now create guards to drop all the pinned fields

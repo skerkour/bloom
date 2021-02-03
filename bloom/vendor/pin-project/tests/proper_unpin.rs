@@ -5,8 +5,9 @@
 mod auxiliary;
 
 pub mod default {
-    use pin_project::pin_project;
     use std::marker::PhantomPinned;
+
+    use pin_project::pin_project;
 
     struct Inner<T> {
         f: T,
@@ -60,8 +61,9 @@ pub mod default {
 }
 
 pub mod cfg {
-    use pin_project::pin_project;
     use std::marker::PhantomPinned;
+
+    use pin_project::pin_project;
 
     #[pin_project]
     struct Foo<T> {
@@ -88,8 +90,9 @@ pub mod cfg {
 }
 
 pub mod cfg_attr {
-    use pin_project::pin_project;
     use std::marker::PhantomPinned;
+
+    use pin_project::pin_project;
 
     #[cfg_attr(any(), pin_project)]
     struct Foo<T> {
@@ -111,8 +114,9 @@ pub mod cfg_attr {
 
 // pin_project(!Unpin)
 pub mod not_unpin {
-    use pin_project::pin_project;
     use std::marker::PhantomPinned;
+
+    use pin_project::pin_project;
 
     struct Inner<T> {
         f: T,

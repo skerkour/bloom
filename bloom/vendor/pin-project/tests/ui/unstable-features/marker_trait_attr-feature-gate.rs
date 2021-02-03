@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'marker_trait_attr.rs' at the same time.
+// Note: If you change this test, change 'marker_trait_attr.rs' at the same time.
 
 use pin_project::pin_project;
 use std::marker::PhantomPinned;

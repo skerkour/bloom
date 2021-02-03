@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'overlapping_marker_traits.rs' at the same time.
+// Note: If you change this test, change 'overlapping_marker_traits.rs' at the same time.
 
 use pin_project::pin_project;
 use std::marker::PhantomPinned;

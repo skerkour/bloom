@@ -1,5 +1,6 @@
+use actix_cors::Cors;
 use actix_files::NamedFile;
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{http::header, middleware, web, App, HttpServer};
 use std::sync::Arc;
 use stdx::log::info;
 
@@ -32,6 +33,18 @@ pub async fn run(
     HttpServer::new(move || {
         App::new()
             .data(Arc::clone(&context))
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+                    .allowed_headers(vec![
+                        header::AUTHORIZATION,
+                        header::ACCEPT,
+                        header::CONTENT_TYPE,
+                        header::ORIGIN,
+                    ])
+                    .max_age(3600),
+            )
             .wrap(middlewares::AuthMiddleware::new(kernel_service.clone()))
             .wrap(middleware::Compress::default())
             .wrap(middlewares::RequestIdMiddleware)

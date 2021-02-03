@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'marker_trait_attr-feature-gate.rs' at the same time.
+// Note: If you change this test, change 'marker_trait_attr-feature-gate.rs' at the same time.
 
 // marker_trait_attr
 // Tracking issue: https://github.com/rust-lang/rust/issues/29864

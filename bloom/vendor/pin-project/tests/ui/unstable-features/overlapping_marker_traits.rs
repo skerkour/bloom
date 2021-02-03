@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'overlapping_marker_traits-feature-gate.rs' at the same time.
+// Note: If you change this test, change 'overlapping_marker_traits-feature-gate.rs' at the same time.
 
 // This feature could break the guarantee for Unpin provided by pin-project,
 // but was removed in https://github.com/rust-lang/rust/pull/68544 (nightly-2020-02-06).

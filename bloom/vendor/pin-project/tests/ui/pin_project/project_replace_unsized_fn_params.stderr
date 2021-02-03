@@ -11,14 +11,6 @@ error[E0277]: the size for values of type `T` cannot be known at compilation tim
   = note: the return type of a function must have a statically known size
 
 error[E0277]: the size for values of type `T` cannot be known at compilation time
-   --> $DIR/project_replace_unsized_fn_params.rs:7:5
-    |
-6   | struct Struct<T: ?Sized> {
-    |               - this type parameter needs to be `Sized`
-7   |     f: T,
-    |     ^ doesn't have a size known at compile-time
-
-error[E0277]: the size for values of type `T` cannot be known at compilation time
  --> $DIR/project_replace_unsized_fn_params.rs:5:1
   |
 5 | #[pin_project(project_replace)] //~ ERROR E0277
@@ -26,9 +18,17 @@ error[E0277]: the size for values of type `T` cannot be known at compilation tim
 6 | struct Struct<T: ?Sized> {
   |               - this type parameter needs to be `Sized`
   |
-  = note: required because it appears within the type `__StructProjectionOwned<T>`
-  = note: structs must have a statically known size to be initialized
+  = note: required because it appears within the type `Struct<T>`
+  = note: required by `UnsafeOverwriteGuard`
   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the size for values of type `T` cannot be known at compilation time
+   --> $DIR/project_replace_unsized_fn_params.rs:7:5
+    |
+6   | struct Struct<T: ?Sized> {
+    |               - this type parameter needs to be `Sized`
+7   |     f: T,
+    |     ^ doesn't have a size known at compile-time
 
 error[E0277]: the size for values of type `T` cannot be known at compilation time
   --> $DIR/project_replace_unsized_fn_params.rs:11:8
@@ -43,11 +43,13 @@ error[E0277]: the size for values of type `T` cannot be known at compilation tim
    = note: the return type of a function must have a statically known size
 
 error[E0277]: the size for values of type `T` cannot be known at compilation time
-   --> $DIR/project_replace_unsized_fn_params.rs:10:1
-    |
-10  | #[pin_project(project_replace)] //~ ERROR E0277
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
-11  | struct TupleStruct<T: ?Sized>(T);
-    |                    - this type parameter needs to be `Sized`
-    |
-    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  --> $DIR/project_replace_unsized_fn_params.rs:10:1
+   |
+10 | #[pin_project(project_replace)] //~ ERROR E0277
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+11 | struct TupleStruct<T: ?Sized>(T);
+   |                    - this type parameter needs to be `Sized`
+   |
+   = note: required because it appears within the type `TupleStruct<T>`
+   = note: required by `UnsafeOverwriteGuard`
+   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

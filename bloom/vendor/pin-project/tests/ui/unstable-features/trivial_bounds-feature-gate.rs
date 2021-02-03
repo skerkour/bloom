@@ -1,4 +1,4 @@
-// NB: If you change this test, change 'trivial_bounds.rs' at the same time.
+// Note: If you change this test, change 'trivial_bounds.rs' at the same time.
 
 mod phantom_pinned {
     use std::marker::{PhantomData, PhantomPinned};

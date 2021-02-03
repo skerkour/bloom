@@ -10,6 +10,10 @@ Note: In this file, do not use the hard wrap in the middle of a sentence for com
 
 ## [Unreleased]
 
+## [1.0.5] - 2021-02-03
+
+- [Suppress `deprecated` lint in generated code.](https://github.com/taiki-e/pin-project/pull/313)
+
 ## [1.0.4] - 2021-01-09
 
 - [Suppress `clippy::ref_option_ref` lint in generated code.](https://github.com/taiki-e/pin-project/pull/308)
@@ -61,7 +65,7 @@ Note: In this file, do not use the hard wrap in the middle of a sentence for com
 
 Changes since the 1.0.0-alpha.1 release:
 
-- [Fix drop order of pinned fields in project_replace](https://github.com/taiki-e/pin-project/pull/287)
+- [Fix drop order of pinned fields in `project_replace`.](https://github.com/taiki-e/pin-project/pull/287)
 
 - Update minimal version of `syn` to 1.0.44
 
@@ -104,26 +108,24 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
 
 ## [0.4.26] - 2020-10-04
 
-- [Fix drop order of pinned fields in project_replace](https://github.com/taiki-e/pin-project/pull/287)
+- [Fix drop order of pinned fields in `project_replace`.](https://github.com/taiki-e/pin-project/pull/287)
 
 ## [0.4.25] - 2020-10-01
 
-- Suppress `drop_bounds` lint, which will be added to rustc in the future. See [#272](https://github.com/taiki-e/pin-project/issues/272) for more details.
+- [Suppress `drop_bounds` lint, which will be added to rustc in the future.](https://github.com/taiki-e/pin-project/pull/273) See [#272](https://github.com/taiki-e/pin-project/issues/272) for more details.
 
   (Note: 1.0.0-alpha.1 already contains this change.)
 
 ## [0.4.24] - 2020-09-26
 
-- Fix compatibility of generated code with `forbid(future_incompatible)`
+- [Fix compatibility of generated code with `forbid(future_incompatible)`.](https://github.com/taiki-e/pin-project/pull/282)
 
   Note: This does not guarantee compatibility with `forbid(future_incompatible)` in the future.
   If rustc adds a new lint, we may not be able to keep this.
 
 ## [0.4.23] - 2020-07-27
 
-- [Fix compile error with `?Sized` type parameters.][263]
-
-[263]: https://github.com/taiki-e/pin-project/pull/263
+- [Fix compile error with `?Sized` type parameters.](https://github.com/taiki-e/pin-project/pull/263)
 
 ## [0.4.22] - 2020-06-14
 
@@ -131,7 +133,7 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
 
 ## [0.4.21] - 2020-06-13
 
-- [Deprecated `#[project]`, `#[project_ref]`, and `#[project_replace]` attributes due to some unfixable limitations.][244]
+- [Deprecated `#[project]`, `#[project_ref]`, and `#[project_replace]` attributes due to some unfixable limitations.](https://github.com/taiki-e/pin-project/pull/244)
 
   Consider naming the projected type by passing an argument with the same name as the method to the `#[pin_project]` attribute instead.
 
@@ -150,22 +152,17 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
   }
   ```
 
-  See [#225][225] for more details.
+  See [#225](https://github.com/taiki-e/pin-project/pull/225) for more details.
 
-- [Support `Self` in fields and generics in type definitions.][245]
+- [Support `Self` in fields and generics in type definitions.](https://github.com/taiki-e/pin-project/pull/245)
 
-- [Fix errors involving *"`self` value is a keyword only available in methods with `self` parameter"* in apparently correct code.][250]
+- [Fix errors involving *"`self` value is a keyword only available in methods with `self` parameter"* in apparently correct code.](https://github.com/taiki-e/pin-project/pull/250)
 
 - Diagnostic improvements.
 
-[225]: https://github.com/taiki-e/pin-project/pull/225
-[244]: https://github.com/taiki-e/pin-project/pull/244
-[245]: https://github.com/taiki-e/pin-project/pull/245
-[250]: https://github.com/taiki-e/pin-project/pull/250
-
 ## [0.4.20] - 2020-06-07
 
-- [You can now use project_replace argument without Replace argument.][243]
+- [You can now use `project_replace` argument without Replace argument.](https://github.com/taiki-e/pin-project/pull/243)
   This used to require you to specify both.
 
   ```diff
@@ -176,7 +173,7 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
     }
   ```
 
-- [Makes `project_replace` argument an alias for `Replace` argument so that it can be used without a value.][243]
+- [Makes `project_replace` argument an alias for `Replace` argument so that it can be used without a value.](https://github.com/taiki-e/pin-project/pull/243)
 
   ```rust
   #[pin_project(project_replace)]
@@ -187,32 +184,25 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
 
   *The `Replace` argument will be deprecated in the future.*
 
-- Suppress `unreachable_pub` lint in generated code.
-
-[243]: https://github.com/taiki-e/pin-project/pull/243
+- [Suppress `unreachable_pub` lint in generated code.](https://github.com/taiki-e/pin-project/pull/240)
 
 ## [0.4.19] - 2020-06-04
 
-- [Fix `unused_results` lint in generated code.][239]
-
-[239]: https://github.com/taiki-e/pin-project/pull/239
+- [Suppress `unused_results` lint in generated code.](https://github.com/taiki-e/pin-project/pull/239)
 
 ## [0.4.18] - 2020-06-04
 
-- [Support `Self` in more syntax positions inside `#[pinned_drop]` impl.][230]
+- [Support `Self` in more syntax positions inside `#[pinned_drop]` impl.](https://github.com/taiki-e/pin-project/pull/230)
 
-- [Suppress `clippy::type_repetition_in_bounds` and `clippy::used_underscore_binding` lints in generated code.][233]
+- [Suppress `clippy::type_repetition_in_bounds` and `clippy::used_underscore_binding` lints in generated code.](https://github.com/taiki-e/pin-project/pull/233)
 
 - Documentation improvements.
 
 - Diagnostic improvements.
 
-[230]: https://github.com/taiki-e/pin-project/pull/230
-[233]: https://github.com/taiki-e/pin-project/pull/233
-
 ## [0.4.17] - 2020-05-18
 
-- [Support naming the projection types.][202]
+- [Support naming the projection types.](https://github.com/taiki-e/pin-project/pull/202)
 
   By passing an argument with the same name as the method to the attribute, you can name the projection type returned from the method:
 
@@ -231,23 +221,17 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
   }
   ```
 
-[202]: https://github.com/taiki-e/pin-project/pull/202
-
 ## [0.4.16] - 2020-05-11
 
-- [Fixed an issue that users can call internal function generated by `#[pinned_drop]`.][223]
-
-[223]: https://github.com/taiki-e/pin-project/pull/223
+- [Fixed an issue that users can call internal function generated by `#[pinned_drop]`.](https://github.com/taiki-e/pin-project/pull/223)
 
 ## [0.4.15] - 2020-05-10
 
-- [`#[project]` attribute can now handle all project\* attributes in that scope with one wrapper attribute.][220]
-
-[220]: https://github.com/taiki-e/pin-project/pull/220
+- [`#[project]` attribute can now handle all `project*` attributes in that scope with one wrapper attribute.](https://github.com/taiki-e/pin-project/pull/220)
 
 ## [0.4.14] - 2020-05-09
 
-- [Added `!Unpin` option to `#[pin_project]` attribute for guarantee the type is `!Unpin`.][219]
+- [Added `!Unpin` option to `#[pin_project]` attribute for guarantee the type is `!Unpin`.](https://github.com/taiki-e/pin-project/pull/219)
 
   ```rust
   #[pin_project(!Unpin)]
@@ -269,218 +253,167 @@ See also [tracking issue for 1.0 release](https://github.com/taiki-e/pin-project
 
   *[Note: This raises the minimum supported Rust version of this crate from Rust 1.33 to Rust 1.34.](https://github.com/taiki-e/pin-project/pull/219#pullrequestreview-408644187)*
 
-- [Fixed an issue where duplicate `#[project]` attributes were ignored.][218]
+- [Fixed an issue where duplicate `#[project]` attributes were ignored.](https://github.com/taiki-e/pin-project/pull/218)
 
-- [Suppress `single_use_lifetimes` lint in generated code.][217]
+- [Suppress `single_use_lifetimes` lint in generated code.](https://github.com/taiki-e/pin-project/pull/217)
 
-- [Support overlapping lifetime names in HRTB.][217]
+- [Support overlapping lifetime names in HRTB.](https://github.com/taiki-e/pin-project/pull/217)
 
-- [Hide generated items from --document-private-items.][211] See [#211][211] for details.
+- [Hide generated items from --document-private-items.](https://github.com/taiki-e/pin-project/pull/211) See [#211](https://github.com/taiki-e/pin-project/pull/211) for details.
 
 - Documentation improvements.
 
-[211]: https://github.com/taiki-e/pin-project/pull/211
-[217]: https://github.com/taiki-e/pin-project/pull/217
-[218]: https://github.com/taiki-e/pin-project/pull/218
-[219]: https://github.com/taiki-e/pin-project/pull/219
-
 ## [0.4.13] - 2020-05-07
 
-- [Fixed a regression in 0.4.11.][207]
+- [Fixed a regression in 0.4.11.](https://github.com/taiki-e/pin-project/pull/207)
 
   Changes from [0.4.10](https://github.com/taiki-e/pin-project/releases/tag/v0.4.10) and [0.4.12](https://github.com/taiki-e/pin-project/releases/tag/v0.4.12):
 
-  - [Fixed an issue that `#[project]` on non-statement expression does not work without unstable features.][197]
+  - [Fixed an issue that `#[project]` on non-statement expression does not work without unstable features.](https://github.com/taiki-e/pin-project/pull/197)
 
-  - [Support overwriting the name of core crate.][199]
+  - [Support overwriting the name of core crate.](https://github.com/taiki-e/pin-project/pull/199)
 
-  - [Suppress `clippy::needless_pass_by_value` lint in generated code of `#[pinned_drop]`.][200]
+  - [Suppress `clippy::needless_pass_by_value` lint in generated code of `#[pinned_drop]`.](https://github.com/taiki-e/pin-project/pull/200)
 
   - Documentation improvements.
 
   - Diagnostic improvements.
 
-[207]: https://github.com/taiki-e/pin-project/pull/207
-
 ## [0.4.12] - 2020-05-07
 
-- A release to avoid [a regression in 0.4.11][206]. No code changes from [0.4.10](https://github.com/taiki-e/pin-project/releases/tag/v0.4.10).
-
-[206]: https://github.com/taiki-e/pin-project/issues/206
+- A release to avoid [a regression in 0.4.11](https://github.com/taiki-e/pin-project/issues/206). No code changes from [0.4.10](https://github.com/taiki-e/pin-project/releases/tag/v0.4.10).
 
 ## [0.4.11] - 2020-05-07
 
-**Note: This release has been yanked.** See [#206][206] for details.
+**Note: This release has been yanked.** See [#206](https://github.com/taiki-e/pin-project/issues/206) for details.
 
-- [Fixed an issue that `#[project]` on non-statement expression does not work without unstable features.][197]
+- [Fixed an issue that `#[project]` on non-statement expression does not work without unstable features.](https://github.com/taiki-e/pin-project/pull/197)
 
-- [Support overwriting the name of core crate.][199]
+- [Support overwriting the name of core crate.](https://github.com/taiki-e/pin-project/pull/199)
 
-- [Suppress `clippy::needless_pass_by_value` lint in generated code of `#[pinned_drop]`.][200]
+- [Suppress `clippy::needless_pass_by_value` lint in generated code of `#[pinned_drop]`.](https://github.com/taiki-e/pin-project/pull/200)
 
 - Documentation improvements.
 
 - Diagnostic improvements.
 
-[197]: https://github.com/taiki-e/pin-project/pull/197
-[199]: https://github.com/taiki-e/pin-project/pull/199
-[200]: https://github.com/taiki-e/pin-project/pull/200
-
 ## [0.4.10] - 2020-05-04
 
-- [Added `project_replace` method and `#[project_replace]` attribute.][194]
+- [Added `project_replace` method and `#[project_replace]` attribute.](https://github.com/taiki-e/pin-project/pull/194)
   `project_replace` method is optional and can be enabled by passing the `Replace` argument to `#[pin_project]` attribute.
   See [the documentation](https://docs.rs/pin-project/0.4/pin_project/attr.pin_project.html#project_replace) for more details.
 
-- [Support `Self` and `self` in more syntax positions inside `#[pinned_drop]` impl.][190]
+- [Support `Self` and `self` in more syntax positions inside `#[pinned_drop]` impl.](https://github.com/taiki-e/pin-project/pull/190)
 
-- [Hided all generated items except for projected types from calling code.][192] See [#192][192] for details.
-
-[190]: https://github.com/taiki-e/pin-project/pull/190
-[192]: https://github.com/taiki-e/pin-project/pull/192
-[194]: https://github.com/taiki-e/pin-project/pull/194
+- [Hided all generated items except for projected types from calling code.](https://github.com/taiki-e/pin-project/pull/192) See [#192](https://github.com/taiki-e/pin-project/pull/192) for details.
 
 ## [0.4.9] - 2020-04-14
 
-- [Fixed lifetime inference error when associated types are used in fields.][188]
+- [Fixed lifetime inference error when associated types are used in fields.](https://github.com/taiki-e/pin-project/pull/188)
 
-- [Fixed compile error with tuple structs with `where` clauses.][186]
+- [Fixed compile error with tuple structs with `where` clauses.](https://github.com/taiki-e/pin-project/pull/186)
 
-- [`#[project]` attribute can now be used for `if let` expressions.][181]
-
-[181]: https://github.com/taiki-e/pin-project/pull/181
-[186]: https://github.com/taiki-e/pin-project/pull/186
-[188]: https://github.com/taiki-e/pin-project/pull/188
+- [`#[project]` attribute can now be used for `if let` expressions.](https://github.com/taiki-e/pin-project/pull/181)
 
 ## [0.4.8] - 2020-01-27
 
-- [Ensured that users cannot implement `PinnedDrop` without proper attribute argument.][180]
+- [Ensured that users cannot implement `PinnedDrop` without proper attribute argument.](https://github.com/taiki-e/pin-project/pull/180)
 
-- [Fixed use of `Self` in expression position inside `#[pinned_drop]` impl.][177]
-
-[177]: https://github.com/taiki-e/pin-project/pull/180
-[180]: https://github.com/taiki-e/pin-project/pull/180
+- [Fixed use of `Self` in expression position inside `#[pinned_drop]` impl.](https://github.com/taiki-e/pin-project/pull/177)
 
 ## [0.4.7] - 2020-01-20
 
-- [Fixed support for lifetime bounds.][176]
-
-[176]: https://github.com/taiki-e/pin-project/pull/176
+- [Fixed support for lifetime bounds.](https://github.com/taiki-e/pin-project/pull/176)
 
 ## [0.4.6] - 2019-11-20
 
-- [Fixed compile error when there is `Self` in the where clause.][169]
-
-[169]: https://github.com/taiki-e/pin-project/pull/169
+- [Fixed compile error when there is `Self` in the where clause.](https://github.com/taiki-e/pin-project/pull/169)
 
 ## [0.4.5] - 2019-10-21
 
-- [Fixed compile error with `dyn` types.][158]
-
-[158]: https://github.com/taiki-e/pin-project/pull/158
+- [Fixed compile error with `dyn` types.](https://github.com/taiki-e/pin-project/pull/158)
 
 ## [0.4.4] - 2019-10-17
 
-- [Fixed an issue where `PinnedDrop` implementations can call unsafe code without an unsafe block.][149]
-
-[149]: https://github.com/taiki-e/pin-project/pull/149
+- [Fixed an issue where `PinnedDrop` implementations can call unsafe code without an unsafe block.](https://github.com/taiki-e/pin-project/pull/149)
 
 ## [0.4.3] - 2019-10-15
 
-**Note: This release has been yanked.** See [#148] for details.
+**Note: This release has been yanked.** See [#148](https://github.com/taiki-e/pin-project/pull/148) for details.
 
-- [`#[pin_project]` can now interoperate with `#[cfg_attr()]`.][135]
+- [`#[pin_project]` can now interoperate with `#[cfg_attr()]`.](https://github.com/taiki-e/pin-project/pull/135)
 
-- [`#[pin_project]` can now interoperate with `#[cfg()]` on tuple structs and tuple variants.][135]
+- [`#[pin_project]` can now interoperate with `#[cfg()]` on tuple structs and tuple variants.](https://github.com/taiki-e/pin-project/pull/135)
 
-- [Fixed support for DSTs(Dynamically Sized Types) on `#[pin_project(UnsafeUnpin)]`][120]
+- [Fixed support for DSTs(Dynamically Sized Types) on `#[pin_project(UnsafeUnpin)]`](https://github.com/taiki-e/pin-project/pull/120)
 
 - Diagnostic improvements.
 
-[#148]: https://github.com/taiki-e/pin-project/pull/148
-[120]: https://github.com/taiki-e/pin-project/pull/120
-[135]: https://github.com/taiki-e/pin-project/pull/135
-
 ## [0.4.2] - 2019-09-29
 
-**Note: This release has been yanked.** See [#148] for details.
+**Note: This release has been yanked.** See [#148](https://github.com/taiki-e/pin-project/pull/148) for details.
 
-- [Fixed support for DSTs(Dynamically Sized Types).][113]
-
-[113]: https://github.com/taiki-e/pin-project/pull/113
+- [Fixed support for DSTs(Dynamically Sized Types).](https://github.com/taiki-e/pin-project/pull/113)
 
 ## [0.4.1] - 2019-09-26
 
-**Note: This release has been yanked.** See [#148] for details.
+**Note: This release has been yanked.** See [#148](https://github.com/taiki-e/pin-project/pull/148) for details.
 
-- [Fixed an issue that caused an error when using `#[pin_project]` on a type that has `#[pin]` + `!Unpin` field with no generics or lifetime.][111]
-
-[111]: https://github.com/taiki-e/pin-project/pull/111
+- [Fixed an issue that caused an error when using `#[pin_project]` on a type that has `#[pin]` + `!Unpin` field with no generics or lifetime.](https://github.com/taiki-e/pin-project/pull/111)
 
 ## [0.4.0] - 2019-09-25
 
-**Note: This release has been yanked.** See [#148] for details.
+**Note: This release has been yanked.** See [#148](https://github.com/taiki-e/pin-project/pull/148) for details.
 
-- [**Pin projection has become a safe operation.**][18] In the absence of other unsafe code that you write, it is impossible to cause undefined behavior.
+- [**Pin projection has become a safe operation.**](https://github.com/taiki-e/pin-project/pull/18) In the absence of other unsafe code that you write, it is impossible to cause undefined behavior.
 
-- `#[unsafe_project]` attribute has been replaced with `#[pin_project]` attribute. ([#18][18], [#33][33])
+- `#[unsafe_project]` attribute has been replaced with `#[pin_project]` attribute. ([#18](https://github.com/taiki-e/pin-project/pull/18), [#33](https://github.com/taiki-e/pin-project/pull/33))
 
-- [The `Unpin` argument has been removed - an `Unpin` impl is now generated by default.][18]
+- [The `Unpin` argument has been removed - an `Unpin` impl is now generated by default.](https://github.com/taiki-e/pin-project/pull/18)
 
-- Drop impls must be specified with `#[pinned_drop]` instead of via a normal `Drop` impl. ([#18][18], [#33][33], [#86][86])
+- Drop impls must be specified with `#[pinned_drop]` instead of via a normal `Drop` impl. ([#18](https://github.com/taiki-e/pin-project/pull/18), [#33](https://github.com/taiki-e/pin-project/pull/33), [#86](https://github.com/taiki-e/pin-project/pull/86))
 
-- [`Unpin` impls must be specified with an impl of `UnsafeUnpin`, instead of implementing the normal `Unpin` trait.][18]
+- [`Unpin` impls must be specified with an impl of `UnsafeUnpin`, instead of implementing the normal `Unpin` trait.](https://github.com/taiki-e/pin-project/pull/18)
 
-- [`#[pin_project]` attribute now determines the visibility of the projection type/method is based on the original type.][96]
+- [`#[pin_project]` attribute now determines the visibility of the projection type/method is based on the original type.](https://github.com/taiki-e/pin-project/pull/96)
 
-- [`#[pin_project]` can now be used for public type with private field types.][53]
+- [`#[pin_project]` can now be used for public type with private field types.](https://github.com/taiki-e/pin-project/pull/53)
 
-- [`#[pin_project]` can now interoperate with `#[cfg()]`.][77]
+- [`#[pin_project]` can now interoperate with `#[cfg()]`.](https://github.com/taiki-e/pin-project/pull/77)
 
-- [Added `project_ref` method to `#[pin_project]` types.][93]
+- [Added `project_ref` method to `#[pin_project]` types.](https://github.com/taiki-e/pin-project/pull/93)
 
-- [Added `#[project_ref]` attribute.][93]
+- [Added `#[project_ref]` attribute.](https://github.com/taiki-e/pin-project/pull/93)
 
-- [Removed "project_attr" feature and always enable `#[project]` attribute.][94]
+- [Removed "project_attr" feature and always enable `#[project]` attribute.](https://github.com/taiki-e/pin-project/pull/94)
 
-- [`#[project]` attribute can now be used for `impl` blocks.][46]
+- [`#[project]` attribute can now be used for `impl` blocks.](https://github.com/taiki-e/pin-project/pull/46)
 
-- [`#[project]` attribute can now be used for `use` statements.][85]
+- [`#[project]` attribute can now be used for `use` statements.](https://github.com/taiki-e/pin-project/pull/85)
 
-- [`#[project]` attribute now supports `match` expressions at the position of the initializer expression of `let` expressions.][51]
+- [`#[project]` attribute now supports `match` expressions at the position of the initializer expression of `let` expressions.](https://github.com/taiki-e/pin-project/pull/51)
 
 Changes since the 0.4.0-beta.1 release:
 
-- [Fixed an issue that caused an error when using `#[pin_project(UnsafeUnpin)]` and not providing a manual `UnsafeUnpin` implementation on a type with no generics or lifetime.][107]
-
-[18]: https://github.com/taiki-e/pin-project/pull/18
-[33]: https://github.com/taiki-e/pin-project/pull/107
-[107]: https://github.com/taiki-e/pin-project/pull/107
+- [Fixed an issue that caused an error when using `#[pin_project(UnsafeUnpin)]` and not providing a manual `UnsafeUnpin` implementation on a type with no generics or lifetime.](https://github.com/taiki-e/pin-project/pull/107)
 
 ## [0.4.0-beta.1] - 2019-09-21
 
-- [Changed the argument type of project method back to `self: Pin<&mut Self>`.][90]
+- [Changed the argument type of project method back to `self: Pin<&mut Self>`.](https://github.com/taiki-e/pin-project/pull/90)
 
-- [Removed "project_attr" feature and always enable `#[project]` attribute.][94]
+- [Removed "project_attr" feature and always enable `#[project]` attribute.](https://github.com/taiki-e/pin-project/pull/94)
 
-- [Removed "renamed" feature.][100]
+- [Removed "renamed" feature.](https://github.com/taiki-e/pin-project/pull/100)
 
-- [`#[project]` attribute can now be used for `use` statements.][85]
+- [`#[project]` attribute can now be used for `use` statements.](https://github.com/taiki-e/pin-project/pull/85)
 
-- [Added `project_ref` method and `#[project_ref]` attribute.][93]
+- [Added `project_ref` method and `#[project_ref]` attribute.](https://github.com/taiki-e/pin-project/pull/93)
 
-- [`#[pin_project]` attribute now determines the visibility of the projection type/method is based on the original type.][96]
-
-[85]: https://github.com/taiki-e/pin-project/pull/85
-[90]: https://github.com/taiki-e/pin-project/pull/90
-[93]: https://github.com/taiki-e/pin-project/pull/93
-[94]: https://github.com/taiki-e/pin-project/pull/94
-[96]: https://github.com/taiki-e/pin-project/pull/96
-[100]: https://github.com/taiki-e/pin-project/pull/100
+- [`#[pin_project]` attribute now determines the visibility of the projection type/method is based on the original type.](https://github.com/taiki-e/pin-project/pull/96)
 
 ## [0.4.0-alpha.11] - 2019-09-11
 
-- [Changed #[pinned_drop] to trait implementation.][86]
+- [Changed #[pinned_drop] to trait implementation.](https://github.com/taiki-e/pin-project/pull/86)
 
   ```rust
   #[pinned_drop]
@@ -495,19 +428,15 @@ Changes since the 0.4.0-beta.1 release:
 
 - Diagnostic improvements.
 
-[86]: https://github.com/taiki-e/pin-project/pull/86
-
 ## [0.4.0-alpha.10] - 2019-09-07
 
-- [`#[pin_project]` can now interoperate with `#[cfg()]`.][77]
+- [`#[pin_project]` can now interoperate with `#[cfg()]`.](https://github.com/taiki-e/pin-project/pull/77)
 
 - Documentation improvements.
 
-[77]: https://github.com/taiki-e/pin-project/pull/77
-
 ## [0.4.0-alpha.9] - 2019-09-05
 
-- [Added 'project_into' method to `#[pin_project]` types][69]. This can be useful when returning a pin projection from a method.
+- [Added 'project_into' method to `#[pin_project]` types](https://github.com/taiki-e/pin-project/pull/69). This can be useful when returning a pin projection from a method.
 
   ```rust
   fn get_pin_mut(self: Pin<&mut Self>) -> Pin<&mut T> {
@@ -515,37 +444,25 @@ Changes since the 0.4.0-beta.1 release:
   }
   ```
 
-- [Prevented UnpinStruct from appearing in the document by default.][71] See [#71][71] for more details.
-
-[69]: https://github.com/taiki-e/pin-project/pull/69
-[71]: https://github.com/taiki-e/pin-project/pull/69
+- [Prevented UnpinStruct from appearing in the document by default.](https://github.com/taiki-e/pin-project/pull/71) See [#71](https://github.com/taiki-e/pin-project/pull/71) for more details.
 
 ## [0.4.0-alpha.8] - 2019-09-03
 
-- [Improved document of generated code.][62]. Also added an option to control the document of generated code. See [#62][62] for more details.
+- [Improved document of generated code.](https://github.com/taiki-e/pin-project/pull/62). Also added an option to control the document of generated code. See [#62](https://github.com/taiki-e/pin-project/pull/62) for more details.
 
-- [Diagnostic improvements.][61]
-
-[61]: https://github.com/taiki-e/pin-project/pull/61
-[62]: https://github.com/taiki-e/pin-project/pull/62
+- [Diagnostic improvements.](https://github.com/taiki-e/pin-project/pull/61)
 
 ## [0.4.0-alpha.7] - 2019-09-02
 
-- [Suppress `dead_code` lint in generated types.][57]
-
-[57]: https://github.com/taiki-e/pin-project/pull/57
+- [Suppress `dead_code` lint in generated types.](https://github.com/taiki-e/pin-project/pull/57)
 
 ## [0.4.0-alpha.6] - 2019-09-01
 
-- [Allowed using `#[pin_project]` type with private field types][53]
-
-[53]: https://github.com/taiki-e/pin-project/pull/53
+- [Allowed using `#[pin_project]` type with private field types](https://github.com/taiki-e/pin-project/pull/53)
 
 ## [0.4.0-alpha.5] - 2019-08-24
 
-- [`#[project]` attribute now supports `match` expressions at the position of the initializer expression of `let` expressions.][51]
-
-[51]: https://github.com/taiki-e/pin-project/pull/51
+- [`#[project]` attribute now supports `match` expressions at the position of the initializer expression of `let` expressions.](https://github.com/taiki-e/pin-project/pull/51)
 
 ## [0.4.0-alpha.4] - 2019-08-23
 
@@ -553,15 +470,11 @@ Changes since the 0.4.0-beta.1 release:
 
 ## [0.4.0-alpha.3] - 2019-08-23
 
-- [Changed `project` method generated by `#[pin_project]` attribute to take an `&mut Pin<&mut Self>` argument.][47]
+- [Changed `project` method generated by `#[pin_project]` attribute to take an `&mut Pin<&mut Self>` argument.](https://github.com/taiki-e/pin-project/pull/47)
 
-- [`#[project]` attribute can now be used for impl blocks.][46]
+- [`#[project]` attribute can now be used for impl blocks.](https://github.com/taiki-e/pin-project/pull/46)
 
-- [`#[pin_project]` attribute can now detect that the type used does not have its own drop implementation without actually implementing drop.][48] This removed some restrictions.
-
-[46]: https://github.com/taiki-e/pin-project/pull/46
-[47]: https://github.com/taiki-e/pin-project/pull/47
-[48]: https://github.com/taiki-e/pin-project/pull/48
+- [`#[pin_project]` attribute can now detect that the type used does not have its own drop implementation without actually implementing drop.](https://github.com/taiki-e/pin-project/pull/48) This removed some restrictions.
 
 ## [0.4.0-alpha.2] - 2019-08-13
 
@@ -581,9 +494,7 @@ Changes since the 0.4.0-beta.1 release:
 
 - Made `#[project]` attribute disabled by default.
 
-See also [tracking issue for 0.4 release][21].
-
-[21]: https://github.com/taiki-e/pin-project/issues/21
+See also [tracking issue for 0.4 release](https://github.com/taiki-e/pin-project/issues/21).
 
 ## [0.3.5] - 2019-08-14
 
@@ -595,11 +506,9 @@ See also [tracking issue for 0.4 release][21].
 
 ## [0.3.3] - 2019-07-15
 
-**Note: This release has been yanked.** See [#16] for details.
+**Note: This release has been yanked.** See [#16](https://github.com/taiki-e/pin-project/issues/16) for details.
 
 - Diagnostic improvements.
-
-[#16]: https://github.com/taiki-e/pin-project/issues/16
 
 ## [0.3.2] - 2019-03-30
 
@@ -675,7 +584,8 @@ See also [tracking issue for 0.4 release][21].
 
 Initial release
 
-[Unreleased]: https://github.com/taiki-e/pin-project/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/taiki-e/pin-project/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/taiki-e/pin-project/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/taiki-e/pin-project/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/taiki-e/pin-project/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/taiki-e/pin-project/compare/v1.0.1...v1.0.2

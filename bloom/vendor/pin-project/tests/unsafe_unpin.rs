@@ -4,8 +4,9 @@
 #[macro_use]
 mod auxiliary;
 
-use pin_project::{pin_project, UnsafeUnpin};
 use std::marker::PhantomPinned;
+
+use pin_project::{pin_project, UnsafeUnpin};
 
 #[pin_project(UnsafeUnpin)]
 pub struct Blah<T, U> {

@@ -4,12 +4,13 @@
 #[macro_use]
 mod auxiliary;
 
-use pin_project::{pin_project, pinned_drop, UnsafeUnpin};
 use std::{
     marker::{PhantomData, PhantomPinned},
     panic,
     pin::Pin,
 };
+
+use pin_project::{pin_project, pinned_drop, UnsafeUnpin};
 
 #[test]
 fn projection() {
@@ -336,7 +337,7 @@ fn overlapping_lifetime_names() {
 
     #[allow(single_use_lifetimes)] // https://github.com/rust-lang/rust/issues/55058
     #[pin_project(project_replace)]
-    pub struct HRTB<'pin___, T>
+    pub struct Hrtb<'pin___, T>
     where
         for<'pin> &'pin T: Unpin,
         T: for<'pin> Trait<'pin>,

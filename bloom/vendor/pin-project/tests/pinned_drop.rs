@@ -1,7 +1,8 @@
 #![warn(rust_2018_idioms, single_use_lifetimes)]
 
-use pin_project::{pin_project, pinned_drop};
 use std::pin::Pin;
+
+use pin_project::{pin_project, pinned_drop};
 
 #[test]
 fn safe_project() {
