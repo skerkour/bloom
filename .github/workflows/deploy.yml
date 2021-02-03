@@ -9,10 +9,12 @@ jobs:
     name: Deploy job
     runs-on: ubuntu-latest
     steps:
-      - name: Login to Heroku Container registry
+      - name: Login to container registries
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku container:login
+        run: |
+          heroku container:login
+          echo ${{ secrets.GH_PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       # replace heroku pull by docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:latest
       # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
@@ -23,6 +25,8 @@ jobs:
           docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
           docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
 
+      - name: Docker image info
+        run: docker images
 
       - name: Tag and push Heroku image
         # see here for the details of the release pahse https://devcenter.heroku.com/articles/container-registry-and-runtime#release-phase
