@@ -22,7 +22,7 @@ impl Service {
             .map_err(|_| Error::NewsletterMessageNotFound)?;
 
         if !self.kernel_service.self_hosted() {
-            if namespace.plan == BillingPlan::Free {
+            if namespace.plan == BillingPlan::Free && namespace.path != "sylvain" { // TODO: REOMVE this hack
                 return Err(Error::UpgradePlanToSendNewsletterMessage.into());
             }
         }
