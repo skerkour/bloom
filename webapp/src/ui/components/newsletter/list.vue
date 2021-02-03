@@ -35,11 +35,11 @@
           </template>
 
           <v-list>
-            <v-list-item @click="addContact">
+            <v-list-item @click="openImportDialog">
               <v-list-item-icon>
-                <v-icon>mdi-account-plus</v-icon>
+                <v-icon>mdi-cloud-upload</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Add contact</v-list-item-title>
+              <v-list-item-title>Import contact</v-list-item-title>
             </v-list-item>
 
             <v-list-item @click="deleteList">
@@ -93,6 +93,13 @@
       </v-col>
     </v-row>
 
+    <b-import-contacts-dialog
+      v-if="list"
+      v-model="showImportDialog"
+      @imported="onImported"
+      :list="list.id"
+    />
+
   </v-container>
 </template>
 
@@ -101,11 +108,15 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import {
-  List, Contact, CreateList, UpdateList, SubscribeToList,
+  List, Contact, CreateList, UpdateList,
 } from '@/domain/newsletter/model';
+import BImportContactsDialog from '@/ui/components/inbox/import_contacts_dialog.vue';
 
 export default VueApp.extend({
-  name: 'BList',
+  name: 'BNewsletterList',
+  components: {
+    BImportContactsDialog,
+  },
   props: {
     list: {
       type: Object as PropType<List | null>,
@@ -122,6 +133,7 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
+      showImportDialog: false,
 
       name: '',
       description: '',
@@ -220,31 +232,11 @@ export default VueApp.extend({
     gotoContact(contact: Contact) {
       this.$router.push({ path: `/inbox/contacts/${contact.id}` });
     },
-    async addContact() {
-      // eslint-disable-next-line no-alert, no-restricted-globals
-      const email = prompt('Contact email');
-
-      if (!email) {
-        return;
-      }
-
-      this.loading = true;
-      this.error = '';
-      const input: SubscribeToList = {
-        name: null,
-        email,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        list_id: this.list!.id,
-      };
-
-      try {
-        await this.$newsletterService.subscribeToList(input);
-        this.$emit('subscribed');
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
+    openImportDialog() {
+      this.showImportDialog = true;
+    },
+    async onImported() {
+      this.$emit('imported');
     },
   },
 });

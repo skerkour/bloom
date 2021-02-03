@@ -20,7 +20,7 @@
 
     <v-row v-if="list">
       <b-list :list="list.list" :contacts="list.contacts" @updated="onListUpdated"
-        @subscribed="onSubscribed" />
+        @imported="onImported" />
     </v-row>
   </v-container>
 </template>
@@ -63,7 +63,7 @@ export default VueApp.extend({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.list!.list = list;
     },
-    onSubscribed() {
+    onImported() {
       this.fetchData();
     },
   },
