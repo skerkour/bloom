@@ -68,9 +68,12 @@ RUN make build
 FROM alpine:latest
 # FROM debian:buster-slim
 
+RUN apk update && apk add --no-cache ca-certificates
+RUN update-ca-certificates
+
 # Import from builder.
 # We kept the next step from Go's scratch images, not sure if it's required for Rust
-COPY --from=builder_rust /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# COPY --from=builder_rust /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder_rust /etc/passwd /etc/passwd
 COPY --from=builder_rust /etc/group /etc/group
 
