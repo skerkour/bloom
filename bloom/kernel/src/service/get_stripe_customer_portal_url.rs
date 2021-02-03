@@ -1,4 +1,4 @@
-use crate::{Actor, Error, Service, consts::NamespaceType};
+use crate::{consts::NamespaceType, Actor, Error, Service};
 use stdx::{stripe, uuid::Uuid};
 
 impl Service {

@@ -1,5 +1,9 @@
 use super::GetStripeCheckoutSessionInput;
-use crate::{Actor, Service, consts::{BillingPlan, NamespaceType}, errors::kernel::Error};
+use crate::{
+    consts::{BillingPlan, NamespaceType},
+    errors::kernel::Error,
+    Actor, Service,
+};
 use stdx::stripe;
 
 impl Service {
@@ -65,7 +69,7 @@ impl Service {
 
         let params = stripe::model::CheckoutSessionParams {
             customer: customer.stripe_customer_id,
-            payment_method_type: vec!["card".to_string()],
+            payment_method_types: vec!["card".to_string()],
             line_items: vec![stripe::model::CheckoutSessionLineItemParams {
                 price: stripe_price,
                 quantity: 1,

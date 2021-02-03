@@ -42,7 +42,7 @@ pub struct CheckoutSessionLineItemParams {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CheckoutSessionParams {
     pub customer: String,
-    pub payment_method_type: Vec<String>,
+    pub payment_method_types: Vec<String>,
     pub line_items: Vec<CheckoutSessionLineItemParams>,
     pub mode: String,
     pub success_url: String,
@@ -58,9 +58,14 @@ pub struct CheckoutSessionSubscriptionDataParams {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Customer {
     pub id: String,
-    pub subscriptions: Option<Vec<Subscription>>,
+    pub subscriptions: Option<SubscriptionList>,
     pub invoice_settings: Option<CustomerInvoiceSettings>,
     // TODO
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SubscriptionList {
+    pub data: Vec<Subscription>,
 }
 
 #[derive(Serialize, Deserialize, Default)]
@@ -119,7 +124,11 @@ pub enum TaxIdType {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Error {
+    pub error: ErrorInner,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ErrorInner {
     pub r#type: String,
-    pub code: String,
     pub message: String,
 }

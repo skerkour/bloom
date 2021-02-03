@@ -96,12 +96,23 @@ impl Client {
         customer_id: String,
         params: model::CustomerParams,
     ) -> Result<model::Customer, Error> {
-        let url = self.url(&format!("/customers/{}", &customer_id));
         let mut headers = self.headers();
         headers.insert(
             HeaderName::from_static("content-type"),
             HeaderValue::from_str("application/x-www-form-urlencoded").unwrap(),
         );
+        let expands = [
+            "subscriptions",
+            "sources",
+            "default_source",
+            "subscriptions.data.plan",
+            "subscriptions.data.plan.product",
+            "invoice_settings.default_payment_method",
+        ];
+        let expand = Expand {
+            expand: &expands,
+        };
+        let url = self.url_with_params(&format!("/customers/{}", &customer_id), &expand)?;
 
         let res = self
             .http_client
@@ -114,7 +125,7 @@ impl Client {
         let res_status = res.status();
         if !res_status.is_success() {
             let err: model::Error = res.json().await?;
-            return Err(Error::Unknown(err.message));
+            return Err(Error::Unknown(err.error.message));
         }
 
         let customer: model::Customer = res.json().await?;
@@ -142,7 +153,7 @@ impl Client {
         let res_status = res.status();
         if !res_status.is_success() {
             let err: model::Error = res.json().await?;
-            return Err(Error::Unknown(err.message));
+            return Err(Error::Unknown(err.error.message));
         }
 
         let customer: model::Customer = res.json().await?;
@@ -171,7 +182,7 @@ impl Client {
         let res_status = res.status();
         if !res_status.is_success() {
             let err: model::Error = res.json().await?;
-            return Err(Error::Unknown(err.message));
+            return Err(Error::Unknown(err.error.message));
         }
 
         let session: model::BillingPortalSession = res.json().await?;
@@ -189,22 +200,18 @@ impl Client {
             HeaderValue::from_str("application/x-www-form-urlencoded").unwrap(),
         );
 
-        let body = serde_qs::to_string(&params)?;
-
-        println!("BODDDYYY: {}", &body);
-
         let res = self
             .http_client
             .post(&url)
             .headers(headers)
-            .body(body)
+            .body(serde_qs::to_string(&params)?)
             .send()
             .await?;
 
         let res_status = res.status();
         if !res_status.is_success() {
             let err: model::Error = res.json().await?;
-            return Err(Error::Unknown(err.message));
+            return Err(Error::Unknown(err.error.message));
         }
 
         let session: model::CheckoutSession = res.json().await?;
