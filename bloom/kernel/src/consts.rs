@@ -212,6 +212,8 @@ pub const INVALID_NAMESPACES: &[&str] = &[
     "root",
     "search",
     "security",
+    "securityteam",
+    "security-team",
     "settings",
     "shop",
     "shops",
