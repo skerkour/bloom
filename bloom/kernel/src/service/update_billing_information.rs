@@ -100,7 +100,7 @@ impl Service {
 
                 // update stripe customer
                 let customer_params = stripe::model::CustomerParams {
-                    email: customer.email.clone(),
+                    email: Some(customer.email.clone()),
                     address: Some(stripe::model::AddressParams {
                         city: customer.city.clone(),
                         country: customer.country.clone(),
@@ -109,9 +109,8 @@ impl Service {
                         postal_code: customer.postal_code.clone(),
                         state: customer.state.clone(),
                     }),
-                    tax_id_data: stripe_customer_tax_data,
-                    metadata: None,
-                    expands: None,
+                    tax_id_data: Some(stripe_customer_tax_data),
+                    ..Default::default()
                 };
                 self.stripe_client
                     .update_customer(customer.stripe_customer_id.clone(), customer_params)
@@ -161,7 +160,7 @@ impl Service {
                 customer_metadata.insert(String::from("customer.id"), customer.id.to_hyphenated().to_string());
 
                 let customer_params = stripe::model::CustomerParams {
-                    email: customer.email.clone(),
+                    email: Some(customer.email.clone()),
                     address: Some(stripe::model::AddressParams {
                         city: customer.city.clone(),
                         country: customer.country.clone(),
@@ -170,9 +169,9 @@ impl Service {
                         postal_code: customer.postal_code.clone(),
                         state: customer.state.clone(),
                     }),
-                    tax_id_data: stripe_customer_tax_data,
+                    tax_id_data: Some(stripe_customer_tax_data),
                     metadata: Some(customer_metadata),
-                    expands: None,
+                    ..Default::default()
                 };
                 let stripe_customer = self.stripe_client.create_customer(customer_params).await?;
 

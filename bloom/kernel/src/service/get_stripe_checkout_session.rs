@@ -1,5 +1,5 @@
 use super::GetStripeCheckoutSessionInput;
-use crate::{consts::BillingPlan, errors::kernel::Error, Actor, Service};
+use crate::{Actor, Service, consts::{BillingPlan, NamespaceType}, errors::kernel::Error};
 use stdx::stripe;
 
 impl Service {
@@ -55,7 +55,10 @@ impl Service {
         // 	}
         // }
 
-        let cancel_url = format!("{}/groups/{}/billing", &self.config.base_url, &namespace.path);
+        let cancel_url = match namespace.r#type {
+            NamespaceType::User => format!("{}/preferences/billing", &self.config.base_url),
+            NamespaceType::Group => format!("{}/groups/{}/billing", &self.config.base_url, &namespace.path),
+        };
         let success_url = format!("{}/sync", &cancel_url);
         // cancelURL := fmt.Sprintf("%s/groups/%s/-/billing", service.config.BaseURL, namespace.Namespace.Path)
         // successURL := fmt.Sprintf("%s/sync", cancelURL)

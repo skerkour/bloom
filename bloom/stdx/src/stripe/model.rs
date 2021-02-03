@@ -58,18 +58,19 @@ pub struct CheckoutSessionSubscriptionDataParams {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Customer {
     pub id: String,
-    pub subscriptions: Vec<Subscription>,
-    pub invoice_settings: CustomerInvoiceSettings,
+    pub subscriptions: Option<Vec<Subscription>>,
+    pub invoice_settings: Option<CustomerInvoiceSettings>,
     // TODO
 }
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct CustomerParams {
-    pub email: String,
+    pub email: Option<String>,
     pub address: Option<AddressParams>,
-    pub tax_id_data: Vec<CustomerTaxIdDataParams>,
+    pub tax_id_data: Option<Vec<CustomerTaxIdDataParams>>,
     pub metadata: Option<HashMap<String, String>>,
-    pub expands: Option<Vec<String>>,
+    #[serde(skip)]
+    pub expand: Option<Vec<String>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -114,4 +115,11 @@ pub struct Subscription {
 #[serde(rename_all = "snake_case")]
 pub enum TaxIdType {
     EuVat,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Error {
+    pub r#type: String,
+    pub code: String,
+    pub message: String,
 }

@@ -1,4 +1,4 @@
-use crate::{Actor, Error, Service};
+use crate::{Actor, Error, Service, consts::NamespaceType};
 use stdx::{stripe, uuid::Uuid};
 
 impl Service {
@@ -10,7 +10,10 @@ impl Service {
         let namespace = self.repo.find_namespace_by_id(&self.db, namespace_id).await?;
         let customer = self.repo.find_customer_by_namespace_id(&self.db, namespace_id).await?;
 
-        let return_url = format!("{}/group/{}/billing/sync", &self.config.base_url, &namespace.path);
+        let return_url = match namespace.r#type {
+            NamespaceType::User => format!("{}/preferences/billing/sync", &self.config.base_url),
+            NamespaceType::Group => format!("{}/groups/{}/billing/sync", &self.config.base_url, &namespace.path),
+        };
         // returnURL := fmt.Sprintf("%s/groups/%s/-/billing/sync", service.config.BaseURL, namespace.Namespace.Path)
 
         let portal_params = stripe::model::BillingPortalSessionParams {

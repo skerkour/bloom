@@ -32,6 +32,7 @@ regex = "1"
 reqwest = { version = "0.10", default-features = false, features = ["json", "rustls-tls"] }
 ring = "0.16"
 serde = { version = "1", features = ["derive"] }
+serde_qs = "0.8"
 sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }
 thiserror = "1"
 tokio = { version = "0.2", features = ["full"] }

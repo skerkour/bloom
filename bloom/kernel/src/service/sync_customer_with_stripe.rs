@@ -52,13 +52,16 @@ impl Service {
             "invoice_settings.default_payment_method".into(),
         ];
         let stripe_customer_params = stripe::model::CustomerParams {
-            expands: Some(expands),
+            expand: Some(expands),
             ..Default::default()
         };
-        let stripe_customer = self.stripe_client.get_customer(stripe_customer_params).await?;
+        let stripe_customer = self
+            .stripe_client
+            .get_customer(&customer.stripe_customer_id, stripe_customer_params)
+            .await?;
 
-        if stripe_customer.subscriptions.len() == 1 {
-            let subscription = stripe_customer.subscriptions[0].clone();
+        if stripe_customer.subscriptions.is_some() && stripe_customer.subscriptions.clone().unwrap().len() == 1 {
+            let subscription = stripe_customer.subscriptions.unwrap()[0].clone();
             customer.stripe_subscription_id = Some(subscription.id);
             customer.stripe_price_id = Some(subscription.plan.id);
             customer.stripe_product_id = Some(subscription.plan.product.id);
@@ -79,8 +82,16 @@ impl Service {
             customer.stripe_product_id = None;
         }
 
-        if let Some(ref default_payment_method) = stripe_customer.invoice_settings.default_payment_method {
-            customer.stripe_default_payment_method_id = Some(default_payment_method.id.clone());
+        if stripe_customer.invoice_settings.is_some() && stripe_customer.invoice_settings.is_some() {
+            customer.stripe_default_payment_method_id = Some(
+                stripe_customer
+                    .invoice_settings
+                    .unwrap()
+                    .default_payment_method
+                    .unwrap()
+                    .id
+                    .clone(),
+            );
         } else {
             customer.stripe_default_payment_method_id = None;
         }
