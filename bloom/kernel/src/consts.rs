@@ -189,6 +189,7 @@ pub const INVALID_NAMESPACES: &[&str] = &[
     "namespace",
     "namespaces",
     "news",
+    "newsletter",
     "no-reply",
     "noreply",
     "notes",
