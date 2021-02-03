@@ -70,7 +70,6 @@
           :headers="contactsHeaders"
           :items="contacts"
           item-key="id"
-          hide-default-footer
           :loading="loading"
         >
           <template v-slot:no-data>
