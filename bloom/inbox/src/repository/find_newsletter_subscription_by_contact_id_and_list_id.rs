@@ -10,11 +10,11 @@ impl Repository {
         db: C,
         contact_id: Uuid,
         list_id: Uuid,
-    ) -> Result<entities::NewsletterList, Error> {
+    ) -> Result<entities::NewsletterListSubscription, Error> {
         const QUERY: &str = "SELECT * FROM newsletter_lists_subscriptions
             WHERE contact_id = $1 AND list_id = $2";
 
-        match sqlx::query_as::<_, entities::NewsletterList>(QUERY)
+        match sqlx::query_as::<_, entities::NewsletterListSubscription>(QUERY)
             .bind(contact_id)
             .bind(list_id)
             .fetch_optional(db)
