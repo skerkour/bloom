@@ -9,7 +9,6 @@ use std::collections::HashMap;
 use stdx::{chrono::Utc, ulid::Ulid, uuid::Uuid};
 
 impl Service {
-    // TODO: check if list/contact relation exists
     pub async fn import_contacts(
         &self,
         actor: Actor,
@@ -135,18 +134,29 @@ impl Service {
                 Err(err) => Err(err),
             }?;
 
-            // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
             if let Some(ref list) = list {
-                let subscription = NewsletterListSubscription {
-                    id: Uuid::new_v4(),
-                    created_at: now,
-                    updated_at: now,
-                    list_id: list.id,
-                    contact_id: contact.id,
-                };
-                self.repo
-                    .create_newsletter_list_subscription(&mut tx, &subscription)
-                    .await?;
+                let subscription_res = self
+                    .repo
+                    .find_newsletter_subscription_by_contact_id_and_list_id(&mut tx, contact.id, list.id)
+                    .await;
+                match subscription_res {
+                    Ok(_) => Ok(()),
+                    Err(Error::NewsletterSubscriptionNotFound) => {
+                        // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
+                        let subscription = NewsletterListSubscription {
+                            id: Uuid::new_v4(),
+                            created_at: now,
+                            updated_at: now,
+                            list_id: list.id,
+                            contact_id: contact.id,
+                        };
+                        self.repo
+                            .create_newsletter_list_subscription(&mut tx, &subscription)
+                            .await?;
+                        Ok(())
+                    }
+                    Err(err) => Err(err),
+                }?;
             }
 
             contacts.push(contact);

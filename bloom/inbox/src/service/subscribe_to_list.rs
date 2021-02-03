@@ -67,7 +67,7 @@ impl Service {
             .find_newsletter_subscription_by_contact_id_and_list_id(&mut tx, contact.id, list.id)
             .await;
         match subscription_res {
-            Ok(_) => return Ok(()),
+            Ok(_) => Ok(()),
             Err(Error::NewsletterSubscriptionNotFound) => {
                 // we generate a random Uuid instad of a Ulid to prevent unsubscribe bruteforcing
                 let subscription = NewsletterListSubscription {
