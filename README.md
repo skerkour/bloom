@@ -50,7 +50,7 @@ If you want to say thanks or have a question, please use the [Dicussions tab](ht
 
 ## Sponsorship
 
-You find the project awesome and want to contribute financially? Feel free to create an account
+Do you find the project awesome and want to contribute financially? Feel free to create an account
 on https://bloom.sh and subscribe to a plan.
 
 
