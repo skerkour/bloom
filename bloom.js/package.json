@@ -22,6 +22,6 @@
   "homepage": "https://github.com/skerkour/bloom",
   "dependencies": {},
   "devDependencies": {
-    "uglify-js": "^3.12.5"
+    "uglify-js": "^3.12.6"
   }
 }
