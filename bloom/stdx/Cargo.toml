@@ -35,7 +35,7 @@ serde = { version = "1", features = ["derive"] }
 serde_qs = "0.8"
 sqlx = { version = "0.4", features = [ "runtime-actix-rustls", "uuid", "json", "postgres", "migrate", "chrono", "time", "ipnetwork" ] }
 thiserror = "1"
-tokio = { version = "0.2", features = ["full"] }
+tokio = { version = "1.1", features = ["full"] }
 tryhard = { version = "0.2", default-features = false, features = ["tokio-02"] }
 uuid = { version = "0.8", features = ["serde", "v4"] }
 url = "2"
