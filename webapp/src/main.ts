@@ -62,6 +62,7 @@ if (config.sentryDsn) {
     dsn: config.sentryDsn,
     integrations: [new VueIntegration({ Vue, attachProps: false })],
     environment: config.env,
+    autoSessionTracking: false,
   });
 }
 
