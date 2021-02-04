@@ -11,7 +11,7 @@ impl Repository {
     ) -> Result<Vec<entities::Message>, Error> {
         const QUERY: &str = "SELECT * FROM inbox_messages
             WHERE conversation_id = $1
-            ORDER BY id DESC";
+            ORDER BY id";
 
         match sqlx::query_as::<_, entities::Message>(QUERY)
             .bind(conversation_id)
