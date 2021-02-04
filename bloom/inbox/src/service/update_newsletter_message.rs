@@ -27,13 +27,13 @@ impl Service {
         }
 
         // clean and validate input
-        let name = input.name.trim();
+        let name = input.name.trim().to_string();
         self.validate_newsletter_message_name(&name)?;
 
-        let subject = input.subject.trim();
+        let subject = input.subject.trim().to_string();
         self.validate_newsletter_message_subject(&subject)?;
 
-        let body = input.body.trim();
+        let body = input.body.trim().to_string();
         self.validate_newsletter_message_body(&body)?;
 
         let body_html = self.kernel_service.render_markdown(&body).await?;
