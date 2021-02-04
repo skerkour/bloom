@@ -95,6 +95,17 @@ export class KernelService {
 
   async createGroup(input: CreateGroup): Promise<void> {
     const group: Group = await this.apiClient.post(Commands.createGroup, input);
+
+    const namespace: Namespace = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      id: group.namespace_id!,
+      name: group.name,
+      path: group.path,
+      avatar_url: group.avatar_url,
+    };
+    this.store.commit(Mutation.ADD_NAMESPACE, namespace);
+    this.store.commit(Mutation.SET_CURRENT_NAMESPACE, namespace);
+
     this.router.push({ path: `/groups/${group.path}` });
   }
 
