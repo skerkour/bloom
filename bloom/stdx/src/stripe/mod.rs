@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 pub mod model;
 
+// TODO: use https://docs.rs/async-stripe ?
+
 #[derive(thiserror::Error, Debug, Clone)]
 pub enum Error {
     #[error("stripe: Unknown: {0}")]
