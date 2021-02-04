@@ -57,7 +57,7 @@
           <v-icon>mdi-chat-processing-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>Chabtox</v-list-item-title>
+          <v-list-item-title>Chatbox</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
