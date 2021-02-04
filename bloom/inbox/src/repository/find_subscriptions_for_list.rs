@@ -11,7 +11,7 @@ impl Repository {
         list_id: Uuid,
     ) -> Result<Vec<entities::NewsletterListSubscription>, Error> {
         const QUERY: &str = "SELECT * FROM newsletter_lists_subscriptions
-            WHERE list_id = $2";
+            WHERE list_id = $1";
 
         match sqlx::query_as::<_, entities::NewsletterListSubscription>(QUERY)
             .bind(list_id)
