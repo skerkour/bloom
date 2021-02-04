@@ -22,12 +22,10 @@
 
                   <v-list-item-content class="text-left">
                     <v-list-item-title>
-                      <!-- {{ conversation.contact.name }} -->
-                      Title
+                      {{ conversation.conversation.name }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                  <!-- {{ conversation.messages[conversation.messages.length - 1].bodyHtml }} -->
-                      Subtitle
+                      {{ conversation.messages[conversation.messages.length - 1].body_html }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
 
@@ -63,7 +61,7 @@
         <!-- <router-link :to="`/${projectFullPath}/-/contacts/${selectedConversation.contact.id}`">
             {{ selectedConversation.contact.name }}
             </router-link> -->
-            Title
+            {{ selectedConversation.conversation.name }}
           </v-toolbar-title>
         </v-app-bar>
 
