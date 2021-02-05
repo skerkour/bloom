@@ -3,7 +3,7 @@ use crate::Service;
 use kernel::Actor;
 
 impl Service {
-    pub async fn delete_event(&self, actor: Actor, input: DeleteEventInput) -> Result<(), kernel::Error> {
+    pub async fn delete_event(&self, _actor: Actor, _input: DeleteEventInput) -> Result<(), kernel::Error> {
         todo!();
     }
 }
