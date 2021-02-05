@@ -390,6 +390,28 @@ pub async fn run(
                                     ),
                             ),
                     )
+                    // calendar
+                    .service(
+                        web::scope("/calendar")
+                            .service(
+                                web::scope("/commands")
+                                    .service(
+                                        web::resource("/create_event")
+                                            .route(web::post().to(api::calendar::commands::create_event)),
+                                    )
+                                    .service(
+                                        web::resource("/update_event")
+                                            .route(web::post().to(api::calendar::commands::update_event)),
+                                    )
+                                    .service(
+                                        web::resource("/delete_event")
+                                            .route(web::post().to(api::calendar::commands::delete_event)),
+                                    ),
+                            )
+                            .service(web::scope("/queries").service(
+                                web::resource("/events").route(web::post().to(api::calendar::queries::events)),
+                            )),
+                    )
                     .default_service(
                         // 404 for GET request
                         web::resource("").to(api::p404),

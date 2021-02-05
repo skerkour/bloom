@@ -27,7 +27,7 @@ pub struct DeleteEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FindEvents {
+pub struct Events {
     pub namespace_id: Id,
     pub start_at: Option<Time>,
     pub end_at: Option<Time>,
