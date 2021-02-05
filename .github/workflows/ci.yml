@@ -26,10 +26,10 @@ jobs:
           rustc --version
           cargo clippy --version
 
-      # - name: Lint
-      #   run: |
-      #     cd bloom
-      #     make lint
+      - name: Lint
+        run: |
+          cd bloom
+          make lint
 
       - name: Test
         # make test
