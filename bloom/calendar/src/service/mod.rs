@@ -10,6 +10,7 @@ mod create_event;
 mod delete_event;
 mod find_events;
 mod update_event;
+mod validators;
 
 #[derive(Debug)]
 pub struct Service {
