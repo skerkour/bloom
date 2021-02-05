@@ -10,3 +10,25 @@ pub struct CreateEvent {
     pub start_at: Time,
     pub end_at: Time,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateEvent {
+    pub event_id: Id,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub location: Option<String>,
+    pub start_at: Option<Time>,
+    pub end_at: Option<Time>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeleteEvent {
+    pub event_id: Id,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FindEvents {
+    pub namespace_id: Id,
+    pub start_at: Option<Time>,
+    pub end_at: Option<Time>,
+}
