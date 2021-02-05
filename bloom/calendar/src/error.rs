@@ -17,11 +17,9 @@ pub enum Error {
 }
 
 impl std::convert::From<sqlx::Error> for Error {
-    fn from(err: sqlx::Error) -> Self {
-        match err {
-            // Not found errors should be catched manually
-            _ => Error::Internal,
-        }
+    fn from(_: sqlx::Error) -> Self {
+        // Not found errors should be catched manually
+        Error::Internal
     }
 }
 
