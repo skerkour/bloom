@@ -26,6 +26,7 @@ import { InboxService, InboxServiceInjector } from './domain/inbox/service';
 import { AnalyticsService, AnalyticsServiceInjector } from './domain/analytics/service';
 import { FilesService, FilesServiceInjector } from './domain/files/service';
 import { NewsletterService, NewsletterServiceInjector } from './domain/newsletter/service';
+import { CalendarService, CalendarServiceInjector } from './domain/calendar/service';
 
 const config = new Config();
 const storage = new Storage();
@@ -37,7 +38,7 @@ const kernelService = new KernelService(apiClient, store, router);
 const analyticsService = new AnalyticsService(apiClient, store);
 const inboxService = new InboxService(apiClient, store, router);
 const usersService = new UsersService(apiClient, store, router);
-const groupsService = new GroupsService(apiClient, router);
+const groupsService = new GroupsService(apiClient);
 const projectsService = new ProjectsService(apiClient, router, kernelService);
 const namespacesService = new NamespacesService(apiClient, store);
 const supportService = new SupportService(apiClient, store, router);
@@ -47,6 +48,7 @@ const operationsService = new OperationsService(apiClient, router);
 const toolsService = new ToolsService(apiClient);
 const filesService = new FilesService(apiClient, store);
 const newsletterService = new NewsletterService(apiClient, store, router);
+const calendarService = new CalendarService(apiClient, store);
 
 if (config.env === 'production') {
   Vue.config.productionTip = false;
@@ -82,6 +84,7 @@ Vue.use(OperationsServiceInjector, operationsService);
 Vue.use(ToolsServiceInjector, toolsService);
 Vue.use(FilesServiceInjector, filesService);
 Vue.use(NewsletterServiceInjector, newsletterService);
+Vue.use(CalendarServiceInjector, calendarService);
 
 
 async function main() {
