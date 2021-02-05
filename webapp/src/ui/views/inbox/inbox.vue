@@ -31,7 +31,7 @@
 
                   <v-list-item-action>
                     <v-list-item-action-text>
-                      {{ calendar(conversation.last_message_at) }}
+                      {{ calendar(conversation.conversation.last_message_at) }}
                     </v-list-item-action-text>
                   </v-list-item-action>
 
