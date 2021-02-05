@@ -8,6 +8,7 @@ pub struct ServerContext {
     pub files_service: Arc<files::Service>,
     pub analytics_service: Arc<analytics::Service>,
     pub inbox_service: Arc<inbox::Service>,
+    pub calendar_service: Arc<calendar::Service>,
 }
 
 #[derive(Clone)]

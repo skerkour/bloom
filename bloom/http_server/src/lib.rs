@@ -19,6 +19,7 @@ pub async fn run(
     files_service: Arc<files::Service>,
     analytics_service: Arc<analytics::Service>,
     inbox_service: Arc<inbox::Service>,
+    calendar_service: Arc<calendar::Service>,
 ) -> Result<(), ::kernel::Error> {
     let config = kernel_service.config();
     let context = Arc::new(ServerContext {
@@ -26,6 +27,7 @@ pub async fn run(
         files_service,
         analytics_service,
         inbox_service,
+        calendar_service,
     });
 
     let endpoint = format!("0.0.0.0:{}", config.http.port);

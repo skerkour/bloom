@@ -16,5 +16,5 @@ pub struct Event {
     pub start_at: DateTime<Utc>,
     pub end_at: DateTime<Utc>,
 
-    pub namespace_id: Option<Uuid>,
+    pub namespace_id: Uuid,
 }
