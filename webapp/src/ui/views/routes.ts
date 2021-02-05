@@ -27,6 +27,7 @@ import InboxRoutes from './inbox/routes';
 import AnalyticsRoutes from './analytics/routes';
 import NewsletterRoutes from './newsletter/routes';
 import FilesRoutes from './files/routes';
+import CalendarRoutes from './calendar/routes';
 
 const StatusView = () => import(/* webpackChunkName: "chunk-projects-operations" */ './status.vue');
 
@@ -133,6 +134,7 @@ const routes: Array<RouteConfig> = [
   ...InboxRoutes,
   ...NewsletterRoutes,
   ...FilesRoutes,
+  ...CalendarRoutes,
   ...AnalyticsRoutes,
   ...GroupsRoutes,
   ...ProjectsRoutes,
