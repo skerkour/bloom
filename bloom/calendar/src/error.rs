@@ -8,6 +8,8 @@ pub enum Error {
     EventDescriptionIsTooLong,
     EventEndDateCantBeBeforeStartDate,
     EventDatesAreInvalid,
+    EventLocationIsTooLong,
+    EventLocationIsInvalid,
 
     // Other
     Internal,
@@ -37,6 +39,8 @@ impl std::convert::From<Error> for kernel::Error {
             Error::EventEndDateCantBeBeforeStartDate => {
                 kernel::Error::InvalidArgument(String::from("Start date canoot be after End date."))
             }
+            Error::EventLocationIsTooLong => kernel::Error::InvalidArgument(String::from("Location is too long.")),
+            Error::EventLocationIsInvalid => kernel::Error::InvalidArgument(String::from("Location is not valid.")),
 
             // Other
             Error::Internal => kernel::Error::Internal(String::new()),

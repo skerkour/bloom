@@ -23,6 +23,18 @@ impl Service {
         Ok(())
     }
 
+    pub fn validate_event_location(&self, location: &str) -> Result<(), Error> {
+        if location.len() > consts::EVENT_LOCATION_MAX_LENGTH {
+            return Err(Error::EventLocationIsTooLong);
+        }
+
+        if location.contains('\n') {
+            return Err(Error::EventLocationIsInvalid);
+        }
+
+        Ok(())
+    }
+
     pub fn validate_event_dates(&self, start_at: DateTime<Utc>, end_at: DateTime<Utc>) -> Result<(), Error> {
         if end_at < start_at {
             return Err(Error::EventEndDateCantBeBeforeStartDate);
