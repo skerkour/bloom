@@ -575,6 +575,7 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "analytics",
+ "calendar",
  "clap",
  "files",
  "http_server",
