@@ -681,6 +681,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "calendar"
+version = "0.1.0"
+dependencies = [
+ "kernel",
+ "stdx",
+]
+
+[[package]]
 name = "cargo-platform"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1524,6 +1532,7 @@ dependencies = [
  "actix-files",
  "actix-web",
  "analytics",
+ "calendar",
  "files",
  "inbox",
  "kernel",
