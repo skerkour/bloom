@@ -1,5 +1,5 @@
 use super::Repository;
-use crate::{Error};
+use crate::Error;
 use kernel::db::Queryer;
 use stdx::{log::error, sqlx, uuid::Uuid};
 
