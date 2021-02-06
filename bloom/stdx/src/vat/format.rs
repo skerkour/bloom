@@ -60,8 +60,6 @@ lazy_static! {
         m.insert("ES".to_string(), Regex::new(r"^ES[A-Z0-9]\d{7}[A-Z0-9]$").unwrap());
         // Sweden
         m.insert("SE".to_string(), Regex::new(r"^SE\d{10}01$").unwrap());
-        // United Kingdom
-        m.insert("GB".to_string(), Regex::new(r"^(GB(GD|HA)\d{3}|GB\d{9}|GB\d{12})$").unwrap());
 
         m
     };
@@ -150,8 +148,6 @@ mod tests {
     #[test]
     fn test_clean_vat_number() {
         let numbers = vec![
-            ("GB 943413729", "GB943413729"),
-            ("GB-943413729", "GB943413729"),
             ("LU26375245", "LU26375245"),
             ("lu26375245", "LU26375245"),
         ];

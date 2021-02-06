@@ -2,7 +2,7 @@ use super::Error;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 
-pub const RATES_NUMBER: usize = 28;
+pub const RATES_NUMBER: usize = 27;
 
 lazy_static! {
     // very basic and only contains the main rate
@@ -30,8 +30,6 @@ lazy_static! {
         m.insert("FI".to_string(), 24);
         // France
         m.insert("FR".to_string(), 20);
-        // United Kingdom
-        m.insert("GB".to_string(), 20);
         // Greece
         m.insert("GR".to_string(), 24);
         // Croatia
