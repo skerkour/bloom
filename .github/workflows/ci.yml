@@ -20,7 +20,6 @@ jobs:
           rustup update
           rustup component add clippy
           rustup install nightly
-          rustup component add rustfmt --toolchain nightly
 
       - name: Toolchain info
         run: |
@@ -28,10 +27,10 @@ jobs:
           rustc --version
           cargo clippy --version
 
-      - name: Lint
-        run: |
-          cd bloom
-          make lint
+      # - name: Lint
+      #   run: |
+      #     cd bloom
+      #     make lint
 
       - name: Test
         # make test
