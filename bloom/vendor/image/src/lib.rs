@@ -186,6 +186,7 @@ pub mod flat;
 /// | ICO    | Yes | Yes |
 /// | TIFF   | Baseline(no fax support) + LZW + PackBits | RGB8, RGBA8, Gray8 |
 /// | WebP   | Lossy(Luma channel only) | No |
+/// | AVIF   | Only 8-bit | Lossy |
 /// | PNM    | PBM, PGM, PPM, standard PAM | Yes |
 /// | DDS    | DXT1, DXT3, DXT5 | No |
 /// | TGA    | Yes | RGB8, RGBA8, BGR8, BGRA8, Gray8, GrayA8 |
@@ -213,7 +214,7 @@ pub mod flat;
 ///
 /// Re-exports of dependencies that reach version `1` will be discussed when it happens.
 pub mod codecs {
-    #[cfg(feature = "avif")]
+    #[cfg(any(feature = "avif-encoder", feature = "avif-decoder"))]
     pub mod avif;
     #[cfg(feature = "bmp")]
     pub mod bmp;
@@ -243,7 +244,7 @@ pub mod codecs {
     pub mod webp;
 }
 
-#[cfg(feature = "avif")]
+#[cfg(feature = "avif-encoder")]
 #[deprecated = "Use codecs::avif instead"]
 pub mod avif {
     //! Encoding of AVIF images.
@@ -282,7 +283,7 @@ pub mod farbfeld {
 pub mod gif {
     //! Decoding of GIF Images
     #[allow(deprecated)]
-    pub use crate::codecs::gif::{Encoder, GifDecoder, GifEncoder, GifReader};
+    pub use crate::codecs::gif::{Encoder, GifDecoder, GifEncoder, GifReader, Repeat};
 }
 #[cfg(feature = "hdr")]
 #[deprecated = "Use codecs::hdr instead"]

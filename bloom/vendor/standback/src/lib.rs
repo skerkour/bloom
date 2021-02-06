@@ -43,6 +43,17 @@
 //! The following methods and constants are available via the prelude:
 //!
 //! ```rust,ignore
+//! // 1.50
+//! bool::then
+//! btree_map::Entry::or_insert_with_key
+//! hash_map::Entry::or_insert_with_key
+//! f32::clamp
+//! f64::clamp
+//! Ord::clamp
+//! RefCell::take
+//! slice::fill
+//! UnsafeCell::get_mut
+//!
 //! // 1.49
 //! slice::select_nth_unstable
 //! slice::select_nth_unstable_by
@@ -565,6 +576,8 @@ mod v1_47;
 mod v1_48;
 #[cfg(__standback_before_1_49)]
 mod v1_49;
+#[cfg(__standback_before_1_50)]
+mod v1_50;
 
 pub mod prelude {
     #[cfg(__standback_before_1_42)]
@@ -622,6 +635,12 @@ pub mod prelude {
     pub use crate::v1_48::Slice_v1_48;
     #[cfg(__standback_before_1_49)]
     pub use crate::v1_49::Slice_v1_49;
+    #[cfg(all(__standback_before_1_50, feature = "std"))]
+    pub use crate::v1_50::{BTreeMapEntry_v1_50, HashMapEntry_v1_50};
+    #[cfg(__standback_before_1_50)]
+    pub use crate::v1_50::{
+        Bool_v1_50, Float_v1_50, Ord_v1_50, RefCell_v1_50, Slice_v1_50, UnsafeCell_v1_50,
+    };
     #[cfg(__standback_before_1_39)]
     pub use core::unimplemented as todo;
 }

@@ -12,6 +12,7 @@ members = [
   "analytics",
   "files",
   "inbox",
+  "calendar",
 ]
 
 # to be able to run with `cargo run`, `check` and so on without selecting a specific package with `-p`

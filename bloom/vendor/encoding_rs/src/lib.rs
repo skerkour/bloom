@@ -679,8 +679,12 @@
 //! See the section [_UTF-16LE, UTF-16BE and Unicode Encoding Schemes_](#utf-16le-utf-16be-and-unicode-encoding-schemes)
 //! for discussion about the UTF-16 family.
 
+#![no_std]
 #![cfg_attr(feature = "simd-accel", feature(stdsimd, core_intrinsics))]
 
+#[cfg_attr(test, macro_use)]
+extern crate alloc;
+extern crate core;
 #[macro_use]
 extern crate cfg_if;
 
@@ -746,10 +750,12 @@ use crate::ascii::iso_2022_jp_ascii_valid_up_to;
 use crate::utf_8::utf8_valid_up_to;
 use crate::variant::*;
 
-use std::borrow::Cow;
-use std::cmp::Ordering;
-use std::hash::Hash;
-use std::hash::Hasher;
+use alloc::borrow::Cow;
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::cmp::Ordering;
+use core::hash::Hash;
+use core::hash::Hasher;
 
 #[cfg(feature = "serde")]
 use serde::de::Visitor;
@@ -3022,7 +3028,7 @@ impl Encoding {
                 ascii_valid_up_to(bytes)
             };
             if valid_up_to == bytes.len() {
-                let str: &str = unsafe { std::str::from_utf8_unchecked(bytes) };
+                let str: &str = unsafe { core::str::from_utf8_unchecked(bytes) };
                 return (Cow::Borrowed(str), false);
             }
             let decoder = self.new_decoder_without_bom_handling();
@@ -3041,7 +3047,7 @@ impl Encoding {
             unsafe {
                 let vec = string.as_mut_vec();
                 vec.set_len(valid_up_to);
-                std::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
+                core::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
             }
             (decoder, string, valid_up_to)
         } else {
@@ -3114,7 +3120,7 @@ impl Encoding {
         if self == UTF_8 {
             let valid_up_to = utf8_valid_up_to(bytes);
             if valid_up_to == bytes.len() {
-                let str: &str = unsafe { std::str::from_utf8_unchecked(bytes) };
+                let str: &str = unsafe { core::str::from_utf8_unchecked(bytes) };
                 return Some(Cow::Borrowed(str));
             }
             return None;
@@ -3126,7 +3132,7 @@ impl Encoding {
                 ascii_valid_up_to(bytes)
             };
             if valid_up_to == bytes.len() {
-                let str: &str = unsafe { std::str::from_utf8_unchecked(bytes) };
+                let str: &str = unsafe { core::str::from_utf8_unchecked(bytes) };
                 return Some(Cow::Borrowed(str));
             }
             let decoder = self.new_decoder_without_bom_handling();
@@ -3140,7 +3146,7 @@ impl Encoding {
             unsafe {
                 let vec = string.as_mut_vec();
                 vec.set_len(valid_up_to);
-                std::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
+                core::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
             }
             (decoder, string, &bytes[valid_up_to..])
         } else {
@@ -3228,7 +3234,7 @@ impl Encoding {
         );
         unsafe {
             vec.set_len(valid_up_to);
-            std::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
+            core::ptr::copy_nonoverlapping(bytes.as_ptr(), vec.as_mut_ptr(), valid_up_to);
         }
         let mut total_read = valid_up_to;
         let mut total_had_errors = false;
@@ -3357,6 +3363,20 @@ impl PartialEq for Encoding {
 
 impl Eq for Encoding {}
 
+#[cfg(test)]
+impl PartialOrd for Encoding {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        (self as *const Encoding as usize).partial_cmp(&(other as *const Encoding as usize))
+    }
+}
+
+#[cfg(test)]
+impl Ord for Encoding {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self as *const Encoding as usize).cmp(&(other as *const Encoding as usize))
+    }
+}
+
 impl Hash for Encoding {
     #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -3364,9 +3384,9 @@ impl Hash for Encoding {
     }
 }
 
-impl std::fmt::Debug for Encoding {
+impl core::fmt::Debug for Encoding {
     #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "Encoding {{ {} }}", self.name)
     }
 }
@@ -3389,7 +3409,7 @@ struct EncodingVisitor;
 impl<'de> Visitor<'de> for EncodingVisitor {
     type Value = &'static Encoding;
 
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
         formatter.write_str("a valid encoding label")
     }
 
@@ -3400,7 +3420,7 @@ impl<'de> Visitor<'de> for EncodingVisitor {
         if let Some(enc) = Encoding::for_label(value.as_bytes()) {
             Ok(enc)
         } else {
-            Err(E::custom(format!("invalid encoding label: {}", value)))
+            Err(E::custom(alloc::format!("invalid encoding label: {}", value)))
         }
     }
 }
@@ -3674,7 +3694,7 @@ impl Decoder {
                         1,
                         checked_mul(3, checked_div(byte_length.checked_add(1), 2)),
                     ) {
-                        let utf_bom = std::cmp::max(utf8_bom, utf16_bom);
+                        let utf_bom = core::cmp::max(utf8_bom, utf16_bom);
                         let encoding = self.encoding();
                         if encoding == UTF_8 || encoding == UTF_16LE || encoding == UTF_16BE {
                             // No need to consider the internal state of the underlying decoder,
@@ -3683,7 +3703,7 @@ impl Decoder {
                         } else if let Some(non_bom) =
                             self.variant.max_utf8_buffer_length(byte_length)
                         {
-                            return Some(std::cmp::max(utf_bom, non_bom));
+                            return Some(core::cmp::max(utf_bom, non_bom));
                         }
                     }
                 }
@@ -3701,7 +3721,7 @@ impl Decoder {
                             // because it is at start, because no data has reached it yet.
                             return Some(utf8_bom);
                         } else if let Some(non_bom) = self.variant.max_utf8_buffer_length(sum) {
-                            return Some(std::cmp::max(utf8_bom, non_bom));
+                            return Some(core::cmp::max(utf8_bom, non_bom));
                         }
                     }
                 }
@@ -3727,7 +3747,7 @@ impl Decoder {
                             // because it is at start, because no data has reached it yet.
                             return Some(utf16_bom);
                         } else if let Some(non_bom) = self.variant.max_utf8_buffer_length(sum) {
-                            return Some(std::cmp::max(utf16_bom, non_bom));
+                            return Some(core::cmp::max(utf16_bom, non_bom));
                         }
                     }
                 }
@@ -3766,7 +3786,7 @@ impl Decoder {
                         1,
                         checked_mul(3, checked_div(byte_length.checked_add(1), 2)),
                     ) {
-                        let utf_bom = std::cmp::max(utf8_bom, utf16_bom);
+                        let utf_bom = core::cmp::max(utf8_bom, utf16_bom);
                         let encoding = self.encoding();
                         if encoding == UTF_8 || encoding == UTF_16LE || encoding == UTF_16BE {
                             // No need to consider the internal state of the underlying decoder,
@@ -3776,7 +3796,7 @@ impl Decoder {
                             .variant
                             .max_utf8_buffer_length_without_replacement(byte_length)
                         {
-                            return Some(std::cmp::max(utf_bom, non_bom));
+                            return Some(core::cmp::max(utf_bom, non_bom));
                         }
                     }
                 }
@@ -3796,7 +3816,7 @@ impl Decoder {
                         } else if let Some(non_bom) =
                             self.variant.max_utf8_buffer_length_without_replacement(sum)
                         {
-                            return Some(std::cmp::max(utf8_bom, non_bom));
+                            return Some(core::cmp::max(utf8_bom, non_bom));
                         }
                     }
                 }
@@ -3824,7 +3844,7 @@ impl Decoder {
                         } else if let Some(non_bom) =
                             self.variant.max_utf8_buffer_length_without_replacement(sum)
                         {
-                            return Some(std::cmp::max(utf16_bom, non_bom));
+                            return Some(core::cmp::max(utf16_bom, non_bom));
                         }
                     }
                 }
@@ -3918,7 +3938,7 @@ impl Decoder {
         // bytes of trailing garbage. No need to optimize non-ASCII-compatible
         // encodings to avoid overwriting here.
         if self.encoding != UTF_8 {
-            let max = std::cmp::min(len, trail + ascii::MAX_STRIDE_SIZE);
+            let max = core::cmp::min(len, trail + ascii::MAX_STRIDE_SIZE);
             while trail < max {
                 bytes[trail] = 0;
                 trail += 1;
@@ -4008,7 +4028,7 @@ impl Decoder {
         // bytes of trailing garbage. No need to optimize non-ASCII-compatible
         // encodings to avoid overwriting here.
         if self.encoding != UTF_8 {
-            let max = std::cmp::min(len, trail + ascii::MAX_STRIDE_SIZE);
+            let max = core::cmp::min(len, trail + ascii::MAX_STRIDE_SIZE);
             while trail < max {
                 bytes[trail] = 0;
                 trail += 1;
@@ -4081,7 +4101,7 @@ impl Decoder {
                     if let Some(utf16_bom) =
                         checked_add(1, checked_div(byte_length.checked_add(1), 2))
                     {
-                        let utf_bom = std::cmp::max(utf8_bom, utf16_bom);
+                        let utf_bom = core::cmp::max(utf8_bom, utf16_bom);
                         let encoding = self.encoding();
                         if encoding == UTF_8 || encoding == UTF_16LE || encoding == UTF_16BE {
                             // No need to consider the internal state of the underlying decoder,
@@ -4090,7 +4110,7 @@ impl Decoder {
                         } else if let Some(non_bom) =
                             self.variant.max_utf16_buffer_length(byte_length)
                         {
-                            return Some(std::cmp::max(utf_bom, non_bom));
+                            return Some(core::cmp::max(utf_bom, non_bom));
                         }
                     }
                 }
@@ -4108,7 +4128,7 @@ impl Decoder {
                             // because it is at start, because no data has reached it yet.
                             return Some(utf8_bom);
                         } else if let Some(non_bom) = self.variant.max_utf16_buffer_length(sum) {
-                            return Some(std::cmp::max(utf8_bom, non_bom));
+                            return Some(core::cmp::max(utf8_bom, non_bom));
                         }
                     }
                 }
@@ -4132,7 +4152,7 @@ impl Decoder {
                             // because it is at start, because no data has reached it yet.
                             return Some(utf16_bom);
                         } else if let Some(non_bom) = self.variant.max_utf16_buffer_length(sum) {
-                            return Some(std::cmp::max(utf16_bom, non_bom));
+                            return Some(core::cmp::max(utf16_bom, non_bom));
                         }
                     }
                 }
@@ -4267,7 +4287,7 @@ pub enum EncoderResult {
 
 impl EncoderResult {
     fn unmappable_from_bmp(bmp: u16) -> EncoderResult {
-        EncoderResult::Unmappable(::std::char::from_u32(u32::from(bmp)).unwrap())
+        EncoderResult::Unmappable(::core::char::from_u32(u32::from(bmp)).unwrap())
     }
 }
 
@@ -4847,7 +4867,7 @@ fn checked_next_power_of_two(opt: Option<usize>) -> Option<usize> {
 fn checked_min(one: Option<usize>, other: Option<usize>) -> Option<usize> {
     if let Some(a) = one {
         if let Some(b) = other {
-            Some(::std::cmp::min(a, b))
+            Some(::core::cmp::min(a, b))
         } else {
             Some(a)
         }
@@ -4872,7 +4892,7 @@ mod test_labels_names;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::borrow::Cow;
+    use alloc::borrow::Cow;
 
     fn sniff_to_utf16(
         initial_encoding: &'static Encoding,
@@ -5625,7 +5645,7 @@ mod tests {
 
     #[test]
     fn test_hash() {
-        let mut encodings = ::std::collections::HashSet::new();
+        let mut encodings = ::alloc::collections::btree_set::BTreeSet::new();
         encodings.insert(UTF_8);
         encodings.insert(ISO_2022_JP);
         assert!(encodings.contains(UTF_8));

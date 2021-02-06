@@ -14,7 +14,7 @@ You are tired of being abused by Big Companies?
 
 **We too, so we built Bloom.**
 
-Bloom is an open source and privacy-focused productivity suite: Inbox, Files, Contacts &
+Bloom is an open source and privacy-focused productivity suite: Inbox, Calendar, Files, Contacts &
 much more. **It's literally the simplest way to de-Google your life and business**.
 
 
@@ -57,5 +57,4 @@ on https://bloom.sh and subscribe to a plan.
 
 ## Security
 
-If you find a security issue affecting this project, please do not open a public issue and refer to our
-[dedicated security page](https://bloom.sh/security) instead. Thank you!
+We take Bloom's security and our users' trust very seriously. If you believe you have found a security issue in Bloom, please responsibly disclose by contacting: [https://bloom.sh/security](https://bloom.sh/security)

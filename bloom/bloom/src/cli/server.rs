@@ -70,11 +70,13 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
         ));
         let inbox_service = Arc::new(inbox::Service::new(
             kernel_service.clone(),
-            db,
+            db.clone(),
             queue.clone(),
             stdx_xss_sanitizer,
             mailer.clone(),
         ));
+        let calendar_service = Arc::new(calendar::Service::new(kernel_service.clone(), db.clone()));
+
         kernel_service.inject_missing_dependencies(files_service.clone(), inbox_service.clone());
 
         if worker_flag {
@@ -93,7 +95,14 @@ pub fn run(cli_matches: &ArgMatches) -> Result<(), kernel::Error> {
             // TODO: handle error ?
         }
 
-        http_server::run(kernel_service.clone(), files_service, analytics_service, inbox_service).await?;
+        http_server::run(
+            kernel_service.clone(),
+            files_service,
+            analytics_service,
+            inbox_service,
+            calendar_service,
+        )
+        .await?;
 
         Ok(sys.await?)
     })

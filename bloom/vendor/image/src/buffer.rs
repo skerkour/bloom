@@ -693,6 +693,7 @@ where
     /// The iterator yields the coordinates of each pixel
     /// along with a reference to them.
     /// The iteration order is x = 0 to width then y = 0 to height
+    /// Starting from the top left.
     pub fn enumerate_pixels(&self) -> EnumeratePixels<P> {
         EnumeratePixels {
             pixels: self.pixels(),
@@ -935,6 +936,21 @@ where
             <P as Pixel>::COLOR_TYPE,
             format,
         )
+    }
+}
+
+impl<P, Container> Default for ImageBuffer<P, Container>
+where
+    P: Pixel,
+    Container: Default,
+{
+    fn default() -> Self {
+        Self {
+            width: 0,
+            height: 0,
+            _phantom: PhantomData,
+            data: Default::default(),
+        }
     }
 }
 
@@ -1296,7 +1312,7 @@ pub(crate) type GrayAlpha16Image = ImageBuffer<LumaA<u16>, Vec<u16>>;
 #[cfg(test)]
 mod test {
     use super::{ImageBuffer, RgbImage};
-    use crate::color;
+    use crate::{color, Rgb};
 
     #[test]
     /// Tests if image buffers from slices work
@@ -1368,6 +1384,12 @@ mod test {
 
         assert_eq!(image.rows().count(), 1);
         assert_eq!(image.rows_mut().count(), 1);
+    }
+
+    #[test]
+    fn default() {
+        let image = ImageBuffer::<Rgb<u8>, Vec<u8>>::default();
+        assert_eq!(image.dimensions(), (0, 0));
     }
 }
 

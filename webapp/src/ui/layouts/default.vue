@@ -228,6 +228,12 @@ export default VueApp.extend({
           color: 'primary',
         },
         {
+          name: 'Calendar',
+          icon: 'mdi-calendar',
+          url: '/calendar',
+          color: 'purple lighten-1',
+        },
+        {
           name: 'Files',
           icon: 'mdi-folder',
           url: '/files',

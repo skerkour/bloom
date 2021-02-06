@@ -119,6 +119,16 @@ struct Entry<T> {
     value: UnsafeCell<MaybeUninit<T>>,
 }
 
+impl<T> Drop for Entry<T> {
+    fn drop(&mut self) {
+        unsafe {
+            if *self.present.get_mut() {
+                ptr::drop_in_place((*self.value.get()).as_mut_ptr());
+            }
+        }
+    }
+}
+
 // ThreadLocal is always Sync, even if T isn't
 unsafe impl<T: Send> Sync for ThreadLocal<T> {}
 
@@ -600,6 +610,23 @@ mod tests {
         let mut v = tls.into_iter().map(|x| *x).collect::<Vec<i32>>();
         v.sort_unstable();
         assert_eq!(vec![1, 2, 3], v);
+    }
+
+    #[test]
+    fn test_drop() {
+        let local = ThreadLocal::new();
+        struct Dropped(Arc<AtomicUsize>);
+        impl Drop for Dropped {
+            fn drop(&mut self) {
+                self.0.fetch_add(1, Relaxed);
+            }
+        }
+
+        let dropped = Arc::new(AtomicUsize::new(0));
+        local.get_or(|| Dropped(dropped.clone()));
+        assert_eq!(dropped.load(Relaxed), 0);
+        drop(local);
+        assert_eq!(dropped.load(Relaxed), 1);
     }
 
     #[test]
