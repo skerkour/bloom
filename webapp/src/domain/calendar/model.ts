@@ -14,7 +14,7 @@ export type DeleteEvent = {
   event_id: string;
 };
 
-export type Event = {
+export type CalendarEvent = {
   id: string;
   created_at: string;
   updated_at: string;
