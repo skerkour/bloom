@@ -173,3 +173,23 @@ pub struct GetCheckoutSession {
 pub struct GetCustomerPortal {
     pub namespace_id: Id,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct AdminGetUser {
+    pub user_id: Id,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AdminBlockUser {
+    pub user_id: Id,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AdminUnblockUser {
+    pub user_id: Id,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AdminGetGroup {
+    pub group_id: Id,
+}

@@ -60,6 +60,21 @@ pub async fn run(
                     .service(
                         web::scope("/kernel")
                             .service(
+                                web::scope("/admin")
+                                    .service(
+                                        web::resource("/block_user")
+                                            .route(web::post().to(api::kernel::admin::block_user)),
+                                    )
+                                    .service(web::resource("/group").route(web::post().to(api::kernel::admin::group)))
+                                    .service(web::resource("/groups").route(web::post().to(api::kernel::admin::groups)))
+                                    .service(
+                                        web::resource("/unblock_user")
+                                            .route(web::post().to(api::kernel::admin::unblock_user)),
+                                    )
+                                    .service(web::resource("/user").route(web::post().to(api::kernel::admin::user)))
+                                    .service(web::resource("/users").route(web::post().to(api::kernel::admin::users))),
+                            )
+                            .service(
                                 web::scope("/commands")
                                     // User
                                     .service(
