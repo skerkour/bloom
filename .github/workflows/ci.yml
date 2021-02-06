@@ -20,6 +20,7 @@ jobs:
           rustup update
           rustup component add clippy
           rustup install nightly
+          rustup component add rustfmt --toolchain nightly
 
       - name: Toolchain info
         run: |
