@@ -15,7 +15,7 @@ You are tired of being abused by Big Companies?
 **We too, so we built Bloom.**
 
 Bloom is an open source and privacy-focused productivity suite: Inbox, Calendar, Files, Contacts &
-much more. **It's literally the simplest way to de-Google your life and business**.
+much more. **It's literally the easiest way to de-Google your life and business**.
 
 
 --------------------------------
