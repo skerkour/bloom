@@ -3,7 +3,6 @@ import { Store } from 'vuex';
 import { AppState } from '@/app/store';
 import { UsersService } from '@/domain/users/service';
 import { GroupsService } from '@/domain/groups/service';
-import { ProjectsService } from '@/domain/projects/service';
 import { NamespacesService } from '@/domain/namespaces/service';
 import { SupportService } from '@/domain/support/service';
 import { CollaborationService } from '@/domain/collaboration/service';
@@ -30,7 +29,6 @@ abstract class VueAppClass extends Vue {
   public $inboxService!: InboxService;
   public $usersService!: UsersService;
   public $groupsService!: GroupsService;
-  public $projectsService!: ProjectsService;
   public $namespacesService!: NamespacesService;
   public $supportService!: SupportService;
   public $collaborationService!: CollaborationService;

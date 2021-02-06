@@ -19,7 +19,6 @@ import LoginRoutes from './login/routes';
 import RegisterRoutes from './register/routes';
 import PreferencesRoutes from './preferences/routes';
 import GroupsRoutes from './groups/routes';
-import ProjectsRoutes from './projects/routes';
 import NamespacesRoutes from './namespaces/routes';
 import ToolsRoutes from './tools/routes';
 import AdminRoutes from './admin/routes';
@@ -137,7 +136,6 @@ const routes: Array<RouteConfig> = [
   ...CalendarRoutes,
   ...AnalyticsRoutes,
   ...GroupsRoutes,
-  ...ProjectsRoutes,
   ...NamespacesRoutes,
 
   {
