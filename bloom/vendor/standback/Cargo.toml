@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "standback"
-version = "0.2.14"
+version = "0.2.15"
 authors = ["Jacob Pratt <open-source@jhpratt.dev>", "The Rust Project Developers"]
 build = "build.rs"
 include = ["src/**/*", "LICENSE-*", "README.md", "CHANGELOG.md", "build.rs"]

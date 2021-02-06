@@ -17,8 +17,8 @@ use crate::variant::*;
 
 cfg_if! {
     if #[cfg(feature = "simd-accel")] {
-        use ::std::intrinsics::unlikely;
-        use ::std::intrinsics::likely;
+        use ::core::intrinsics::unlikely;
+        use ::core::intrinsics::likely;
     } else {
         #[inline(always)]
         // Unsafe to match the intrinsic, which is needlessly unsafe.
@@ -236,7 +236,7 @@ pub fn convert_utf8_to_utf16_up_to_invalid(src: &[u8], dst: &mut [u16]) -> (usiz
         let mut byte = {
             let src_remaining = &src[read..];
             let dst_remaining = &mut dst[written..];
-            let length = ::std::cmp::min(src_remaining.len(), dst_remaining.len());
+            let length = ::core::cmp::min(src_remaining.len(), dst_remaining.len());
             match unsafe {
                 ascii_to_basic_latin(src_remaining.as_ptr(), dst_remaining.as_mut_ptr(), length)
             } {

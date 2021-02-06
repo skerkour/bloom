@@ -24,7 +24,9 @@
 //! The FFI binding for this module are in the
 //! [encoding_c_mem crate](https://github.com/hsivonen/encoding_c_mem).
 
-use std::borrow::Cow;
+use alloc::borrow::Cow;
+use alloc::string::String;
+use alloc::vec::Vec;
 
 use super::in_inclusive_range16;
 use super::in_inclusive_range32;
@@ -41,8 +43,8 @@ macro_rules! non_fuzz_debug_assert {
 
 cfg_if! {
     if #[cfg(feature = "simd-accel")] {
-        use ::std::intrinsics::likely;
-        use ::std::intrinsics::unlikely;
+        use ::core::intrinsics::likely;
+        use ::core::intrinsics::unlikely;
     } else {
         #[inline(always)]
         // Unsafe to match the intrinsic, which is needlessly unsafe.
@@ -85,7 +87,7 @@ macro_rules! by_unit_check_alu {
         fn $name(buffer: &[$unit]) -> bool {
             let mut offset = 0usize;
             let mut accu = 0usize;
-            let unit_size = ::std::mem::size_of::<$unit>();
+            let unit_size = ::core::mem::size_of::<$unit>();
             let len = buffer.len();
             if len >= ALU_ALIGNMENT / unit_size {
                 // The most common reason to return `false` is for the first code
@@ -157,7 +159,7 @@ macro_rules! by_unit_check_simd {
         fn $name(buffer: &[$unit]) -> bool {
             let mut offset = 0usize;
             let mut accu = 0usize;
-            let unit_size = ::std::mem::size_of::<$unit>();
+            let unit_size = ::core::mem::size_of::<$unit>();
             let len = buffer.len();
             if len >= SIMD_STRIDE_SIZE / unit_size {
                 // The most common reason to return `false` is for the first code
@@ -248,7 +250,7 @@ cfg_if! {
             // only aligned SIMD (perhaps misguidedly) and needs to deal with
             // the last code unit in a SIMD stride being part of a valid
             // surrogate pair.
-            let unit_size = ::std::mem::size_of::<u16>();
+            let unit_size = ::core::mem::size_of::<u16>();
             let src = buffer.as_ptr();
             let len = buffer.len();
             let mut offset = 0usize;
@@ -1781,7 +1783,7 @@ pub fn convert_latin1_to_utf8_partial(src: &[u8], dst: &mut [u8]) -> (usize, usi
         // src can't advance more than dst
         let src_left = src_len - total_read;
         let dst_left = dst_len - total_written;
-        let min_left = ::std::cmp::min(src_left, dst_left);
+        let min_left = ::core::cmp::min(src_left, dst_left);
         if let Some((non_ascii, consumed)) = unsafe {
             ascii_to_ascii(
                 src_ptr.add(total_read),
@@ -1850,7 +1852,7 @@ pub fn convert_latin1_to_str_partial(src: &[u8], dst: &mut str) -> (usize, usize
     let (read, written) = convert_latin1_to_utf8_partial(src, bytes);
     let len = bytes.len();
     let mut trail = written;
-    let max = ::std::cmp::min(len, trail + MAX_STRIDE_SIZE);
+    let max = ::core::cmp::min(len, trail + MAX_STRIDE_SIZE);
     while trail < max {
         bytes[trail] = 0;
         trail += 1;
@@ -1991,7 +1993,7 @@ pub fn decode_latin1<'a>(bytes: &'a [u8]) -> Cow<'a, str> {
     // >= makes later things optimize better than ==
     if up_to >= bytes.len() {
         debug_assert_eq!(up_to, bytes.len());
-        let s: &str = unsafe { ::std::str::from_utf8_unchecked(bytes) };
+        let s: &str = unsafe { ::core::str::from_utf8_unchecked(bytes) };
         return Cow::Borrowed(s);
     }
     let (head, tail) = bytes.split_at(up_to);
@@ -3152,11 +3154,11 @@ mod tests {
     #[cfg_attr(miri, ignore)] // Miri is too slow
     fn test_is_char_bidi_thoroughly() {
         for i in 0..0xD800u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             assert_eq!(is_char_bidi(c), reference_is_char_bidi(c));
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             assert_eq!(is_char_bidi(c), reference_is_char_bidi(c));
         }
     }
@@ -3178,14 +3180,14 @@ mod tests {
     fn test_is_str_bidi_thoroughly() {
         let mut buf = [0; 4];
         for i in 0..0xD800u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             assert_eq!(
                 is_str_bidi(c.encode_utf8(&mut buf[..])),
                 reference_is_char_bidi(c)
             );
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             assert_eq!(
                 is_str_bidi(c.encode_utf8(&mut buf[..])),
                 reference_is_char_bidi(c)
@@ -3198,7 +3200,7 @@ mod tests {
     fn test_is_utf8_bidi_thoroughly() {
         let mut buf = [0; 8];
         for i in 0..0xD800u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             let expect = reference_is_char_bidi(c);
             {
                 let len = {
@@ -3216,7 +3218,7 @@ mod tests {
             assert_eq!(is_utf8_bidi(&buf[..]), expect);
         }
         for i in 0xE000..0x110000u32 {
-            let c: char = ::std::char::from_u32(i).unwrap();
+            let c: char = ::core::char::from_u32(i).unwrap();
             let expect = reference_is_char_bidi(c);
             {
                 let len = {

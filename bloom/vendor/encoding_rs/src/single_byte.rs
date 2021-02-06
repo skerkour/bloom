@@ -432,7 +432,7 @@ impl SingleByteEncoder {
                                     }
                                     // The next code unit is a low surrogate.
                                     let astral: char = unsafe {
-                                        ::std::char::from_u32_unchecked(
+                                        ::core::char::from_u32_unchecked(
                                             (u32::from(non_ascii) << 10) + second
                                                 - (((0xD800u32 << 10) - 0x1_0000u32) + 0xDC00u32),
                                         )
