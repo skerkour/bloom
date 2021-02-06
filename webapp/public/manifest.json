@@ -1,7 +1,7 @@
 {
     "name":"Bloom",
     "short_name":"Bloom",
-    "description": "Our mission: Empowering people. Take back control and start getting the respect you deserve with our privacy-first apps!",
+    "description": "The easiest way to de-Google your life and business: Open Source Inbox, Calendar, Files, Contacts & much more.",
     "theme_color":"#24292e",
     "icons":[
       {
@@ -32,7 +32,7 @@
         "purpose":"maskable"
       }
     ],
-    "start_url":"/index.html",
+    "start_url":"/",
     "display":"standalone",
     "background_color":"#ffffff"
   }
