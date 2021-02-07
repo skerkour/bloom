@@ -39,7 +39,7 @@
         <b>Description</b>: {{ group.description }}
       </v-col>
 
-     <v-col cols="12">
+     <!-- <v-col cols="12">
         <h3 class="text-h5">Billing </h3>
         <p v-if="group.billing">
           <b>Plan</b>: {{ group.billing.plan }}
@@ -54,7 +54,7 @@
       <v-col cols="12">
         <h3 class="text-h5">Members </h3>
         <b-group-members-list :members="members" :loading="loading" />
-      </v-col>
+      </v-col> -->
 
     </v-row>
   </v-container>
@@ -62,7 +62,7 @@
 
 
 <script lang="ts">
-import { Group, GroupMember } from '@/api/graphql/model';
+import { Group } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import date from '@/app/filters/date';
 import BGroupMembersList from '@/ui/components/groups/members_list.vue';
@@ -85,9 +85,6 @@ export default VueApp.extend({
     groupId(): string {
       return this.$route.params.groupId;
     },
-    members(): GroupMember[] {
-      return this.group?.members ?? [];
-    },
   },
   mounted() {
     this.fetchData();
@@ -99,7 +96,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.group = await this.$groupsService.adminFetchGroup(this.groupId);
+        this.group = await this.$kernelService.adminFetchGroup(this.groupId);
       } catch (err) {
         this.error = err.message;
       } finally {

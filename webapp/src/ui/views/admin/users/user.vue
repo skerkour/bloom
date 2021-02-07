@@ -33,7 +33,7 @@
       </v-col>
 
       <v-col cols="12">
-        <b>Created at</b>: {{ date(user.createdAt) }}
+        <b>Created at</b>: {{ date(user.created_at) }}
       </v-col>
 
       <v-col cols="12">
@@ -42,7 +42,7 @@
 
       <v-col cols="12">
         <b>Admin</b>:
-        <v-chip v-if="user.isAdmin" color="success">
+        <v-chip v-if="user.is_admin" color="success">
           Admin
         </v-chip>
         <v-chip v-else>
@@ -51,24 +51,24 @@
       </v-col>
 
       <v-col cols="12">
-        <v-btn color="primary" @click="activateUser" depressed v-if="user.disabledAt">
-          Re-activate
+        <v-btn color="primary" @click="unblockUser" depressed v-if="user.blocked_at">
+          Unblock
         </v-btn>
-        <v-btn color="error" @click="deactivateUser" depressed v-else>
-          Deactivate
+        <v-btn color="error" @click="blockUser" depressed v-else>
+          Block
         </v-btn>
       </v-col>
 
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <b-admin-groups-list :groups="groups" :loading="loading" />
-      </v-col>
+      </v-col> -->
     </v-row>
   </v-container>
 </template>
 
 
 <script lang="ts">
-import { Group, User } from '@/api/graphql/model';
+import { User } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import date from '@/app/filters/date';
 import BAdminGroupsList from '@/ui/components/kernel/admin_groups_list.vue';
@@ -86,40 +86,36 @@ export default VueApp.extend({
     };
   },
   computed: {
-    username(): string {
-      return this.$route.params.username;
+    userId(): string {
+      return this.$route.params.userId;
     },
-    groups(): Group[] {
-      return this.user?.groups ?? [];
-    },
+    // groups(): Group[] {
+    //   return this.user?.groups ?? [];
+    // },
   },
   mounted() {
     this.fetchData();
   },
   methods: {
     date,
-    async deactivateUser(): Promise<void> {
+    async unblockUser(): Promise<void> {
       this.loading = true;
       this.error = '';
 
       try {
-        await this.$usersService.adminDisableUser(this.username);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.user!.disabledAt = new Date().toISOString();
+        this.user = await this.$kernelService.adminUnblockUser(this.userId);
       } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
       }
     },
-    async activateUser(): Promise<void> {
+    async blockUser(): Promise<void> {
       this.loading = true;
       this.error = '';
 
       try {
-        await this.$usersService.adminEnableUser(this.username);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.user!.disabledAt = null;
+        this.user = await this.$kernelService.adminBlockUser(this.userId);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -131,7 +127,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.user = await this.$usersService.adminFetchUser(this.username);
+        this.user = await this.$kernelService.adminFetchUser(this.userId);
       } catch (err) {
         this.error = err.message;
       } finally {
