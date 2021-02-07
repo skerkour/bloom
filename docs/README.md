@@ -1,15 +1,10 @@
 # Bloom Docs
 
-## [Glossary](glossary.md)
+
+## [Architecture](achitecture.md)
 
 
-## [Design](design.md)
-
-
-## [Rust](rust.md)
-
-
-## [Debugging](debugging.md)
+## [Development](dev.md)
 
 
 ## [Emails blocklist](emails_blocklist.md)
