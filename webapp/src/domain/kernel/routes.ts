@@ -2,6 +2,16 @@
 const prefix = 'kernel';
 const commands = 'commands';
 const queries = 'queries';
+const admin = 'admin';
+
+export const Admin = {
+  blockUser: `/${prefix}/${admin}/block_user`,
+  group: `/${prefix}/${admin}/group`,
+  groups: `/${prefix}/${admin}/groups`,
+  unblockUser: `/${prefix}/${admin}/unblock_user`,
+  user: `/${prefix}/${admin}/user`,
+  users: `/${prefix}/${admin}/users`,
+};
 
 export const Commands = {
   acceptGroupInvitation: `/${prefix}/${commands}/accept_group_invitation`,
