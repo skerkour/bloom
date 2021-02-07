@@ -71,7 +71,7 @@
 import { Group, User } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import date from '@/app/filters/date';
-import BAdminGroupsList from '@/ui/components/groups/admin_groups_list.vue';
+import BAdminGroupsList from '@/ui/components/kernel/admin_groups_list.vue';
 
 export default VueApp.extend({
   name: 'BAdminUserView',

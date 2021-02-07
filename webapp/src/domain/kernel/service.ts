@@ -49,7 +49,7 @@ export class KernelService {
     return res;
   }
 
-  async adminGroup(groupId: string): Promise<Group> {
+  async adminFetchGroup(groupId: string): Promise<Group> {
     const input: AdminGroup = {
       group_id: groupId,
     };
@@ -58,7 +58,7 @@ export class KernelService {
     return res;
   }
 
-  async adminGroups(): Promise<Group[]> {
+  async adminFetchGroups(): Promise<Group[]> {
     const res: Group[] = await this.apiClient.post(Admin.groups, {});
     return res;
   }
@@ -72,7 +72,7 @@ export class KernelService {
     return res;
   }
 
-  async adminUser(userId: string): Promise<User> {
+  async adminFetchUser(userId: string): Promise<User> {
     const input: AdminUser = {
       user_id: userId,
     };
@@ -81,7 +81,7 @@ export class KernelService {
     return res;
   }
 
-  async adminUsers(): Promise<User[]> {
+  async adminFetchUsers(): Promise<User[]> {
     const res: User[] = await this.apiClient.post(Admin.users, {});
     return res;
   }

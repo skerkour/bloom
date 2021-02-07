@@ -24,7 +24,7 @@
           {{ item.username }}
         </td>
         <td>
-          <v-chip v-if="item.isAdmin" color="success">
+          <v-chip v-if="item.is_admin" color="success">
             Admin
           </v-chip>
           <v-chip v-else>
@@ -43,7 +43,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { User } from '@/api/graphql/model';
+import { User } from '@/domain/kernel/model';
 import date from '@/app/filters/date';
 
 export default VueApp.extend({
@@ -84,7 +84,7 @@ export default VueApp.extend({
           text: 'Admin',
           align: 'start',
           sortable: true,
-          value: 'isAdmin',
+          value: 'is_admin',
         },
         {
           text: 'Email',
@@ -98,7 +98,7 @@ export default VueApp.extend({
   methods: {
     date,
     gotoUser(user: User) {
-      this.$router.push({ path: `/admin/users/${user.username}` });
+      this.$router.push({ path: `/admin/users/${user.id}` });
     },
   },
 });

@@ -95,6 +95,7 @@ export function newStore(storage: Storage): Store<AppState> {
       [Mutation.INIT](state: AppState, me: Me) {
         state.session = me.session;
         state.me = me.user;
+        state.isAdmin = me.user.is_admin!;
 
         const namespaces: Namespace[] = [{
           id: me.user.namespace_id!,

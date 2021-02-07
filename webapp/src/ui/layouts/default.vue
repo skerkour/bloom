@@ -139,7 +139,7 @@ import BGroupDrawer from '@/ui/components/groups/drawer.vue';
 import BUserPreferencesDrawer from '@/ui/components/kernel/preferences_drawer.vue';
 import BFooter from '@/ui/components/kernel/footer.vue';
 import BToolsDrawer from '@/ui/components/tools/drawer.vue';
-import BAdminDrawer from '@/ui/components/admin/drawer.vue';
+import BAdminDrawer from '@/ui/components/kernel/admin_drawer.vue';
 import BInboxDrawer from '@/ui/components/inbox/drawer.vue';
 import BFilesDrawer from '@/ui/components/files/drawer.vue';
 import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';

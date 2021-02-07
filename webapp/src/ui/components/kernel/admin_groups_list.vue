@@ -18,7 +18,7 @@
           {{ item.id }}
         </td>
         <td>
-          {{ date(item.createdAt) }}
+          {{ date(item.created_at) }}
         </td>
         <td>
           {{ item.name }}
@@ -35,7 +35,7 @@
 <script lang="ts">
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
-import { Group } from '@/api/graphql/model';
+import { Group } from '@/domain/kernel/model';
 import date from '@/app/filters/date';
 
 export default VueApp.extend({
@@ -64,7 +64,7 @@ export default VueApp.extend({
           text: 'Created At',
           align: 'start',
           sortable: true,
-          value: 'createdAt',
+          value: 'created_at',
         },
         {
           text: 'Name',
