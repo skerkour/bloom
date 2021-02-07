@@ -147,10 +147,7 @@ mod tests {
 
     #[test]
     fn test_clean_vat_number() {
-        let numbers = vec![
-            ("LU26375245", "LU26375245"),
-            ("lu26375245", "LU26375245"),
-        ];
+        let numbers = vec![("LU26375245", "LU26375245"), ("lu26375245", "LU26375245")];
         for (start, expected) in numbers {
             assert_eq!(clean_vat_number(start), expected.to_string());
         }

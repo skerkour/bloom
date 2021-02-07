@@ -19,7 +19,7 @@
 
 
 <script lang="ts">
-import { User } from '@/api/graphql/model';
+import { User } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
 import BAdminUsersList from '@/ui/components/kernel/admin_users_list.vue';
 
@@ -44,7 +44,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.users = await this.$usersService.adminFetchAllUsers();
+        this.users = await this.$kernelService.adminFetchUsers();
       } catch (err) {
         this.error = err.message;
       } finally {

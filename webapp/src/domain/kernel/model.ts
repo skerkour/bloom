@@ -13,6 +13,22 @@ export type AcceptGroupInvitation = {
   invitation_id: string;
 }
 
+export type AdminBlockUser = {
+  user_id: string;
+}
+
+export type AdminGroup = {
+  group_id: string;
+}
+
+export type AdminUnblockUser = {
+  user_id: string;
+}
+
+export type AdminUser = {
+  user_id: string;
+}
+
 export type BillingInformation = {
   namespace_id: string;
   path: string;

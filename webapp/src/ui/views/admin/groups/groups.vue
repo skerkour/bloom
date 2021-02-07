@@ -19,9 +19,9 @@
 
 
 <script lang="ts">
-import { Group } from '@/api/graphql/model';
+import { Group } from '@/domain/kernel/model';
 import { VueApp } from '@/app/vue';
-import BAdminGroupsList from '@/ui/components/groups/admin_groups_list.vue';
+import BAdminGroupsList from '@/ui/components/kernel/admin_groups_list.vue';
 
 export default VueApp.extend({
   name: 'BAdminGroupsView',
@@ -44,7 +44,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.groups = await this.$groupsService.adminFetchAllGroups();
+        this.groups = await this.$kernelService.adminFetchGroups();
       } catch (err) {
         this.error = err.message;
       } finally {

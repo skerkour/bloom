@@ -20,6 +20,8 @@ mod delete_pending_user;
 mod delete_session;
 mod delete_upload;
 mod detach_uploads_for_namespace;
+mod find_all_groups;
+mod find_all_users;
 mod find_customer_by_namespace_id;
 mod find_customer_by_stripe_customer_id;
 mod find_group_by_id;

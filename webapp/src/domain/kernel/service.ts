@@ -10,12 +10,12 @@ import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
 import Router from '@/app/router';
 import { loadStripe } from '@stripe/stripe-js';
-import { Commands, Queries } from './routes';
+import { Admin, Commands, Queries } from './routes';
 import {
   AcceptGroupInvitation,
   CancelGroupInvitation,
   CompleteRegistration, CompleteSignIn, CompleteTwoFaChallenge, CompleteTwoFaSetup, CreateGroup, DeclineGroupInvitation, DeleteMyAccount, DisableTwoFa, GenerateQrCode, GetSignedUploadUrl, GroupInvitation, Markdown, MarkdownHtml, Me, QrCode, Register, RegistrationStarted, RevokeSession, Session, SetupTwoFa, SignedIn, SignedUploadUrl, SignIn, SignInStarted, UpdateMyProfile,
-  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithProvider, GetCheckoutSession, CheckoutSession, GetCustomerPortal, CustomerPortal,
+  User, Group, GetGroup, UpdateGroupProfile, GroupWithMembersAndInvitations, RemoveMemberFromGroup, QuitGroup, InvitePeopleInGroup, DeleteGroup, Namespace, BillingInformation, GetBillingInformation, UpdateBillingInformation, SyncCustomerWithProvider, GetCheckoutSession, CheckoutSession, GetCustomerPortal, CustomerPortal, AdminBlockUser, AdminGroup, AdminUnblockUser, AdminUser,
 } from './model';
 
 export type StorageSignedUploadUrlInput = {
@@ -38,6 +38,52 @@ export class KernelService {
       invitation_id: invitationId,
     };
     await this.apiClient.post(Commands.acceptGroupInvitation, input);
+  }
+
+  async adminBlockUser(userId: string): Promise<User> {
+    const input: AdminBlockUser = {
+      user_id: userId,
+    };
+
+    const res: User = await this.apiClient.post(Admin.blockUser, input);
+    return res;
+  }
+
+  async adminFetchGroup(groupId: string): Promise<Group> {
+    const input: AdminGroup = {
+      group_id: groupId,
+    };
+
+    const res: Group = await this.apiClient.post(Admin.group, input);
+    return res;
+  }
+
+  async adminFetchGroups(): Promise<Group[]> {
+    const res: Group[] = await this.apiClient.post(Admin.groups, {});
+    return res;
+  }
+
+  async adminUnblockUser(userId: string): Promise<User> {
+    const input: AdminUnblockUser = {
+      user_id: userId,
+    };
+
+    const res: User = await this.apiClient.post(Admin.unblockUser, input);
+    return res;
+  }
+
+  async adminFetchUser(userId: string): Promise<User> {
+    const input: AdminUser = {
+      user_id: userId,
+    };
+
+    const res: User = await this.apiClient.post(Admin.user, input);
+    return res;
+  }
+
+  async adminFetchUsers(): Promise<User[]> {
+    const res: User[] = await this.apiClient.post(Admin.users, {});
+    return res;
   }
 
   async cancelGroupInvitation(invitationId: string): Promise<void> {

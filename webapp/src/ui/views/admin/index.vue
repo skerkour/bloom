@@ -41,12 +41,6 @@ export default VueApp.extend({
           description: '',
           link: '/admin/groups',
         },
-        {
-          title: 'Projects',
-          icon: 'mdi-format-list-bulleted-square',
-          description: '',
-          link: '/admin/projects',
-        },
       ],
     };
   },

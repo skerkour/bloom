@@ -23,6 +23,12 @@ use std::{collections::HashSet, fmt::Debug, sync::Arc};
 use stdx::{stripe, uuid::Uuid};
 
 mod accept_group_invitation;
+mod admin_block_user;
+mod admin_find_group;
+mod admin_find_groups;
+mod admin_find_user;
+mod admin_find_users;
+mod admin_unblock_user;
 mod cancel_group_invitation;
 mod check_namespace_exists;
 mod check_namespace_membership;

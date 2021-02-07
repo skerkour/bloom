@@ -42,6 +42,7 @@ pub enum Error {
     UserNameIsTooLong,
     UserNameIsTooShort,
     InvalidUserName,
+    CantBlockAdmin,
 
     // Group
     AdminRoleRequired,
@@ -139,6 +140,7 @@ impl std::convert::From<Error> for crate::Error {
             Error::UserNameIsTooLong => crate::Error::InvalidArgument(String::from("Name is too short.")),
             Error::UserNameIsTooShort => crate::Error::InvalidArgument(String::from("Name is too long.")),
             Error::InvalidUserName => crate::Error::InvalidArgument(String::from("Name is not valid.")),
+            Error::CantBlockAdmin => crate::Error::InvalidArgument(String::from("Admins can't be blocked.")),
 
             // Group
             Error::AdminRoleRequired => crate::Error::PermissionDenied(String::from("Administrator role required")),

@@ -29,7 +29,7 @@ const routes: Array<RouteConfig> = [
     component: Users,
   },
   {
-    path: '/admin/users/:username',
+    path: '/admin/users/:userId',
     component: User,
   },
 
