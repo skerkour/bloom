@@ -21,6 +21,10 @@ impl Service {
             return Err(Error::EmailIsInvalid);
         }
 
+        if parts[1].matches('.').count() < 1 {
+            return Err(Error::EmailIsInvalid);
+        }
+
         if reject_disposable {
             if self.config.mail.domains_blocklist.contains(&parts[1]) {
                 return Err(Error::EmailIsInvalid);

@@ -5,6 +5,7 @@ const queries = 'queries';
 
 export const Commands = {
   sendChatboxMessages: `/${prefix}/${commands}/send_chatbox_message`,
+  linkContact: `/${prefix}/${commands}/link_chatbox_contact`,
 }
 
 export const Queries = {
