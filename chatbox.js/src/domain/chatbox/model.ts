@@ -30,6 +30,12 @@ export type GetChatboxMessages = {
   namespace_id: string;
 };
 
+
+export type LinkChatboxContact = {
+  namespace_id: string;
+  email: string;
+};
+
 export type SendChatboxMessage = {
   namespace_id: string;
   body: String;

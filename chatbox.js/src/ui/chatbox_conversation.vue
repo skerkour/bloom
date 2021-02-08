@@ -1,6 +1,7 @@
 <template>
   <div class="conversation">
-    <div class="conversation-top" >
+    <div class="conversation-top">
+      <!-- dirty hack -->
       <span>a</span>
     </div>
     <agent-message :message="welcomeMessage" v-if="welcomeMessage" />
@@ -8,7 +9,9 @@
       <agent-message :message="message" v-if="message.from_operator" :key="message.id" />
       <user-message :message="message" v-else :key="message.id" />
     </template>
-    <div class="conversation-bottom" >
+    <ask-email v-if="askForEmail" />
+    <div class="conversation-bottom">
+      <!-- dirty hack -->
       <span>a</span>
     </div>
   </div>
@@ -19,6 +22,7 @@ import { VueApp } from '@/app/vue';
 import { ChatboxMessage } from '@/domain/chatbox/model';
 import AgentMessage from './messages/agent_message.vue';
 import UserMessage from './messages/user_message.vue';
+import AskEmail from './messages/ask_email.vue';
 
 
 export default VueApp.extend({
@@ -26,6 +30,7 @@ export default VueApp.extend({
   components: {
     AgentMessage,
     UserMessage,
+    AskEmail,
   },
   watch: {
     messages() {
@@ -33,6 +38,9 @@ export default VueApp.extend({
     },
   },
   computed: {
+    askForEmail(): boolean {
+      return this.$store.state.askForEmail;
+    },
     messages(): ChatboxMessage[] {
       return this.$store.state.messages;
     },

@@ -7,7 +7,7 @@ import { Store } from 'vuex';
 import { BloomService } from '../bloom';
 import {
   ChatboxPreferences, GetChatboxMessages, GetChatboxPreferences, Chatbox,
-  ChatboxMessage, SendChatboxMessage,
+  ChatboxMessage, SendChatboxMessage, LinkChatboxContact,
 } from './model';
 import { Commands, Queries } from './routes';
 
@@ -25,6 +25,10 @@ export class ChatboxService {
     this.store = store;
     this.bloomService = bloomService;
     this.messagesTimeout = CLOSED_MESSAGES_TIMEOUT;
+  }
+
+  closeAskEmailMessage() {
+    this.store.commit(Mutation.CLOSE_ASK_FOR_EMAIL);
   }
 
   async fetchChatbox(): Promise<Chatbox> {
@@ -45,25 +49,6 @@ export class ChatboxService {
       preferences: res[0],
     };
     return ret;
-  }
-
-  async sendMessage(body: string): Promise<void> {
-    const input: SendChatboxMessage = {
-      body,
-      namespace_id: this.bloomService.namespaceId,
-    };
-    const message: ChatboxMessage = await this.apiClient.post(Commands.sendChatboxMessages, input);
-
-    this.store.commit(Mutation.MESSAGE_RECEIVED, message);
-  }
-
-  subscribeToChatboxMessages(): void {
-    this.messagesTimeout = CLOSED_MESSAGES_TIMEOUT;
-    this.fetchMessages();
-  }
-
-  unsubscribeFromChatboxMessages(): void {
-    this.messagesTimeout = 0;
   }
 
   async fetchMessages(): Promise<void> {
@@ -96,6 +81,43 @@ export class ChatboxService {
         this.fetchMessages();
       }, this.messagesTimeout);
     }
+  }
+
+  async linkContact(email: string): Promise<void> {
+    const input: LinkChatboxContact = {
+      email,
+      namespace_id: this.bloomService.namespaceId,
+    };
+    await this.apiClient.post(Commands.linkContact, input);
+
+    this.store.commit(Mutation.EMAIL_ASKED);
+    this.store.commit(Mutation.CLOSE_ASK_FOR_EMAIL);
+
+
+    this.sendMessage(`My email is ${email}`);
+  }
+
+  async sendMessage(body: string): Promise<void> {
+    const input: SendChatboxMessage = {
+      body,
+      namespace_id: this.bloomService.namespaceId,
+    };
+    const message: ChatboxMessage = await this.apiClient.post(Commands.sendChatboxMessages, input);
+
+    this.store.commit(Mutation.MESSAGE_RECEIVED, message);
+
+    if (!this.store.state.emailAsked) {
+      this.store.commit(Mutation.ASK_FOR_EMAIL);
+    }
+  }
+
+  subscribeToChatboxMessages(): void {
+    this.messagesTimeout = CLOSED_MESSAGES_TIMEOUT;
+    this.fetchMessages();
+  }
+
+  unsubscribeFromChatboxMessages(): void {
+    this.messagesTimeout = 0;
   }
 }
 
