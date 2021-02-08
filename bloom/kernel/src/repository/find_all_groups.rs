@@ -5,7 +5,7 @@ use stdx::sqlx;
 
 impl Repository {
     pub async fn find_all_groups<'c, C: Queryer<'c>>(&self, db: C) -> Result<Vec<entities::Group>, Error> {
-        const QUERY: &str = "SELECT * FROM kernel_groups";
+        const QUERY: &str = "SELECT * FROM kernel_users ORDER BY id";
 
         match sqlx::query_as::<_, entities::Group>(QUERY).fetch_all(db).await {
             Err(err) => {
