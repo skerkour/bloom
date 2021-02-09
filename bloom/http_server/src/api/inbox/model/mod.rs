@@ -152,6 +152,17 @@ pub struct ChatboxPreferences {
     pub show_branding: bool,
     pub welcome_message: String,
     pub base_url: String,
+    pub twitter: String,
+    pub twitter_url: String,
+    pub facebook_url: String,
+    pub instagram: String,
+    pub instagram_url: String,
+    pub whatsapp_number: String,
+    pub whatsapp_url: String,
+    pub mastodon_url: String,
+    pub website_url: String,
+    pub telegram: String,
+    pub telegram_url: String,
 }
 
 impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
@@ -163,6 +174,20 @@ impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
             show_branding: input.preferences.show_branding,
             welcome_message: input.preferences.welcome_message,
             base_url: input.base_url,
+            twitter_url: format!("https://twitter.com/@{}", &input.preferences.twitter),
+            twitter: input.preferences.twitter,
+            facebook_url: input.preferences.facebook_url,
+            instagram_url: format!("https://instagram.com/{}", &input.preferences.instagram),
+            instagram: input.preferences.instagram,
+            whatsapp_url: format!(
+                "https://api.whatsapp.com/send?phone={}",
+                &input.preferences.whatsapp_number
+            ),
+            whatsapp_number: input.preferences.whatsapp_number,
+            mastodon_url: input.preferences.mastodon_url,
+            website_url: input.preferences.website_url,
+            telegram_url: format!("https://t.me/@{}", &input.preferences.telegram),
+            telegram: input.preferences.telegram,
         }
     }
 }

@@ -268,7 +268,6 @@ pub struct UpdateChatboxPreferencesInput {
     pub welcome_message: String,
     pub twitter: String,
     pub facebook_url: String,
-    pub public_email: String,
     pub instagram: String,
     pub whatsapp_number: String,
     pub mastodon_url: String,

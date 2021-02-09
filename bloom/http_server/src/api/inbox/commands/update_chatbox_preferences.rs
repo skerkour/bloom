@@ -20,6 +20,13 @@ pub async fn update_chatbox_preferences(
         name: input.name,
         show_branding: input.show_branding,
         welcome_message: input.welcome_message,
+        twitter: input.twitter,
+        facebook_url: input.facebook_url,
+        instagram: input.instagram,
+        whatsapp_number: input.whatsapp_number,
+        mastodon_url: input.mastodon_url,
+        website_url: input.website_url,
+        telegram: input.telegram,
     };
     let chatbox_preferences = ctx
         .inbox_service
