@@ -300,30 +300,139 @@ impl Service {
     }
 
     pub fn parse_and_validate_chatbox_twitter(&self, twitter: &str) -> Result<String, Error> {
-        todo!();
+        if twitter.is_empty() {
+            return Ok("".to_string());
+        }
+
+        let twitter = twitter.strip_prefix("https://twitter.com/").unwrap_or(twitter);
+        let twitter = twitter.trim_start_matches('@');
+
+        if !twitter.chars().all(|c| c.is_ascii_alphanumeric() || "_.'".contains(c)) {
+            return Err(Error::ChatboxTwitterIsNotValid);
+        }
+
+        if twitter.len() > consts::CHATBOX_SOCIAL_HANDLE_MAX_LENGTH {
+            return Err(Error::ChatboxTwitterIsNotValid);
+        }
+
+        return Ok(twitter.to_string());
     }
 
     pub fn validate_chatbox_facebook_url(&self, facebook_url: &str) -> Result<(), Error> {
-        todo!();
+        if facebook_url.is_empty() {
+            return Ok(());
+        }
+
+        if facebook_url.len() > consts::CHATBOX_SOCIAL_URL_MAX_LENGTH {
+            return Err(Error::ChatboxFacebookUrlIsNotValid);
+        }
+
+        let url = Url::parse(facebook_url).map_err(|_| Error::ChatboxFacebookUrlIsNotValid)?;
+
+        let scheme = url.scheme();
+        let host = url.host().ok_or(Error::ChatboxFacebookUrlIsNotValid)?;
+        if scheme != "https" || host.to_string() != "facebook.com" {
+            return Err(Error::ChatboxFacebookUrlIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn parse_and_validate_chatbox_instagram(&self, instagram: &str) -> Result<String, Error> {
-        todo!();
+        if instagram.is_empty() {
+            return Ok("".to_string());
+        }
+
+        let instagram = instagram.strip_prefix("https://instagram.com/").unwrap_or(instagram);
+        let instagram = instagram.trim_start_matches('@');
+
+        if !instagram.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+            return Err(Error::ChatboxInstagramIsNotValid);
+        }
+
+        if instagram.len() > consts::CHATBOX_SOCIAL_HANDLE_MAX_LENGTH {
+            return Err(Error::ChatboxInstagramIsNotValid);
+        }
+
+        return Ok(instagram.to_string());
     }
 
     pub fn validate_chatbox_mastodon_url(&self, mastodon_url: &str) -> Result<(), Error> {
-        todo!();
+        if mastodon_url.is_empty() {
+            return Ok(());
+        }
+
+        if mastodon_url.len() > consts::CHATBOX_SOCIAL_URL_MAX_LENGTH {
+            return Err(Error::ChatboxMastodonUrlIsNotValid);
+        }
+
+        let url = Url::parse(mastodon_url).map_err(|_| Error::ChatboxMastodonUrlIsNotValid)?;
+
+        let scheme = url.scheme();
+        let host = url.host().ok_or(Error::ChatboxMastodonUrlIsNotValid)?;
+        if scheme != "https" || host.to_string().is_empty() {
+            return Err(Error::ChatboxMastodonUrlIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn validate_chatbox_website_url(&self, website_url: &str) -> Result<(), Error> {
-        todo!();
+        if website_url.is_empty() {
+            return Ok(());
+        }
+
+        if website_url.len() > consts::CHATBOX_SOCIAL_URL_MAX_LENGTH {
+            return Err(Error::ChatboxWebsiteUrlIsNotValid);
+        }
+
+        let url = Url::parse(website_url).map_err(|_| Error::ChatboxWebsiteUrlIsNotValid)?;
+
+        let scheme = url.scheme();
+        let host = url.host().ok_or(Error::ChatboxWebsiteUrlIsNotValid)?;
+        if scheme != "https" || host.to_string().is_empty() {
+            return Err(Error::ChatboxWebsiteUrlIsNotValid);
+        }
+
+        Ok(())
     }
 
     pub fn parse_and_validate_chatbox_telegram(&self, telegram: &str) -> Result<String, Error> {
-        todo!();
+        if telegram.is_empty() {
+            return Ok("".to_string());
+        }
+
+        let telegram = telegram.strip_prefix("https://t.me").unwrap_or(telegram);
+        let telegram = telegram.trim_start_matches('@');
+
+        if !telegram.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+            return Err(Error::ChatboxTelegramIsNotValid);
+        }
+
+        if telegram.len() > consts::CHATBOX_SOCIAL_HANDLE_MAX_LENGTH {
+            return Err(Error::ChatboxTelegramIsNotValid);
+        }
+
+        return Ok(telegram.to_string());
     }
 
     pub fn validate_chatbox_whatsapp_number(&self, whatsapp_number: &str) -> Result<(), Error> {
-        todo!();
+        if whatsapp_number.is_empty() {
+            return Ok(());
+        }
+
+        if !whatsapp_number.starts_with("+") {
+            return Err(Error::ChatboxWhatsAppNumberIsNotValid);
+        }
+
+        if !whatsapp_number[1..].chars().all(char::is_numeric) {
+            return Err(Error::ChatboxWhatsAppNumberIsNotValid);
+        }
+
+        if whatsapp_number.len() > consts::CHATBOX_PHONE_NUMBER_MAX_LENGTH {
+            return Err(Error::ChatboxWhatsAppNumberIsNotValid);
+        }
+
+        return Ok(());
     }
 }

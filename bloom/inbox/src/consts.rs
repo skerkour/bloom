@@ -3,6 +3,9 @@ pub const DEFAULT_CHATBOX_COLOR: &str = "#ff0000";
 pub const CHATBOX_WELCOME_MESSAGE_MAX_LENGTH: usize = 1024;
 pub const CHATBOX_NAME_MAX_LENGTH: usize = 128;
 pub const CHATBOX_NAME_MIN_LENGTH: usize = 1;
+pub const CHATBOX_SOCIAL_HANDLE_MAX_LENGTH: usize = 128;
+pub const CHATBOX_SOCIAL_URL_MAX_LENGTH: usize = 280;
+pub const CHATBOX_PHONE_NUMBER_MAX_LENGTH: usize = 16;
 
 // Messages
 pub const MESSAGE_MAX_LENGTH: usize = 4096;

@@ -39,6 +39,13 @@ pub enum Error {
     ChatboxNameIsTooLong,
     ChatboxNameIsTooShort,
     ChatboxNameIsNotValid,
+    ChatboxTwitterIsNotValid,
+    ChatboxFacebookUrlIsNotValid,
+    ChatboxInstagramIsNotValid,
+    ChatboxMastodonUrlIsNotValid,
+    ChatboxWebsiteUrlIsNotValid,
+    ChatboxTelegramIsNotValid,
+    ChatboxWhatsAppNumberIsNotValid,
 
     // Newsletter
     NewsletterListNotFound,
@@ -119,6 +126,23 @@ impl std::convert::From<Error> for kernel::Error {
             Error::ChatboxNameIsTooLong => kernel::Error::InvalidArgument(String::from("Name is too long.")),
             Error::ChatboxNameIsTooShort => kernel::Error::InvalidArgument(String::from("Name is too short.")),
             Error::ChatboxNameIsNotValid => kernel::Error::InvalidArgument(String::from("Name is not valid.")),
+            Error::ChatboxTwitterIsNotValid => kernel::Error::InvalidArgument(String::from("Twitter is not valid.")),
+            Error::ChatboxFacebookUrlIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Facebook URL is not valid."))
+            }
+            Error::ChatboxInstagramIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Instagram is not valid."))
+            }
+            Error::ChatboxMastodonUrlIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Mastodon URL is not valid."))
+            }
+            Error::ChatboxWebsiteUrlIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("Website URL is not valid."))
+            }
+            Error::ChatboxTelegramIsNotValid => kernel::Error::InvalidArgument(String::from("Telegram is not valid.")),
+            Error::ChatboxWhatsAppNumberIsNotValid => {
+                kernel::Error::InvalidArgument(String::from("WhatsApp number is not valid."))
+            }
 
             // Newsletter
             Error::NewsletterListNotFound => kernel::Error::NotFound(String::from("List not found")),
