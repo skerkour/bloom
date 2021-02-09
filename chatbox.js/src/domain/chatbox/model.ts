@@ -28,6 +28,7 @@ export type GetChatboxPreferences = {
 
 export type GetChatboxMessages = {
   namespace_id: string;
+  after: Option<string>,
 };
 
 

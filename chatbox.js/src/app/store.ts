@@ -26,6 +26,7 @@ export interface AppState {
   reconnecting: boolean;
   askForEmail: boolean;
   emailAsked: boolean;
+  lastReceivedMessageId: string | null;
 }
 
 const seenMessages = new Set<string>();
@@ -39,6 +40,7 @@ export default new Vuex.Store<AppState>({
     reconnecting: false,
     askForEmail: false,
     emailAsked: false,
+    lastReceivedMessageId: null,
   },
   mutations: {
     [Mutation.OPEN](state: AppState) {
@@ -55,6 +57,7 @@ export default new Vuex.Store<AppState>({
       if (!seenMessages.has(message.id)) {
         state.messages.push(message);
         seenMessages.add(message.id);
+        state.lastReceivedMessageId = message.id;
       }
     },
     [Mutation.CHATBOX_FETCHED](state: AppState, chatbox: Chatbox) {
@@ -67,11 +70,9 @@ export default new Vuex.Store<AppState>({
         if (!seenMessages.has(message.id)) {
           state.messages.push(message);
           seenMessages.add(message.id);
+          state.lastReceivedMessageId = message.id;
         }
       });
-
-      console.log(seenMessages.size);
-      console.log(state.preferences.welcome_message);
 
       if ((seenMessages.size === 1 && state.preferences.welcome_message.length === 0)
         || (state.preferences.welcome_message.length !== 0 && seenMessages.size === 2)) {

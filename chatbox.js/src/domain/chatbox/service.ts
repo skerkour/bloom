@@ -39,6 +39,7 @@ export class ChatboxService {
 
     const inputMessages: GetChatboxMessages = {
       namespace_id: this.bloomService.namespaceId,
+      after: this.store.state.lastReceivedMessageId,
     };
     const chatboxMessagesPromise: Promise<ChatboxMessage[]> = this.apiClient.post(Queries.chatboxMessages, inputMessages);
 
@@ -61,6 +62,7 @@ export class ChatboxService {
     try {
       const input: GetChatboxMessages = {
         namespace_id: this.bloomService.namespaceId,
+        after: this.store.state.lastReceivedMessageId,
       };
       messages = await this.apiClient.post(Queries.chatboxMessages, input);
     } catch (err) {
