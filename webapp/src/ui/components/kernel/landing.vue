@@ -71,7 +71,7 @@
 
     <v-row class="my-5 py-5" justify="center">
       <v-col cols="12" md="8" class="text-center">
-        <h2 class="text-h2 font-weight-medium">
+        <h2 class="text-h3 font-weight-medium">
           I want to
         </h2>
       </v-col>
@@ -81,7 +81,6 @@
           <v-col cols="12" md="6" class="text-center my-5">
             <v-row justify="center">
               <v-col cols="12">
-                <!-- <img src="/assets/imgs/landing/superhero.svg" /> -->
                 <v-img alt="Super Hero"
                   src="/assets/imgs/landing/superhero.svg" height="200px" contain />
               </v-col>
