@@ -20,6 +20,17 @@ export type ChatboxPreferences = {
   show_branding: boolean;
   welcome_message: string;
   base_url: string;
+  twitter: string;
+  twitter_url: string;
+  facebook_url: string;
+  instagram: string;
+  instagram_url: string;
+  whatsapp_number: string;
+  whatsapp_url: string;
+  mastodon_url: string;
+  website_url: string;
+  telegram: string;
+  telegram_url: string;
 };
 
 export type GetChatboxPreferences = {

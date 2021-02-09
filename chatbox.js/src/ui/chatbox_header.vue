@@ -3,10 +3,6 @@
     <div class="info">
       <img :src="avatarUrl" alt="avatar" />
       <h2>{{ name }}</h2>
-      <a target="_blank" ret="noopener" :href="publicEmailUrl" class="social-link"
-        v-if="publicEmail">
-        <b-at-icon />
-      </a>
       <a target="_blank" ret="noopener" :href="twitterUrl" class="social-link" v-if="twitterUrl">
         <b-twitter-icon />
       </a>
@@ -15,7 +11,7 @@
         <b-instagram-icon />
       </a>
       <a target="_blank" ret="noopener" :href="whatsappUrl" class="social-link"
-        v-if="whatsappNumber">
+        v-if="whatsappUrl">
         <b-whatsapp-icon />
       </a>
     </div>
@@ -62,32 +58,20 @@ export default VueApp.extend({
       return `${this.$store.state.preferences!.base_url}${this.$store.state.preferences!.avatar_url}`;
     },
     homepageUrl(): string {
-      return ''; // TODO
-      // return this.$store.state.preferences!.homepageUrl;
+      return this.$store.state.preferences?.website_url ?? '';
     },
     twitterUrl(): string {
-      return ''; // TODO
-      // return this.$store.state.preferences!.twitterUrl;
+      return this.$store.state.preferences?.twitter ? this.$store.state.preferences.twitter_url : '';
     },
     whatsappUrl(): string {
-      return ''; // TODO
-      // return `https://api.whatsapp.com/send?phone=${this.$store.state.preferences!.whatsappNumber}`;
+      if (this.$store.state.preferences && this.$store.state.preferences.whatsapp_number) {
+        return this.$store.state.preferences.whatsapp_url;
+      }
+
+      return '';
     },
-    whatsappNumber(): string {
-      return ''; // TODO
-      // return this.$store.state.preferences!.whatsappNumber;
-    },
-    instagramUrl(): string | null {
-      return ''; // TODO
-      // return this.$store.state.preferences!.instagramUrl;
-    },
-    publicEmail(): string | null {
-      return ''; // TODO
-      // return this.$store.state.preferences!.publicEmail;
-    },
-    publicEmailUrl(): string | null {
-      return ''; // TODO
-      // return `mailto:${this.$store.state.preferences!.publicEmail}`;
+    instagramUrl(): string {
+      return this.$store.state.preferences?.instagram ? this.$store.state.preferences.instagram_url : '';
     },
   },
   methods: {
