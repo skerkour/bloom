@@ -57,21 +57,14 @@ export default VueApp.extend({
       }
       return `${this.$store.state.preferences!.base_url}${this.$store.state.preferences!.avatar_url}`;
     },
-    homepageUrl(): string {
-      return this.$store.state.preferences?.website_url ?? '';
-    },
     twitterUrl(): string {
-      return this.$store.state.preferences?.twitter ? this.$store.state.preferences.twitter_url : '';
+      return this.$store.state.preferences!.twitter_url;
     },
     whatsappUrl(): string {
-      if (this.$store.state.preferences && this.$store.state.preferences.whatsapp_number) {
-        return this.$store.state.preferences.whatsapp_url;
-      }
-
-      return '';
+      return this.$store.state.preferences!.whatsapp_url;
     },
     instagramUrl(): string {
-      return this.$store.state.preferences?.instagram ? this.$store.state.preferences.instagram_url : '';
+      return this.$store.state.preferences!.instagram_url;
     },
   },
   methods: {
