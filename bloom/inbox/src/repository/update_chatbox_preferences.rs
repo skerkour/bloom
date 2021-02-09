@@ -11,7 +11,7 @@ impl Repository {
     ) -> Result<(), Error> {
         const QUERY: &str = "UPDATE inbox_chatbox_preferences SET
             updated_at = $1, color = $2, name = $3, avatar_storage_key = $4, show_branding = $5,
-                welcome_message = $6, twitter = $7, facebook_url = $8, instagram = $9, whatsapp_number = $10
+                welcome_message = $6, twitter = $7, facebook_url = $8, instagram = $9, whatsapp_number = $10,
                 mastodon_url = $11, website_url = $12, telegram = $13
             WHERE id = $14";
 
