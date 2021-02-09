@@ -23,7 +23,7 @@ impl Service {
 
         let messages = self
             .repo
-            .find_inbox_messages_for_conversation(&self.db, conversation.id)
+            .find_inbox_messages_for_conversation(&self.db, conversation.id, input.after)
             .await?;
 
         Ok(messages)

@@ -16,6 +16,7 @@ pub async fn chatbox_messages(
     let input = input.into_inner();
     let service_input = FindChatboxMessagesInput {
         namespace_id: input.namespace_id,
+        after: input.after,
     };
     let messages = ctx.inbox_service.find_chatbox_messages(actor, service_input).await?;
 

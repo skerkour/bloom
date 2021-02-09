@@ -276,6 +276,7 @@ pub struct FindChatboxPreferencesInput {
 #[derive(Debug, Clone)]
 pub struct FindChatboxMessagesInput {
     pub namespace_id: Uuid,
+    pub after: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]

@@ -96,6 +96,7 @@ pub struct GetChatboxPreferences {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetChatboxMessages {
     pub namespace_id: Id,
+    pub after: Option<Id>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
