@@ -3,7 +3,6 @@ import { Store } from 'vuex';
 import { AppState } from '@/app/store';
 import { UsersService } from '@/domain/users/service';
 import { NamespacesService } from '@/domain/namespaces/service';
-import { SupportService } from '@/domain/support/service';
 import { OperationsService } from '@/domain/operations/service';
 import { ToolsService } from '@/domain/tools/service';
 import { KernelService } from '@/domain/kernel/service';
@@ -26,7 +25,6 @@ abstract class VueAppClass extends Vue {
   public $inboxService!: InboxService;
   public $usersService!: UsersService;
   public $namespacesService!: NamespacesService;
-  public $supportService!: SupportService;
   public $operationsService!: OperationsService;
   public $toolsService!: ToolsService;
   public $analyticsService!: AnalyticsService;
