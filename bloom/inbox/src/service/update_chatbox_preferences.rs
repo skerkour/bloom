@@ -30,6 +30,24 @@ impl Service {
         let welcome_message = input.welcome_message.trim().to_string();
         self.validate_chatbox_welcome_message(&welcome_message)?;
 
+        let twitter = self.parse_and_validate_chatbox_twitter(input.twitter.trim())?;
+
+        let facebook_url = input.facebook_url.trim().to_string();
+        self.validate_chatbox_facebook_url(&facebook_url)?;
+
+        let instagram = self.parse_and_validate_chatbox_instagram(input.instagram.trim())?;
+
+        let whatsapp_number = input.whatsapp_number.trim().to_string();
+        self.validate_chatbox_whatsapp_number(&whatsapp_number)?;
+
+        let mastodon_url = input.mastodon_url.trim().to_string();
+        self.validate_chatbox_mastodon_url(&mastodon_url)?;
+
+        let website_url = input.website_url.trim().to_string();
+        self.validate_chatbox_website_url(&website_url)?;
+
+        let telegram = self.parse_and_validate_chatbox_telegram(input.telegram.trim())?;
+
         let show_branding = input.show_branding;
         if !show_branding {
             if !self.kernel_service.self_hosted() && namespace.plan == BillingPlan::Free {
@@ -42,6 +60,13 @@ impl Service {
         preferences.color = color;
         preferences.welcome_message = welcome_message;
         preferences.show_branding = show_branding;
+        preferences.twitter = twitter;
+        preferences.facebook_url = facebook_url;
+        preferences.instagram = instagram;
+        preferences.whatsapp_number = whatsapp_number;
+        preferences.mastodon_url = mastodon_url;
+        preferences.website_url = website_url;
+        preferences.telegram = telegram;
         self.repo.update_chatbox_preferences(&self.db, &preferences).await?;
 
         let base_url = self.kernel_service.base_url();

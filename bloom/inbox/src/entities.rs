@@ -122,6 +122,13 @@ pub struct ChatboxPreferences {
     pub avatar_storage_key: Option<String>,
     pub show_branding: bool,
     pub welcome_message: String,
+    pub twitter: String,
+    pub facebook_url: String,
+    pub instagram: String,
+    pub whatsapp_number: String,
+    pub mastodon_url: String,
+    pub website_url: String,
+    pub telegram: String,
 
     pub namespace_id: Uuid,
 }

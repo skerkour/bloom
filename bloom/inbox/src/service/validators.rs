@@ -298,4 +298,32 @@ impl Service {
 
         return Ok(());
     }
+
+    pub fn parse_and_validate_chatbox_twitter(&self, twitter: &str) -> Result<String, Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_facebook_url(&self, facebook_url: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn parse_and_validate_chatbox_instagram(&self, instagram: &str) -> Result<String, Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_mastodon_url(&self, mastodon_url: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_website_url(&self, website_url: &str) -> Result<(), Error> {
+        todo!();
+    }
+
+    pub fn parse_and_validate_chatbox_telegram(&self, telegram: &str) -> Result<String, Error> {
+        todo!();
+    }
+
+    pub fn validate_chatbox_whatsapp_number(&self, whatsapp_number: &str) -> Result<(), Error> {
+        todo!();
+    }
 }

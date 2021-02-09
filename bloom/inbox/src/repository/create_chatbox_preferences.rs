@@ -10,8 +10,9 @@ impl Repository {
         preferences: &ChatboxPreferences,
     ) -> Result<(), Error> {
         const QUERY: &str = "INSERT INTO inbox_chatbox_preferences
-            (id, created_at, updated_at, color, name, avatar_storage_key, show_branding, welcome_message, namespace_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)";
+            (id, created_at, updated_at, color, name, avatar_storage_key, show_branding, welcome_message, namespace_id,
+                twitter, facebook_url, instagram, whatsapp_number, mastodon_url, website_url, telegram)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)";
 
         match sqlx::query(QUERY)
             .bind(preferences.id)
@@ -23,6 +24,13 @@ impl Repository {
             .bind(preferences.show_branding)
             .bind(&preferences.welcome_message)
             .bind(preferences.namespace_id)
+            .bind(&preferences.twitter)
+            .bind(&preferences.facebook_url)
+            .bind(&preferences.instagram)
+            .bind(&preferences.whatsapp_number)
+            .bind(&preferences.mastodon_url)
+            .bind(&preferences.website_url)
+            .bind(&preferences.telegram)
             .execute(db)
             .await
         {

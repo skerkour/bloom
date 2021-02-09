@@ -19,6 +19,13 @@ impl Service {
             avatar_storage_key: None,
             show_branding: true,
             welcome_message: String::new(),
+            twitter: String::from(""),
+            facebook_url: String::from(""),
+            instagram: String::from(""),
+            whatsapp_number: String::from(""),
+            mastodon_url: String::from(""),
+            website_url: String::from(""),
+            telegram: String::from(""),
             namespace_id: input.namespace_id,
         };
         self.repo.create_chatbox_preferences(db, &preferences).await?;
