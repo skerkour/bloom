@@ -32,7 +32,7 @@
 
 
 <script lang="ts">
-import { ConfirmListSubscriptionInput } from '@/api/graphql/model';
+// import { ConfirmListSubscriptionInput } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 
 export default VueApp.extend({
@@ -51,12 +51,12 @@ export default VueApp.extend({
     async fetchData(): Promise<void> {
       this.loading = true;
       this.error = '';
-      const input: ConfirmListSubscriptionInput = {
-        pendingSubscriptionID: this.$route.params.subscriptionId,
-      };
+      // const input: ConfirmListSubscriptionInput = {
+      //   pendingSubscriptionID: this.$route.params.subscriptionId,
+      // };
 
       try {
-        await this.$growthService.confirmListSubscription(input);
+        // await this.$growthService.confirmListSubscription(input);
         this.success = 'You are now subscribed :)';
       } catch (err) {
         this.error = err.message;
