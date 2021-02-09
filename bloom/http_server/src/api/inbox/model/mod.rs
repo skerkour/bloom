@@ -167,6 +167,33 @@ pub struct ChatboxPreferences {
 
 impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
     fn from(input: inbox::service::DetailedChatboxPreferences) -> Self {
+        let twitter_url = if input.preferences.twitter.is_empty() {
+            String::new()
+        } else {
+            format!("https://twitter.com/@{}", &input.preferences.twitter)
+        };
+
+        let instagram_url = if input.preferences.instagram.is_empty() {
+            String::new()
+        } else {
+            format!("https://instagram.com/{}", &input.preferences.instagram)
+        };
+
+        let whatsapp_url = if input.preferences.whatsapp_number.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "https://api.whatsapp.com/send?phone={}",
+                &input.preferences.whatsapp_number
+            )
+        };
+
+        let telegram_url = if input.preferences.telegram.is_empty() {
+            String::new()
+        } else {
+            format!("https://t.me/@{}", &input.preferences.telegram)
+        };
+
         ChatboxPreferences {
             color: input.preferences.color,
             name: input.preferences.name,
@@ -174,20 +201,17 @@ impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
             show_branding: input.preferences.show_branding,
             welcome_message: input.preferences.welcome_message,
             base_url: input.base_url,
-            twitter_url: format!("https://twitter.com/@{}", &input.preferences.twitter),
             twitter: input.preferences.twitter,
+            twitter_url,
             facebook_url: input.preferences.facebook_url,
-            instagram_url: format!("https://instagram.com/{}", &input.preferences.instagram),
             instagram: input.preferences.instagram,
-            whatsapp_url: format!(
-                "https://api.whatsapp.com/send?phone={}",
-                &input.preferences.whatsapp_number
-            ),
+            instagram_url,
             whatsapp_number: input.preferences.whatsapp_number,
+            whatsapp_url,
             mastodon_url: input.preferences.mastodon_url,
             website_url: input.preferences.website_url,
-            telegram_url: format!("https://t.me/@{}", &input.preferences.telegram),
             telegram: input.preferences.telegram,
+            telegram_url,
         }
     }
 }
