@@ -39,6 +39,33 @@
     </v-row>
 
     <v-row>
+      <v-col cols="10" md="6" lg="5" xl="4" class="flex-wrap">
+        <v-text-field v-model="websiteUrl" label="Website URL" :loading="loading" />
+      </v-col>
+
+      <v-col cols="10" md="6" lg="5" xl="4">
+        <v-text-field v-model="twitter" label="Twitter username" :loading="loading" />
+      </v-col>
+
+      <v-col cols="10" md="6" lg="5" xl="4">
+        <v-text-field v-model="facebookUrl" label="Facebook page" :loading="loading" />
+      </v-col>
+
+      <v-col cols="10" md="6" lg="5" xl="4">
+        <v-text-field v-model="instagram" label="Instagram username" :loading="loading" />
+      </v-col>
+
+      <v-col cols="10" md="6" lg="5" xl="4">
+        <v-text-field v-model="whatsappNumber" label="WhatsApp number" :loading="loading" />
+      </v-col>
+
+      <v-col cols="10" md="6" lg="5" xl="4">
+        <v-text-field v-model="mastodonUrl" label="Mastodon page" :loading="loading" />
+      </v-col>
+
+    </v-row>
+
+    <v-row>
       <v-col cols="12" sm="6" xl="4">
         <v-switch
           v-model="branding"
@@ -86,6 +113,13 @@ export default VueApp.extend({
       name: '',
       branding: true,
       welcomeMessage: '',
+      twitter: '',
+      facebookUrl: '',
+      instagram: '',
+      whatsappNumber: '',
+      mastodonUrl: '',
+      websiteUrl: '',
+      telegram: '',
     };
   },
   created() {
@@ -104,6 +138,13 @@ export default VueApp.extend({
         name: this.name,
         show_branding: this.branding,
         welcome_message: this.welcomeMessage,
+        twitter: this.twitter,
+        facebook_url: this.facebookUrl,
+        instagram: this.instagram,
+        whatsapp_number: this.whatsappNumber,
+        mastodon_url: this.mastodonUrl,
+        website_url: this.websiteUrl,
+        telegram: this.telegram,
       };
 
       try {
@@ -124,6 +165,14 @@ export default VueApp.extend({
       this.name = this.preferences.name;
       this.branding = this.preferences.show_branding;
       this.welcomeMessage = this.preferences.welcome_message;
+
+      this.twitter = this.preferences.twitter;
+      this.facebookUrl = this.preferences.facebook_url;
+      this.instagram = this.preferences.instagram;
+      this.whatsappNumber = this.preferences.whatsapp_number;
+      this.mastodonUrl = this.preferences.mastodon_url;
+      this.websiteUrl = this.preferences.website_url;
+      this.telegram = this.preferences.telegram;
     },
   },
 });
