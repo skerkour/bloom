@@ -23,7 +23,11 @@
         </h3>
         <h4 class="text-h5">
           Bloom is the easiest way to de-Google your life and business.
-        </h4> -->
+        </h4>
+        -->
+        <h4 class="text-h5">
+          Open Source Inbox, Calendar, Files, Contacts & much more
+        </h4>
 
         <v-row class="text-center text--darken-1 grey--text pt-4 mt-5"
           align="center" justify="center" >
