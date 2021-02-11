@@ -8,6 +8,7 @@ export const Commands = {
   createMessage: `/${prefix}/${commands}/create_message`,
   deleteList: `/${prefix}/${commands}/delete_list`,
   deleteMessage: `/${prefix}/${commands}/delete_message`,
+  removeContactFromList: `/${prefix}/${commands}/remove_contact_from_list`,
   sendMessage: `/${prefix}/${commands}/send_message`,
   sendTestMessage: `/${prefix}/${commands}/send_test_message`,
   subscribeToList: `/${prefix}/${commands}/subscribe_to_list`,

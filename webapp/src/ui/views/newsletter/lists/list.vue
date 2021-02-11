@@ -20,13 +20,14 @@
 
     <v-row v-if="list">
       <b-list :list="list.list" :contacts="list.contacts" @updated="onListUpdated"
-        @imported="onImported" />
+        @imported="onImported" @removed="onContactRemoved" />
     </v-row>
   </v-container>
 </template>
 
 
 <script lang="ts">
+import { Contact } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
 import { List, ListWithContacts } from '@/domain/newsletter/model';
 import BList from '@/ui/components/newsletter/list.vue';
@@ -65,6 +66,10 @@ export default VueApp.extend({
     },
     onImported() {
       this.fetchData();
+    },
+    onContactRemoved(contact: Contact) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.list!.contacts = this.list!.contacts.filter((c) => c.id !== contact.id);
     },
   },
 });

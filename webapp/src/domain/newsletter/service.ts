@@ -11,6 +11,7 @@ import {
   DeleteMessage,
   GetList, GetLists, GetMessage, GetMessages, List, ListWithContacts, Message, MessageWithLists,
   SendMessage, SendTestMessage, SubscribeToList, UpdateList, UpdateMessage, UnsubscribeFromList,
+  RemoveContactFromList,
 } from './model';
 import { Commands, Queries } from './routes';
 
@@ -91,6 +92,10 @@ export class NewsletterService {
     const res: Message[] = await this.apiClient.post(Queries.messages, input);
 
     return res;
+  }
+
+  async removeContactFromList(input: RemoveContactFromList): Promise<void> {
+    await this.apiClient.post(Commands.removeContactFromList, input);
   }
 
   async sendMessage(messageId: string): Promise<void> {

@@ -76,6 +76,12 @@ export type MessageWithLists = {
   lists: List[];
 };
 
+export type RemoveContactFromList = {
+  list_id: string;
+  contact_id: string;
+};
+
+
 export type SendMessage = {
   message_id: string;
 };

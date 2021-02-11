@@ -86,6 +86,26 @@
               <td>
                 {{ item.email }}
               </td>
+              <td>
+
+
+                <v-menu bottom left>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-list>
+                    <v-list-item @click="removeContact(item)">
+                      <v-list-item-icon>
+                        <v-icon>mdi-delete</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-title>Remove contact</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </td>
             </tr>
           </template>
         </v-data-table>
@@ -104,10 +124,11 @@
 
 
 <script lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import {
-  List, Contact, CreateList, UpdateList,
+  List, Contact, CreateList, UpdateList, RemoveContactFromList,
 } from '@/domain/newsletter/model';
 import BImportContactsDialog from '@/ui/components/inbox/import_contacts_dialog.vue';
 
@@ -148,6 +169,11 @@ export default VueApp.extend({
           align: 'start',
           sortable: true,
           value: 'email',
+        },
+        {
+          text: 'Actions',
+          align: 'start',
+          sortable: false,
         },
       ],
     };
@@ -236,6 +262,28 @@ export default VueApp.extend({
     },
     async onImported() {
       this.$emit('imported');
+    },
+    async removeContact(contact: Contact) {
+      // eslint-disable-next-line no-alert, no-restricted-globals
+      if (!confirm(`Do you really want to remove ${contact.email} from ${this.list!.name}?`)) {
+        return;
+      }
+
+      this.loading = true;
+      this.error = '';
+      const input: RemoveContactFromList = {
+        contact_id: contact.id,
+        list_id: this.list!.id,
+      };
+
+      try {
+        await this.$newsletterService.removeContactFromList(input);
+        this.$emit('removed', contact);
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });
