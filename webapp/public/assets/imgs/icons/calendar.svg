@@ -1,0 +1,14 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="calendar">
+<rect width="1024" height="1024" transform="scale(0.25)" fill="white"/>
+<rect id="background" width="256" height="256" fill="url(#paint0_linear)"/>
+<path id="Shape" fill-rule="evenodd" clip-rule="evenodd" d="M156.236 59V72.825H101.014V59H87.2083V72.825H80.3056C72.6435 72.825 66.5 78.9771 66.5 86.65V183.425C66.5 191.06 72.681 197.25 80.3056 197.25H176.944C184.569 197.25 190.75 191.06 190.75 183.425V86.65C190.75 78.9771 184.537 72.825 176.944 72.825H170.042V59H156.236ZM176.66 183.169H80.5902V107.644H176.66V183.169ZM127.985 134.525H162.57V169.088H127.985V134.525Z" fill="white"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear" x1="131.581" y1="387.787" x2="395.155" y2="124.625" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4285F4"/>
+<stop offset="1" stop-color="#40B0FF"/>
+<stop offset="1" stop-color="#34B4A2"/>
+</linearGradient>
+</defs>
+</svg>

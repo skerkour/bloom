@@ -40,8 +40,8 @@
             <v-row justify="start">
               <v-col cols="4" v-for="(app, index) in apps" :key="index" class="text-center pa-0">
                 <router-link :to="app.url">
-                  <v-avatar class="blm-pointer"  size="52">
-                    <v-icon :color="app.color">{{ app.icon }}</v-icon>
+                  <v-avatar class="blm-pointer"  size="48">
+                    <img :src="app.icon" :alt="app.name" />
                   </v-avatar>
                   <p class="subtitle-1 font-weight-medium">
                     {{ app.name }}
@@ -223,37 +223,37 @@ export default VueApp.extend({
       apps: [
         {
           name: 'Inbox',
-          icon: 'mdi-inbox',
+          icon: '/assets/imgs/icons/inbox.svg',
           url: '/inbox',
           color: 'primary',
         },
         {
           name: 'Calendar',
-          icon: 'mdi-calendar',
+          icon: '/assets/imgs/icons/calendar.svg',
           url: '/calendar',
           color: 'purple lighten-1',
         },
         {
           name: 'Files',
-          icon: 'mdi-folder',
+          icon: '/assets/imgs/icons/files.svg',
           url: '/files',
           color: 'yellow',
         },
         {
           name: 'Analytics',
-          icon: 'mdi-chart-line',
+          icon: '/assets/imgs/icons/analytics.svg',
           url: '/analytics',
           color: 'success',
         },
         {
           name: 'Newsletter',
-          icon: 'mdi-feather',
+          icon: '/assets/imgs/icons/newsletter.svg',
           url: '/newsletter',
           color: 'black',
         },
         {
           name: 'Tools',
-          icon: 'mdi-hammer-wrench',
+          icon: '/assets/imgs/icons/tools.svg',
           url: '/tools',
           color: '',
         },
