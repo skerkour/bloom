@@ -36,6 +36,7 @@ mod init_namespace;
 mod job_dispatch_send_newsletter_message;
 mod job_send_newsletter_message;
 mod link_chatbox_contact;
+mod remove_contact_from_list;
 mod send_chatbox_message;
 mod send_message;
 mod send_newsletter_message;
@@ -336,6 +337,12 @@ pub struct SendNewsletterMessageJobInput {
     pub to: mail::Address,
     pub from: mail::Address,
     pub subscription_id: Option<Uuid>,
+}
+
+#[derive(Debug, Clone)]
+pub struct RemoveContactFromListInput {
+    pub list_id: Uuid,
+    pub contact_id: Uuid,
 }
 
 #[derive(Debug, Clone)]

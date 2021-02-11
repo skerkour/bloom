@@ -385,6 +385,10 @@ pub async fn run(
                                     .service(
                                         web::resource("/unsubscribe_from_list")
                                             .route(web::post().to(api::newsletter::commands::unsubscribe_from_list)),
+                                    )
+                                    .service(
+                                        web::resource("/remove_contact_from_list")
+                                            .route(web::post().to(api::newsletter::commands::remove_contact_from_list)),
                                     ),
                             )
                             .service(

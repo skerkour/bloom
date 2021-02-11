@@ -83,3 +83,9 @@ pub struct SubscribeToList {
 pub struct UnsubscribeFromList {
     pub subscription_id: Id,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RemoveContactFromList {
+    pub contact_id: Id,
+    pub list_id: Id,
+}

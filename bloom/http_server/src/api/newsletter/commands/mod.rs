@@ -18,3 +18,5 @@ mod subscribe_to_list;
 pub use subscribe_to_list::subscribe_to_list;
 mod unsubscribe_from_list;
 pub use unsubscribe_from_list::unsubscribe_from_list;
+mod remove_contact_from_list;
+pub use remove_contact_from_list::remove_contact_from_list;
