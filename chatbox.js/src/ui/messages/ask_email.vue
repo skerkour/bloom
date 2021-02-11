@@ -11,6 +11,7 @@
         v-model="email"
         class="email-input"
         type="email"
+        @keyup.enter="linkContact"
       />
       <span @click="linkContact" class="pointer send-btn">
         <b-send-icon alt="send icon" color="white" />
