@@ -5,6 +5,7 @@ import { Storage } from '@/app/storage';
 import {
   SignedIn, User, Session, Me, Namespace,
 } from '@/domain/kernel/model';
+import Vuetify from 'vuetify';
 
 Vue.use(Vuex);
 
@@ -38,7 +39,15 @@ export enum Mutation {
   UPDATE_NAMESPACE = 'UPDATE_NAMESPACE',
 }
 
-function defaultAppState(): AppState {
+function defaultAppState(vuetify?: Vuetify): AppState {
+  // eslint-disable-next-line no-restricted-globals
+  const width = window.innerWidth ?? screen.width;
+  let drawer = true;
+  if (vuetify) {
+    // eslint-disable-next-line no-unneeded-ternary
+    drawer = (width < vuetify.framework.breakpoint.thresholds.md) ? false : true;
+  }
+
   return {
     darkMode: false,
     me: null,
@@ -46,7 +55,7 @@ function defaultAppState(): AppState {
     sessionToken: null,
     pendingUserId: null,
     pendingSessionId: null,
-    drawer: true,
+    drawer,
     currentNamespace: null,
     namespaces: [],
     isAdmin: false,
@@ -54,8 +63,8 @@ function defaultAppState(): AppState {
 }
 
 
-export function newStore(storage: Storage): Store<AppState> {
-  const baseAppState = defaultAppState();
+export function newStore(storage: Storage, vuetify: Vuetify): Store<AppState> {
+  const baseAppState = defaultAppState(vuetify);
 
   const storedDarkMode = storage.get(storage.keyDarkMode);
   if (storedDarkMode) {

@@ -25,7 +25,7 @@ import { CalendarService, CalendarServiceInjector } from './domain/calendar/serv
 
 const config = new Config();
 const storage = new Storage();
-const store = newStore(storage);
+const store = newStore(storage, vuetify);
 const router = new Router(config, routes, store);
 const apiClient = new ApiClient(config, store, router);
 
