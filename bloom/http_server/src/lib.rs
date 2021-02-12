@@ -315,6 +315,22 @@ pub async fn run(
                                     .service(
                                         web::resource("/link_chatbox_contact")
                                             .route(web::post().to(api::inbox::commands::link_chatbox_contact)),
+                                    )
+                                    .service(
+                                        web::resource("/move_conversation_to_archive")
+                                            .route(web::post().to(api::inbox::commands::move_conversation_to_archive)),
+                                    )
+                                    .service(
+                                        web::resource("/move_conversation_to_inbox")
+                                            .route(web::post().to(api::inbox::commands::move_conversation_to_inbox)),
+                                    )
+                                    .service(
+                                        web::resource("/move_conversation_to_spam")
+                                            .route(web::post().to(api::inbox::commands::move_conversation_to_spam)),
+                                    )
+                                    .service(
+                                        web::resource("/move_conversation_to_trash")
+                                            .route(web::post().to(api::inbox::commands::move_conversation_to_trash)),
                                     ),
                             )
                             .service(

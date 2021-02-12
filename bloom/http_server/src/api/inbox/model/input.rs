@@ -143,3 +143,8 @@ pub struct LinkChatboxContact {
     pub namespace_id: Id,
     pub email: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MoveConversation {
+    pub conversation_id: Id,
+}
