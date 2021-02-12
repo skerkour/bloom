@@ -7,8 +7,11 @@ export const Commands = {
   createContact: `/${prefix}/${commands}/create_contact`,
   deleteContact: `/${prefix}/${commands}/delete_contact`,
   importContacts: `/${prefix}/${commands}/import_contacts`,
+  moveConversationToArchive: `/${prefix}/${commands}/move_conversation_to_archive`,
+  moveConversationToInbox: `/${prefix}/${commands}/move_conversation_to_inbox`,
+  moveConversationToSpam: `/${prefix}/${commands}/move_conversation_to_spam`,
+  moveConversationToTrash: `/${prefix}/${commands}/move_conversation_to_trash`,
   sendMessage: `/${prefix}/${commands}/send_message`,
-
   updateChetboxPreferences:  `/${prefix}/${commands}/update_chatbox_preferences`,
   updateContact:  `/${prefix}/${commands}/update_contact`,
 }

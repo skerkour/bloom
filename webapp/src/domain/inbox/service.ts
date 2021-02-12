@@ -19,6 +19,7 @@ import {
   UpdateContact,
   DeleteContact,
   CreateContact,
+  MoveConversation,
 } from './model';
 
 
@@ -171,6 +172,34 @@ export class InboxService {
     const res: Contact[] = await this.apiClient.post(Commands.importContacts, input);
 
     return res;
+  }
+
+  async moveConversationToArchive(conversationId: string): Promise<void> {
+    const input: MoveConversation = {
+      conversation_id: conversationId,
+    };
+    await this.apiClient.post(Commands.moveConversationToArchive, input);
+  }
+
+  async moveConversationToInbox(conversationId: string): Promise<void> {
+    const input: MoveConversation = {
+      conversation_id: conversationId,
+    };
+    await this.apiClient.post(Commands.moveConversationToInbox, input);
+  }
+
+  async moveConversationToSpam(conversationId: string): Promise<void> {
+    const input: MoveConversation = {
+      conversation_id: conversationId,
+    };
+    await this.apiClient.post(Commands.moveConversationToSpam, input);
+  }
+
+  async moveConversationToTrash(conversationId: string): Promise<void> {
+    const input: MoveConversation = {
+      conversation_id: conversationId,
+    };
+    await this.apiClient.post(Commands.moveConversationToTrash, input);
   }
 
   async sendMessage(input: SendMessage): Promise<Message> {

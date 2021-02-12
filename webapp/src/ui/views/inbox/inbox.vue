@@ -63,6 +63,27 @@
             </router-link> -->
             {{ selectedConversation.conversation.name }}
           </v-toolbar-title>
+
+          <v-spacer />
+
+          <v-tooltip bottom v-if="isInbox">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on"
+                @click="moveConversationToDone(selectedConversation.conversation)">
+                <v-icon color="success">mdi-check</v-icon>
+              </v-btn>
+            </template>
+            <span>Done</span>
+          </v-tooltip>
+          <v-tooltip bottom v-if="isDone">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on"
+                @click="moveConversationToInbox(selectedConversation.conversation)">
+                <v-icon color="primary">mdi-inbox</v-icon>
+              </v-btn>
+            </template>
+            <span>Move to Inbox</span>
+          </v-tooltip>
         </v-app-bar>
 
         <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" v-if="error !== ''">
@@ -108,6 +129,7 @@ import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions, InboxType } from '@/domain/inbox/service';
 import {
   ChatboxPreferences,
+  Conversation,
   ConversationWithContactsAndMessages, Message, SendMessage,
 } from '@/domain/inbox/model';
 import BChatboxSetupCard from '@/ui/components/inbox/chatbox_setup_card.vue';
@@ -137,8 +159,17 @@ export default VueApp.extend({
     };
   },
   computed: {
-    projectFullPath(): string {
-      return `${this.$route.params.namespacePath}/${this.$route.params.projectPath}`;
+    isDone(): boolean {
+      return this.$route.path === '/inbox/done';
+    },
+    isInbox(): boolean {
+      return this.$route.path === '/inbox';
+    },
+    isTrash(): boolean {
+      return this.$route.path === '/inbox/trash';
+    },
+    isSpam(): boolean {
+      return this.$route.path === '/inbox/spam';
     },
   },
   watch: {
@@ -163,11 +194,11 @@ export default VueApp.extend({
   methods: {
     calendar,
     async fetchData() {
-      if (this.$route.path === '/inbox/done') {
+      if (this.isDone) {
         this.fetchDone();
         return;
       // eslint-disable-next-line no-else-return
-      } else if (this.$route.path === '/inbox/trash') {
+      } else if (this.isTrash) {
         this.fetchTrash();
         return;
       }
@@ -266,9 +297,9 @@ export default VueApp.extend({
     },
     subscribeToMessages() {
       let inboxType = InboxType.Inbox;
-      if (this.$route.path === '/inbox/done') {
+      if (this.isDone) {
         inboxType = InboxType.Archive;
-      } else if (this.$route.path === '/inbox/trash') {
+      } else if (this.isTrash) {
         inboxType = InboxType.Trash;
       }
 
@@ -335,8 +366,8 @@ export default VueApp.extend({
       } else {
         this.selectedConversationIndex = selected;
       }
-      this.selectedConversation = this.conversations[this.selectedConversationIndex];
-      this.messages = this.selectedConversation.messages;
+      this.selectedConversation = this.conversations[this.selectedConversationIndex] ?? null;
+      this.messages = this.selectedConversation?.messages ?? [];
     },
     scrollToBottom() {
       const container = this.$refs.conversation;
@@ -349,6 +380,36 @@ export default VueApp.extend({
       if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
         this.sendMessage();
+      }
+    },
+    async moveConversationToDone(conversation: Conversation) {
+      this.loadingSend = true;
+      this.error = '';
+
+      try {
+        await this.$inboxService.moveConversationToArchive(conversation.id);
+        this.conversations = this.conversations
+          .filter((c) => c.conversation.id !== conversation.id);
+        this.selectedConversationIndexChanged(undefined);
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loadingSend = false;
+      }
+    },
+    async moveConversationToInbox(conversation: Conversation) {
+      this.loadingSend = true;
+      this.error = '';
+
+      try {
+        await this.$inboxService.moveConversationToInbox(conversation.id);
+        this.conversations = this.conversations
+          .filter((c) => c.conversation.id !== conversation.id);
+        this.selectedConversationIndexChanged(undefined);
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loadingSend = false;
       }
     },
   },

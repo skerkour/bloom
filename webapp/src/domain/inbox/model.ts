@@ -134,6 +134,10 @@ export type Message = {
   conversation_id: string;
 };
 
+export type MoveConversation = {
+  conversation_id: string;
+};
+
 export type SendMessage = {
   conversation_id: string;
   body: string;
