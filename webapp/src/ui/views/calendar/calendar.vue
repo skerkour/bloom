@@ -22,7 +22,7 @@
 
       </v-toolbar>
 
-    <div class="fill-height" style="height: calc(100vh - 113px)">
+    <div class="fill-height b-calendar-wrapper">
       <v-calendar
         ref="calendar"
         v-model="focus"
@@ -174,4 +174,14 @@ export default VueApp.extend({
 
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/styles.sass';
+
+.b-calendar-wrapper {
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    height: calc(100vh - 160px);
+  }
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    height: calc(100vh - 113px);
+  }
+}
 </style>
