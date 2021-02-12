@@ -1,7 +1,12 @@
 use super::Service;
 use kernel::domain::messages::Message;
 use std::collections::HashMap;
-use stdx::{chrono::Utc, log::error, mail, uuid::Uuid};
+use stdx::{
+    chrono::{Duration, Utc},
+    log::error,
+    mail,
+    uuid::Uuid,
+};
 
 impl Service {
     pub async fn job_dispatch_send_newsletter_message(&self, message_id: Uuid) -> Result<(), kernel::Error> {
@@ -29,7 +34,15 @@ impl Service {
         let mut from = self.kernel_service.config().mail.newsletter_address.clone();
         from.name = namespace.path;
 
-        for contact in contacts.into_iter().filter(|c| !c.email.is_empty()) {
+        let mut schedule_for = Utc::now();
+        let one_sec = Duration::seconds(1);
+
+        for (i, contact) in contacts.into_iter().filter(|c| !c.email.is_empty()).enumerate() {
+            // every 10 emails we increase by one second in order to not spam the outbound email server
+            if i % 10 == 0 {
+                schedule_for = schedule_for + one_sec;
+            }
+
             let to = mail::Address {
                 name: contact.name,
                 address: contact.email,
@@ -44,7 +57,7 @@ impl Service {
                 to,
                 subscription_id: Some(subscription_id),
             };
-            match self.queue.push(job, None).await {
+            match self.queue.push(job, Some(schedule_for)).await {
                 Err(err) => {
                     error!(
                         "kernel.job_dispatch_send_newsletter_message: queueing message: {}",
