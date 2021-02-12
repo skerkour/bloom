@@ -38,8 +38,8 @@ impl Service {
         let one_sec = Duration::seconds(1);
 
         for (i, contact) in contacts.into_iter().filter(|c| !c.email.is_empty()).enumerate() {
-            // every 10 emails we increase by one second in order to not spam the outbound email server
-            if i % 10 == 0 {
+            // every 12 emails we increase by one second in order to not spam the outbound email server
+            if i % 12 == 0 {
                 schedule_for = schedule_for + one_sec;
             }
 
