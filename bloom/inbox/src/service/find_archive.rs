@@ -1,5 +1,5 @@
-use super::FindArchiveInput;
-use crate::{entities::Conversation, Service};
+use super::{ConversationWithMessageAndContacts, FindArchiveInput};
+use crate::Service;
 use kernel::Actor;
 
 impl Service {
@@ -7,7 +7,7 @@ impl Service {
         &self,
         actor: Actor,
         input: FindArchiveInput,
-    ) -> Result<Vec<Conversation>, kernel::Error> {
+    ) -> Result<Vec<ConversationWithMessageAndContacts>, kernel::Error> {
         // TODO: messages
         let actor = self.kernel_service.current_user(actor)?;
 
@@ -19,6 +19,24 @@ impl Service {
             .repo
             .find_archived_conversations(&self.db, input.namespace_id)
             .await?;
-        Ok(conversations)
+
+        let mut ret = Vec::with_capacity(conversations.len());
+
+        // TODO: batch...
+        for conversation in conversations {
+            let messages = self
+                .repo
+                .find_inbox_messages_for_conversation(&self.db, conversation.id, None)
+                .await?;
+            // TODO
+            let contacts = Vec::new();
+            ret.push(ConversationWithMessageAndContacts {
+                conversation,
+                messages,
+                contacts,
+            });
+        }
+
+        Ok(ret)
     }
 }

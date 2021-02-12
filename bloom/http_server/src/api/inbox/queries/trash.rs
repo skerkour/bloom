@@ -12,12 +12,15 @@ pub async fn trash(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::GetTrash>,
     actor: Actor,
-) -> Result<api::Response<Vec<model::Conversation>>, kernel::Error> {
+) -> Result<api::Response<model::Inbox>, kernel::Error> {
     let input = input.into_inner();
     let service_input = FindTrashInput {
         namespace_id: input.namespace_id,
     };
     let conversations = ctx.inbox_service.find_trash(actor, service_input).await?;
 
-    Ok(api::Response::ok(conversations.into_iter().map(Into::into).collect()))
+    let inbox = model::Inbox {
+        conversations: conversations.into_iter().map(Into::into).collect(),
+    };
+    Ok(api::Response::ok(inbox))
 }
