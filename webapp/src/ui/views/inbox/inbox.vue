@@ -105,7 +105,7 @@
 import { VueApp } from '@/app/vue';
 import BMessage from '@/ui/components/inbox/message.vue';
 import { calendar } from '@/app/filters';
-import { InboxSubscriptionOptions } from '@/domain/inbox/service';
+import { InboxSubscriptionOptions, InboxType } from '@/domain/inbox/service';
 import {
   ChatboxPreferences,
   ConversationWithContactsAndMessages, Message, SendMessage,
@@ -145,6 +145,13 @@ export default VueApp.extend({
     messages() {
       setTimeout(this.scrollToBottom, 50);
     },
+    $route() {
+      this.selectedConversation = null;
+      this.seenConversations.clear();
+      this.seenMessages.clear();
+      this.$inboxService.unsubscribeFromInbox();
+      this.fetchData();
+    },
   },
   created() {
     this.fetchData();
@@ -156,6 +163,15 @@ export default VueApp.extend({
   methods: {
     calendar,
     async fetchData() {
+      if (this.$route.path === '/inbox/done') {
+        this.fetchDone();
+        return;
+      // eslint-disable-next-line no-else-return
+      } else if (this.$route.path === '/inbox/trash') {
+        this.fetchTrash();
+        return;
+      }
+
       this.loading = true;
       this.error = '';
 
@@ -186,10 +202,80 @@ export default VueApp.extend({
         this.error = err.message;
       }
     },
+    async fetchDone() {
+      this.loading = true;
+      this.error = '';
+
+      try {
+        const [inbox, chatboxPreferences] = await Promise.all([
+          this.$inboxService.fetchArchive(),
+          this.$inboxService.fetchChatboxPreferences(),
+        ]);
+
+        this.chatboxPreferences = chatboxPreferences;
+        this.conversations = inbox.conversations;
+
+        this.conversations.forEach((conversation) => {
+          this.seenConversations.add(conversation.conversation.id);
+          // eslint-disable-next-line max-len
+          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
+        });
+
+        if (this.conversations.length !== 0) {
+          this.messages = this.conversations[this.selectedConversationIndex].messages;
+          this.selectedConversation = this.conversations[this.selectedConversationIndex];
+        }
+        this.loading = false;
+        VueApp.nextTick(() => {
+          this.scrollToBottom();
+        });
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
+    async fetchTrash() {
+      this.loading = true;
+      this.error = '';
+
+      try {
+        const [inbox, chatboxPreferences] = await Promise.all([
+          this.$inboxService.fetchArchive(),
+          this.$inboxService.fetchChatboxPreferences(),
+        ]);
+
+        this.chatboxPreferences = chatboxPreferences;
+        this.conversations = inbox.conversations;
+
+        this.conversations.forEach((conversation) => {
+          this.seenConversations.add(conversation.conversation.id);
+          // eslint-disable-next-line max-len
+          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
+        });
+
+        if (this.conversations.length !== 0) {
+          this.messages = this.conversations[this.selectedConversationIndex].messages;
+          this.selectedConversation = this.conversations[this.selectedConversationIndex];
+        }
+        this.loading = false;
+        VueApp.nextTick(() => {
+          this.scrollToBottom();
+        });
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
     subscribeToMessages() {
+      let inboxType = InboxType.Inbox;
+      if (this.$route.path === '/inbox/done') {
+        inboxType = InboxType.Archive;
+      } else if (this.$route.path === '/inbox/trash') {
+        inboxType = InboxType.Trash;
+      }
+
       const options: InboxSubscriptionOptions = {
         onData: this.onConversation,
         onError: console.error,
+        inboxType,
       };
       this.$inboxService.subscribeToInbox(options);
     },

@@ -12,7 +12,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <!-- <v-list-item exact link to="/inbox/archive" color="success">
+      <v-list-item exact link to="/inbox/done" color="success">
         <v-list-item-icon>
           <v-icon color="success">mdi-check</v-icon>
         </v-list-item-icon>
@@ -31,6 +31,8 @@
           <v-list-item-title>Trash</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+
+      <!--
 
       <v-list-item exact link to="/inbox/spam">
         <v-list-item-icon>

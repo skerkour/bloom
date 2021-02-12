@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable class-methods-use-this */
 import ApiClient from '@/api/client';
@@ -23,14 +24,21 @@ import {
 
 const DEFAULT_MESSAGES_TIMEOUT = 2000; // 2 secs
 
+export enum InboxType {
+  Inbox,
+  Archive,
+  Spam,
+  Trash,
+}
 
-export interface InboxSubscriptionOptions {
+export type InboxSubscriptionOptions = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
  onData: (data: ConversationWithContactsAndMessages) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
  onError: (err: any) => void;
  onDisconnected?: () => void;
  onConnected?: () => void;
+ inboxType: InboxType,
 }
 
 export class InboxService {
@@ -105,8 +113,25 @@ export class InboxService {
       return;
     }
 
+    let inbox = null;
+
     try {
-      const inbox = await this.fetchInbox();
+      switch (options.inboxType) {
+        case InboxType.Archive:
+          inbox = await this.fetchArchive();
+          break;
+        case InboxType.Inbox:
+          inbox = await this.fetchInbox();
+          break;
+        case InboxType.Spam:
+          inbox = await this.fetchSpam();
+          break;
+        case InboxType.Trash:
+          inbox = await this.fetchTrash();
+          break;
+        default:
+          inbox = await this.fetchInbox();
+      }
       inbox.conversations.forEach((conversation) => {
         // conversation.messages.forEach((message: InboxMessage) => {
         options?.onData(conversation);
