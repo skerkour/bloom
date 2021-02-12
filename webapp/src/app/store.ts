@@ -45,7 +45,7 @@ function defaultAppState(vuetify?: Vuetify): AppState {
   let drawer = true;
   if (vuetify) {
     // eslint-disable-next-line no-unneeded-ternary
-    drawer = (width < vuetify.framework.breakpoint.thresholds.md) ? false : true;
+    drawer = (width < vuetify.framework.breakpoint.thresholds.sm) ? false : true;
   }
 
   return {

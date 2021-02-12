@@ -47,7 +47,7 @@
       </v-col> -->
 
       <v-col cols="12" md="6">
-        <b-analytics-events :events="events" />
+        <b-analytics-events :events="analytics.events" />
       </v-col>
     </v-row>
 
