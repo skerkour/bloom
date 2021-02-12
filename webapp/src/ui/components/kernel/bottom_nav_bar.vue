@@ -16,7 +16,7 @@
     </v-btn>
 
     <v-btn to="/apps" text fab>
-      <span>All</span>
+      <span>More</span>
       <v-icon>mdi-apps</v-icon>
     </v-btn>
 

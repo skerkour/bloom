@@ -28,9 +28,9 @@
 
       <v-spacer />
 
-      <v-menu offset-y close-on-content-click>
+      <v-menu offset-y close-on-content-click v-if="showNavBarAppsButton">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-if="showNavBarAppsButton" v-bind="attrs" v-on="on">
+          <v-btn icon v-bind="attrs" v-on="on">
             <v-icon>mdi-apps</v-icon>
           </v-btn>
         </template>
@@ -146,6 +146,7 @@ import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';
 import BNewsletterDrawer from '@/ui/components/newsletter/drawer.vue';
 import { Mutation } from '@/app/store';
 import { Namespace } from '@/domain/kernel/model';
+import { apps } from '@/domain/kernel/apps';
 
 export default VueApp.extend({
   name: 'BDefaultLayout',
@@ -206,8 +207,7 @@ export default VueApp.extend({
       return this.$route.meta.auth === false && this.$route.path !== '/';
     },
     showNavBarAppsButton(): boolean {
-      // TODO
-      return this.authenticated; //  && this.$vuetify.breakpoint.mdAndUp;
+      return this.authenticated && this.$vuetify.breakpoint.mdAndUp;
     },
     showDrawerButton(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
@@ -219,48 +219,14 @@ export default VueApp.extend({
     showBottomNav(): boolean {
       return this.authenticated && this.$vuetify.breakpoint.smAndDown;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    apps(): any[] {
+      return apps;
+    },
   },
   data() {
     return {
       namespaceMenu: false,
-      apps: [
-        {
-          name: 'Inbox',
-          icon: '/assets/imgs/icons/inbox.svg',
-          url: '/inbox',
-          color: 'primary',
-        },
-        {
-          name: 'Calendar',
-          icon: '/assets/imgs/icons/calendar.svg',
-          url: '/calendar',
-          color: 'purple lighten-1',
-        },
-        {
-          name: 'Files',
-          icon: '/assets/imgs/icons/files.svg',
-          url: '/files',
-          color: 'yellow',
-        },
-        {
-          name: 'Analytics',
-          icon: '/assets/imgs/icons/analytics.svg',
-          url: '/analytics',
-          color: 'success',
-        },
-        {
-          name: 'Newsletter',
-          icon: '/assets/imgs/icons/newsletter.svg',
-          url: '/newsletter',
-          color: 'black',
-        },
-        {
-          name: 'Tools',
-          icon: '/assets/imgs/icons/tools.svg',
-          url: '/tools',
-          color: '',
-        },
-      ],
     };
   },
   methods: {
