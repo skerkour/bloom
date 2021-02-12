@@ -5,8 +5,8 @@
         <v-container>
           <v-row justify="center">
             <v-col cols="4" v-for="(app, index) in apps" :key="index"
-              class="b-app-icon text-center">
-              <v-avatar class="b-pointer" @click="goto(app.path)" size="52">
+              class="b-app-icon text-center bloom-pointer">
+              <v-avatar class="b-pointer" @click="goto(app.url)" size="52">
                 <img :src="app.icon" :alt="app.name" />
               </v-avatar>
               <p class="subtitle-1 font-weight-medium b-app-icon-name">{{ app.name }}</p>

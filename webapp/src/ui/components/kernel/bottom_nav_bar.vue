@@ -5,14 +5,14 @@
       <v-icon>mdi-inbox</v-icon>
     </v-btn>
 
+    <v-btn to="/calendar" text fab>
+      <span>Calendar</span>
+      <v-icon>mdi-calendar</v-icon>
+    </v-btn>
+
     <v-btn to="/files" text fab>
       <span>Files</span>
       <v-icon>mdi-folder</v-icon>
-    </v-btn>
-
-    <v-btn to="/analytics" text fab>
-      <span>Analytics</span>
-      <v-icon>mdi-chart-line</v-icon>
     </v-btn>
 
     <v-btn to="/apps" text fab>
