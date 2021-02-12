@@ -129,7 +129,7 @@
       <b-footer v-if="showFooter" />
     </v-main>
 
-    <b-bottom-nav-bar />
+    <b-bottom-nav-bar :show="showBottomNav" />
   </v-app>
 </template>
 
@@ -215,6 +215,9 @@ export default VueApp.extend({
         // eslint-disable-next-line max-len
         && (this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
           || this.inboxDrawer || this.filesDrawer || this.newsletterDrawer);
+    },
+    showBottomNav(): boolean {
+      return this.authenticated && this.$vuetify.breakpoint.smAndDown;
     },
   },
   data() {

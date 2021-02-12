@@ -1,21 +1,21 @@
 <template>
-  <v-bottom-navigation fixed v-if="show">
-    <v-btn to="/inbox">
+  <v-bottom-navigation fixed v-if="show" grow color="primary" app>
+    <v-btn to="/inbox" text fab>
       <span>Inbox</span>
       <v-icon>mdi-inbox</v-icon>
     </v-btn>
 
-    <v-btn to="/files">
+    <v-btn to="/files" text fab>
       <span>Files</span>
       <v-icon>mdi-folder</v-icon>
     </v-btn>
 
-    <v-btn to="/analytics">
+    <v-btn to="/analytics" text fab>
       <span>Analytics</span>
       <v-icon>mdi-chart-line</v-icon>
     </v-btn>
 
-    <v-btn to="/apps">
+    <v-btn to="/apps" text fab>
       <span>All</span>
       <v-icon>mdi-apps</v-icon>
     </v-btn>
@@ -25,18 +25,15 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
+import { PropType } from 'vue';
 
 
 export default VueApp.extend({
   name: 'BBottomNavBar',
-  computed: {
-    authenticated(): boolean {
-      return this.$store.state.session !== null;
-    },
-    show(): boolean {
-      // TODO
-      // return this.authenticated && this.$vuetify.breakpoint.smAndDown;
-      return false;
+  props: {
+    show: {
+      type: Boolean as PropType<boolean>,
+      required: true,
     },
   },
 });

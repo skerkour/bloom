@@ -270,6 +270,8 @@ export default VueApp.extend({
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/styles.sass';
+
 .v-toolbar {
   border-bottom: 1px solid rgba($color: #000000, $alpha: 0.1) !important;
   left: 0px !important;
@@ -280,7 +282,12 @@ export default VueApp.extend({
 }
 
 .conversation {
-  height: calc(100vh - 244px);
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    height: calc(100vh - 300px);
+  }
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    height: calc(100vh - 244px);
+  }
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -296,6 +303,11 @@ export default VueApp.extend({
 }
 
 .b-conversations-list {
-  height: calc(100vh - 50px);
+  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+    height: calc(100vh - 106px);
+  }
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    height: calc(100vh - 50px);
+  }
 }
 </style>
