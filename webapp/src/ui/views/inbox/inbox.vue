@@ -180,8 +180,8 @@ export default VueApp.extend({
       this.selectedConversation = null;
       this.seenConversations.clear();
       this.seenMessages.clear();
-      this.$inboxService.unsubscribeFromInbox();
       this.fetchData();
+      this.subscribeToMessages();
     },
   },
   created() {
@@ -197,9 +197,13 @@ export default VueApp.extend({
       if (this.isDone) {
         this.fetchDone();
         return;
-      // eslint-disable-next-line no-else-return
-      } else if (this.isTrash) {
+      }
+      if (this.isTrash) {
         this.fetchTrash();
+        return;
+      }
+      if (this.isSpam) {
+        this.fetchSpam();
         return;
       }
 
@@ -270,7 +274,38 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchArchive(),
+          this.$inboxService.fetchTrash(),
+          this.$inboxService.fetchChatboxPreferences(),
+        ]);
+
+        this.chatboxPreferences = chatboxPreferences;
+        this.conversations = inbox.conversations;
+
+        this.conversations.forEach((conversation) => {
+          this.seenConversations.add(conversation.conversation.id);
+          // eslint-disable-next-line max-len
+          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
+        });
+
+        if (this.conversations.length !== 0) {
+          this.messages = this.conversations[this.selectedConversationIndex].messages;
+          this.selectedConversation = this.conversations[this.selectedConversationIndex];
+        }
+        this.loading = false;
+        VueApp.nextTick(() => {
+          this.scrollToBottom();
+        });
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
+    async fetchSpam() {
+      this.loading = true;
+      this.error = '';
+
+      try {
+        const [inbox, chatboxPreferences] = await Promise.all([
+          this.$inboxService.fetchSpam(),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -301,6 +336,8 @@ export default VueApp.extend({
         inboxType = InboxType.Archive;
       } else if (this.isTrash) {
         inboxType = InboxType.Trash;
+      } else if (this.isSpam) {
+        inboxType = InboxType.Spam;
       }
 
       const options: InboxSubscriptionOptions = {

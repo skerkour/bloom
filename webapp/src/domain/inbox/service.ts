@@ -47,12 +47,14 @@ export class InboxService {
   private store: Store<AppState>;
   private subscriptionTimeout: number;
   private router: Router;
+  private subscriptionType: InboxType;
 
   constructor(apiClient: ApiClient, store: Store<AppState>, router: Router) {
     this.apiClient = apiClient;
     this.store = store;
     this.router = router;
-    this.subscriptionTimeout = DEFAULT_MESSAGES_TIMEOUT;
+    this.subscriptionTimeout = 0;
+    this.subscriptionType = InboxType.Inbox;
   }
 
   async createContact(input: CreateContact): Promise<void> {
@@ -117,7 +119,7 @@ export class InboxService {
     let inbox = null;
 
     try {
-      switch (options.inboxType) {
+      switch (this.subscriptionType) {
         case InboxType.Archive:
           inbox = await this.fetchArchive();
           break;
@@ -209,8 +211,14 @@ export class InboxService {
   }
 
   subscribeToInbox(options: InboxSubscriptionOptions): void {
+    // eslint-disable-next-line no-unneeded-ternary
+    const startPolling = this.subscriptionTimeout === 0 ? true : false;
     this.subscriptionTimeout = DEFAULT_MESSAGES_TIMEOUT;
-    this.fetchInboxMessages(options);
+    this.subscriptionType = options.inboxType;
+
+    if (startPolling) {
+      this.fetchInboxMessages(options);
+    }
   }
 
   unsubscribeFromInbox(): void {

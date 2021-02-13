@@ -21,6 +21,10 @@ const routes: Array<RouteConfig> = [
     component: Inbox,
   },
   {
+    path: '/inbox/spam',
+    component: Inbox,
+  },
+  {
     path: '/inbox/chatbox',
     component: Chatbox,
   },
