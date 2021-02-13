@@ -75,6 +75,7 @@
             </template>
             <span>Done</span>
           </v-tooltip>
+
           <v-tooltip bottom v-if="isDone">
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on"
@@ -84,6 +85,33 @@
             </template>
             <span>Move to Inbox</span>
           </v-tooltip>
+
+          <v-tooltip bottom v-if="isTrash">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on"
+                @click="moveConversationToInbox(selectedConversation.conversation)">
+                <v-icon>mdi-history</v-icon>
+              </v-btn>
+            </template>
+            <span>Restore</span>
+          </v-tooltip>
+
+          <v-menu bottom v-if="isInbox || isDone || isSpam">
+            <template v-slot:activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item @click="moveConversationToTrash(selectedConversation.conversation)">
+                <v-list-item-icon>
+                  <v-icon>mdi-delete</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Move to trash</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-app-bar>
 
         <v-alert icon="mdi-alert-circle" type="error" :value="error !== ''" v-if="error !== ''">
@@ -440,6 +468,21 @@ export default VueApp.extend({
 
       try {
         await this.$inboxService.moveConversationToInbox(conversation.id);
+        this.conversations = this.conversations
+          .filter((c) => c.conversation.id !== conversation.id);
+        this.selectedConversationIndexChanged(undefined);
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loadingSend = false;
+      }
+    },
+    async moveConversationToTrash(conversation: Conversation) {
+      this.loadingSend = true;
+      this.error = '';
+
+      try {
+        await this.$inboxService.moveConversationToTrash(conversation.id);
         this.conversations = this.conversations
           .filter((c) => c.conversation.id !== conversation.id);
         this.selectedConversationIndexChanged(undefined);
