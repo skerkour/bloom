@@ -84,6 +84,7 @@ pub enum Error {
     CustomerStateIsTooLong,
     CustomerAddressRequired,
     CustomerAddressIsTooLong,
+    BillingCantBeAccessedWhenSelfHosting,
 }
 
 impl std::convert::From<Error> for crate::Error {
@@ -198,6 +199,9 @@ impl std::convert::From<Error> for crate::Error {
             Error::CustomerStateIsTooLong => crate::Error::InvalidArgument(String::from("State is too long.")),
             Error::CustomerAddressRequired => crate::Error::InvalidArgument(String::from("Address is required.")),
             Error::CustomerAddressIsTooLong => crate::Error::InvalidArgument(String::from("Address is too long.")),
+            Error::BillingCantBeAccessedWhenSelfHosting => {
+                crate::Error::PermissionDenied(String::from("Billing can't be accessed when self-hosting."))
+            }
 
             // Other
             Error::FileSizeIsNegative => crate::Error::InvalidArgument("File size can't be negative.".into()),

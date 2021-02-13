@@ -22,12 +22,17 @@ impl Service {
         self.check_namespace_membership(&self.db, &actor, input.namespace_id)
             .await?;
 
+        if self.self_hosted() {
+            return Err(Error::BillingCantBeAccessedWhenSelfHosting.into());
+        }
+
         let namespace = self.repo.find_namespace_by_id(&self.db, input.namespace_id).await?;
 
         let countries = self.config.countries.clone();
         let mut tax_id: Option<String> = None;
         let mut stripe_tax: Option<String> = None;
-        let stripe_data = self.config.stripe.data.clone();
+        // unwrap is safe as if we are here we are not self-hosting
+        let stripe_data = &self.config.stripe.as_ref().unwrap().data;
         let mut tax_id_type: Option<TaxIdType> = None;
         let mut stripe_customer_tax_data: Vec<stripe::model::CustomerTaxIdDataParams> = Vec::new();
 
@@ -112,7 +117,10 @@ impl Service {
                     tax_id_data: Some(stripe_customer_tax_data),
                     ..Default::default()
                 };
+                // unwrap is safe as if we are here we are not self-hosting
                 self.stripe_client
+                    .as_ref()
+                    .unwrap()
                     .update_customer(customer.stripe_customer_id.clone(), customer_params)
                     .await?;
 
@@ -173,7 +181,13 @@ impl Service {
                     metadata: Some(customer_metadata),
                     ..Default::default()
                 };
-                let stripe_customer = self.stripe_client.create_customer(customer_params).await?;
+                // unwrap is safe as if we are here we are not self-hosting
+                let stripe_customer = self
+                    .stripe_client
+                    .as_ref()
+                    .unwrap()
+                    .create_customer(customer_params)
+                    .await?;
 
                 customer.stripe_customer_id = stripe_customer.id;
                 self.repo.create_customer(&self.db, &customer).await?;

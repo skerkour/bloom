@@ -18,6 +18,10 @@ impl Service {
         self.check_namespace_membership(&self.db, &actor, input.namespace_id)
             .await?;
 
+        if self.self_hosted() {
+            return Err(Error::BillingCantBeAccessedWhenSelfHosting.into());
+        }
+
         let namespace = self.repo.find_namespace_by_id(&self.db, input.namespace_id).await?;
         let customer = self
             .repo
@@ -32,7 +36,8 @@ impl Service {
             return Err(Error::PermissionDenied.into());
         }
 
-        let stripe_data = self.config.stripe.data.clone();
+        // unwrap is safe as if we are here we are not self-hosting
+        let stripe_data = self.config.stripe.as_ref().unwrap().data.clone();
         let mut stripe_tax_rates: Vec<String> = Vec::new();
 
         let stripe_price = match input.plan {
@@ -81,7 +86,13 @@ impl Service {
                 default_tax_rates: stripe_tax_rates,
             }),
         };
-        let checkout_session = self.stripe_client.new_checkout_session(params).await?;
+        // unwrap is safe as if we are here we are not self-hosting
+        let checkout_session = self
+            .stripe_client
+            .as_ref()
+            .unwrap()
+            .new_checkout_session(params)
+            .await?;
 
         Ok(checkout_session.id)
     }

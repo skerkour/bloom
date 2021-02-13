@@ -99,7 +99,7 @@ pub struct Service {
     files_service: Option<Arc<dyn files::Service>>,
     inbox_service: Option<Arc<dyn inbox::Service>>,
     xss: Arc<dyn drivers::XssSanitizer>,
-    stripe_client: stripe::Client,
+    stripe_client: Option<stripe::Client>,
 }
 
 impl Service {
@@ -148,7 +148,11 @@ impl Service {
 
         let valid_namespace_alphabet = consts::NAMESPACE_ALPHABET.chars().collect();
 
-        let stripe_client = stripe::Client::new(config.stripe.secret_key.clone());
+        let stripe_client = if config.self_hosted {
+            None
+        } else {
+            Some(stripe::Client::new(config.stripe.as_ref().unwrap().secret_key.clone()))
+        };
 
         let config = Arc::new(config);
 

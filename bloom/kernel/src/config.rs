@@ -65,7 +65,7 @@ pub struct Config {
     pub smtp: Smtp,
     pub mail: Mail,
     pub storage: Storage,
-    pub stripe: Stripe,
+    pub stripe: Option<Stripe>,
     pub aws: Aws,
     pub ses: Ses,
     pub s3: S3,
@@ -424,26 +424,31 @@ impl Config {
             base_directory: storage_base_directory,
         };
 
-        let stripe_private_key =
-            std::env::var(ENV_STRIPE_SECRET_KEY).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
-        let stripe_public_key =
-            std::env::var(ENV_STRIPE_PUBLIC_KEY).map_err(|_| env_not_found(ENV_STRIPE_PUBLIC_KEY))?;
-        let stripe_webhook_secret =
-            std::env::var(ENV_STRIPE_WEBHOOK_SECRET).map_err(|_| env_not_found(ENV_STRIPE_WEBHOOK_SECRET))?;
-        let stripe_data_json = std::env::var(ENV_STRIPE_DATA).map_err(|_| env_not_found(ENV_STRIPE_DATA))?;
-        let mut stripe_data: StripeData = serde_json::from_str(&stripe_data_json)?;
-        stripe_data.taxes = stripe_data
-            .taxes
-            .into_iter()
-            .map(|tax| (tax.0.trim().to_string(), tax.1.trim().to_string()))
-            .collect();
+        // Stripe
+        let stripe = if self_hosted {
+            None
+        } else {
+            let stripe_private_key =
+                std::env::var(ENV_STRIPE_SECRET_KEY).map_err(|_| env_not_found(ENV_STRIPE_SECRET_KEY))?;
+            let stripe_public_key =
+                std::env::var(ENV_STRIPE_PUBLIC_KEY).map_err(|_| env_not_found(ENV_STRIPE_PUBLIC_KEY))?;
+            let stripe_webhook_secret =
+                std::env::var(ENV_STRIPE_WEBHOOK_SECRET).map_err(|_| env_not_found(ENV_STRIPE_WEBHOOK_SECRET))?;
+            let stripe_data_json = std::env::var(ENV_STRIPE_DATA).map_err(|_| env_not_found(ENV_STRIPE_DATA))?;
+            let mut stripe_data: StripeData = serde_json::from_str(&stripe_data_json)?;
+            stripe_data.taxes = stripe_data
+                .taxes
+                .into_iter()
+                .map(|tax| (tax.0.trim().to_string(), tax.1.trim().to_string()))
+                .collect();
 
-        let stripe = Stripe {
-            secret_key: stripe_private_key,
-            public_key: stripe_public_key,
-            webhook_secret: stripe_webhook_secret,
-            data: stripe_data,
-            json_data: stripe_data_json,
+            Some(Stripe {
+                secret_key: stripe_private_key,
+                public_key: stripe_public_key,
+                webhook_secret: stripe_webhook_secret,
+                data: stripe_data,
+                json_data: stripe_data_json,
+            })
         };
 
         // aws
@@ -558,48 +563,51 @@ impl Config {
         // config.Database.URL = databaseURL.String()
 
         // Stripe
-        if !self.stripe.public_key.starts_with(STRIPE_PUBLIC_KEY_PREFIX) {
-            return Err(Error::InvalidArgument(String::from(
-                "config: STRIPE_PUBLIC_KEY is not valid",
-            )));
-        }
-
-        if !self.stripe.secret_key.starts_with(STRIPE_SECRET_KEY_PREFIX) {
-            return Err(Error::InvalidArgument(String::from(
-                "config: STRIPE_SECRET_KEY is not valid",
-            )));
-        }
-
-        if !self.stripe.data.prices.starter.starts_with(STRIPE_PRICE_PREFIX)
-            || !self.stripe.data.prices.pro.starts_with(STRIPE_PRICE_PREFIX)
-        // || !self.stripe.data.prices.ultra.starts_with(STRIPE_PRICE_PREFIX)
-        {
-            return Err(Error::InvalidArgument(String::from("config: invalid price")));
-        }
-
-        if !self.stripe.data.products.starter.starts_with(STRIPE_PRODUCT_PREFIX)
-            || !self.stripe.data.products.pro.starts_with(STRIPE_PRODUCT_PREFIX)
-        // || !self.stripe.data.products.ultra.starts_with(STRIPE_PRODUCT_PREFIX)
-        {
-            return Err(Error::InvalidArgument(String::from("config: invalid product")));
-        }
-
-        if self.stripe.data.taxes.len() != vat::RATES_NUMBER {
-            return Err(Error::InvalidArgument(String::from(
-                "config: invalid number of stripe taxes",
-            )));
-        }
-
-        for tax in &self.stripe.data.taxes {
-            if !tax.1.starts_with(STRIPE_TAX_PREFIX) {
-                return Err(Error::InvalidArgument(String::from("config: stripe tax not valid")));
+        if !self.self_hosted {
+            let stripe = self.stripe.as_ref().unwrap();
+            if !stripe.public_key.starts_with(STRIPE_PUBLIC_KEY_PREFIX) {
+                return Err(Error::InvalidArgument(String::from(
+                    "config: STRIPE_PUBLIC_KEY is not valid",
+                )));
             }
 
-            if !self.countries.contains_key(tax.0) {
-                return Err(Error::InvalidArgument(format!(
-                    "config: country code not found for stripe tax: {}",
-                    tax.0
+            if !stripe.secret_key.starts_with(STRIPE_SECRET_KEY_PREFIX) {
+                return Err(Error::InvalidArgument(String::from(
+                    "config: STRIPE_SECRET_KEY is not valid",
                 )));
+            }
+
+            if !stripe.data.prices.starter.starts_with(STRIPE_PRICE_PREFIX)
+                || !stripe.data.prices.pro.starts_with(STRIPE_PRICE_PREFIX)
+            // || !self.stripe.data.prices.ultra.starts_with(STRIPE_PRICE_PREFIX)
+            {
+                return Err(Error::InvalidArgument(String::from("config: invalid price")));
+            }
+
+            if !stripe.data.products.starter.starts_with(STRIPE_PRODUCT_PREFIX)
+                || !stripe.data.products.pro.starts_with(STRIPE_PRODUCT_PREFIX)
+            // || !self.stripe.data.products.ultra.starts_with(STRIPE_PRODUCT_PREFIX)
+            {
+                return Err(Error::InvalidArgument(String::from("config: invalid product")));
+            }
+
+            if stripe.data.taxes.len() != vat::RATES_NUMBER {
+                return Err(Error::InvalidArgument(String::from(
+                    "config: invalid number of stripe taxes",
+                )));
+            }
+
+            for tax in &stripe.data.taxes {
+                if !tax.1.starts_with(STRIPE_TAX_PREFIX) {
+                    return Err(Error::InvalidArgument(String::from("config: stripe tax not valid")));
+                }
+
+                if !self.countries.contains_key(tax.0) {
+                    return Err(Error::InvalidArgument(format!(
+                        "config: country code not found for stripe tax: {}",
+                        tax.0
+                    )));
+                }
             }
         }
 

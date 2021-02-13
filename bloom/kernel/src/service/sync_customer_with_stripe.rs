@@ -18,6 +18,10 @@ impl Service {
             return Err(Error::PermissionDenied.into());
         };
 
+        if self.self_hosted() {
+            return Err(Error::BillingCantBeAccessedWhenSelfHosting.into());
+        }
+
         if customer.namespace_id.is_none() {
             // early return beacuse the customer is no longer linked to an active namespace
             return Ok(());
@@ -36,7 +40,8 @@ impl Service {
             .find_namespace_by_id(&self.db, customer.namespace_id.unwrap())
             .await?;
 
-        let stripe_data = self.config.stripe.data.clone();
+        // unwrap is safe as if we are here we are not self-hosting
+        let stripe_data = self.config.stripe.as_ref().unwrap().data.clone();
         let now = Utc::now();
 
         customer.updated_at = now;
@@ -57,6 +62,8 @@ impl Service {
         };
         let stripe_customer = self
             .stripe_client
+            .as_ref()
+            .unwrap()
             .get_customer(&customer.stripe_customer_id, stripe_customer_params)
             .await?;
 
