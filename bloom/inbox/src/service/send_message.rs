@@ -42,9 +42,10 @@ impl Service {
         };
         self.repo.create_inbox_message(&self.db, &message).await?;
 
-        // we can ignore error as it's not important
+        // we can ignore error as it's not that important
         conversation.updated_at = now;
         conversation.last_message_at = now;
+        conversation.archived_at = None;
         let _ = self.repo.update_conversation(&self.db, &conversation).await;
 
         Ok(message)

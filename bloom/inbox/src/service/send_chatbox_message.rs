@@ -17,7 +17,7 @@ impl Service {
         let now = Utc::now();
         let namespace_id = input.namespace_id;
 
-        let conversation = match self
+        let mut conversation = match self
             .repo
             .find_inbox_conversation_for_anonymous_id(&self.db, anonymous_id, namespace_id)
             .await
@@ -71,6 +71,12 @@ impl Service {
             from_operator: false,
         };
         self.repo.create_inbox_message(&self.db, &message).await?;
+
+        // we can ignore error as it's not that important
+        conversation.updated_at = now;
+        conversation.last_message_at = now;
+        conversation.archived_at = None;
+        let _ = self.repo.update_conversation(&self.db, &conversation).await;
 
         Ok(message)
     }
