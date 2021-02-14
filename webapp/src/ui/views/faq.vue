@@ -47,7 +47,7 @@ export default VueApp.extend({
           `,
         },
         {
-          question: 'Why Bloom is more ethical than other service providers?',
+          question: 'Why is Bloom more ethical than other service providers?',
           answer: `
           Bloom is <a href="https://github.com/skerkour/bloom" target="_blank" rel="noopener"><b>100% Open Source</b></a>.
           Anyone can inspect how Bloom works and even contribute to it!
@@ -55,9 +55,9 @@ export default VueApp.extend({
           Just open technology for a fast, simple, and secure experience.`,
         },
         {
-          question: 'How secure are my data?',
+          question: 'How secure is my data?',
           answer: `
-          As some of your most important data are stored on Bloom, we designed it with care to be as secure as possible using state
+          As some of your most important data is stored on Bloom, we designed it with care to be as secure as possible using state
           of the art cryptography. <br />
           One-time passwords are hashed using <a href="https://en.wikipedia.org/wiki/Argon2" target="_blank" rel="noopener">Argon2id</a>. <br />
           External services credentials are encrypted at rest using the <a href="https://tools.ietf.org/html/draft-irtf-cfrg-xchacha-03" target="_blank" rel="noopener">XChaCha20-Poly1305 AEAD</a>. <br />
@@ -67,7 +67,7 @@ export default VueApp.extend({
           `,
         },
         // {
-        //   question: 'Where are stored the data ?',
+        //   question: 'Where is the data stored?',
         //   answer: `
         //   The data are stored in a <a href="https://aws.amazon.com" target="_blank" rel="noopener">Amazon AWS</a>
         //   datacenter in a privacy friendly country European: Ireland. <br />
