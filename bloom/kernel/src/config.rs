@@ -139,7 +139,7 @@ pub struct Http {
     // pub https_domain: String,
     // pub https_port: u16,
 }
-const DEFAULT_HTTP_PORT: u16 = 8000;
+const DEFAULT_HTTP_PORT: u16 = 8080;
 const DEFAULT_ACCESS_LOGS: bool = false;
 const DEFAULT_HTTP_PUBLIC_DIRECTORY: &str = "public";
 // const ENV_HTTPS_CERTS_DIRECTORY: &str = "ENV_HTTPS_CERTS_DIRECTORY";
