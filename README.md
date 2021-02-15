@@ -53,6 +53,7 @@ If you want to say thanks or have a question, please use the [Discussions tab](h
 Do you find the project awesome and want to contribute financially? Feel free to create an account
 on https://bloom.sh and subscribe to a plan.
 
+Here is a blog post with additional details about my plan to make Bloom sustainable: https://kerkour.com/blog/the-unusual-way-im-funding-my-open-source-work
 
 
 ## Security
