@@ -7,6 +7,9 @@
 ## [Self Hosting](self_hosting.md)
 
 
+## [Code structure](code_structure.md)
+
+
 ## [Development](dev.md)
 
 
