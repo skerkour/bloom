@@ -134,15 +134,28 @@
           <b-chatbox-setup-card class="ma-5 pa-5" :preferences="chatboxPreferences" />
         </div>
 
-        <v-textarea
-          class="conversation-input pa-0"
-          placeholder="Compose your message..."
-          v-model="message"
-          hide-details
-          @keydown="onInputKeyDown"
-          v-if="selectedConversation"
-          :loading="loadingSend"
-        />
+        <v-container fluid class="pa-0 ma-0">
+          <v-row class="pa-0 ma-0">
+            <v-col cols="8" sm="10" class="pa-0 ma-0">
+              <v-textarea
+                class="conversation-input pa-0"
+                placeholder="Compose your message..."
+                v-model="message"
+                hide-details
+                v-if="selectedConversation"
+                :loading="loadingSend"
+                no-resize
+                outlined
+              />
+            </v-col>
+
+            <v-col cols="4" sm="2" class="pa-0 ma-0 text-center">
+              <v-btn fab depressed color="primary" @click="sendMessage" class="ma-3">
+                <v-icon>mdi-send</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-col>
     </v-row>
 
@@ -441,12 +454,6 @@ export default VueApp.extend({
         (container as any).scrollTop = (container as any).scrollHeight;
       }
     },
-    onInputKeyDown(e: KeyboardEvent) {
-      if (e.keyCode === 13 && !e.shiftKey) {
-        e.preventDefault();
-        this.sendMessage();
-      }
-    },
     async moveConversationToDone(conversation: Conversation) {
       this.loadingSend = true;
       this.error = '';
@@ -510,10 +517,10 @@ export default VueApp.extend({
 
 .conversation {
   @media #{map-get($display-breakpoints, 'sm-and-down')} {
-    height: calc(100vh - 300px);
+    height: calc(100vh - 304px);
   }
   @media #{map-get($display-breakpoints, 'md-and-up')} {
-    height: calc(100vh - 244px);
+    height: calc(100vh - 248px);
   }
   display: flex;
   flex-direction: column;
