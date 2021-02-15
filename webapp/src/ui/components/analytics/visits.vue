@@ -12,9 +12,8 @@ import { VueApp } from '@/app/vue';
 import * as echarts from 'echarts/core';
 import { LineChart, LinesChart } from 'echarts/charts';
 import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
+  TitleComponent, TooltipComponent,
+  GridComponent, LegendComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { Visit } from '@/domain/analytics/model';
@@ -44,9 +43,11 @@ export default VueApp.extend({
   },
   methods: {
     init() {
-      echarts.use(
-        [TitleComponent, TooltipComponent, GridComponent, LinesChart, LineChart, CanvasRenderer],
-      );
+      echarts.use([
+        TitleComponent, TooltipComponent, GridComponent,
+        LinesChart, LineChart, CanvasRenderer, LegendComponent,
+      ]);
+
       this.chart = echarts.init(document.getElementById('analytics-visits-chart') as HTMLDivElement);
       const xAxisData = this.visits.map((visit: Visit) => visit.date);
       const viewsData = this.visits.map((visit: Visit) => visit.views);
