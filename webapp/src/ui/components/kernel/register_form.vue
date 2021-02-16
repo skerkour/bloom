@@ -59,6 +59,9 @@ export default VueApp.extend({
       username: '',
       usernameRules: [
         (v: string) => !!v || 'Username is required',
+        (v: string) => v.length >= 4 || 'Username is too short',
+        (v: string) => v.length <= 20 || 'Username is too long',
+        (v: string) => /^[a-z0-9]*$/.test(v) || 'Username is not valid',
       ],
       email: '',
       emailRules: [

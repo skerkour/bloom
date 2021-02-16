@@ -33,14 +33,18 @@
                   disabled
                 ></v-text-field>
               </v-col>
+
               <v-col cols="6">
                 <v-text-field
                   label="Namespace"
                   v-model="path"
                   @keyup="lowercasePath"
                   :disabled="loading"
+                  counter="20"
+                  :rules="usernameRules"
                 ></v-text-field>
               </v-col>
+
               <v-col cols="12">
                 <v-textarea
                   label="Description"
@@ -81,6 +85,12 @@ export default VueApp.extend({
       error: '',
       path: '',
       description: '',
+      namespaceRules: [
+        (v: string) => !!v || 'Namespace is required',
+        (v: string) => v.length >= 4 || 'Namespace is too short',
+        (v: string) => v.length <= 20 || 'Namespace is too long',
+        (v: string) => /^[a-z0-9]*$/.test(v) || 'Username is not valid',
+      ],
     };
   },
   methods: {
