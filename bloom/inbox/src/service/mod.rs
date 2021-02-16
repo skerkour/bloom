@@ -306,6 +306,7 @@ pub struct InitNamespaceInput {
 #[derive(Debug, Clone)]
 pub struct FindInboxInput {
     pub namespace_id: Uuid,
+    pub after: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]

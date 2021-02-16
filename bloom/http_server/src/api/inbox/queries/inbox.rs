@@ -16,6 +16,7 @@ pub async fn inbox(
     let input = input.into_inner();
     let service_input = FindInboxInput {
         namespace_id: input.namespace_id,
+        after: input.after,
     };
     let conversations = ctx.inbox_service.find_inbox(actor, service_input).await?;
 
