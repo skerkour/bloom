@@ -43,6 +43,9 @@ pub enum Error {
     UserNameIsTooShort,
     InvalidUserName,
     CantBlockAdmin,
+    UsernameIsInvalid,
+    UsernameIsTooLong,
+    UsernameIsTooShort,
 
     // Group
     AdminRoleRequired,
@@ -142,7 +145,11 @@ impl std::convert::From<Error> for crate::Error {
             Error::UserNameIsTooShort => crate::Error::InvalidArgument(String::from("Name is too long.")),
             Error::InvalidUserName => crate::Error::InvalidArgument(String::from("Name is not valid.")),
             Error::CantBlockAdmin => crate::Error::InvalidArgument(String::from("Admins can't be blocked.")),
-
+            Error::UsernameIsInvalid => {
+                crate::Error::InvalidArgument(String::from("Username characters are not valid."))
+            }
+            Error::UsernameIsTooLong => crate::Error::InvalidArgument(String::from("Username is too long.")),
+            Error::UsernameIsTooShort => crate::Error::InvalidArgument(String::from("Username is too short.")),
             // Group
             Error::AdminRoleRequired => crate::Error::PermissionDenied(String::from("Administrator role required")),
             Error::AtLeatOneAdminMustRemainInGroup => {
@@ -170,7 +177,9 @@ impl std::convert::From<Error> for crate::Error {
             Error::NamespaceAlreadyExists => crate::Error::AlreadyExists(String::from("Namespace already exists.")),
             Error::NamespaceIsTooLong => crate::Error::InvalidArgument(String::from("Namespace is too long.")),
             Error::NamespaceIsTooShort => crate::Error::InvalidArgument(String::from("Namespace is too short.")),
-            Error::InvalidNamespace => crate::Error::InvalidArgument(String::from("namespace is not valid.")),
+            Error::InvalidNamespace => {
+                crate::Error::InvalidArgument(String::from("Namespace characters are not valid."))
+            }
 
             // Billing
             Error::CustomerNotFound => crate::Error::NotFound(String::from("Customer not found.")),

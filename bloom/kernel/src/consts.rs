@@ -88,7 +88,7 @@ pub const MARKDOWN_MAX_SIZE: usize = 42_000; // 42kb
 // Namespace
 pub const NAMESPACE_MIN_LENGTH: usize = 4;
 pub const NAMESPACE_MAX_LENGTH: usize = 20;
-pub const NAMESPACE_ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz0123456789-";
+pub const NAMESPACE_ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 pub const INVALID_NAMESPACES: &[&str] = &[
     "about",

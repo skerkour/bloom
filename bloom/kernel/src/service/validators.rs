@@ -35,7 +35,13 @@ impl Service {
     }
 
     pub fn validate_username(&self, username: &str) -> Result<(), Error> {
-        self.validate_namespace(username)
+        match self.validate_namespace(username) {
+            Ok(_) => Ok(()),
+            Err(Error::NamespaceIsTooLong) => Err(Error::UsernameIsTooLong),
+            Err(Error::NamespaceIsTooShort) => Err(Error::UsernameIsTooShort),
+            Err(Error::InvalidNamespace) => Err(Error::UsernameIsInvalid),
+            Err(err) => Err(err),
+        }
     }
 
     pub fn validate_user_description(&self, description: &str) -> Result<(), Error> {
