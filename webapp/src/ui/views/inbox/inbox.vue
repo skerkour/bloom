@@ -134,7 +134,7 @@
           <b-chatbox-setup-card class="ma-5 pa-5" :preferences="chatboxPreferences" />
         </div>
 
-        <v-container fluid class="pa-0 ma-0">
+        <v-container fluid class="pa-0 ma-0" v-if="selectedConversation">
           <v-row class="pa-0 ma-0">
             <v-col cols="8" sm="10" class="pa-0 ma-0">
               <v-textarea
@@ -142,7 +142,6 @@
                 placeholder="Compose your message..."
                 v-model="message"
                 hide-details
-                v-if="selectedConversation"
                 :loading="loadingSend"
                 no-resize
                 outlined
