@@ -196,10 +196,7 @@ export default VueApp.extend({
       seenConversations: new Set<string>(),
       baseUrl: '',
       chatboxPreferences: null as ChatboxPreferences | null,
-      lastMessage: {
-        date: moment('2000-01-01T00:00:00+0000'),
-        id: null as string | null,
-      },
+      lastMessageDate: moment('2000-01-01T00:00:00+0000'),
     };
   },
   computed: {
@@ -256,7 +253,7 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchInbox(this.lastMessage.id),
+          this.$inboxService.fetchInbox(null),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -287,7 +284,7 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchArchive(this.lastMessage.id),
+          this.$inboxService.fetchArchive(null),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -314,7 +311,7 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchTrash(this.lastMessage.id),
+          this.$inboxService.fetchTrash(null),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -341,7 +338,7 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchSpam(this.lastMessage.id),
+          this.$inboxService.fetchSpam(null),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -408,12 +405,8 @@ export default VueApp.extend({
         conversation.messages.forEach((message) => {
           this.seenMessages.add(message.id);
           const receivedAt = moment(message.received_at);
-          if (receivedAt.isAfter(this.lastMessage.date)) {
-            this.lastMessage = {
-              date: receivedAt,
-              id: message.id,
-            };
-            this.$inboxService.setAfter(message.id);
+          if (receivedAt.isAfter(this.lastMessageDate)) {
+            this.$inboxService.setLastMessageId(message.id);
           }
         });
         const index = this.conversations.length >= 1 ? 1 : 0;
@@ -438,12 +431,8 @@ export default VueApp.extend({
         this.seenMessages.add(message.id);
 
         const receivedAt = moment(message.received_at);
-        if (receivedAt.isAfter(this.lastMessage.date)) {
-          this.lastMessage = {
-            date: receivedAt,
-            id: message.id,
-          };
-          this.$inboxService.setAfter(message.id);
+        if (receivedAt.isAfter(this.lastMessageDate)) {
+          this.$inboxService.setLastMessageId(message.id);
         }
       }
     },
