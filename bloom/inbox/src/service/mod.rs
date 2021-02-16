@@ -312,16 +312,19 @@ pub struct FindInboxInput {
 #[derive(Debug, Clone)]
 pub struct FindTrashInput {
     pub namespace_id: Uuid,
+    pub after: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindArchiveInput {
     pub namespace_id: Uuid,
+    pub after: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]
 pub struct FindSpamInput {
     pub namespace_id: Uuid,
+    pub after: Option<Uuid>,
 }
 
 #[derive(Debug, Clone)]

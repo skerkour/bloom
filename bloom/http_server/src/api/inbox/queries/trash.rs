@@ -16,6 +16,7 @@ pub async fn trash(
     let input = input.into_inner();
     let service_input = FindTrashInput {
         namespace_id: input.namespace_id,
+        after: input.after,
     };
     let conversations = ctx.inbox_service.find_trash(actor, service_input).await?;
 

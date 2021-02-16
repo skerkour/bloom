@@ -16,6 +16,7 @@ pub async fn archive(
     let input = input.into_inner();
     let service_input = FindArchiveInput {
         namespace_id: input.namespace_id,
+        after: input.after,
     };
     let conversations = ctx.inbox_service.find_archive(actor, service_input).await?;
 

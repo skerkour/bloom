@@ -26,7 +26,7 @@ impl Service {
         for conversation in conversations {
             let messages = self
                 .repo
-                .find_inbox_messages_for_conversation(&self.db, conversation.id, None)
+                .find_inbox_messages_for_conversation(&self.db, conversation.id, input.after)
                 .await?;
             // TODO
             let contacts = Vec::new();

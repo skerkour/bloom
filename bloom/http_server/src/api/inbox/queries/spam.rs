@@ -16,6 +16,7 @@ pub async fn spam(
     let input = input.into_inner();
     let service_input = FindSpamInput {
         namespace_id: input.namespace_id,
+        after: input.after,
     };
     let conversations = ctx.inbox_service.find_spam(actor, service_input).await?;
 
