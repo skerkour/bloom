@@ -90,6 +90,7 @@ export type DeleteContact = {
 
 export type GetArchive = {
   namespace_id: string;
+  after: Option<string>,
 };
 
 export type GetContact = {
@@ -106,14 +107,17 @@ export type GetChatboxPreferences = {
 
 export type GetInbox = {
   namespace_id: string;
+  after: Option<string>,
 };
 
 export type GetSpam = {
   namespace_id: string;
+  after: Option<string>,
 };
 
 export type GetTrash = {
   namespace_id: string;
+  after: Option<string>,
 };
 
 export type ImportContacts = {

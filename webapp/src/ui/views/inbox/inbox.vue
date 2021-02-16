@@ -164,6 +164,7 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
+import moment from 'moment';
 import BMessage from '@/ui/components/inbox/message.vue';
 import { calendar } from '@/app/filters';
 import { InboxSubscriptionOptions, InboxType } from '@/domain/inbox/service';
@@ -195,7 +196,10 @@ export default VueApp.extend({
       seenConversations: new Set<string>(),
       baseUrl: '',
       chatboxPreferences: null as ChatboxPreferences | null,
-
+      lastMessage: {
+        date: moment('2000-01-01T00:00:00+0000'),
+        id: null as string | null,
+      },
     };
   },
   computed: {
@@ -252,7 +256,7 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchInbox(),
+          this.$inboxService.fetchInbox(this.lastMessage.id),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
@@ -283,18 +287,14 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchArchive(),
+          this.$inboxService.fetchArchive(this.lastMessage.id),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
         this.chatboxPreferences = chatboxPreferences;
         this.conversations = inbox.conversations;
 
-        this.conversations.forEach((conversation) => {
-          this.seenConversations.add(conversation.conversation.id);
-          // eslint-disable-next-line max-len
-          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
-        });
+        this.conversations.forEach((conversation) => this.onConversation(conversation));
 
         if (this.conversations.length !== 0) {
           this.messages = this.conversations[this.selectedConversationIndex].messages;
@@ -314,18 +314,14 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchTrash(),
+          this.$inboxService.fetchTrash(this.lastMessage.id),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
         this.chatboxPreferences = chatboxPreferences;
         this.conversations = inbox.conversations;
 
-        this.conversations.forEach((conversation) => {
-          this.seenConversations.add(conversation.conversation.id);
-          // eslint-disable-next-line max-len
-          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
-        });
+        this.conversations.forEach((conversation) => this.onConversation(conversation));
 
         if (this.conversations.length !== 0) {
           this.messages = this.conversations[this.selectedConversationIndex].messages;
@@ -345,23 +341,20 @@ export default VueApp.extend({
 
       try {
         const [inbox, chatboxPreferences] = await Promise.all([
-          this.$inboxService.fetchSpam(),
+          this.$inboxService.fetchSpam(this.lastMessage.id),
           this.$inboxService.fetchChatboxPreferences(),
         ]);
 
         this.chatboxPreferences = chatboxPreferences;
         this.conversations = inbox.conversations;
 
-        this.conversations.forEach((conversation) => {
-          this.seenConversations.add(conversation.conversation.id);
-          // eslint-disable-next-line max-len
-          conversation.messages.forEach((message) => this.seenMessages.add(message.id));
-        });
+        this.conversations.forEach((conversation) => this.onConversation(conversation));
 
         if (this.conversations.length !== 0) {
           this.messages = this.conversations[this.selectedConversationIndex].messages;
           this.selectedConversation = this.conversations[this.selectedConversationIndex];
         }
+
         this.loading = false;
         VueApp.nextTick(() => {
           this.scrollToBottom();
@@ -412,15 +405,23 @@ export default VueApp.extend({
     onConversation(conversation: ConversationWithContactsAndMessages): void {
       if (!this.seenConversations.has(conversation.conversation.id)) {
         // new conversation
-        conversation.messages.forEach((message) => this.seenMessages.add(message.id));
+        conversation.messages.forEach((message) => {
+          this.seenMessages.add(message.id);
+          const receivedAt = moment(message.received_at);
+          if (receivedAt.isAfter(this.lastMessage.date)) {
+            this.lastMessage = {
+              date: receivedAt,
+              id: message.id,
+            };
+            this.$inboxService.setAfter(message.id);
+          }
+        });
         const index = this.conversations.length >= 1 ? 1 : 0;
         this.conversations.splice(index, 0, conversation);
         this.seenConversations.add(conversation.conversation.id);
       } else {
         // existing conversation
-        conversation.messages.forEach((message) => {
-          this.onMessage(message);
-        });
+        conversation.messages.forEach((message) => this.onMessage(message));
       }
 
       if (this.conversations.length === 1) {
@@ -435,6 +436,15 @@ export default VueApp.extend({
           }
         });
         this.seenMessages.add(message.id);
+
+        const receivedAt = moment(message.received_at);
+        if (receivedAt.isAfter(this.lastMessage.date)) {
+          this.lastMessage = {
+            date: receivedAt,
+            id: message.id,
+          };
+          this.$inboxService.setAfter(message.id);
+        }
       }
     },
     selectedConversationIndexChanged(selected: number | undefined) {
