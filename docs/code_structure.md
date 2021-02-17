@@ -17,6 +17,11 @@ Crates are splitted according to domain logic.
 `scheduler` contains the logic to schedule bacnkground jobs.
 
 
+
+![architecture](./http_server_code_structure.svg)
+`http_server` code architecture
+
+
 ## bloom.js
 
 The `bloom.js` project contains all the code to load other modules such as `chatbox.js` and send analytics events to backend.
