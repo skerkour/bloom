@@ -42,10 +42,7 @@ Hey! Want to report a Bug or participate to the development of Bloom? Please [op
 
 If you want to say thanks or have a question, please use the [Discussions tab](https://github.com/skerkour/bloom/discussions).
 
-* Blog / Newsletter: [kerkour.com](https://kerkour.com)
-* Twitter: [@sylvain_kerkour](https://twitter.com/@sylvain_kerkour)
-* Mastodon: [@42bloom@mastodon.social](https://mastodon.social/@42bloom)
-
+All the project's updates and news will be published on the official Blog / Newsletter: [kerkour.com](https://kerkour.com)
 
 
 ## Sponsorship
