@@ -18,7 +18,8 @@ Crates are splitted according to domain logic.
 
 
 
-![architecture](./http_server_code_structure.svg)
+<img src="./http_server_code_structure.svg" height="350" />
+
 `http_server` code architecture
 
 
