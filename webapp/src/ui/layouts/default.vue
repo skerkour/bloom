@@ -43,7 +43,7 @@
                   <v-avatar class="blm-pointer"  size="48">
                     <img :src="app.icon" :alt="app.name" />
                   </v-avatar>
-                  <p class="subtitle-1 font-weight-medium">
+                  <p class="subtitle-1 font-weight-medium text--secondary">
                     {{ app.name }}
                   </p>
                 </router-link>
