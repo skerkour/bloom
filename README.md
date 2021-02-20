@@ -38,7 +38,7 @@ See the [Projects tab](https://github.com/skerkour/bloom/projects)
 
 ## Community
 
-Hey! Want to report a Bug or participate to the development of Bloom? Please [open an issue](https://github.com/skerkour/bloom/issues). Pull requests will be accepted without prior discussion only for typos.
+Hey! Want to report a Bug or participate in the development of Bloom? Please [open an issue](https://github.com/skerkour/bloom/issues). Pull requests will be accepted without prior discussion only for typos.
 
 If you want to say thanks or have a question, please use the [Discussions tab](https://github.com/skerkour/bloom/discussions).
 
