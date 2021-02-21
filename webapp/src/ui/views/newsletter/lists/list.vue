@@ -20,6 +20,7 @@
 
     <v-row v-if="list">
       <b-list :list="list.list" :contacts="list.contacts" :messages="list.messages"
+        :acquisition="list.acquisition"
         @updated="onListUpdated" @imported="onImported" @removed="onContactRemoved" />
     </v-row>
   </v-container>
@@ -29,7 +30,7 @@
 <script lang="ts">
 import { Contact } from '@/api/graphql/model';
 import { VueApp } from '@/app/vue';
-import { List, ListWithContactsAndMessages } from '@/domain/newsletter/model';
+import { List, ListWithDetails } from '@/domain/newsletter/model';
 import BList from '@/ui/components/newsletter/list.vue';
 
 export default VueApp.extend({
@@ -41,7 +42,7 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
-      list: null as ListWithContactsAndMessages | null,
+      list: null as ListWithDetails | null,
     };
   },
   created() {

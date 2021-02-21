@@ -9,7 +9,7 @@ import {
   CreateMessage,
   DeleteList,
   DeleteMessage,
-  GetList, GetLists, GetMessage, GetMessages, List, ListWithContactsAndMessages,
+  GetList, GetLists, GetMessage, List, ListWithDetails,
   Message, MessageWithLists,
   SendMessage, SendTestMessage, SubscribeToList, UpdateList, UpdateMessage, UnsubscribeFromList,
   RemoveContactFromList,
@@ -57,11 +57,11 @@ export class NewsletterService {
     this.router.back();
   }
 
-  async fetchList(listId: string): Promise<ListWithContactsAndMessages> {
+  async fetchList(listId: string): Promise<ListWithDetails> {
     const input: GetList = {
       list_id: listId,
     };
-    const res: ListWithContactsAndMessages = await this.apiClient.post(Queries.list, input);
+    const res: ListWithDetails = await this.apiClient.post(Queries.list, input);
 
     return res;
   }
@@ -81,16 +81,6 @@ export class NewsletterService {
       message_id: messageId,
     };
     const res: MessageWithLists = await this.apiClient.post(Queries.message, input);
-
-    return res;
-  }
-
-  async fetchMessages(): Promise<Message[]> {
-    const input: GetMessages = {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      namespace_id: this.store.state.currentNamespace!.id,
-    };
-    const res: Message[] = await this.apiClient.post(Queries.messages, input);
 
     return res;
   }

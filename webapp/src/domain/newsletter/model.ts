@@ -40,10 +40,6 @@ export type GetMessage = {
   message_id: string;
 };
 
-export type GetMessages = {
-  namespace_id: string;
-};
-
 export type List = {
   id: string;
   created_at: string;
@@ -51,10 +47,16 @@ export type List = {
   description: string;
 };
 
-export type ListWithContactsAndMessages = {
+export type ListAcquisition = {
+  date: string;
+  new_contacts: number;
+};
+
+export type ListWithDetails = {
   list: List;
   contacts: Contact[];
   messages: Message[];
+  acquisition: ListAcquisition[];
 };
 
 export type Message = {

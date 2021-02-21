@@ -94,6 +94,10 @@
       </v-col>
 
       <v-col cols="12">
+        <div id="contacts-acquisition-chart" />
+      </v-col>
+
+      <v-col cols="12">
         <v-data-table
           :headers="contactsHeaders"
           :items="contacts"
@@ -156,10 +160,18 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import {
-  List, Contact, CreateList, UpdateList, RemoveContactFromList, Message,
+  List, Contact, CreateList, UpdateList, RemoveContactFromList, Message, ListAcquisition,
 } from '@/domain/newsletter/model';
 import BImportContactsDialog from '@/ui/components/inbox/import_contacts_dialog.vue';
 import BNewsletterMessagesList from '@/ui/components/newsletter/messages_list.vue';
+import * as echarts from 'echarts/core';
+import { LineChart, LinesChart } from 'echarts/charts';
+import {
+  TitleComponent, TooltipComponent,
+  GridComponent, LegendComponent,
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+
 
 export default VueApp.extend({
   name: 'BNewsletterList',
@@ -183,6 +195,11 @@ export default VueApp.extend({
       required: false,
       default: () => [],
     },
+    acquisition: {
+      type: Array as PropType<ListAcquisition[]>,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -192,6 +209,8 @@ export default VueApp.extend({
 
       name: '',
       description: '',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      contactsChart: null as any,
       contactsHeaders: [
         {
           text: 'Name',
@@ -220,6 +239,11 @@ export default VueApp.extend({
   },
   mounted() {
     this.clearFields();
+    this.initContactsChart();
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     cancel() {
@@ -320,10 +344,64 @@ export default VueApp.extend({
         this.loading = false;
       }
     },
+    initContactsChart() {
+      if (!this.list) {
+        return;
+      }
+
+      echarts.use([
+        TitleComponent, TooltipComponent, GridComponent,
+        LinesChart, LineChart, CanvasRenderer, LegendComponent,
+      ]);
+
+      this.contactsChart = echarts.init(document.getElementById('contacts-acquisition-chart') as HTMLDivElement);
+      const xAxisData = this.acquisition.map((a) => a.date);
+      const acquisitionData = this.acquisition.map((a) => a.new_contacts);
+
+      this.contactsChart.setOption({
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985',
+            },
+          },
+        },
+        legend: {
+          data: ['New Contacts'],
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: xAxisData,
+        },
+        yAxis: {
+          type: 'value',
+        },
+        series: [
+          {
+            name: 'New Contacts',
+            data: acquisitionData,
+            areaStyle: {},
+            type: 'line',
+            color: '#99ff66', // '#cc66ff',
+          },
+        ],
+      });
+    },
+    handleResize() {
+      if (this.contactsChart) {
+        this.contactsChart.resize();
+      }
+    },
   },
 });
 </script>
 
 
 <style lang="scss" scoped>
+#contacts-acquisition-chart {
+  height: 300px;
+}
 </style>

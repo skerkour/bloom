@@ -21,5 +21,4 @@ export const Queries = {
   list: `/${prefix}/${queries}/list`,
   lists: `/${prefix}/${queries}/lists`,
   message: `/${prefix}/${queries}/message`,
-  messages: `/${prefix}/${queries}/messages`,
 }
