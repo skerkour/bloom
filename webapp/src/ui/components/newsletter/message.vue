@@ -14,6 +14,12 @@
       </v-btn>
 
       <v-btn class="mr-3"
+        text plain
+        :loading="autosaving" v-if="message">
+        Saved
+        <v-icon right color="success">mdi-check</v-icon>
+      </v-btn>
+      <v-btn class="mr-3"
         @click="sendMessage"
         depressed
         color="primary"
@@ -24,7 +30,7 @@
       </v-btn>
       <v-btn
         @click="createMessage" depressed color="success" :loading="loading" :disabled="!canCreate"
-        v-else >
+        v-else class="mr-5">
         Create message
       </v-btn>
 
@@ -55,12 +61,8 @@
 
 
     <v-row>
-      <v-col cols="12" sm="6">
-        <v-text-field v-model="name" label="Name" />
-      </v-col>
-
       <v-col cols="12">
-        <v-text-field v-model="subject" label="Subject" />
+        <v-text-field v-model="subject" label="Subject" outlined/>
       </v-col>
 
       <v-col cols="12">
@@ -102,8 +104,8 @@ export default VueApp.extend({
     return {
       loading: false,
       error: '',
+      autosaving: false,
 
-      name: '',
       subject: '',
       body: '',
       bodyHtml: '',
@@ -112,7 +114,7 @@ export default VueApp.extend({
   },
   computed: {
     canCreate(): boolean {
-      return this.name.length !== 0;
+      return this.subject.length !== 0;
     },
   },
   mounted() {
@@ -134,16 +136,14 @@ export default VueApp.extend({
   },
   methods: {
     cancel() {
-      this.$router.back();
+      this.$router.push({ path: `/newsletter/lists/${this.list}` });
     },
     clearFields() {
       if (this.message) {
-        this.name = this.message.name;
         this.subject = this.message.subject;
         this.body = this.message.body;
         this.bodyHtml = this.message.body_html;
       } else {
-        this.name = '';
         this.subject = '';
         this.body = '';
         this.bodyHtml = '';
@@ -151,8 +151,7 @@ export default VueApp.extend({
     },
     async autosave() {
       if (this.message
-        && (this.name !== this.message.name
-        || this.subject !== this.message.subject
+        && (this.subject !== this.message.subject
         || this.body !== this.message.body)) {
         this.updateMessage(true);
       }
@@ -162,7 +161,7 @@ export default VueApp.extend({
       this.error = '';
       const input: CreateMessage = {
         list_id: this.list,
-        name: this.name,
+        name: this.subject,
         subject: this.subject,
         body: this.body,
       };
@@ -179,12 +178,14 @@ export default VueApp.extend({
       if (!autosave) {
         this.loading = true;
         this.error = '';
+      } else {
+        this.autosaving = true;
       }
       const input: UpdateMessage = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         message_id: this.message!.id,
         list_id: this.list,
-        name: this.name,
+        name: this.subject,
         subject: this.subject,
         body: this.body,
       };
@@ -196,6 +197,7 @@ export default VueApp.extend({
         this.error = err.message;
       } finally {
         this.loading = false;
+        this.autosaving = false;
       }
     },
     async deleteMessage() {
@@ -208,7 +210,7 @@ export default VueApp.extend({
       this.error = '';
       try {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        await this.$newsletterService.deleteMessage(this.message!.id);
+        await this.$newsletterService.deleteMessage(this.message!.id, this.list);
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -14,11 +14,8 @@
     <template v-slot:item="{ item }" class="text-left">
       <tr @click="gotoMessage(item)" class="bloom-pointer">
         <td>
-          {{ item.name }}
+          {{ item.subject }}
         </td>
-        <!-- <td>
-          {{ item.type }}
-        </td> -->
         <td>
           <span v-if="item.lastSentAt"> {{ calendar(item.lastSentAt) }}</span>
           <span v-else>-</span>

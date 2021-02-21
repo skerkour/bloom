@@ -48,13 +48,13 @@ export class NewsletterService {
     this.router.push({ path: '/newsletter/lists' });
   }
 
-  async deleteMessage(messageId: string): Promise<void> {
+  async deleteMessage(messageId: string, listId: string): Promise<void> {
     const input: DeleteMessage = {
       message_id: messageId,
     };
     await this.apiClient.post(Commands.deleteMessage, input);
 
-    this.router.back();
+    this.router.push({ path: `/newsletter/lists/${listId}` });
   }
 
   async fetchList(listId: string): Promise<ListWithDetails> {
