@@ -26,6 +26,7 @@ mod find_inbox_messages_for_conversation;
 mod find_newsletter_list_by_id;
 mod find_newsletter_lists_for_namespace;
 mod find_newsletter_message_by_id;
+mod find_newsletter_messages_by_list_id;
 mod find_newsletter_messages_for_namespace;
 mod find_newsletter_subscription_by_contact_id_and_list_id;
 mod find_spam_conversations;

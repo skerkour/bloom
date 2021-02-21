@@ -418,10 +418,6 @@ pub async fn run(
                                     .service(
                                         web::resource("/message")
                                             .route(web::post().to(api::newsletter::queries::message)),
-                                    )
-                                    .service(
-                                        web::resource("/messages")
-                                            .route(web::post().to(api::newsletter::queries::messages)),
                                     ),
                             ),
                     )

@@ -28,7 +28,6 @@ mod find_inbox;
 mod find_newsletter_list;
 mod find_newsletter_lists;
 mod find_newsletter_message;
-mod find_newsletter_messages;
 mod find_spam;
 mod find_trash;
 mod import_contacts;
@@ -374,7 +373,8 @@ pub struct NewsletterMessageWithLists {
 }
 
 #[derive(Debug, Clone)]
-pub struct NewsletterListWithContacts {
+pub struct NewsletterListWithContactsAndMessages {
     pub list: NewsletterList,
     pub contacts: Vec<Contact>,
+    pub messages: Vec<NewsletterMessage>,
 }
