@@ -12,7 +12,7 @@ pub async fn list(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::GetList>,
     actor: Actor,
-) -> Result<api::Response<model::ListWithContactsAndMessages>, kernel::Error> {
+) -> Result<api::Response<model::ListWithDetails>, kernel::Error> {
     let input = input.into_inner();
     let service_input = FindNewsletterListInput {
         list_id: input.list_id,

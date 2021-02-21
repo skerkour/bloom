@@ -23,6 +23,7 @@ mod find_conversation_by_id;
 mod find_inbox_conversation_for_anonymous_id;
 mod find_inbox_conversations_by_namespace_id;
 mod find_inbox_messages_for_conversation;
+mod find_newsletter_list_acquisition;
 mod find_newsletter_list_by_id;
 mod find_newsletter_lists_for_namespace;
 mod find_newsletter_message_by_id;

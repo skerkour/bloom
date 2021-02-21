@@ -7,7 +7,7 @@ use kernel::{db::DB, drivers};
 use std::sync::Arc;
 use stdx::{
     chrono::{DateTime, Utc},
-    mail,
+    mail, sqlx,
     sqlx::{Postgres, Transaction},
     uuid::Uuid,
 };
@@ -373,8 +373,15 @@ pub struct NewsletterMessageWithLists {
 }
 
 #[derive(Debug, Clone)]
-pub struct NewsletterListWithContactsAndMessages {
+pub struct NewsletterListWithDetails {
     pub list: NewsletterList,
     pub contacts: Vec<Contact>,
     pub messages: Vec<NewsletterMessage>,
+    pub acquisition: Vec<NewsletterListAcquisition>,
+}
+
+#[derive(sqlx::FromRow, Debug, Clone)]
+pub struct NewsletterListAcquisition {
+    pub date: String,
+    pub new_contacts: i64,
 }

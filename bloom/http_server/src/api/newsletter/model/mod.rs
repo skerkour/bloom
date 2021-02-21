@@ -42,18 +42,20 @@ impl From<inbox::entities::NewsletterList> for List {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ListWithContactsAndMessages {
+pub struct ListWithDetails {
     pub list: List,
     pub contacts: Vec<Contact>,
     pub messages: Vec<Message>,
+    pub acquisition: Vec<ListAcquisition>,
 }
 
-impl From<inbox::service::NewsletterListWithContactsAndMessages> for ListWithContactsAndMessages {
-    fn from(list: inbox::service::NewsletterListWithContactsAndMessages) -> Self {
-        ListWithContactsAndMessages {
+impl From<inbox::service::NewsletterListWithDetails> for ListWithDetails {
+    fn from(list: inbox::service::NewsletterListWithDetails) -> Self {
+        ListWithDetails {
             list: list.list.into(),
             contacts: list.contacts.into_iter().map(Into::into).collect(),
             messages: list.messages.into_iter().map(Into::into).collect(),
+            acquisition: list.acquisition.into_iter().map(Into::into).collect(),
         }
     }
 }
@@ -107,3 +109,21 @@ impl From<inbox::service::NewsletterMessageWithLists> for MessageWithLists {
         }
     }
 }
+
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ListAcquisition {
+    pub date: String,
+    pub new_contacts: i64,
+}
+
+impl From<inbox::service::NewsletterListAcquisition> for ListAcquisition {
+    fn from(input: inbox::service::NewsletterListAcquisition) -> Self {
+        ListAcquisition {
+            date: input.date,
+            new_contacts: input.new_contacts,
+        }
+    }
+}
+
