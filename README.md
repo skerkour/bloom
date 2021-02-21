@@ -44,6 +44,7 @@ If you want to say thanks or have a question, please use the [Discussions tab](h
 
 All the project's updates and news will be published on the official Blog / Newsletter: [kerkour.com](https://kerkour.com)
 
+And on the Telegram channel: [t.me/skerkour](https://t.me/skerkour)
 
 ## Sponsorship
 
