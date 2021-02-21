@@ -22,7 +22,8 @@ impl Repository {
         ) date LEFT OUTER JOIN
         subscriptions
         ON date.date = to_char(date_trunc('day', subscriptions.created_at), 'YYYY-MM-DD')
-        GROUP BY date.date;
+        GROUP BY date.date
+        ORDER BY date;
         ";
 
         match sqlx::query_as::<_, NewsletterListAcquisition>(QUERY)
