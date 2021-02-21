@@ -9,7 +9,8 @@ import {
   CreateMessage,
   DeleteList,
   DeleteMessage,
-  GetList, GetLists, GetMessage, GetMessages, List, ListWithContacts, Message, MessageWithLists,
+  GetList, GetLists, GetMessage, GetMessages, List, ListWithContactsAndMessages,
+  Message, MessageWithLists,
   SendMessage, SendTestMessage, SubscribeToList, UpdateList, UpdateMessage, UnsubscribeFromList,
   RemoveContactFromList,
 } from './model';
@@ -29,7 +30,7 @@ export class NewsletterService {
   async createMessage(input: CreateMessage): Promise<void> {
     const message: Message = await this.apiClient.post(Commands.createMessage, input);
 
-    this.router.push({ path: `/newsletter/messages/${message.id}` });
+    this.router.push({ path: `/newsletter/lists/${input.list_id}/messages/${message.id}` });
   }
 
   async createList(input: CreateList): Promise<void> {
@@ -53,14 +54,14 @@ export class NewsletterService {
     };
     await this.apiClient.post(Commands.deleteMessage, input);
 
-    this.router.push({ path: '/newsletter/messages' });
+    this.router.back();
   }
 
-  async fetchList(listId: string): Promise<ListWithContacts> {
+  async fetchList(listId: string): Promise<ListWithContactsAndMessages> {
     const input: GetList = {
       list_id: listId,
     };
-    const res: ListWithContacts = await this.apiClient.post(Queries.list, input);
+    const res: ListWithContactsAndMessages = await this.apiClient.post(Queries.list, input);
 
     return res;
   }

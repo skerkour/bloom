@@ -10,7 +10,7 @@
 
     <v-row>
       <v-btn @click="cancel" depressed :loading="loading" class="mr-auto ml-3">
-        Cancel
+        Back
       </v-btn>
 
       <v-btn class="mr-3"
@@ -64,10 +64,6 @@
       </v-col>
 
       <v-col cols="12">
-        <b-select-lists v-model="selectedList" :items="lists" />
-      </v-col>
-
-      <v-col cols="12">
         <b-markdown-editor placeholder="Compose your message..." v-model="body" outlined />
       </v-col>
 
@@ -81,9 +77,8 @@
 import { VueApp } from '@/app/vue';
 import { PropType } from 'vue';
 import BMarkdownEditor from '@/ui/components/kernel/markdown_editor.vue';
-import BSelectLists from '@/ui/components/newsletter/select_lists.vue';
 import {
-  CreateMessage, List, Message, UpdateMessage,
+  CreateMessage, Message, UpdateMessage,
 } from '@/domain/newsletter/model';
 
 
@@ -91,7 +86,6 @@ export default VueApp.extend({
   name: 'BNewsletterMessage',
   components: {
     BMarkdownEditor,
-    BSelectLists,
   },
   props: {
     message: {
@@ -100,12 +94,7 @@ export default VueApp.extend({
       default: null,
     },
     list: {
-      type: Object as PropType<List>,
-      required: false,
-      default: null,
-    },
-    lists: {
-      type: Array as PropType<List[]>,
+      type: String as PropType<string>,
       required: true,
     },
   },
@@ -118,7 +107,6 @@ export default VueApp.extend({
       subject: '',
       body: '',
       bodyHtml: '',
-      selectedList: null as List | null,
       autoSaveInterval: null as number | null,
     };
   },
@@ -146,7 +134,7 @@ export default VueApp.extend({
   },
   methods: {
     cancel() {
-      this.$router.push({ path: '/newsletter/messages' });
+      this.$router.back();
     },
     clearFields() {
       if (this.message) {
@@ -154,13 +142,11 @@ export default VueApp.extend({
         this.subject = this.message.subject;
         this.body = this.message.body;
         this.bodyHtml = this.message.body_html;
-        this.selectedList = this.list;
       } else {
         this.name = '';
         this.subject = '';
         this.body = '';
         this.bodyHtml = '';
-        [this.selectedList] = this.lists;
       }
     },
     async autosave() {
@@ -175,8 +161,7 @@ export default VueApp.extend({
       this.loading = true;
       this.error = '';
       const input: CreateMessage = {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        list_id: this.selectedList!.id,
+        list_id: this.list,
         name: this.name,
         subject: this.subject,
         body: this.body,
@@ -198,8 +183,7 @@ export default VueApp.extend({
       const input: UpdateMessage = {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         message_id: this.message!.id,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        list_id: this.selectedList!.id,
+        list_id: this.list,
         name: this.name,
         subject: this.subject,
         body: this.body,

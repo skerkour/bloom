@@ -6,7 +6,6 @@
     <b-admin-drawer v-if="adminDrawer" />
     <b-inbox-drawer v-if="inboxDrawer" />
     <b-files-drawer v-if="filesDrawer" />
-    <b-newsletter-drawer v-if="newsletterDrawer" />
 
     <v-app-bar app color="#24292e" dark elevation="0" dense fixed clipped-left>
       <v-app-bar-nav-icon  @click.stop="toggleDrawer" v-if="showDrawerButton"/>
@@ -143,7 +142,6 @@ import BAdminDrawer from '@/ui/components/kernel/admin_drawer.vue';
 import BInboxDrawer from '@/ui/components/inbox/drawer.vue';
 import BFilesDrawer from '@/ui/components/files/drawer.vue';
 import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';
-import BNewsletterDrawer from '@/ui/components/newsletter/drawer.vue';
 import { Mutation } from '@/app/store';
 import { Namespace } from '@/domain/kernel/model';
 import { apps } from '@/domain/kernel/apps';
@@ -159,7 +157,6 @@ export default VueApp.extend({
     BInboxDrawer,
     BBottomNavBar,
     BFilesDrawer,
-    BNewsletterDrawer,
   },
   computed: {
     currentNamespaceIndex(): number {
@@ -200,9 +197,6 @@ export default VueApp.extend({
     filesDrawer(): boolean {
       return this.$route.path.startsWith('/files');
     },
-    newsletterDrawer(): boolean {
-      return this.$route.path.startsWith('/newsletter');
-    },
     showFooter(): boolean {
       return this.$route.meta.auth === false && this.$route.path !== '/';
     },
@@ -214,7 +208,7 @@ export default VueApp.extend({
       return (this.$store.state.session ? true : false)
         // eslint-disable-next-line max-len
         && (this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
-          || this.inboxDrawer || this.filesDrawer || this.newsletterDrawer);
+          || this.inboxDrawer || this.filesDrawer);
     },
     showBottomNav(): boolean {
       return this.authenticated && this.$vuetify.breakpoint.smAndDown;

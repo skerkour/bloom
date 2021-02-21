@@ -11,7 +11,7 @@
     <v-row>
       <v-col>
         <v-btn @click="cancel" depressed :loading="loading">
-          Cancel
+          Back
         </v-btn>
       </v-col>
 
@@ -65,6 +65,34 @@
     </v-row>
 
     <v-row v-if="list">
+      <v-col cols="12">
+        <h3 class="text-h4">
+          Messages
+        </h3>
+      </v-col>
+
+      <v-col cols="12" class="ma-0 py-0">
+        <v-app-bar dense color="white" flat>
+          <v-btn :to="`/newsletter/lists/${list.id}/messages/new`" color="success" depressed>
+            <v-icon left>mdi-plus</v-icon>
+            New message
+          </v-btn>
+        </v-app-bar>
+      </v-col>
+
+      <v-col cols="12">
+        <b-newsletter-messages-list :messages="messages" :loading="loading" :list="list.id" />
+      </v-col>
+
+    </v-row>
+
+    <v-row v-if="list">
+      <v-col cols="12">
+        <h3 class="text-h4">
+          Contacts
+        </h3>
+      </v-col>
+
       <v-col cols="12">
         <v-data-table
           :headers="contactsHeaders"
@@ -128,14 +156,16 @@
 import { PropType } from 'vue';
 import { VueApp } from '@/app/vue';
 import {
-  List, Contact, CreateList, UpdateList, RemoveContactFromList,
+  List, Contact, CreateList, UpdateList, RemoveContactFromList, Message,
 } from '@/domain/newsletter/model';
 import BImportContactsDialog from '@/ui/components/inbox/import_contacts_dialog.vue';
+import BNewsletterMessagesList from '@/ui/components/newsletter/messages_list.vue';
 
 export default VueApp.extend({
   name: 'BNewsletterList',
   components: {
     BImportContactsDialog,
+    BNewsletterMessagesList,
   },
   props: {
     list: {
@@ -146,7 +176,12 @@ export default VueApp.extend({
     contacts: {
       type: Array as PropType<Contact[]>,
       required: false,
-      default: [],
+      default: () => [],
+    },
+    messages: {
+      type: Array as PropType<Message[]>,
+      required: false,
+      default: () => [],
     },
   },
   data() {

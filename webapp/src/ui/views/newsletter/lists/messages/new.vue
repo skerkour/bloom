@@ -18,9 +18,8 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="message">
-      <b-newsletter-message :message="message.message"
-        @updated="onMessageUpdated" :lists="message.lists" :list="message.list" />
+    <v-row v-if="loaded">
+      <b-newsletter-message :list="listId" />
     </v-row>
   </v-container>
 </template>
@@ -28,20 +27,26 @@
 
 <script lang="ts">
 import { VueApp } from '@/app/vue';
-import { MessageWithLists } from '@/domain/newsletter/model';
+import { List } from '@/domain/newsletter/model';
 import BNewsletterMessage from '@/ui/components/newsletter/message.vue';
 
 export default VueApp.extend({
-  name: 'BNewsletterMessageView',
+  name: 'BNewOutboundMessageView',
   components: {
     BNewsletterMessage,
   },
   data() {
     return {
       loading: false,
+      loaded: false,
       error: '',
-      message: null as MessageWithLists | null,
+      lists: [] as List[],
     };
+  },
+  computed: {
+    listId(): string {
+      return this.$route.params.listId;
+    },
   },
   created() {
     this.fetchData();
@@ -52,16 +57,13 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.message = await this.$newsletterService.fetchMessage(this.$route.params.messageId);
+        this.lists = await this.$newsletterService.fetchLists();
+        this.loaded = true;
       } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
       }
-    },
-    onMessageUpdated(message: MessageWithLists) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.message = message;
     },
   },
 });

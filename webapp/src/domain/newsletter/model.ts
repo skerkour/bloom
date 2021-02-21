@@ -51,9 +51,10 @@ export type List = {
   description: string;
 };
 
-export type ListWithContacts = {
+export type ListWithContactsAndMessages = {
   list: List;
   contacts: Contact[];
+  messages: Message[];
 };
 
 export type Message = {

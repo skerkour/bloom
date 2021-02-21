@@ -3,7 +3,6 @@
     :headers="headers"
     :items="messages"
     item-key="id"
-    hide-default-footer
     :loading="loading"
   >
     <template v-slot:no-data>
@@ -55,6 +54,10 @@ export default VueApp.extend({
       required: false,
       default: false,
     },
+    list: {
+      type: String as PropType<string>,
+      required: true,
+    },
   },
   data() {
     return {
@@ -96,8 +99,7 @@ export default VueApp.extend({
   methods: {
     calendar,
     gotoMessage(message: Message) {
-      console.log(message);
-      this.$router.push({ path: `/newsletter/messages/${message.id}` });
+      this.$router.push({ path: `/newsletter/lists/${this.list}/messages/${message.id}` });
     },
   },
 });

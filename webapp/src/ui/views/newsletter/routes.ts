@@ -1,8 +1,7 @@
 import { RouteConfig } from 'vue-router';
 
-const Messages = () => import(/* webpackChunkName: "chunk-newsletter" */ './messages/messages.vue');
-const Message = () => import(/* webpackChunkName: "chunk-newsletter" */ './messages/message.vue');
-const NewMessage = () => import(/* webpackChunkName: "chunk-newsletter" */ './messages/new.vue');
+const Message = () => import(/* webpackChunkName: "chunk-newsletter" */ './lists/messages/message.vue');
+const NewMessage = () => import(/* webpackChunkName: "chunk-newsletter" */ './lists/messages/new.vue');
 
 const Lists = () => import(/* webpackChunkName: "chunk-newsletter" */ './lists/lists.vue');
 const List = () => import(/* webpackChunkName: "chunk-newsletter" */ './lists/list.vue');
@@ -11,20 +10,7 @@ const NewList = () => import(/* webpackChunkName: "chunk-newsletter" */ './lists
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/newsletter/messages',
-    component: Messages,
-  },
-  {
-    path: '/newsletter/messages/new',
-    component: NewMessage,
-  },
-  {
-    path: '/newsletter/messages/:messageId',
-    component: Message,
-  },
-
-  {
-    path: '/newsletter/lists',
+    path: '/newsletter',
     component: Lists,
   },
   {
@@ -35,8 +21,16 @@ const routes: Array<RouteConfig> = [
     path: '/newsletter/lists/:listId',
     component: List,
   },
+  {
+    path: '/newsletter/lists/:listId/messages/new',
+    component: NewMessage,
+  },
+  {
+    path: '/newsletter/lists/:listId/messages/:messageId',
+    component: Message,
+  },
 
-  { path: '/newsletter*', redirect: '/newsletter/messages' },
+  { path: '/newsletter*', redirect: '/newsletter' },
 ];
 
 export default routes;

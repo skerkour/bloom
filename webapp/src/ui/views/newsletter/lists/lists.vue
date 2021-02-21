@@ -17,19 +17,35 @@
           to choose which messages they want to receive from you.
         </p>
       </v-col>
+    </v-row>
 
-      <v-col cols="12" class="ma-0 py-0">
-        <v-app-bar dense color="white" flat>
-          <v-spacer />
-          <v-btn to="/newsletter/lists/new" color="success" depressed>
-            <v-icon left>mdi-plus</v-icon>
-            New List
-          </v-btn>
-        </v-app-bar>
+    <v-row>
+      <v-col cols="12" md="3" v-for="list in lists" :key="list.id">
+        <v-card outlined @click="gotoList(list)"
+          class="b-list-card mx-auto d-flex flex-column align-self-stretch">
+          <v-card-title>
+            <h3 class="text-h4">
+              {{ list.name }}
+            </h3>
+          </v-card-title>
+          <v-card-text>
+            {{ list.description }}
+          </v-card-text>
+        </v-card>
       </v-col>
 
-      <v-col cols="12" class="ma-0 py-0">
-        <b-lists-list :lists="lists" :loading="loading" />
+      <v-col cols="12" md="3">
+        <v-card outlined @click="gotoNewList"
+          class="b-list-card mx-auto d-flex flex-column align-self-stretch">
+          <v-card-title>
+            <h3 class="text-h4">
+              New List
+            </h3>
+          </v-card-title>
+          <v-card-text class="text-center">
+            <v-icon x-large>mdi-plus</v-icon>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -40,13 +56,9 @@
 <script lang="ts">
 import { VueApp } from '@/app/vue';
 import { List } from '@/domain/newsletter/model';
-import BListsList from '@/ui/components/newsletter/lists_list.vue';
 
 export default VueApp.extend({
   name: 'BListsView',
-  components: {
-    BListsList,
-  },
   data() {
     return {
       loading: false,
@@ -58,6 +70,12 @@ export default VueApp.extend({
     this.fetchData();
   },
   methods: {
+    gotoList(list: List) {
+      this.$router.push({ path: `/newsletter/lists/${list.id}` });
+    },
+    gotoNewList() {
+      this.$router.push({ path: '/newsletter/lists/new' });
+    },
     async fetchData(): Promise<void> {
       this.loading = true;
       this.error = '';
@@ -76,4 +94,7 @@ export default VueApp.extend({
 
 
 <style lang="scss" scoped>
+.b-list-card {
+  height: 100%;
+}
 </style>
