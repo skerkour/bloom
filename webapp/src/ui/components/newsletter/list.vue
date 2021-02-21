@@ -35,13 +35,6 @@
           </template>
 
           <v-list>
-            <v-list-item @click="openImportDialog">
-              <v-list-item-icon>
-                <v-icon>mdi-cloud-upload</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>Import contact</v-list-item-title>
-            </v-list-item>
-
             <v-list-item @click="deleteList">
               <v-list-item-icon>
                 <v-icon>mdi-delete</v-icon>
@@ -72,12 +65,10 @@
       </v-col>
 
       <v-col cols="12" class="ma-0 py-0">
-        <v-app-bar dense color="white" flat>
-          <v-btn :to="`/newsletter/lists/${list.id}/messages/new`" color="success" depressed>
-            <v-icon left>mdi-plus</v-icon>
-            New message
-          </v-btn>
-        </v-app-bar>
+        <v-btn :to="`/newsletter/lists/${list.id}/messages/new`" color="success" depressed>
+          <v-icon left>mdi-plus</v-icon>
+          New message
+        </v-btn>
       </v-col>
 
       <v-col cols="12">
@@ -91,6 +82,13 @@
         <h3 class="text-h4">
           Contacts
         </h3>
+      </v-col>
+
+      <v-col cols="12" class="ma-0 py-0">
+        <v-btn @click="openImportDialog" color="primary" depressed>
+          <v-icon left>mdi-cloud-upload</v-icon>
+          Import contacts
+        </v-btn>
       </v-col>
 
       <v-col cols="12">
