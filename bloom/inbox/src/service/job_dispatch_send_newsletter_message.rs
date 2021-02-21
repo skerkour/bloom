@@ -1,5 +1,5 @@
 use super::Service;
-use kernel::domain::messages::Message;
+use kernel::{consts::NamespaceType, domain::messages::Message};
 use std::collections::HashMap;
 use stdx::{
     chrono::{Duration, Utc},
@@ -30,9 +30,26 @@ impl Service {
         message.last_sent_at = Some(now);
         self.repo.update_newsletter_message(&self.db, &message).await?;
 
+        let name = match namespace.r#type {
+            NamespaceType::User => {
+                let user = self
+                    .kernel_service
+                    .find_user_by_namespace_id_unauthenticated(&self.db, namespace.id)
+                    .await?;
+                user.name
+            }
+            NamespaceType::Group => {
+                let group = self
+                    .kernel_service
+                    .find_group_by_namespace_id_unauthenticated(&self.db, namespace.id)
+                    .await?;
+                group.name
+            }
+        };
+
         // TODO: correct email of the sender
         let mut from = self.kernel_service.config().mail.newsletter_address.clone();
-        from.name = namespace.path;
+        from.name = name;
 
         let mut schedule_for = Utc::now();
         let one_sec = Duration::seconds(1);
