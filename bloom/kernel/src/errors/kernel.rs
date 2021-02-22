@@ -14,6 +14,7 @@ pub enum Error {
     QrCodeInputIsTooLong,
     MarkdownIsTooLong,
     CountryNotValid,
+    UploadIsTooLarge,
 
     // User
     UserNotFound,
@@ -226,6 +227,7 @@ impl std::convert::From<Error> for crate::Error {
             Error::QrCodeInputIsTooLong => crate::Error::InvalidArgument(String::from("QR code input is too long.")),
             Error::MarkdownIsTooLong => crate::Error::InvalidArgument(String::from("Markdown is too long.")),
             Error::CountryNotValid => crate::Error::InvalidArgument(String::from("Country is not valid.")),
+            Error::UploadIsTooLarge => crate::Error::InvalidArgument(String::from("Uplaod is too large.")),
         }
     }
 }

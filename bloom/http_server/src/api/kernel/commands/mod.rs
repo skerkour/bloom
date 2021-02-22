@@ -44,3 +44,5 @@ mod update_billing_information;
 pub use update_billing_information::update_billing_information;
 mod sync_customer_with_provider;
 pub use sync_customer_with_provider::sync_customer_with_provider;
+mod update_my_avatar;
+pub use update_my_avatar::update_my_avatar;

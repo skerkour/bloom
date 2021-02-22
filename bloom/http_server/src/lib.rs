@@ -124,6 +124,10 @@ pub async fn run(
                                         web::resource("/update_my_profile")
                                             .route(web::post().to(api::kernel::commands::update_my_profile)),
                                     )
+                                    .service(
+                                        web::resource("/update_my_avatar")
+                                            .route(web::post().to(api::kernel::commands::update_my_avatar)),
+                                    )
                                     // Group
                                     .service(
                                         web::resource("/create_group")

@@ -110,8 +110,6 @@ impl From<inbox::service::NewsletterMessageWithLists> for MessageWithLists {
     }
 }
 
-
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ListAcquisition {
     pub date: String,
@@ -126,4 +124,3 @@ impl From<inbox::service::NewsletterListAcquisition> for ListAcquisition {
         }
     }
 }
-

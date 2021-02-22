@@ -18,4 +18,5 @@ calendar = { path = "../calendar" }
 actix-web = "3"
 actix-cors = "0.5"
 actix-files = "0.5"
+actix-multipart = "0.3"
 serde = { version = "1", features = ["derive"] }
