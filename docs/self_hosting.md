@@ -12,11 +12,11 @@ Copy `bloom/env.example` to `.env` and edit it with good values
 ## Run migrations
 
 ```
-$ docker run --ti --rm -v `pwd`/.env:/bloom/.env ghcr.io/skerkour/bloom:release
+$ docker run -it --rm -v `pwd`/.env:/bloom/.env ghcr.io/skerkour/bloom:release
 ```
 
 ## Run Bloom
 
 ```
-$ docker run --d -v `pwd`/.env:/bloom/.env -p 8080:8080 ghcr.io/skerkour/bloom:latest
+$ docker run -d -v `pwd`/.env:/bloom/.env -p 8080:8080 ghcr.io/skerkour/bloom:latest
 ```
