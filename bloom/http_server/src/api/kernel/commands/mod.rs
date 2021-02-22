@@ -46,3 +46,5 @@ mod sync_customer_with_provider;
 pub use sync_customer_with_provider::sync_customer_with_provider;
 mod update_my_avatar;
 pub use update_my_avatar::update_my_avatar;
+mod update_group_avatar;
+pub use update_group_avatar::update_group_avatar;
