@@ -18,7 +18,7 @@
     <v-row v-if="group" class="mx-5">
       <v-col cols="10" md="6" lg="5" xl="4">
         <b-avatar-form :loading="loading" @update-avatar="updateAvatar"
-          :avatarUrl="group.avatar_url" disabled />
+          :avatarUrl="group.avatar_url" />
       </v-col>
     </v-row>
 

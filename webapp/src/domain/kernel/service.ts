@@ -344,8 +344,13 @@ export class KernelService {
   async updateGroupAvatar(groupId: string, file: File): Promise<Group> {
     this.validateAvatar(file);
 
+
+    const renamedFile = new File([file], groupId, {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', renamedFile);
     const group: Group = await this.apiClient.upload(Commands.updateGroupAvatar, formData);
 
     const namespace: Namespace = {
