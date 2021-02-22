@@ -3,6 +3,7 @@ use actix_web::{web::Json, Responder};
 use std::collections::HashMap;
 
 pub mod analytics;
+pub mod avatars;
 pub mod calendar;
 pub mod files;
 pub mod inbox;

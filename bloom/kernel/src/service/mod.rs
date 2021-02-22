@@ -75,6 +75,7 @@ mod send_group_invitation_email;
 mod send_register_email;
 mod send_sign_in_email;
 mod send_verify_email_email;
+mod serve_avatar;
 mod setup_two_fa;
 mod sign_in;
 mod sync_customer_with_stripe;

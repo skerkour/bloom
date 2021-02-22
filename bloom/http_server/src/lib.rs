@@ -452,6 +452,7 @@ pub async fn run(
                         web::resource("").to(api::p404),
                     ),
             )
+            .service(web::resource("/avatars/{avatar_id}").route(web::get().to(api::avatars::avatars)))
             .service(
                 // serve webapp
                 actix_files::Files::new("/", &config.http.public_directory)
