@@ -180,8 +180,8 @@ impl Service {
         }
     }
 
-    pub fn get_avatar_storage_key(&self, avatar_id: Uuid) -> String {
-        format!("/avatars/{}", avatar_id.to_hyphenated().to_string())
+    pub fn get_avatar_storage_key(&self, avatar_id: &str) -> String {
+        format!("/avatars/{}", avatar_id)
     }
 }
 

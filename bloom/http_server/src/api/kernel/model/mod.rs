@@ -7,12 +7,12 @@ pub mod input;
 
 pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User {
     let mut ret = User {
+        avatar_url: user.avatar_url(),
         id: None,
         created_at: None,
         name: user.name,
         username: user.username,
         namespace_id: None,
-        avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
         two_fa_enabled: None,
         is_admin: None,
         email: None,
@@ -33,11 +33,11 @@ pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User
 
 pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> Group {
     let mut ret = Group {
+        avatar_url: group.avatar_url(),
         id: None,
         created_at: None,
         namespace_id: None,
         name: group.name,
-        avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
         path: group.path,
         description: group.description,
     };
@@ -319,9 +319,9 @@ pub struct GroupMember {
 impl From<kernel::entities::GroupMember> for GroupMember {
     fn from(item: kernel::entities::GroupMember) -> Self {
         GroupMember {
+            avatar_url: item.avatar_url(),
             user_id: item.user_id,
             username: item.username,
-            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
             name: item.name,
             role: item.role,
             joined_at: item.joined_at,

@@ -16,7 +16,7 @@ impl Service {
             updated_at: now,
             color: consts::DEFAULT_CHATBOX_COLOR.to_string(),
             name: input.name,
-            avatar_storage_key: None,
+            avatar_id: None,
             show_branding: true,
             welcome_message: String::new(),
             twitter: String::from(""),

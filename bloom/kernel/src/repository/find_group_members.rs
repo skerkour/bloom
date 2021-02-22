@@ -10,7 +10,7 @@ impl Repository {
         group_id: Uuid,
     ) -> Result<Vec<entities::GroupMember>, Error> {
         const QUERY: &str = "SELECT kernel_users.id AS user_id, kernel_users.username AS username,
-                kernel_users.name AS name, kernel_users.avatar_storage_key AS avatar_storage_key,
+                kernel_users.name AS name, kernel_users.avatar_id AS avatar_id,
                 kernel_groups_members.joined_at AS joined_at, kernel_groups_members.role AS role
             FROM kernel_users
             INNER JOIN kernel_groups_members ON kernel_groups_members.user_id = kernel_users.id

@@ -7,7 +7,7 @@ impl Repository {
     pub async fn update_user<'c, C: db::Queryer<'c>>(&self, db: C, user: &entities::User) -> Result<(), Error> {
         const QUERY: &str = "UPDATE kernel_users SET
         updated_at = $1, blocked_at = $2, email = $3, username = $4, name = $5, description = $6,
-        is_admin = $7, avatar_storage_key = $8, two_fa_enabled = $9, two_fa_method = $10, encrypted_totp_secret = $11,
+        is_admin = $7, avatar_id = $8, two_fa_enabled = $9, two_fa_method = $10, encrypted_totp_secret = $11,
         totp_secret_nonce = $12
 		WHERE id = $13";
 
@@ -19,7 +19,7 @@ impl Repository {
             .bind(&user.name)
             .bind(&user.description)
             .bind(user.is_admin)
-            .bind(&user.avatar_storage_key)
+            .bind(&user.avatar_id)
             .bind(user.two_fa_enabled)
             .bind(user.two_fa_method)
             .bind(&user.encrypted_totp_secret)

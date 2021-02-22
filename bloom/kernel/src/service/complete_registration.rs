@@ -91,7 +91,7 @@ impl Service {
             totp_secret_nonce: None,
             name: pending_user.username,
             description: String::new(),
-            avatar_storage_key: None,
+            avatar_id: None,
             namespace_id: namespace.id,
         };
         let new_session = self.new_session(user.id).await?;

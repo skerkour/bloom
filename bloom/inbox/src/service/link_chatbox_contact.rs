@@ -76,7 +76,7 @@ impl Service {
                     country: String::new(),
                     country_code: String::new(),
                     namespace_id,
-                    avatar_storage_key: None,
+                    avatar_id: None,
                 };
                 self.repo.create_contact(&mut tx, &new_contact).await?;
 

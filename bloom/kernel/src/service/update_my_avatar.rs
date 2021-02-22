@@ -43,14 +43,15 @@ impl Service {
         };
 
         // upload new avatar
-        let avatar_id = Uuid::new_v4();
-        let avatar_storage_key = self.get_avatar_storage_key(avatar_id);
+        let avatar_id = Uuid::new_v4().to_hyphenated().to_string();
+        let avatar_storage_key = self.get_avatar_storage_key(&avatar_id);
         self.storage
             .put_object(&avatar_storage_key, avatar, consts::AVATAR_CONTENT_TYPE)
             .await?;
 
         // delete old avatar
-        if let Some(old_avatar_storage_key) = actor.avatar_storage_key {
+        if let Some(old_avatar_id) = actor.avatar_id {
+            let old_avatar_storage_key = self.get_avatar_storage_key(&old_avatar_id);
             match self.storage.delete_object(&old_avatar_storage_key).await {
                 Ok(_) => {}
                 Err(err) => {
@@ -60,7 +61,7 @@ impl Service {
         }
 
         // update user
-        actor.avatar_storage_key = Some(avatar_storage_key);
+        actor.avatar_id = Some(avatar_id);
         self.repo.update_user(&self.db, &actor).await?;
 
         Ok(actor)

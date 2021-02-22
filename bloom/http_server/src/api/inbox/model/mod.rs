@@ -1,4 +1,3 @@
-use kernel::consts;
 use serde::{Deserialize, Serialize};
 
 use crate::api::scalars::{Id, Time};
@@ -34,6 +33,7 @@ pub struct Contact {
 impl From<inbox::entities::Contact> for Contact {
     fn from(contact: inbox::entities::Contact) -> Self {
         Contact {
+            avatar_url: contact.avatar_url(),
             id: contact.id,
             created_at: contact.created_at,
             name: contact.name,
@@ -55,7 +55,6 @@ impl From<inbox::entities::Contact> for Contact {
             country_code: contact.country_code,
             plan: contact.plan,
             user_id: contact.user_id,
-            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
         }
     }
 }
@@ -195,9 +194,9 @@ impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
         };
 
         ChatboxPreferences {
+            avatar_url: input.preferences.avatar_url(),
             color: input.preferences.color,
             name: input.preferences.name,
-            avatar_url: String::from(consts::DEFAULT_AVATAR), // TODO
             show_branding: input.preferences.show_branding,
             welcome_message: input.preferences.welcome_message,
             base_url: input.base_url,
