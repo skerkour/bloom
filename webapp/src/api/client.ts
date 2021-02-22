@@ -62,13 +62,11 @@ export default class ApiClient {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async query(query: string, variables?: any): Promise<any> {
+  async upload(route: string, formData: FormData): Promise<any> {
     let res: AxiosResponse<ApiResponse> | null = null;
     try {
-      res = await this.http.post(`${this.apiBaseURL}/graphql`, {
-        operationName: null,
-        query,
-        variables,
+      res = await this.http.post(`${this.apiBaseURL}${route}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
     } catch (err) {
       if (err.response) {
@@ -89,11 +87,13 @@ export default class ApiClient {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async upload(route: string, formData: FormData): Promise<any> {
+  async query(query: string, variables?: any): Promise<any> {
     let res: AxiosResponse<ApiResponse> | null = null;
     try {
-      res = await this.http.post(route, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      res = await this.http.post(`${this.apiBaseURL}/graphql`, {
+        operationName: null,
+        query,
+        variables,
       });
     } catch (err) {
       if (err.response) {
