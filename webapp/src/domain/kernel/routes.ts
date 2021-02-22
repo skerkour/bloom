@@ -34,7 +34,9 @@ export const Commands = {
   setupTwoFa: `/${prefix}/${commands}/setup_two_fa`,
   syncCustomerWithProvider: `/${prefix}/${commands}/sync_customer_with_provider`,
   updateBillingInformation: `/${prefix}/${commands}/update_billing_information`,
+  updateGroupAvatar: `/${prefix}/${commands}/update_group_avatar`,
   updateGroupProfile: `/${prefix}/${commands}/update_group_profile`,
+  updateMyAvatar: `/${prefix}/${commands}/update_my_avatar`,
   updateMyProfile: `/${prefix}/${commands}/update_my_profile`,
 }
 

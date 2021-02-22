@@ -89,10 +89,12 @@ export default class ApiClient {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async upload(formData: FormData, options?: AxiosRequestConfig): Promise<any> {
+  async upload(route: string, formData: FormData): Promise<any> {
     let res: AxiosResponse<ApiResponse> | null = null;
     try {
-      res = await this.http.post(`${this.apiBaseURL}/graphql`, formData, options);
+      res = await this.http.post(route, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
     } catch (err) {
       if (err.response) {
         res = err.response;

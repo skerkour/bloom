@@ -5,7 +5,7 @@ const Json = () => import(/* webpackChunkName: "chunk-tools" */ './json.vue');
 const Rot13 = () => import(/* webpackChunkName: "chunk-tools" */ './rot13.vue');
 const Url = () => import(/* webpackChunkName: "chunk-tools" */ './url.vue');
 const Timestamp = () => import(/* webpackChunkName: "chunk-tools" */ './timestamp.vue');
-const Hexdump = () => import(/* webpackChunkName: "chunk-tools" */ './hexdump.vue');
+// const Hexdump = () => import(/* webpackChunkName: "chunk-tools" */ './hexdump.vue');
 const Hex = () => import(/* webpackChunkName: "chunk-tools" */ './hex.vue');
 const QRCode = () => import(/* webpackChunkName: "chunk-tools" */ './qrcode.vue');
 
@@ -39,10 +39,10 @@ const routes: Array<RouteConfig> = [
     path: '/tools/timestamp',
     component: Timestamp,
   },
-  {
-    path: '/tools/hexdump',
-    component: Hexdump,
-  },
+  // {
+  //   path: '/tools/hexdump',
+  //   component: Hexdump,
+  // },
 
   { path: '/tools*', redirect: '/tools/base64' },
 ];

@@ -4,7 +4,7 @@
 /* eslint-disable max-len */
 import ApiClient from '@/api/client';
 import {
-  StatusPage, UpdateGroupProfileInput, UpdateMyProfileInput,
+  StatusPage,
 } from '@/api/graphql/model';
 import { AppState, Mutation } from '@/app/store';
 import { Store } from 'vuex';
@@ -341,6 +341,25 @@ export class KernelService {
     return info;
   }
 
+  async updateGroupAvatar(groupId: string, file: File): Promise<Group> {
+    this.validateAvatar(file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    const group: Group = await this.apiClient.upload(Commands.updateGroupAvatar, formData);
+
+    const namespace: Namespace = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      id: group.namespace_id!,
+      name: group.name,
+      path: group.path,
+      avatar_url: group.avatar_url,
+    };
+    this.store.commit(Mutation.UPDATE_NAMESPACE, namespace);
+
+    return group;
+  }
+
   async updateGroupProfile(input: UpdateGroupProfile): Promise<Group> {
     const group: Group = await this.apiClient.post(Commands.updateGroupProfile, input);
 
@@ -354,6 +373,26 @@ export class KernelService {
     this.store.commit(Mutation.UPDATE_NAMESPACE, namespace);
 
     return group;
+  }
+
+  async updateMyAvatar(file: File): Promise<User> {
+    this.validateAvatar(file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    const user: User = await this.apiClient.upload(Commands.updateMyAvatar, formData);
+
+    const namespace: Namespace = {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      id: user.namespace_id!,
+      name: user.name,
+      path: user.username,
+      avatar_url: user.avatar_url,
+    };
+    this.store.commit(Mutation.UPDATE_NAMESPACE, namespace);
+
+
+    return user;
   }
 
   async updateMyProfile(input: UpdateMyProfile): Promise<User> {
@@ -371,8 +410,6 @@ export class KernelService {
     return user;
   }
 
-  // eslint-disable-next-line spaced-comment
-  ////////////////////////////////////////////////////////////////////////////
 
   validateAvatar(file: File) {
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
@@ -384,63 +421,37 @@ export class KernelService {
       throw new Error('File size must be less or equal to 2MB');
     }
   }
+  // eslint-disable-next-line spaced-comment
+  ////////////////////////////////////////////////////////////////////////////
 
-  async updateMyAvatar(file: File): Promise<string> {
-    this.validateAvatar(file);
+  // async updateGroupAvatar(groupId: string, file: File): Promise<string> {
+  //   this.validateAvatar(file);
 
-    const query = `
-      mutation($input: UpdateMyProfileInput!) {
-        updateMyProfile(input: $input) {
-          id
-          avatarUrl
-        }
-      }
-    `;
-    const input: UpdateMyProfileInput = {};
-    const variables = { input };
-    const operations = { query, variables };
-    const map = {
-      0: ['variables.input.avatar'],
-    };
+  //   const query = `
+  //     mutation($input: UpdateGroupProfileInput!) {
+  //       updateGroupProfile(input: $input) {
+  //         id
+  //         avatarUrl
+  //       }
+  //     }
+  //   `;
+  //   const input: UpdateGroupProfileInput = {
+  //     id: groupId,
+  //   };
+  //   const variables = { input };
+  //   const operations = { query, variables };
+  //   const map = {
+  //     0: ['variables.input.avatar'],
+  //   };
 
-    const formData = new FormData();
-    formData.append('operations', JSON.stringify(operations));
-    formData.append('map', JSON.stringify(map));
-    formData.append('0', file);
+  //   const formData = new FormData();
+  //   formData.append('operations', JSON.stringify(operations));
+  //   formData.append('map', JSON.stringify(map));
+  //   formData.append('0', file);
 
-    const res: { updateMyProfile: User } = await this.apiClient.upload(formData);
-    // this.store.commit(Mutation.UPDATE_MY_PROFILE, res.updateMyProfile);
-    return res.updateMyProfile.avatar_url;
-  }
-
-  async updateGroupAvatar(groupId: string, file: File): Promise<string> {
-    this.validateAvatar(file);
-
-    const query = `
-      mutation($input: UpdateGroupProfileInput!) {
-        updateGroupProfile(input: $input) {
-          id
-          avatarUrl
-        }
-      }
-    `;
-    const input: UpdateGroupProfileInput = {
-      id: groupId,
-    };
-    const variables = { input };
-    const operations = { query, variables };
-    const map = {
-      0: ['variables.input.avatar'],
-    };
-
-    const formData = new FormData();
-    formData.append('operations', JSON.stringify(operations));
-    formData.append('map', JSON.stringify(map));
-    formData.append('0', file);
-
-    const res: { updateGroupProfile: Group } = await this.apiClient.upload(formData);
-    return res.updateGroupProfile.avatar_url;
-  }
+  //   const res: { updateGroupProfile: Group } = await this.apiClient.upload(formData);
+  //   return res.updateGroupProfile.avatar_url;
+  // }
 
   async fetchStatusPage(projectFullPath: string): Promise<StatusPage> {
     const query = `

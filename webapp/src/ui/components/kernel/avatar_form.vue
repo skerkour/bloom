@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-hover v-slot:default="{ hover }">
-      <v-avatar :class="{'blm-pointer': enabled }" size="60" @click="openAvatarUploadDialog">
+      <v-avatar :class="{'b-pointer': enabled }" size="60" @click="openAvatarUploadDialog">
         <v-img :src="avatarUrl" >
           <v-expand-transition>
             <div
               v-if="hover && enabled"
-  class="d-flex transition-fast-in-fast-out grey darken-4 blm-avatar-reveal white--text blm-pointer"
+  class="d-flex transition-fast-in-fast-out grey darken-4 b-avatar-reveal white--text b-pointer"
               style="height: 100%;"
             >
               Update
@@ -22,7 +22,7 @@
       v-if="loading"
     />
 
-    <input type="file" class="blm-avatar-upload" ref="blmavatarupload"
+    <input type="file" class="b-avatar-upload" ref="bavatarupload"
       v-on:change="updateAvatar()"/>
   </div>
 </template>
@@ -61,12 +61,12 @@ export default VueApp.extend({
         return;
       }
 
-      const upload = this.$refs.blmavatarupload as HTMLElement;
+      const upload = this.$refs.bavatarupload as HTMLElement;
       upload.click();
     },
     updateAvatar() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const upload = this.$refs.blmavatarupload as any; // ugly
+      const upload = this.$refs.bavatarupload as any; // ugly
       if (upload.files.length !== 1) {
         return;
       }
@@ -79,7 +79,7 @@ export default VueApp.extend({
 
 
 <style lang="scss" scoped>
-.blm-avatar-reveal {
+.b-avatar-reveal {
   align-items: center;
   bottom: 0;
   justify-content: center;
@@ -89,7 +89,7 @@ export default VueApp.extend({
   cursor: pointer;
 }
 
-.blm-avatar-upload {
+.b-avatar-upload {
   display: none;
 }
 </style>

@@ -24,7 +24,7 @@
 
     <v-row v-if="user" class="mx-5">
       <v-col cols="10" md="6" lg="5" xl="4">
-        <b-avatar-form :loading="loading" @update-avatar="updateAvatar" disabled
+        <b-avatar-form :loading="loading" @update-avatar="updateAvatar"
           :avatarUrl="user.avatar_url" />
       </v-col>
     </v-row>
@@ -192,7 +192,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.user!.avatar_url = await this.$kernelService.updateMyAvatar(file);
+        this.user = await this.$kernelService.updateMyAvatar(file);
       } catch (err) {
         this.error = err.message;
       } finally {

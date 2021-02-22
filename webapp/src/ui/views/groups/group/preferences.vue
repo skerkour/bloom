@@ -167,7 +167,7 @@ export default VueApp.extend({
       this.error = '';
 
       try {
-        this.group!.avatar_url = await this.$kernelService.updateGroupAvatar(this.group!.id!, file);
+        this.group = await this.$kernelService.updateGroupAvatar(this.group!.id!, file);
       } catch (err) {
         this.error = err.message;
       } finally {

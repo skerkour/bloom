@@ -67,7 +67,7 @@ export default VueApp.extend({
       this.loading = true;
 
       try {
-        this.output = await this.$toolsService.hexdump(this.input);
+        // this.output = await this.$toolsService.hexdump(this.input);
       } catch (err) {
         this.error = err.message;
       } finally {

@@ -93,28 +93,28 @@ export class ToolsService {
     }
   }
 
-  async hexdump(file: File): Promise<string> {
-    this.validateHexdumpFile(file);
+  // async hexdump(file: File): Promise<string> {
+  //   this.validateHexdumpFile(file);
 
-    const query = `
-      query($file: Upload!) {
-        hexdump(file: $file)
-      }
-    `;
-    const variables = {};
-    const operations = { query, variables };
-    const map = {
-      0: ['variables.file'],
-    };
+  //   const query = `
+  //     query($file: Upload!) {
+  //       hexdump(file: $file)
+  //     }
+  //   `;
+  //   const variables = {};
+  //   const operations = { query, variables };
+  //   const map = {
+  //     0: ['variables.file'],
+  //   };
 
-    const formData = new FormData();
-    formData.append('operations', JSON.stringify(operations));
-    formData.append('map', JSON.stringify(map));
-    formData.append('0', file);
+  //   const formData = new FormData();
+  //   formData.append('operations', JSON.stringify(operations));
+  //   formData.append('map', JSON.stringify(map));
+  //   formData.append('0', file);
 
-    const res: { hexdump: string } = await this.apiClient.upload(formData);
-    return res.hexdump;
-  }
+  //   const res: { hexdump: string } = await this.apiClient.upload(formData);
+  //   return res.hexdump;
+  // }
 
   async qrCode(input: string): Promise<string> {
     const query = `
