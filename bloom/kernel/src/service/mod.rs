@@ -80,6 +80,7 @@ mod setup_two_fa;
 mod sign_in;
 mod sync_customer_with_stripe;
 mod update_billing_information;
+mod update_group_avatar;
 mod update_group_profile;
 mod update_my_avatar;
 mod update_my_profile;
@@ -431,8 +432,13 @@ pub struct SendVerifyEmailEmailInput {
 }
 
 #[derive(Debug, Clone)]
-pub struct UpdateAvatarInput {
-    pub mime_type: String,
+pub struct UpdateMyAvatarInput {
+    pub avatar: Vec<u8>,
+}
+
+#[derive(Debug, Clone)]
+pub struct UpdateGroupAvatarInput {
+    pub group_id: Uuid,
     pub avatar: Vec<u8>,
 }
 

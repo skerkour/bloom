@@ -1,5 +1,5 @@
 use super::Service;
-use crate::{consts, entities::User, errors::kernel::Error, service, Actor};
+use crate::{consts, entities::Group, errors::kernel::Error, service, Actor};
 use stdx::{
     image::{self, imageops::FilterType, ImageOutputFormat},
     log::error,
@@ -8,12 +8,17 @@ use stdx::{
 };
 
 impl Service {
-    pub async fn update_my_avatar(
+    pub async fn update_group_avatar(
         &self,
         actor: Actor,
-        input: service::UpdateMyAvatarInput,
-    ) -> Result<User, crate::Error> {
-        let mut actor = self.current_user(actor)?;
+        input: service::UpdateGroupAvatarInput,
+    ) -> Result<Group, crate::Error> {
+        let actor = self.current_user(actor)?;
+
+        // check group membership
+        let (mut group, _) = self
+            .find_group_and_membership(&self.db, actor.id, input.group_id)
+            .await?;
 
         // validate input
         if input.avatar.len() > consts::AVATAR_MAX_SIZE {
@@ -37,7 +42,7 @@ impl Service {
         {
             Ok(avatar) => avatar,
             Err(err) => {
-                error!("kernel.update_my_avatar: processing image: {}", err);
+                error!("kernel.update_group_avatar: processing image: {}", err);
                 return Err(err.into());
             }
         };
@@ -50,20 +55,20 @@ impl Service {
             .await?;
 
         // delete old avatar
-        if let Some(old_avatar_id) = actor.avatar_id {
+        if let Some(old_avatar_id) = group.avatar_id {
             let old_avatar_storage_key = self.get_avatar_storage_key(&old_avatar_id);
             match self.storage.delete_object(&old_avatar_storage_key).await {
                 Ok(_) => {}
                 Err(err) => {
-                    error!("kernel.update_my_avatar: deleting old avatar: {}", err);
+                    error!("kernel.update_group_avatar: deleting old avatar: {}", err);
                 }
             }
         }
 
-        // update user
-        actor.avatar_id = Some(avatar_id);
-        self.repo.update_user(&self.db, &actor).await?;
+        // update group
+        group.avatar_id = Some(avatar_id);
+        self.repo.update_group(&self.db, &group).await?;
 
-        Ok(actor)
+        Ok(group)
     }
 }
