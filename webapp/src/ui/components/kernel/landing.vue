@@ -111,7 +111,7 @@
               </v-col>
               <v-col cols="12">
                 <h3 class="text-h4">
-                  Boost my productivity
+                  Boost my business
                 </h3>
               </v-col>
 
