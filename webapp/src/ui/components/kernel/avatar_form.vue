@@ -23,7 +23,7 @@
     />
 
     <input type="file" class="b-avatar-upload" ref="bavatarupload"
-      v-on:change="updateAvatar()"/>
+      v-on:change="updateAvatar()" accept=".jpg,.jpeg,.png" />
   </div>
 </template>
 
