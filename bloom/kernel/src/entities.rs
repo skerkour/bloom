@@ -38,15 +38,6 @@ pub struct User {
     pub namespace_id: uuid::Uuid,
 }
 
-impl User {
-    pub fn avatar_url(&self) -> String {
-        match &self.avatar_id {
-            Some(avatar_id) => format!("/avatars/{}", avatar_id),
-            None => consts::DEFAULT_AVATAR.to_string(),
-        }
-    }
-}
-
 #[derive(sqlx::FromRow, Debug, Clone)]
 pub struct Group {
     pub id: uuid::Uuid,
@@ -59,15 +50,6 @@ pub struct Group {
     pub path: String,
 
     pub namespace_id: uuid::Uuid,
-}
-
-impl Group {
-    pub fn avatar_url(&self) -> String {
-        match &self.avatar_id {
-            Some(avatar_id) => format!("/avatars/{}", avatar_id),
-            None => consts::DEFAULT_AVATAR.to_string(),
-        }
-    }
 }
 
 /// Session entity is a session of a bloom user. It may not necessarily map 1:1 with users' devices
@@ -224,15 +206,6 @@ pub struct GroupMember {
     pub avatar_id: Option<String>,
     pub joined_at: chrono::DateTime<chrono::Utc>,
     pub role: GroupRole,
-}
-
-impl GroupMember {
-    pub fn avatar_url(&self) -> String {
-        match &self.avatar_id {
-            Some(avatar_id) => format!("/avatars/{}", avatar_id),
-            None => consts::DEFAULT_AVATAR.to_string(),
-        }
-    }
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]

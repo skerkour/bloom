@@ -10,6 +10,9 @@ pub async fn users(
     let users = ctx.kernel_service.admin_find_users(actor).await?;
 
     Ok(api::Response::ok(
-        users.into_iter().map(|user| model::convert_user(user, true)).collect(),
+        users
+            .into_iter()
+            .map(|user| model::convert_user(&ctx.kernel_service, user, true))
+            .collect(),
     ))
 }

@@ -39,7 +39,11 @@ pub async fn update_group_avatar(
         };
         let group = ctx.kernel_service.update_group_avatar(actor, service_input).await?;
 
-        Ok(api::Response::ok(model::convert_group(group, true)))
+        Ok(api::Response::ok(model::convert_group(
+            &ctx.kernel_service,
+            group,
+            true,
+        )))
     } else {
         Err(kernel::Error::InvalidArgument(String::from("Upload is empty")))
     }

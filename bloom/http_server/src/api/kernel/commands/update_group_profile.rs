@@ -18,5 +18,9 @@ pub async fn update_group_profile(
     };
     let group = ctx.kernel_service.update_group_profile(actor, service_input).await?;
 
-    Ok(api::Response::ok(model::convert_group(group, true)))
+    Ok(api::Response::ok(model::convert_group(
+        &ctx.kernel_service,
+        group,
+        true,
+    )))
 }

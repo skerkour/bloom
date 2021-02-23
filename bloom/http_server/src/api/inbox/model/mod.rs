@@ -30,32 +30,30 @@ pub struct Contact {
     pub avatar_url: String,
 }
 
-impl From<inbox::entities::Contact> for Contact {
-    fn from(contact: inbox::entities::Contact) -> Self {
-        Contact {
-            avatar_url: contact.avatar_url(),
-            id: contact.id,
-            created_at: contact.created_at,
-            name: contact.name,
-            birthday: contact.birthday,
-            email: contact.email,
-            pgp_key: contact.pgp_key,
-            phone: contact.phone,
-            address: contact.address,
-            website: contact.website,
-            twitter: contact.twitter,
-            instagram: contact.instagram,
-            facebook: contact.facebook,
-            linkedin: contact.linkedin,
-            skype: contact.skype,
-            telegram: contact.telegram,
-            bloom: contact.bloom,
-            notes: contact.notes,
-            country: contact.country,
-            country_code: contact.country_code,
-            plan: contact.plan,
-            user_id: contact.user_id,
-        }
+pub fn convert_contact(kernel: &kernel::Service, contact: inbox::entities::Contact) -> Contact {
+    Contact {
+        avatar_url: kernel.get_avatar_url(contact.avatar_id.as_ref()),
+        id: contact.id,
+        created_at: contact.created_at,
+        name: contact.name,
+        birthday: contact.birthday,
+        email: contact.email,
+        pgp_key: contact.pgp_key,
+        phone: contact.phone,
+        address: contact.address,
+        website: contact.website,
+        twitter: contact.twitter,
+        instagram: contact.instagram,
+        facebook: contact.facebook,
+        linkedin: contact.linkedin,
+        skype: contact.skype,
+        telegram: contact.telegram,
+        bloom: contact.bloom,
+        notes: contact.notes,
+        country: contact.country,
+        country_code: contact.country_code,
+        plan: contact.plan,
+        user_id: contact.user_id,
     }
 }
 
@@ -133,13 +131,14 @@ pub struct ConversationWithContactsAndMessages {
     pub messages: Vec<Message>,
 }
 
-impl From<inbox::service::ConversationWithMessageAndContacts> for ConversationWithContactsAndMessages {
-    fn from(input: inbox::service::ConversationWithMessageAndContacts) -> Self {
-        ConversationWithContactsAndMessages {
-            conversation: input.conversation.into(),
-            contacts: input.contacts.into_iter().map(Into::into).collect(),
-            messages: input.messages.into_iter().map(Into::into).collect(),
-        }
+pub fn convert_conversation_with_messages_and_contacts(
+    kernel: &kernel::Service,
+    input: inbox::service::ConversationWithMessageAndContacts,
+) -> ConversationWithContactsAndMessages {
+    ConversationWithContactsAndMessages {
+        conversation: input.conversation.into(),
+        contacts: input.contacts.into_iter().map(|c| convert_contact(kernel, c)).collect(),
+        messages: input.messages.into_iter().map(Into::into).collect(),
     }
 }
 
@@ -164,54 +163,55 @@ pub struct ChatboxPreferences {
     pub telegram_url: String,
 }
 
-impl From<inbox::service::DetailedChatboxPreferences> for ChatboxPreferences {
-    fn from(input: inbox::service::DetailedChatboxPreferences) -> Self {
-        let twitter_url = if input.preferences.twitter.is_empty() {
-            String::new()
-        } else {
-            format!("https://twitter.com/@{}", &input.preferences.twitter)
-        };
+pub fn convert_chatbox_preferences(
+    kernel: &kernel::Service,
+    input: inbox::service::DetailedChatboxPreferences,
+) -> ChatboxPreferences {
+    let twitter_url = if input.preferences.twitter.is_empty() {
+        String::new()
+    } else {
+        format!("https://twitter.com/@{}", &input.preferences.twitter)
+    };
 
-        let instagram_url = if input.preferences.instagram.is_empty() {
-            String::new()
-        } else {
-            format!("https://instagram.com/{}", &input.preferences.instagram)
-        };
+    let instagram_url = if input.preferences.instagram.is_empty() {
+        String::new()
+    } else {
+        format!("https://instagram.com/{}", &input.preferences.instagram)
+    };
 
-        let whatsapp_url = if input.preferences.whatsapp_number.is_empty() {
-            String::new()
-        } else {
-            format!(
-                "https://api.whatsapp.com/send?phone={}",
-                &input.preferences.whatsapp_number
-            )
-        };
+    let whatsapp_url = if input.preferences.whatsapp_number.is_empty() {
+        String::new()
+    } else {
+        format!(
+            "https://api.whatsapp.com/send?phone={}",
+            &input.preferences.whatsapp_number
+        )
+    };
 
-        let telegram_url = if input.preferences.telegram.is_empty() {
-            String::new()
-        } else {
-            format!("https://t.me/@{}", &input.preferences.telegram)
-        };
+    let telegram_url = if input.preferences.telegram.is_empty() {
+        String::new()
+    } else {
+        format!("https://t.me/@{}", &input.preferences.telegram)
+    };
 
-        ChatboxPreferences {
-            avatar_url: input.preferences.avatar_url(),
-            color: input.preferences.color,
-            name: input.preferences.name,
-            show_branding: input.preferences.show_branding,
-            welcome_message: input.preferences.welcome_message,
-            base_url: input.base_url,
-            twitter: input.preferences.twitter,
-            twitter_url,
-            facebook_url: input.preferences.facebook_url,
-            instagram: input.preferences.instagram,
-            instagram_url,
-            whatsapp_number: input.preferences.whatsapp_number,
-            whatsapp_url,
-            mastodon_url: input.preferences.mastodon_url,
-            website_url: input.preferences.website_url,
-            telegram: input.preferences.telegram,
-            telegram_url,
-        }
+    ChatboxPreferences {
+        avatar_url: kernel.get_avatar_url(input.preferences.avatar_id.as_ref()),
+        color: input.preferences.color,
+        name: input.preferences.name,
+        show_branding: input.preferences.show_branding,
+        welcome_message: input.preferences.welcome_message,
+        base_url: input.base_url,
+        twitter: input.preferences.twitter,
+        twitter_url,
+        facebook_url: input.preferences.facebook_url,
+        instagram: input.preferences.instagram,
+        instagram_url,
+        whatsapp_number: input.preferences.whatsapp_number,
+        whatsapp_url,
+        mastodon_url: input.preferences.mastodon_url,
+        website_url: input.preferences.website_url,
+        telegram: input.preferences.telegram,
+        telegram_url,
     }
 }
 

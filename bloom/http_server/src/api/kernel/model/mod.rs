@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 
 pub mod input;
 
-pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User {
+pub fn convert_user(kernel: &kernel::Service, user: kernel::entities::User, private_details: bool) -> User {
     let mut ret = User {
-        avatar_url: user.avatar_url(),
+        avatar_url: kernel.get_avatar_url(user.avatar_id.as_ref()),
         id: None,
         created_at: None,
         name: user.name,
@@ -31,9 +31,9 @@ pub fn convert_user(user: kernel::entities::User, private_details: bool) -> User
     ret
 }
 
-pub fn convert_group(group: kernel::entities::Group, private_details: bool) -> Group {
+pub fn convert_group(kernel: &kernel::Service, group: kernel::entities::Group, private_details: bool) -> Group {
     let mut ret = Group {
-        avatar_url: group.avatar_url(),
+        avatar_url: kernel.get_avatar_url(group.avatar_id.as_ref()),
         id: None,
         created_at: None,
         namespace_id: None,
@@ -135,13 +135,11 @@ pub struct Me {
     pub groups: Vec<Group>,
 }
 
-impl From<kernel::service::Me> for Me {
-    fn from(me: kernel::service::Me) -> Self {
-        Me {
-            session: me.session.into(),
-            user: convert_user(me.user, true),
-            groups: me.groups.into_iter().map(|g| convert_group(g, true)).collect(),
-        }
+pub fn convert_me(kernel: &kernel::Service, me: kernel::service::Me) -> Me {
+    Me {
+        session: me.session.into(),
+        user: convert_user(kernel, me.user, true),
+        groups: me.groups.into_iter().map(|g| convert_group(kernel, g, true)).collect(),
     }
 }
 
@@ -167,17 +165,15 @@ pub struct SignedIn {
     pub token: Option<String>,
 }
 
-impl From<kernel::service::Registered> for SignedIn {
-    fn from(input: kernel::service::Registered) -> Self {
-        SignedIn {
-            me: Some(Me {
-                user: convert_user(input.user, true),
-                session: input.session.into(),
-                groups: Vec::new(),
-            }),
-            token: Some(input.token),
-            two_fa_method: None,
-        }
+pub fn convert_registered(kernel: &kernel::Service, input: kernel::service::Registered) -> SignedIn {
+    SignedIn {
+        me: Some(Me {
+            user: convert_user(kernel, input.user, true),
+            session: input.session.into(),
+            groups: Vec::new(),
+        }),
+        token: Some(input.token),
+        two_fa_method: None,
     }
 }
 
@@ -195,23 +191,21 @@ impl From<kernel::consts::TwoFaMethod> for TwoFaMethod {
     }
 }
 
-impl From<kernel::service::SignedIn> for SignedIn {
-    fn from(item: kernel::service::SignedIn) -> Self {
-        match item {
-            kernel::service::SignedIn::Success {
-                me,
-                token,
-            } => SignedIn {
-                me: Some(me.into()),
-                two_fa_method: None,
-                token: Some(token),
-            },
-            kernel::service::SignedIn::TwoFa(method) => SignedIn {
-                me: None,
-                token: None,
-                two_fa_method: Some(method.into()),
-            },
-        }
+pub fn convert_signed_in(kernel: &kernel::Service, item: kernel::service::SignedIn) -> SignedIn {
+    match item {
+        kernel::service::SignedIn::Success {
+            me,
+            token,
+        } => SignedIn {
+            me: Some(convert_me(kernel, me)),
+            two_fa_method: None,
+            token: Some(token),
+        },
+        kernel::service::SignedIn::TwoFa(method) => SignedIn {
+            me: None,
+            token: None,
+            two_fa_method: Some(method.into()),
+        },
     }
 }
 
@@ -289,15 +283,16 @@ pub struct GroupInvitation {
     pub invitee: User,
 }
 
-impl From<kernel::service::GroupInvitationWithDetails> for GroupInvitation {
-    fn from(item: kernel::service::GroupInvitationWithDetails) -> Self {
-        GroupInvitation {
-            id: item.invitation.id,
-            created_at: item.invitation.created_at,
-            group: convert_group(item.group, false),
-            inviter: convert_user(item.inviter, false),
-            invitee: convert_user(item.invitee, false),
-        }
+pub fn convert_group_invitation_with_details(
+    kernel: &kernel::Service,
+    item: kernel::service::GroupInvitationWithDetails,
+) -> GroupInvitation {
+    GroupInvitation {
+        id: item.invitation.id,
+        created_at: item.invitation.created_at,
+        group: convert_group(kernel, item.group, false),
+        inviter: convert_user(kernel, item.inviter, false),
+        invitee: convert_user(kernel, item.invitee, false),
     }
 }
 
@@ -316,16 +311,14 @@ pub struct GroupMember {
     pub joined_at: Time,
 }
 
-impl From<kernel::entities::GroupMember> for GroupMember {
-    fn from(item: kernel::entities::GroupMember) -> Self {
-        GroupMember {
-            avatar_url: item.avatar_url(),
-            user_id: item.user_id,
-            username: item.username,
-            name: item.name,
-            role: item.role,
-            joined_at: item.joined_at,
-        }
+pub fn convert_group_member(kernel: &kernel::Service, item: kernel::entities::GroupMember) -> GroupMember {
+    GroupMember {
+        avatar_url: kernel.get_avatar_url(item.avatar_id.as_ref()),
+        user_id: item.user_id,
+        username: item.username,
+        name: item.name,
+        role: item.role,
+        joined_at: item.joined_at,
     }
 }
 
@@ -336,13 +329,22 @@ pub struct GroupWithMembersAndInvitations {
     pub invitations: Vec<GroupInvitation>,
 }
 
-impl From<kernel::service::GroupWithMembersAndInvitations> for GroupWithMembersAndInvitations {
-    fn from(item: kernel::service::GroupWithMembersAndInvitations) -> Self {
-        GroupWithMembersAndInvitations {
-            group: convert_group(item.group, true),
-            invitations: item.invitations.into_iter().map(Into::into).collect(),
-            members: item.members.into_iter().map(Into::into).collect(),
-        }
+pub fn convert_group_with_members_and_invitations(
+    kernel: &kernel::Service,
+    item: kernel::service::GroupWithMembersAndInvitations,
+) -> GroupWithMembersAndInvitations {
+    GroupWithMembersAndInvitations {
+        group: convert_group(kernel, item.group, true),
+        invitations: item
+            .invitations
+            .into_iter()
+            .map(|i| convert_group_invitation_with_details(kernel, i))
+            .collect(),
+        members: item
+            .members
+            .into_iter()
+            .map(|m| convert_group_member(kernel, m))
+            .collect(),
     }
 }
 

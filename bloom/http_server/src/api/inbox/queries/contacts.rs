@@ -19,5 +19,10 @@ pub async fn contacts(
     };
     let contacts = ctx.inbox_service.find_contacts(actor, service_input).await?;
 
-    Ok(api::Response::ok(contacts.into_iter().map(Into::into).collect()))
+    Ok(api::Response::ok(
+        contacts
+            .into_iter()
+            .map(|c| model::convert_contact(&ctx.kernel_service, c))
+            .collect(),
+    ))
 }

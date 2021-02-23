@@ -12,7 +12,7 @@ pub async fn groups(
     Ok(api::Response::ok(
         groups
             .into_iter()
-            .map(|group| model::convert_group(group, true))
+            .map(|group| model::convert_group(&ctx.kernel_service, group, true))
             .collect(),
     ))
 }

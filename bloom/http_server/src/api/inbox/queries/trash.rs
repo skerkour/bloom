@@ -21,7 +21,10 @@ pub async fn trash(
     let conversations = ctx.inbox_service.find_trash(actor, service_input).await?;
 
     let inbox = model::Inbox {
-        conversations: conversations.into_iter().map(Into::into).collect(),
+        conversations: conversations
+            .into_iter()
+            .map(|c| model::convert_conversation_with_messages_and_contacts(&ctx.kernel_service, c))
+            .collect(),
     };
     Ok(api::Response::ok(inbox))
 }

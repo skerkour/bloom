@@ -33,5 +33,8 @@ pub async fn update_chatbox_preferences(
         .update_chatbox_preferences(actor, service_input)
         .await?;
 
-    Ok(api::Response::ok(chatbox_preferences.into()))
+    Ok(api::Response::ok(model::convert_chatbox_preferences(
+        &ctx.kernel_service,
+        chatbox_preferences,
+    )))
 }

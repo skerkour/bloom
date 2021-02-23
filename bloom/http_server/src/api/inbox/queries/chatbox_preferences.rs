@@ -19,5 +19,8 @@ pub async fn chatbox_preferences(
     };
     let preferences = ctx.inbox_service.find_chatbox_preferences(actor, service_input).await?;
 
-    Ok(api::Response::ok(preferences.into()))
+    Ok(api::Response::ok(model::convert_chatbox_preferences(
+        &ctx.kernel_service,
+        preferences,
+    )))
 }

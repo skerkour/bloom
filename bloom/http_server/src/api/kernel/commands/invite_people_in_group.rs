@@ -1,5 +1,5 @@
 use crate::{
-    api::kernel::model::{input, GroupInvitation},
+    api::kernel::model::{self, input},
     ServerContext,
 };
 use actix_web::web;
@@ -11,7 +11,7 @@ pub async fn invite_people_in_group(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::InvitePeopleInGroup>,
     actor: Actor,
-) -> Result<api::Response<Vec<GroupInvitation>>, kernel::Error> {
+) -> Result<api::Response<Vec<model::GroupInvitation>>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::InvitePeopleInGroupInput {
         group_id: input.group_id,
@@ -19,5 +19,10 @@ pub async fn invite_people_in_group(
     };
     let invitations = ctx.kernel_service.invite_people_in_group(actor, service_input).await?;
 
-    Ok(api::Response::ok(invitations.into_iter().map(Into::into).collect()))
+    Ok(api::Response::ok(
+        invitations
+            .into_iter()
+            .map(|i| model::convert_group_invitation_with_details(&ctx.kernel_service, i))
+            .collect(),
+    ))
 }

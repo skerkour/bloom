@@ -1,4 +1,3 @@
-use kernel::consts;
 use serde::{Deserialize, Serialize};
 use stdx::{
     chrono::{DateTime, Utc},
@@ -80,15 +79,6 @@ pub struct Contact {
     pub namespace_id: Uuid,
 }
 
-impl Contact {
-    pub fn avatar_url(&self) -> String {
-        match &self.avatar_id {
-            Some(avatar_id) => format!("/avatars/{}", &avatar_id),
-            None => consts::DEFAULT_AVATAR.to_string(),
-        }
-    }
-}
-
 #[derive(sqlx::FromRow, Debug, Clone)]
 pub struct NewsletterList {
     pub id: Uuid,
@@ -141,15 +131,6 @@ pub struct ChatboxPreferences {
     pub telegram: String,
 
     pub namespace_id: Uuid,
-}
-
-impl ChatboxPreferences {
-    pub fn avatar_url(&self) -> String {
-        match &self.avatar_id {
-            Some(avatar_id) => format!("/avatars/{}", avatar_id),
-            None => consts::DEFAULT_AVATAR.to_string(),
-        }
-    }
 }
 
 #[derive(sqlx::FromRow, Debug, Clone)]

@@ -12,5 +12,5 @@ pub async fn unblock_user(
     let input = input.into_inner();
     let user = ctx.kernel_service.admin_unblock_user(actor, input.user_id).await?;
 
-    Ok(api::Response::ok(model::convert_user(user, true)))
+    Ok(api::Response::ok(model::convert_user(&ctx.kernel_service, user, true)))
 }

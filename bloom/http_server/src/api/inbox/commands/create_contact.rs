@@ -36,5 +36,5 @@ pub async fn create_contact(
     };
     let contact = ctx.inbox_service.create_contact(actor, service_input).await?;
 
-    Ok(api::Response::ok(contact.into()))
+    Ok(api::Response::ok(model::convert_contact(&ctx.kernel_service, contact)))
 }

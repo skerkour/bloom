@@ -1,5 +1,5 @@
 use crate::{
-    api::kernel::model::{input, SignedIn},
+    api::kernel::model::{self, input},
     ServerContext,
 };
 use actix_web::web;
@@ -11,7 +11,7 @@ pub async fn complete_registration(
     ctx: web::Data<Arc<ServerContext>>,
     input: Json<input::CompleteRegistration>,
     actor: Actor,
-) -> Result<api::Response<SignedIn>, kernel::Error> {
+) -> Result<api::Response<model::SignedIn>, kernel::Error> {
     let input = input.into_inner();
     let service_input = service::CompleteRegistrationInput {
         pending_user_id: input.pending_user_id,
@@ -19,5 +19,5 @@ pub async fn complete_registration(
     };
     let res = ctx.kernel_service.complete_registration(actor, service_input).await?;
 
-    Ok(api::Response::ok(res.into()))
+    Ok(api::Response::ok(model::convert_registered(&ctx.kernel_service, res)))
 }

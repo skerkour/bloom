@@ -15,5 +15,5 @@ pub async fn group(
 
     let group = ctx.kernel_service.find_group(actor, input.path).await?;
 
-    Ok(api::Response::ok(convert_group(group, true)))
+    Ok(api::Response::ok(convert_group(&ctx.kernel_service, group, true)))
 }

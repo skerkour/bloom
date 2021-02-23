@@ -26,7 +26,7 @@ pub async fn update_my_avatar(
         };
         let me = ctx.kernel_service.update_my_avatar(actor, service_input).await?;
 
-        Ok(api::Response::ok(model::convert_user(me, true)))
+        Ok(api::Response::ok(model::convert_user(&ctx.kernel_service, me, true)))
     } else {
         Err(kernel::Error::InvalidArgument(String::from("Upload is empty")))
     }

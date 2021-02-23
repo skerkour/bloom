@@ -15,5 +15,9 @@ pub async fn accept_group_invitation(
     };
     let group = ctx.kernel_service.accept_group_invitation(actor, service_input).await?;
 
-    Ok(api::Response::ok(model::convert_group(group, true)))
+    Ok(api::Response::ok(model::convert_group(
+        &ctx.kernel_service,
+        group,
+        true,
+    )))
 }

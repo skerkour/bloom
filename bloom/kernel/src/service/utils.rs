@@ -183,6 +183,15 @@ impl Service {
     pub fn get_avatar_storage_key(&self, avatar_id: &str) -> String {
         format!("/avatars/{}", avatar_id)
     }
+
+    pub fn get_avatar_url(&self, avatar_id: Option<&String>) -> String {
+        let base_url = self.base_url();
+
+        match avatar_id {
+            Some(avatar_id) => format!("{}/avatars/{}", &base_url, avatar_id),
+            None => format!("{}{}", &base_url, consts::DEFAULT_AVATAR.to_string()),
+        }
+    }
 }
 
 #[cfg(test)]

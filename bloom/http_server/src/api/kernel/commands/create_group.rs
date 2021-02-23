@@ -17,5 +17,9 @@ pub async fn create_group(
     };
     let group = ctx.kernel_service.create_group(actor, service_input).await?;
 
-    Ok(api::Response::ok(model::convert_group(group, true)))
+    Ok(api::Response::ok(model::convert_group(
+        &ctx.kernel_service,
+        group,
+        true,
+    )))
 }

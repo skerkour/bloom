@@ -12,5 +12,9 @@ pub async fn group(
     let input = input.into_inner();
     let group = ctx.kernel_service.admin_find_group(actor, input.group_id).await?;
 
-    Ok(api::Response::ok(model::convert_group(group, true)))
+    Ok(api::Response::ok(model::convert_group(
+        &ctx.kernel_service,
+        group,
+        true,
+    )))
 }

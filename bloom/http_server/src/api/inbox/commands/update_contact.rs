@@ -36,5 +36,5 @@ pub async fn update_contact(
     };
     let contact = ctx.inbox_service.update_contact(actor, service_input).await?;
 
-    Ok(api::Response::ok(contact.into()))
+    Ok(api::Response::ok(model::convert_contact(&ctx.kernel_service, contact)))
 }

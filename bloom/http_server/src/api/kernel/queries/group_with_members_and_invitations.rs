@@ -15,5 +15,8 @@ pub async fn group_with_members_and_invitations(
         .find_group_members_and_invitations(actor, input.path)
         .await?;
 
-    Ok(api::Response::ok(group.into()))
+    Ok(api::Response::ok(model::convert_group_with_members_and_invitations(
+        &ctx.kernel_service,
+        group,
+    )))
 }
