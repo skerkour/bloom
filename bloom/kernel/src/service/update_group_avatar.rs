@@ -69,8 +69,8 @@ impl Service {
         group.avatar_id = Some(avatar_id);
 
         let inbox_service_input = UpdateChatboxAvatarInput {
-            namespace_id: actor.namespace_id,
-            avatar_id: actor.avatar_id.clone(),
+            namespace_id: group.namespace_id,
+            avatar_id: group.avatar_id.clone(),
         };
 
         let mut tx = self.db.begin().await?;
@@ -79,7 +79,7 @@ impl Service {
 
         self.inbox_service
             .as_ref()
-            .expect("kernel.update_my_avatar: unwrapping inbox_service")
+            .expect("kernel.update_group_avatar: unwrapping inbox_service")
             .update_chatbox_avatar_unauthenticated(&mut tx, inbox_service_input)
             .await?;
 
