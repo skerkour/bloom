@@ -1,5 +1,5 @@
 use super::Service;
-use crate::{consts, entities::Group, errors::kernel::Error, service, Actor};
+use crate::{consts, domain::inbox::UpdateChatboxAvatarInput, entities::Group, errors::kernel::Error, service, Actor};
 use stdx::{
     image::{self, imageops::FilterType, ImageOutputFormat},
     log::error,
@@ -65,9 +65,25 @@ impl Service {
             }
         }
 
-        // update group
+        // update group and chatbox preferences
         group.avatar_id = Some(avatar_id);
-        self.repo.update_group(&self.db, &group).await?;
+
+        let inbox_service_input = UpdateChatboxAvatarInput {
+            namespace_id: actor.namespace_id,
+            avatar_id: actor.avatar_id.clone(),
+        };
+
+        let mut tx = self.db.begin().await?;
+
+        self.repo.update_group(&mut tx, &group).await?;
+
+        self.inbox_service
+            .as_ref()
+            .expect("kernel.update_my_avatar: unwrapping inbox_service")
+            .update_chatbox_avatar_unauthenticated(&mut tx, inbox_service_input)
+            .await?;
+
+        tx.commit().await?;
 
         Ok(group)
     }

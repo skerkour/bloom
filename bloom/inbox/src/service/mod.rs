@@ -46,6 +46,7 @@ mod send_newsletter_message;
 mod send_test_newsletter_message;
 mod subscribe_to_list;
 mod unsubscribe_from_list;
+mod update_chatbox_avatar_unauthenticated;
 mod update_chatbox_preferences;
 mod update_contact;
 mod update_newsletter_list;
@@ -109,6 +110,14 @@ impl kernel::domain::inbox::Service for Service {
 
     async fn clean_user<'c>(&self, tx: &mut Transaction<'c, Postgres>, user_id: Uuid) -> Result<(), kernel::Error> {
         self.clean_user(tx, user_id).await
+    }
+
+    async fn update_chatbox_avatar_unauthenticated<'c>(
+        &self,
+        tx: &mut Transaction<'c, Postgres>,
+        input: kernel::domain::inbox::UpdateChatboxAvatarInput,
+    ) -> Result<(), kernel::Error> {
+        self.update_chatbox_avatar_unauthenticated(tx, input).await
     }
 }
 

@@ -127,13 +127,6 @@ impl Service {
 
         tx.commit().await?;
 
-        // if oldAvatarStorageKey != "" {
-        //     storageErr := service.storage.DeleteObject(ctx, oldAvatarStorageKey)
-        //     if storageErr != nil {
-        //         errMessage := "projects.UpdateGroupProfile: deleting old avatar"
-        //         logger.Error(errMessage, log.Err("error", storageErr))
-        //     }
-        // }
         Ok(group)
     }
 }
