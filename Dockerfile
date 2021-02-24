@@ -28,7 +28,6 @@ WORKDIR /bloom
 COPY ./ .
 WORKDIR /bloom/bloom
 
-# there is problem building static due to transitive dependency openssl (hyper-tls)
 RUN make build_static
 # RUN make build
 
