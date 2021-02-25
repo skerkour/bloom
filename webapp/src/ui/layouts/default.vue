@@ -43,7 +43,7 @@
         Register for free
       </v-btn>
 
-      <v-menu left bottom v-if="authenticated" v-model="namespaceMenu">
+      <v-menu left bottom v-if="showAppBarAvatar" v-model="namespaceMenu">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
           <v-avatar size="35">
@@ -67,14 +67,6 @@
                     {{ namespace.name }}</v-list-item-title>
                   <v-list-item-subtitle>
                     @{{ namespace.path }}</v-list-item-subtitle>
-
-                  <div class="text-xs-center">
-                    <v-btn depressed small
-                      @click.stop="goToNamespacePreferences(index, namespace)">
-                      <v-icon small left>mdi-cog</v-icon>
-                      Preferences
-                    </v-btn>
-                  </div>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -185,8 +177,8 @@ export default VueApp.extend({
     showFooter(): boolean {
       return this.$route.meta.auth === false && this.$route.path !== '/';
     },
-    showNavBarAppsButton(): boolean {
-      return this.authenticated && this.$vuetify.breakpoint.mdAndUp;
+    showAppBarAvatar(): boolean {
+      return this.authenticated && this.$vuetify.breakpoint.smAndDown;
     },
     showDrawerButton(): boolean {
       // eslint-disable-next-line no-unneeded-ternary
