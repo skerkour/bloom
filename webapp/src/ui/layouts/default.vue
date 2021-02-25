@@ -1,16 +1,16 @@
 <template>
   <v-app :dark="darkMode">
-      <b-left-bar />
+    <b-left-bar />
 
     <v-navigation-drawer app clipped v-model="drawer"
       :mobile-breakpoint="this.$vuetify.breakpoint.thresholds.sm"
       class="b-navigation-drawer">
       <b-group-drawer v-if="groupDrawer" />
-      <b-user-preferences-drawer v-if="userPreferencesDrawer" />
-      <b-tools-drawer v-if="toolsDrawer" />
-      <b-admin-drawer v-if="adminDrawer" />
-      <b-inbox-drawer v-if="inboxDrawer" />
-      <b-files-drawer v-if="filesDrawer" />
+      <b-user-preferences-drawer v-else-if="userPreferencesDrawer" />
+      <b-tools-drawer v-else-if="toolsDrawer" />
+      <b-admin-drawer v-else-if="adminDrawer" />
+      <b-inbox-drawer v-else-if="inboxDrawer" />
+      <b-files-drawer v-else-if="filesDrawer" />
     </v-navigation-drawer>
 
     <v-app-bar app color="#24292e" dark elevation="0" dense fixed clipped-left>
@@ -192,7 +192,9 @@ export default VueApp.extend({
     },
     drawer: {
       get(): boolean {
-        return this.$store.state.drawer && this.showDrawerButton;
+        return this.$store.state.drawer
+          && (this.groupDrawer || this.userPreferencesDrawer || this.toolsDrawer || this.adminDrawer
+            || this.inboxDrawer || this.filesDrawer);
       },
       set(value: boolean) {
         this.$store.commit(Mutation.SET_DRAWER, value);
@@ -215,11 +217,6 @@ export default VueApp.extend({
     },
     toggleDrawer() {
       this.$store.commit(Mutation.SET_DRAWER, !this.$store.state.drawer);
-    },
-    goToNamespacePreferences(index: number, namespace: Namespace) {
-      const route = index === 0 ? '/preferences' : `/groups/${namespace.path}/preferences`;
-      this.$router.push({ path: route });
-      this.namespaceMenu = false;
     },
   },
 });
