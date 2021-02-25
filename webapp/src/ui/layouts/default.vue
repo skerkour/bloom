@@ -1,13 +1,21 @@
 <template>
   <v-app :dark="darkMode">
-    <b-group-drawer v-if="groupDrawer" />
-    <b-user-preferences-drawer v-if="userPreferencesDrawer" />
-    <b-tools-drawer v-if="toolsDrawer" />
-    <b-admin-drawer v-if="adminDrawer" />
-    <b-inbox-drawer v-if="inboxDrawer" />
-    <b-files-drawer v-if="filesDrawer" />
+      <b-left-bar />
+
+    <v-navigation-drawer app clipped v-model="drawer"
+    :mobile-breakpoint="this.$vuetify.breakpoint.thresholds.sm"
+    class="b-navigation-drawer">
+      <b-group-drawer v-if="groupDrawer" />
+      <b-user-preferences-drawer v-if="userPreferencesDrawer" />
+      <b-tools-drawer v-if="toolsDrawer" />
+      <b-admin-drawer v-if="adminDrawer" />
+      <b-inbox-drawer v-if="inboxDrawer" />
+      <b-files-drawer v-if="filesDrawer" />
+    </v-navigation-drawer>
 
     <v-app-bar app color="#24292e" dark elevation="0" dense fixed clipped-left>
+      <div class="b-app-bar-left-spacer" />
+
       <v-app-bar-nav-icon  @click.stop="toggleDrawer" v-if="showDrawerButton"/>
       <router-link to="/">
         <v-toolbar-title class="headline " to="/">
@@ -26,31 +34,6 @@
       </v-btn>
 
       <v-spacer />
-
-      <v-menu offset-y close-on-content-click v-if="showNavBarAppsButton">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-apps</v-icon>
-          </v-btn>
-        </template>
-
-        <v-card id="b-app-bar-apps-card">
-          <v-card-text>
-            <v-row justify="start">
-              <v-col cols="4" v-for="(app, index) in apps" :key="index" class="text-center pa-0">
-                <router-link :to="app.url">
-                  <v-avatar class="blm-pointer"  size="48">
-                    <img :src="app.icon" :alt="app.name" />
-                  </v-avatar>
-                  <p class="subtitle-1 font-weight-medium text--secondary">
-                    {{ app.name }}
-                  </p>
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-menu>
 
       <v-btn to="/login" text v-if="!authenticated">
         Sign In
@@ -142,6 +125,7 @@ import BAdminDrawer from '@/ui/components/kernel/admin_drawer.vue';
 import BInboxDrawer from '@/ui/components/inbox/drawer.vue';
 import BFilesDrawer from '@/ui/components/files/drawer.vue';
 import BBottomNavBar from '@/ui/components/kernel/bottom_nav_bar.vue';
+import BLeftBar from '@/ui/components/kernel/left_bar.vue';
 import { Mutation } from '@/app/store';
 import { Namespace } from '@/domain/kernel/model';
 import { apps } from '@/domain/kernel/apps';
@@ -157,6 +141,7 @@ export default VueApp.extend({
     BInboxDrawer,
     BBottomNavBar,
     BFilesDrawer,
+    BLeftBar,
   },
   computed: {
     currentNamespaceIndex(): number {
@@ -213,6 +198,14 @@ export default VueApp.extend({
     showBottomNav(): boolean {
       return this.authenticated && this.$vuetify.breakpoint.smAndDown;
     },
+    drawer: {
+      get(): boolean {
+        return this.$store.state.drawer && this.showDrawerButton;
+      },
+      set(value: boolean) {
+        this.$store.commit(Mutation.SET_DRAWER, value);
+      },
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     apps(): any[] {
       return apps;
@@ -242,6 +235,26 @@ export default VueApp.extend({
 
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/styles.sass';
+
+.b-app-bar-left-spacer {
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    width: 72px;
+  }
+}
+
+.v-main {
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    margin-left: 72px;
+  }
+}
+
+.b-navigation-drawer {
+  @media #{map-get($display-breakpoints, 'md-and-up')} {
+    margin-left: 72px;
+  }
+}
+
 .v-app-bar {
   .headline {
     color: #fff;
@@ -250,5 +263,9 @@ export default VueApp.extend({
 
 #b-app-bar-apps-card {
   width: 300px;
+}
+
+.v-main, .b-content {
+  height: 100%;
 }
 </style>
