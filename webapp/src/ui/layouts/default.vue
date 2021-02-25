@@ -67,6 +67,15 @@
                     {{ namespace.name }}</v-list-item-title>
                   <v-list-item-subtitle>
                     @{{ namespace.path }}</v-list-item-subtitle>
+
+                  <div class="text-xs-center">
+                    <v-btn depressed small
+                      @click.stop="goToNamespacePreferences(index, namespace)">
+                      <v-icon small left>mdi-cog</v-icon>
+                      Preferences
+                    </v-btn>
+                  </div>
+
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
