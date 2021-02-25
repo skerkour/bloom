@@ -218,6 +218,7 @@ export default VueApp.extend({
     overflow-y: auto;
     width: 72px !important;
     height: 100vh;
+    position: fixed !important;
   }
 }
 

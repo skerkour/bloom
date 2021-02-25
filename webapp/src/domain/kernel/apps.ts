@@ -6,14 +6,14 @@ export const apps = [
     url: '/inbox',
   },
   {
+    name: 'Newsletter',
+    icon: '/assets/imgs/icons/newsletter.svg',
+    url: '/newsletter',
+  },
+  {
     name: 'Calendar',
     icon: '/assets/imgs/icons/calendar.svg',
     url: '/calendar',
-  },
-  {
-    name: 'Files',
-    icon: '/assets/imgs/icons/files.svg',
-    url: '/files',
   },
   {
     name: 'Analytics',
@@ -21,9 +21,9 @@ export const apps = [
     url: '/analytics',
   },
   {
-    name: 'Newsletter',
-    icon: '/assets/imgs/icons/newsletter.svg',
-    url: '/newsletter',
+    name: 'Files',
+    icon: '/assets/imgs/icons/files.svg',
+    url: '/files',
   },
   {
     name: 'DevTools',
