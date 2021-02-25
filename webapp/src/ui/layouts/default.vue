@@ -3,8 +3,8 @@
       <b-left-bar />
 
     <v-navigation-drawer app clipped v-model="drawer"
-    :mobile-breakpoint="this.$vuetify.breakpoint.thresholds.sm"
-    class="b-navigation-drawer">
+      :mobile-breakpoint="this.$vuetify.breakpoint.thresholds.sm"
+      class="b-navigation-drawer">
       <b-group-drawer v-if="groupDrawer" />
       <b-user-preferences-drawer v-if="userPreferencesDrawer" />
       <b-tools-drawer v-if="toolsDrawer" />

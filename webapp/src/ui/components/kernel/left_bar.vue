@@ -9,7 +9,7 @@
       class="b-left-bar overflow-y-auto"
     >
 
-      <v-list-item>
+      <!-- <v-list-item>
         <v-list-item-avatar
           class="bloom-pointer"
         >
@@ -66,7 +66,7 @@
             </v-card>
           </v-menu>
         </v-list-item-avatar>
-      </v-list-item>
+      </v-list-item> -->
 
       <v-list-item>
         <v-list-item-avatar
