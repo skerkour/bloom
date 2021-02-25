@@ -177,11 +177,6 @@ export default VueApp.extend({
       this.$store.commit(Mutation.SET_CURRENT_NAMESPACE, namespace);
       this.$router.push({ path: '/' });
     },
-    goToNamespacePreferences(index: number, namespace: Namespace) {
-      const route = index === 0 ? '/preferences' : `/groups/${namespace.path}/preferences`;
-      this.$router.push({ path: route });
-      this.namespaceMenu = false;
-    },
     goToCurrentNamespacePreferences() {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const namespace = this.$store.state.currentNamespace!;
