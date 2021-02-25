@@ -157,22 +157,22 @@ export default VueApp.extend({
       return this.$store.state.currentNamespace!.avatar_url;
     },
     groupDrawer(): boolean {
-      return this.$route.path.startsWith('/groups') && this.$route.path !== '/groups/new';
+      return this.showGroupDrawer();
     },
     userPreferencesDrawer(): boolean {
-      return this.$route.path.startsWith('/preferences');
+      return this.showUserPreferencesDrawer();
     },
     toolsDrawer(): boolean {
-      return this.$route.path.startsWith('/tools');
+      return this.showToolsDrawer();
     },
     adminDrawer(): boolean {
-      return this.$route.path.startsWith('/admin');
+      return this.showAdminDrawer();
     },
     inboxDrawer(): boolean {
-      return this.$route.path.startsWith('/inbox');
+      return this.showInboxDrawer();
     },
     filesDrawer(): boolean {
-      return this.$route.path.startsWith('/files');
+      return this.showFilesDrawer();
     },
     showFooter(): boolean {
       return this.$route.meta.auth === false && this.$route.path !== '/';
@@ -210,6 +210,19 @@ export default VueApp.extend({
       namespaceMenu: false,
     };
   },
+  watch: {
+    $route(to) {
+      if (!this.drawer && this.$vuetify.breakpoint.mdAndUp) {
+        const path = to.path as string;
+        if (this.showGroupDrawer(path)
+          || this.showUserPreferencesDrawer(path)
+          || this.showToolsDrawer(path) || this.showAdminDrawer(path)
+          || this.showInboxDrawer(path) || this.showFilesDrawer(path)) {
+          this.drawer = true;
+        }
+      }
+    },
+  },
   methods: {
     setCurrentNamespace(namespace: Namespace) {
       this.$store.commit(Mutation.SET_CURRENT_NAMESPACE, namespace);
@@ -217,6 +230,42 @@ export default VueApp.extend({
     },
     toggleDrawer() {
       this.$store.commit(Mutation.SET_DRAWER, !this.$store.state.drawer);
+    },
+    showGroupDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/groups') && path !== '/groups/new';
+    },
+    showUserPreferencesDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/preferences');
+    },
+    showToolsDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/tools');
+    },
+    showAdminDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/admin');
+    },
+    showInboxDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/inbox');
+    },
+    showFilesDrawer(path?: string): boolean {
+      if (!path) {
+        path = this.$route.path;
+      }
+      return path.startsWith('/files');
     },
   },
 });
