@@ -26,7 +26,7 @@ export const apps = [
     url: '/newsletter',
   },
   {
-    name: 'Tools',
+    name: 'DevTools',
     icon: '/assets/imgs/icons/tools.svg',
     url: '/tools',
   },
