@@ -7,7 +7,10 @@ on: [workflow_dispatch]
 jobs:
   deploy:
     name: Deploy job
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    # temporary fix: https://github.com/aws/aws-cli/issues/5262
+    runs-on: ubuntu-18.04
+
     steps:
       - name: Login to container registries
         env:
