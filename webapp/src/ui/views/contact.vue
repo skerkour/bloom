@@ -12,23 +12,12 @@
           You can contact the Bloom team using one of the following way:
           <ul>
             <li>
-              <span>Using the chatbox at the bottom right of this website</span>
-            </li>
-            <li>
               <span>Using email:</span>&nbsp;
               <a href="mailto:hello@bloom.sh">hello@bloom.sh</a>
             </li>
             <li>
-              <span>By saying <i>Hi</i> on Twitter:</span>&nbsp;
-              <a href="https://twitter.com/sylvain_kerkour" target="_blank" rel="noopener">@sylvain_kerkour</a>
-            </li>
-            <li>
               <span>Opening an issue on</span>&nbsp;
               <a href="https://github.com/skerkour/bloom/issues" target="_blank" rel="noopener">GitHub</a>
-            </li>
-            <li>
-              <span>On the fediverse:</span>&nbsp;
-              <a href="https://mastodon.social/@42bloom" target="_blank" rel="noopener">@42bloom@mastodon.social</a>
             </li>
           </ul>
         </p>

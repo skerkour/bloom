@@ -43,6 +43,15 @@
         Register for free
       </v-btn>
 
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon to="/contact" v-bind="attrs" v-on="on">
+            <v-icon>mdi-help-circle-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Help</span>
+      </v-tooltip>
+
       <v-menu left bottom v-if="showAppBarAvatar" v-model="namespaceMenu">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
