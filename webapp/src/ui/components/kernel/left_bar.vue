@@ -7,6 +7,7 @@
       fill-height
       color="#24292e"
       class="b-left-bar overflow-y-auto"
+      v-if="authenticated"
     >
 
       <v-list-item>
