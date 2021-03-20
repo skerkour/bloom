@@ -43,7 +43,9 @@ jobs:
         run: heroku container:release -a ${{ secrets.HEROKU_APP_PRODUCTION }} web release
 
       - name: Purge CDN
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CDN_ID }} --paths "/*"
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+            -H "X-Auth-Email: ${{ secrets.CF_EMAIL }}" \
+            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
