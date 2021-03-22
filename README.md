@@ -9,7 +9,7 @@
 
 
 Do you no longer trust tech monopolies with your data?<br/>
-Are you tired of your privacy being invaded by advertisers? <br/>
+Are you done with your privacy being invaded by advertisers? <br/>
 Are you tired of being abused by Big Companies?
 
 **We are too. So, we built Bloom.**
