@@ -8,11 +8,11 @@
 </p>
 
 
-You no longer trust tech monopolies with your data?<br/>
-You are done with your privacy invaded by advertisers? <br/>
-You are tired of being abused by Big Companies?
+Do you no longer trust tech monopolies with your data?<br/>
+Are you tired of your privacy being invaded by advertisers? <br/>
+Are you tired of being abused by Big Companies?
 
-**We too, so we built Bloom.**
+**We are too. So, we built Bloom.**
 
 Bloom is an open source and privacy-focused productivity suite: Inbox, Calendar, Files, Contacts &
 much more. **It's literally the easiest way to de-Google your life and business**.
@@ -22,19 +22,13 @@ much more. **It's literally the easiest way to de-Google your life and business*
 
 Why? How? What? 👉 Read the launch post: https://kerkour.com/blog/bloom-a-free-and-open-source-google
 
-
-
 ## Documentation
 
 See [docs/README.md](docs/README.md)
 
-
-
 ## Roadmap
 
 See the [Projects tab](https://github.com/skerkour/bloom/projects)
-
-
 
 ## Community
 
@@ -46,11 +40,10 @@ All the project's updates and news will be published on the official Blog / News
 
 ## Sponsorship
 
-Do you find the project awesome and want to contribute financially? Feel free to create an account
+Do you find the project to be awesome and thus want to contribute financially? Feel free to create an account
 on https://bloom.sh and subscribe to a plan.
 
 Here is a blog post with additional details about my plan to make Bloom sustainable: https://kerkour.com/blog/the-unusual-way-im-funding-my-open-source-work
-
 
 ## Security
 
