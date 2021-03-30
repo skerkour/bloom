@@ -23,7 +23,8 @@ codegen-units = 1
 kernel = { path = "../kernel" }
 http_server = { path = "../http_server" }
 worker = { path = "../worker" }
-stdx = { path = "../stdx" }
+stdx = { git = "https://github.com/skerkour/stdx", rev = "b5adb65059491d3f4bfdc8c485688ee9df6754a2" }
+
 scheduler = { path = "../scheduler" }
 files = { path = "../files" }
 analytics = { path = "../analytics" }
@@ -41,4 +42,5 @@ version = "0.3"
 
 
 [build-dependencies]
-stdx = { path = "../stdx" }
+stdx = { git = "https://github.com/skerkour/stdx", rev = "b5adb65059491d3f4bfdc8c485688ee9df6754a2" }
+

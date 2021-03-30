@@ -3458,6 +3458,7 @@ checksum = "213701ba3370744dcd1a12960caa4843b3d68b4d1c0a5d575e0d65b2ee9d16c0"
 [[package]]
 name = "stdx"
 version = "0.1.0"
+source = "git+https://github.com/skerkour/stdx?rev=b5adb65059491d3f4bfdc8c485688ee9df6754a2#b5adb65059491d3f4bfdc8c485688ee9df6754a2"
 dependencies = [
  "ammonia",
  "askama_escape",

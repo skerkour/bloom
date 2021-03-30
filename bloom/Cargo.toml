@@ -6,7 +6,6 @@ members = [
   "http_server",
   "scheduler",
   "worker",
-  "stdx",
 
   # apps
   "analytics",

@@ -1,6 +1,6 @@
 [package]
 name = "stdx"
-description = "The missing pieces of Rust standard library"
+description = "The missing pieces of Rust's standard library"
 version = "0.1.0"
 authors = ["skerkour <sylvain@kerkour.fr>"]
 edition = "2018"
