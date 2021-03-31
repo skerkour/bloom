@@ -1,15 +1,14 @@
 mod try_from;
 
+use core::fmt;
+use core::hash::{Hash, Hasher};
+use core::iter::FusedIterator;
+#[cfg(feature = "std")]
+use core::mem;
+
 pub use self::try_from::{TryFrom, TryFromIntError, TryInto};
 pub use crate::array::TryFromSliceError;
 use crate::traits::{Integer, Sealed};
-#[cfg(feature = "std")]
-use core::mem;
-use core::{
-    fmt,
-    hash::{Hash, Hasher},
-    iter::FusedIterator,
-};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Infallible {}

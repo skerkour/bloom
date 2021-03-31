@@ -1,13 +1,12 @@
-use crate::traits::{Float, Sealed};
-use core::{
-    alloc::{Layout, LayoutErr},
-    cmp,
-    mem::{self, transmute},
-};
+use core::alloc::{Layout, LayoutErr};
+use core::cmp;
+use core::mem::{self, transmute};
 #[cfg(feature = "std")]
 use std::ffi::OsString;
 #[cfg(feature = "std")]
 use std::path::PathBuf;
+
+use crate::traits::{Float, Sealed};
 
 #[cfg(feature = "std")]
 pub trait PathBuf_v1_44: Sealed<PathBuf> {
@@ -108,9 +107,6 @@ fn repeat(zelf: &Layout, n: usize) -> Result<(Layout, usize), LayoutErr> {
 
 #[inline(always)]
 fn layout_err() -> LayoutErr {
-    // We can safely transmute this, as zero-sized types have no actual memory
-    // representation. If `LayoutErr` ever has the addition of a field, this
-    // will stop compiling (rather than creating undefined behavior).
     unsafe { transmute(()) }
 }
 

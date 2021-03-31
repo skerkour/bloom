@@ -37,9 +37,9 @@ impl ColorMap {
     }
 
     /// Get one entry from the color map
-    pub(crate) fn get(&self, index: usize) -> &[u8] {
+    pub(crate) fn get(&self, index: usize) -> Option<&[u8]> {
         let entry = self.start_offset + self.entry_size * index;
-        &self.bytes[entry..entry + self.entry_size]
+        self.bytes.get(entry..entry + self.entry_size)
     }
 }
 
@@ -54,6 +54,7 @@ pub struct TgaDecoder<R> {
 
     image_type: ImageType,
     color_type: ColorType,
+    original_color_type: Option<ExtendedColorType>,
 
     header: Header,
     color_map: Option<ColorMap>,
@@ -76,6 +77,7 @@ impl<R: Read + Seek> TgaDecoder<R> {
 
             image_type: ImageType::Unknown,
             color_type: ColorType::L8,
+            original_color_type: None,
 
             header: Header::default(),
             color_map: None,
@@ -153,6 +155,11 @@ impl<R: Read + Seek> TgaDecoder<R> {
             (0, 24, true) => self.color_type = ColorType::Rgb8,
             (8, 8, false) => self.color_type = ColorType::La8,
             (0, 8, false) => self.color_type = ColorType::L8,
+            (8, 0, false) => { 
+                // alpha-only image is treated as L8
+                self.color_type = ColorType::L8;
+                self.original_color_type = Some(ExtendedColorType::A8);
+            },
             _ => {
                 return Err(ImageError::Unsupported(
                     UnsupportedError::from_format_and_kind(
@@ -179,6 +186,8 @@ impl<R: Read + Seek> TgaDecoder<R> {
 
     fn read_color_map(&mut self) -> ImageResult<()> {
         if self.header.map_type == 1 {
+            // FIXME: we could reverse the map entries, which avoids having to reverse all pixels
+            // in the final output individually.
             self.color_map = Some(ColorMap::from_reader(
                 &mut self.r,
                 self.header.map_origin,
@@ -190,7 +199,7 @@ impl<R: Read + Seek> TgaDecoder<R> {
     }
 
     /// Expands indices into its mapped color
-    fn expand_color_map(&self, pixel_data: &[u8]) -> Vec<u8> {
+    fn expand_color_map(&self, pixel_data: &[u8]) -> io::Result<Vec<u8>> {
         #[inline]
         fn bytes_to_index(bytes: &[u8]) -> usize {
             let mut result = 0usize;
@@ -203,14 +212,24 @@ impl<R: Read + Seek> TgaDecoder<R> {
         let bytes_per_entry = (self.header.map_entry_size as usize + 7) / 8;
         let mut result = Vec::with_capacity(self.width * self.height * bytes_per_entry);
 
-        let color_map = self.color_map.as_ref().unwrap();
+        if self.bytes_per_pixel == 0 {
+            return Err(io::ErrorKind::Other.into());
+        }
+
+        let color_map = self.color_map
+            .as_ref()
+            .ok_or_else(|| io::Error::from(io::ErrorKind::Other))?;
 
         for chunk in pixel_data.chunks(self.bytes_per_pixel) {
             let index = bytes_to_index(chunk);
-            result.extend(color_map.get(index).iter().cloned());
+            if let Some(color) = color_map.get(index) {
+                result.extend(color.iter().cloned());
+            } else {
+                return Err(io::ErrorKind::Other.into());
+            }
         }
 
-        result
+        Ok(result)
     }
 
     /// Reads a run length encoded data for given number of bytes
@@ -242,6 +261,13 @@ impl<R: Read + Seek> TgaDecoder<R> {
                     .take(num_raw_bytes as u64)
                     .read_to_end(&mut pixel_data)?;
             }
+        }
+
+        if pixel_data.len() > num_bytes {
+            // FIXME: the last packet contained more data than we asked for!
+            // This is at least a warning. We truncate the data since some methods rely on the
+            // length to be accurate in the success case.
+            pixel_data.truncate(num_bytes);
         }
 
         Ok(pixel_data)
@@ -284,11 +310,11 @@ impl<R: Read + Seek> TgaDecoder<R> {
     ///
     /// TGA files are stored in the BGRA encoding. This function swaps
     /// the blue and red bytes in the `pixels` array.
-    fn reverse_encoding(&mut self, pixels: &mut [u8]) {
+    fn reverse_encoding_in_output(&mut self, pixels: &mut [u8]) {
         // We only need to reverse the encoding of color images
         match self.color_type {
             ColorType::Rgb8 | ColorType::Rgba8 => {
-                for chunk in pixels.chunks_mut(self.bytes_per_pixel) {
+                for chunk in pixels.chunks_mut(self.color_type.bytes_per_pixel().into()) {
                     chunk.swap(0, 2);
                 }
             }
@@ -304,6 +330,10 @@ impl<R: Read + Seek> TgaDecoder<R> {
     /// This function checks the bit, and if it's 0, flips the image vertically.
     fn flip_vertically(&mut self, pixels: &mut [u8]) {
         if self.is_flipped_vertically() {
+            if self.height == 0 {
+                return;
+            }
+
             let num_bytes = pixels.len();
 
             let width_bytes = num_bytes / self.height;
@@ -352,9 +382,9 @@ impl<R: Read + Seek> TgaDecoder<R> {
 
         // expand the indices using the color map if necessary
         if self.image_type.is_color_mapped() {
-            pixel_data = self.expand_color_map(&pixel_data)
+            pixel_data = self.expand_color_map(&pixel_data)?;
         }
-        self.reverse_encoding(&mut pixel_data);
+        self.reverse_encoding_in_output(&mut pixel_data);
 
         // copy to the output buffer
         buf[..pixel_data.len()].copy_from_slice(&pixel_data);
@@ -376,6 +406,10 @@ impl<'a, R: 'a + Read + Seek> ImageDecoder<'a> for TgaDecoder<R> {
         self.color_type
     }
 
+    fn original_color_type(&self) -> ExtendedColorType {
+        self.original_color_type.unwrap_or_else(|| self.color_type().into())
+    }
+
     fn scanline_bytes(&self) -> u64 {
         // This cannot overflow because TGA has a maximum width of u16::MAX_VALUE and
         // `bytes_per_pixel` is a u8.
@@ -392,24 +426,38 @@ impl<'a, R: 'a + Read + Seek> ImageDecoder<'a> for TgaDecoder<R> {
     fn read_image(mut self, buf: &mut [u8]) -> ImageResult<()> {
         assert_eq!(u64::try_from(buf.len()), Ok(self.total_bytes()));
 
+        // In indexed images, we might need more bytes than pixels to read them. That's nonsensical
+        // to encode but we'll not want to crash.
+        let mut fallback_buf = vec![];
         // read the pixels from the data region
-        let len = if self.image_type.is_encoded() {
+        let rawbuf = if self.image_type.is_encoded() {
             let pixel_data = self.read_all_encoded_data()?;
-            buf[0..pixel_data.len()].copy_from_slice(&pixel_data);
-            pixel_data.len()
+            if self.bytes_per_pixel <= usize::from(self.color_type.bytes_per_pixel()) {
+                buf[..pixel_data.len()].copy_from_slice(&pixel_data);
+                &buf[..pixel_data.len()]
+            } else {
+                fallback_buf = pixel_data;
+                &fallback_buf[..]
+            }
         } else {
             let num_raw_bytes = self.width * self.height * self.bytes_per_pixel;
-            self.r.by_ref().read_exact(&mut buf[0..num_raw_bytes])?;
-            num_raw_bytes
+            if self.bytes_per_pixel <= usize::from(self.color_type.bytes_per_pixel()) {
+                self.r.by_ref().read_exact(&mut buf[..num_raw_bytes])?;
+                &buf[..num_raw_bytes]
+            } else {
+                fallback_buf.resize(num_raw_bytes, 0u8);
+                self.r.by_ref().read_exact(&mut fallback_buf[..num_raw_bytes])?;
+                &fallback_buf[..num_raw_bytes]
+            }
         };
 
         // expand the indices using the color map if necessary
         if self.image_type.is_color_mapped() {
-            let pixel_data = self.expand_color_map(&buf[0..len]);
+            let pixel_data = self.expand_color_map(rawbuf)?;
             buf.copy_from_slice(&pixel_data);
         }
 
-        self.reverse_encoding(buf);
+        self.reverse_encoding_in_output(buf);
 
         self.flip_vertically(buf);
 

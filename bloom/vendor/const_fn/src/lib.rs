@@ -63,8 +63,9 @@ mod error;
 mod iter;
 mod to_tokens;
 
-use proc_macro::{Delimiter, TokenStream, TokenTree};
 use std::str::FromStr;
+
+use proc_macro::{Delimiter, TokenStream, TokenTree};
 
 use crate::{
     ast::{Func, LitStr},

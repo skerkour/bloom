@@ -14,9 +14,10 @@
 # - DerivedNormalizationProps.txt
 # - NormalizationTest.txt
 # - UnicodeData.txt
+# - StandardizedVariants.txt
 #
 # Since this should not require frequent updates, we just store this
-# out-of-line and check the unicode.rs file into git.
+# out-of-line and check the tables.rs and normalization_tests.rs files into git.
 import collections
 import urllib.request
 
@@ -57,6 +58,11 @@ expanded_categories = {
     'Cc': ['C'], 'Cf': ['C'], 'Cs': ['C'], 'Co': ['C'], 'Cn': ['C'],
 }
 
+# Constants from Unicode 9.0.0 Section 3.12 Conjoining Jamo Behavior
+# http://www.unicode.org/versions/Unicode9.0.0/ch03.pdf#M9.32468.Heading.310.Combining.Jamo.Behavior
+S_BASE, L_COUNT, V_COUNT, T_COUNT = 0xAC00, 19, 21, 28
+S_COUNT = L_COUNT * V_COUNT * T_COUNT
+
 class UnicodeData(object):
     def __init__(self):
         self._load_unicode_data()
@@ -65,6 +71,9 @@ class UnicodeData(object):
 
         self.canon_comp = self._compute_canonical_comp()
         self.canon_fully_decomp, self.compat_fully_decomp = self._compute_fully_decomposed()
+
+        self.cjk_compat_variants_fully_decomp = {}
+        self._load_cjk_compat_ideograph_variants()
 
         def stats(name, table):
             count = sum(len(v) for v in table.values())
@@ -75,6 +84,7 @@ class UnicodeData(object):
         stats("Compatible decomp", self.compat_decomp)
         stats("Canonical fully decomp", self.canon_fully_decomp)
         stats("Compatible fully decomp", self.compat_fully_decomp)
+        stats("CJK Compat Variants fully decomp", self.cjk_compat_variants_fully_decomp)
 
         self.ss_leading, self.ss_trailing = self._compute_stream_safe_tables()
 
@@ -83,6 +93,7 @@ class UnicodeData(object):
         return resp.read().decode('utf-8')
 
     def _load_unicode_data(self):
+        self.name_to_char_int = {}
         self.combining_classes = {}
         self.compat_decomp = {}
         self.canon_decomp = {}
@@ -95,6 +106,9 @@ class UnicodeData(object):
             char, category, cc, decomp = pieces[0], pieces[2], pieces[3], pieces[5]
             char_int = int(char, 16)
 
+            name = pieces[1].strip()
+            self.name_to_char_int[name] = char_int
+
             if cc != '0':
                 self.combining_classes[char_int] = cc
 
@@ -105,6 +119,41 @@ class UnicodeData(object):
 
             if category == 'M' or 'M' in expanded_categories.get(category, []):
                 self.general_category_mark.append(char_int)
+
+    def _load_cjk_compat_ideograph_variants(self):
+        for line in self._fetch("StandardizedVariants.txt").splitlines():
+            strip_comments = line.split('#', 1)[0].strip()
+            if not strip_comments:
+                continue
+
+            variation_sequence, description, differences = strip_comments.split(';')
+            description = description.strip()
+
+            # Don't use variations that only apply in particular shaping environments.
+            if differences:
+                continue
+
+            # Look for entries where the description field is a codepoint name.
+            if description not in self.name_to_char_int:
+                continue
+
+            # Only consider the CJK Compatibility Ideographs.
+            if not description.startswith('CJK COMPATIBILITY IDEOGRAPH-'):
+                continue
+
+            char_int = self.name_to_char_int[description]
+
+            assert not char_int in self.combining_classes, "Unexpected: CJK compat variant with a combining class"
+            assert not char_int in self.compat_decomp, "Unexpected: CJK compat variant and compatibility decomposition"
+            assert len(self.canon_decomp[char_int]) == 1, "Unexpected: CJK compat variant and non-singleton canonical decomposition"
+            # If we ever need to handle Hangul here, we'll need to handle it separately.
+            assert not (S_BASE <= char_int < S_BASE + S_COUNT)
+
+            cjk_compat_variant_parts = [int(c, 16) for c in variation_sequence.split()]
+            for c in cjk_compat_variant_parts:
+                assert not c in self.canon_decomp, "Unexpected: CJK compat variant is unnormalized (canon)"
+                assert not c in self.compat_decomp, "Unexpected: CJK compat variant is unnormalized (compat)"
+            self.cjk_compat_variants_fully_decomp[char_int] = cjk_compat_variant_parts
 
     def _load_norm_props(self):
         props = collections.defaultdict(list)
@@ -178,11 +227,6 @@ class UnicodeData(object):
         The upshot is that decomposition code is very simple and easy to inline
         at mild code size cost.
         """
-        # Constants from Unicode 9.0.0 Section 3.12 Conjoining Jamo Behavior
-        # http://www.unicode.org/versions/Unicode9.0.0/ch03.pdf#M9.32468.Heading.310.Combining.Jamo.Behavior
-        S_BASE, L_COUNT, V_COUNT, T_COUNT = 0xAC00, 19, 21, 28
-        S_COUNT = L_COUNT * V_COUNT * T_COUNT
-
         def _decompose(char_int, compatible):
             # 7-bit ASCII never decomposes
             if char_int <= 0x7f:
@@ -320,8 +364,8 @@ def gen_composition_table(canon_comp, out):
     out.write("    }\n")
     out.write("}\n")
 
-def gen_decomposition_tables(canon_decomp, compat_decomp, out):
-    tables = [(canon_decomp, 'canonical'), (compat_decomp, 'compatibility')]
+def gen_decomposition_tables(canon_decomp, compat_decomp, cjk_compat_variants_decomp, out):
+    tables = [(canon_decomp, 'canonical'), (compat_decomp, 'compatibility'), (cjk_compat_variants_decomp, 'cjk_compat_variants')]
     for table, name in tables:
         gen_mph_data(name + '_decomposed', table, "(u32, &'static [char])",
             lambda k: "(0x{:x}, &[{}])".format(k,
@@ -491,7 +535,7 @@ if __name__ == '__main__':
         gen_composition_table(data.canon_comp, out)
         out.write("\n")
 
-        gen_decomposition_tables(data.canon_fully_decomp, data.compat_fully_decomp, out)
+        gen_decomposition_tables(data.canon_fully_decomp, data.compat_fully_decomp, data.cjk_compat_variants_fully_decomp, out)
 
         gen_combining_mark(data.general_category_mark, out)
         out.write("\n")

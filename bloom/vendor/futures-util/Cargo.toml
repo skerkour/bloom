@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "futures-util"
-version = "0.3.12"
+version = "0.3.13"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 description = "Common utilities and extension traits for the futures-rs library.\n"
 homepage = "https://rust-lang.github.io/futures-rs"
@@ -24,33 +24,33 @@ repository = "https://github.com/rust-lang/futures-rs"
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 [dependencies.futures-channel]
-version = "0.3.12"
+version = "0.3.13"
 features = ["std"]
 optional = true
 default-features = false
 
 [dependencies.futures-core]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures-io]
-version = "0.3.12"
+version = "0.3.13"
 features = ["std"]
 optional = true
 default-features = false
 
 [dependencies.futures-macro]
-version = "=0.3.12"
+version = "=0.3.13"
 optional = true
 default-features = false
 
 [dependencies.futures-sink]
-version = "0.3.12"
+version = "0.3.13"
 optional = true
 default-features = false
 
 [dependencies.futures-task]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures_01]

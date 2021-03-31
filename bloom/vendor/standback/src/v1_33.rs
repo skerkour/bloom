@@ -1,12 +1,13 @@
 mod pin;
 
-pub use self::pin::Pin;
-use crate::traits::Sealed;
 use core::time::Duration;
 #[cfg(feature = "std")]
 use std::collections::VecDeque;
 #[cfg(all(feature = "std", target_family = "unix"))]
 use std::{io, os::unix};
+
+pub use self::pin::Pin;
+use crate::traits::Sealed;
 
 #[inline]
 pub const fn identity<T>(x: T) -> T {

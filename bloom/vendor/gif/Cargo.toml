@@ -13,9 +13,9 @@
 [package]
 edition = "2018"
 name = "gif"
-version = "0.11.1"
+version = "0.11.2"
 authors = ["nwin <nwin@users.noreply.github.com>"]
-exclude = ["tests/*", "benches/*.gif", "gif-afl/*"]
+exclude = ["tests/crashtest/*", "tests/samples/*", "benches/*.gif", "gif-afl/*"]
 description = "GIF de- and encoder"
 homepage = "https://github.com/image-rs/image-gif"
 documentation = "https://docs.rs/gif"
@@ -23,14 +23,31 @@ readme = "README.md"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/image-rs/image-gif"
 
+[[test]]
+name = "check_testimages"
+required-features = ["std"]
+
+[[test]]
+name = "crashtest"
+required-features = ["std"]
+
+[[test]]
+name = "decode"
+required-features = ["std"]
+
+[[test]]
+name = "roundtrip"
+required-features = ["std"]
+
 [[bench]]
 name = "decode"
 harness = false
+required-features = ["std"]
 [dependencies.color_quant]
 version = "1.0"
 
 [dependencies.weezl]
-version = "0.1.0"
+version = "0.1.4"
 [dev-dependencies.criterion]
 version = "0.3.1"
 

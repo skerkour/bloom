@@ -28,6 +28,7 @@ enum PatternElement {
 }
 
 #[derive(Clone, Debug)]
+#[allow(clippy::large_enum_variant)]
 enum PatternType {
     Static(String),
     Prefix(String),
@@ -154,8 +155,8 @@ impl ResourceDef {
         &self.pattern
     }
 
-    #[inline]
     /// Check if path matches this pattern.
+    #[inline]
     pub fn is_match(&self, path: &str) -> bool {
         match self.tp {
             PatternType::Static(ref s) => s == path,

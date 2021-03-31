@@ -1,5 +1,6 @@
-use crate::traits::Sealed;
 use core::ops::{DerefMut, Range};
+
+use crate::traits::Sealed;
 
 pub trait Range_v1_47<Idx>: Sealed<Range<Idx>> {
     fn is_empty(&self) -> bool;

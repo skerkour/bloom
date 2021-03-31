@@ -6,7 +6,7 @@
 
 use crate::collector::{Collector, LocalHandle};
 use crate::guard::Guard;
-use lazy_static::lazy_static;
+use crate::primitive::{lazy_static, thread_local};
 
 lazy_static! {
     /// The global data for the default garbage collector.
@@ -45,7 +45,7 @@ where
         .unwrap_or_else(|_| f(&COLLECTOR.register()))
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(crossbeam_loom)))]
 mod tests {
     use crossbeam_utils::thread;
 

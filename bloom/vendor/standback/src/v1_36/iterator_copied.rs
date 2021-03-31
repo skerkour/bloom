@@ -1,6 +1,7 @@
+use core::iter::FusedIterator;
+
 #[cfg(__standback_before_1_35)]
 use crate::prelude::*;
-use core::iter::FusedIterator;
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 #[derive(Clone, Debug)]

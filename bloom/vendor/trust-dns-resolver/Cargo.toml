@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "trust-dns-resolver"
-version = "0.19.6"
+version = "0.19.7"
 authors = ["Benjamin Fry <benjaminfry@me.com>"]
 description = "Trust-DNS is a safe and secure DNS library. This Resolver library  uses the Client library to perform all DNS queries. The Resolver is intended to be a high-level library for any DNS record resolution see Resolver and AsyncResolver for supported resolution types. The Client can be used for other queries.\n"
 homepage = "http://www.trust-dns.org/index.html"
@@ -27,9 +27,6 @@ repository = "https://github.com/bluejekyll/trust-dns"
 [lib]
 name = "trust_dns_resolver"
 path = "src/lib.rs"
-[dependencies.backtrace]
-version = "0.3.44"
-
 [dependencies.cfg-if]
 version = "0.1.9"
 
@@ -84,23 +81,23 @@ version = "0.3.0"
 optional = true
 
 [dependencies.trust-dns-https]
-version = "0.19.6"
+version = "0.19.7"
 optional = true
 
 [dependencies.trust-dns-native-tls]
-version = "0.19.6"
+version = "0.19.7"
 optional = true
 
 [dependencies.trust-dns-openssl]
-version = "0.19.6"
+version = "0.19.7"
 optional = true
 
 [dependencies.trust-dns-proto]
-version = "0.19.6"
+version = "0.19.7"
 default-features = false
 
 [dependencies.trust-dns-rustls]
-version = "0.19.6"
+version = "0.19.7"
 optional = true
 
 [dependencies.webpki-roots]
@@ -115,7 +112,8 @@ features = ["std", "executor"]
 default-features = false
 
 [features]
-default = ["system-config", "tokio-runtime"]
+backtrace = ["trust-dns-proto/backtrace"]
+default = ["backtrace", "system-config", "tokio-runtime"]
 dns-over-https = []
 dns-over-https-rustls = ["trust-dns-https", "dns-over-rustls", "dns-over-https"]
 dns-over-native-tls = ["dns-over-tls", "tokio-tls", "trust-dns-native-tls"]

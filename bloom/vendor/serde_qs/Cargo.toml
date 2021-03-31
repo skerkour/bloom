@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "serde_qs"
-version = "0.8.2"
+version = "0.8.3"
 authors = ["Sam Scott <sam@osohq.com>"]
 description = "Querystrings for Serde"
 documentation = "https://docs.rs/serde_qs"
@@ -23,10 +23,11 @@ categories = ["encoding", "web-programming"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/samscott89/serde_qs"
 [package.metadata.docs.rs]
-features = ["actix"]
+features = ["actix", "warp"]
 [dependencies.actix-web]
-version = "3.3"
+version = "3.3.2"
 optional = true
+package = "actix-web"
 
 [dependencies.actix-web2]
 version = "2.0.0"
@@ -34,25 +35,35 @@ optional = true
 package = "actix-web"
 
 [dependencies.futures]
-version = "0.3.8"
+version = "0.3.13"
 optional = true
 
 [dependencies.percent-encoding]
 version = "2.1.0"
 
 [dependencies.serde]
-version = "1.0.118"
+version = "1.0.124"
 
 [dependencies.thiserror]
-version = "1.0.22"
+version = "1.0.24"
+
+[dependencies.tracing]
+version = "0.1.25"
+optional = true
+
+[dependencies.warp-framework]
+version = "0.3.0"
+optional = true
+default-features = false
+package = "warp"
 [dev-dependencies.csv]
-version = "1.1.5"
+version = "1.1.6"
 
 [dev-dependencies.rand]
-version = "0.7.3"
+version = "0.8.3"
 
 [dev-dependencies.serde_derive]
-version = "1.0.118"
+version = "1.0.124"
 
 [dev-dependencies.serde_urlencoded]
 version = "0.7.0"
@@ -61,5 +72,4 @@ version = "0.7.0"
 actix = ["actix-web", "futures"]
 actix2 = ["actix-web2", "futures"]
 default = []
-[badges.travis-ci]
-repository = "samscott89/serde_qs"
+warp = ["futures", "tracing", "warp-framework"]

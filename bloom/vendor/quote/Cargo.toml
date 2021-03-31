@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "quote"
-version = "1.0.8"
+version = "1.0.9"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 include = ["Cargo.toml", "src/**/*.rs", "tests/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
 description = "Quasi-quoting macro quote!(...)"

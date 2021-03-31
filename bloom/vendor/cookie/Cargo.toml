@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "cookie"
-version = "0.14.3"
+version = "0.14.4"
 authors = ["Sergio Benitez <sb@sergio.bz>", "Alex Crichton <alex@alexcrichton.com>"]
 build = "build.rs"
 description = "HTTP cookie parsing and cookie jar management. Supports signed and private\n(encrypted, authenticated) jars.\n"
@@ -28,7 +28,7 @@ version = "0.8.0"
 optional = true
 
 [dependencies.base64]
-version = "0.12.1"
+version = "0.13.0"
 optional = true
 
 [dependencies.hkdf]
@@ -44,7 +44,7 @@ version = "2.0"
 optional = true
 
 [dependencies.rand]
-version = "0.7.3"
+version = "0.8.3"
 optional = true
 
 [dependencies.sha2]

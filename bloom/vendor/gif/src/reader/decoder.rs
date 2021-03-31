@@ -192,6 +192,7 @@ pub struct StreamingDecoder {
     decode_buffer: Vec<u8>,
     skip_extensions: bool,
     check_frame_consistency: bool,
+    check_for_end_code: bool,
     version: &'static str,
     width: u16,
     height: u16,
@@ -217,6 +218,7 @@ impl StreamingDecoder {
             decode_buffer: vec![],
             skip_extensions: true,
             check_frame_consistency: options.check_frame_consistency,
+            check_for_end_code: options.check_for_end_code,
             version: "",
             width: 0,
             height: 0,
@@ -565,7 +567,6 @@ impl StreamingDecoder {
                         "invalid minimal code size"
                     ))
                 }
-                // dbg!(code_size);
                 self.lzw_reader = Some(LzwDecoder::new(BitOrder::Lsb, code_size));
                 goto!(DecodeSubBlock(b as usize), emit Decoded::Frame(self.current_frame_mut()))
             }
@@ -603,7 +604,12 @@ impl StreamingDecoder {
                     match decoded.status {
                         Ok(LzwStatus::Done) | Ok(LzwStatus::Ok) => {},
                         Ok(LzwStatus::NoProgress) => {
-                            return Err(io::Error::new(io::ErrorKind::InvalidData, "No end code in lzw stream").into());
+                            if self.check_for_end_code {
+                                return Err(io::Error::new(io::ErrorKind::InvalidData, "No end code in lzw stream").into());
+                            } else {
+                                self.current = None;
+                                return goto!(0, FrameDecoded, emit Decoded::DataEnd);
+                            }
                         },
                         Err(err) => {
                             return Err(io::Error::new(io::ErrorKind::InvalidData, &*format!("{:?}", err)).into());

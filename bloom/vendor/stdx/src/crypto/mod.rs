@@ -9,6 +9,11 @@ pub enum Error {
 pub const AEAD_KEY_SIZE: usize = 32;
 pub const KEY_SIZE_512: usize = 64;
 
+pub fn init() -> Result<(), Error> {
+    crypto42::init().map_err(|_| Error::Unknown)?;
+    Ok(())
+}
+
 pub fn hash_password(password: &str) -> Result<String, Error> {
     let hash_str = argon2id::hash_password(
         password.as_bytes(),
@@ -27,11 +32,17 @@ pub fn verify_password(password: &str, hash: &str) -> bool {
     argon2id::verify_password(&hashed, password.as_bytes())
 }
 
-pub fn aead_decrypt(key: &[u8], ciphertext: &[u8], nonce: &[u8], ad: &[u8]) -> Result<Vec<u8>, Error> {
+pub fn aead_decrypt(
+    key: &[u8],
+    ciphertext: &[u8],
+    nonce: &[u8],
+    ad: &[u8],
+) -> Result<Vec<u8>, Error> {
     let key = xchacha20poly1305_ietf::Key::from_slice(key).ok_or(Error::Unknown)?;
     let nonce = xchacha20poly1305_ietf::Nonce::from_slice(nonce).ok_or(Error::Unknown)?;
 
-    let plaintext = xchacha20poly1305_ietf::decrypt(ciphertext, Some(ad), &nonce, &key).map_err(|_| Error::Unknown)?;
+    let plaintext = xchacha20poly1305_ietf::decrypt(ciphertext, Some(ad), &nonce, &key)
+        .map_err(|_| Error::Unknown)?;
     Ok(plaintext)
 }
 

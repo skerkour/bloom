@@ -569,14 +569,18 @@ mod tests {
     use std::thread;
     use std::time::Duration;
 
-    use rand::{thread_rng, Rng};
+    use rand::{distributions::Alphanumeric, thread_rng, Rng};
 
     use super::{anonymous, NamedPipe, NamedPipeBuilder};
     use crate::iocp::CompletionPort;
     use crate::Overlapped;
 
     fn name() -> String {
-        let name = thread_rng().gen_ascii_chars().take(30).collect::<String>();
+        let name = thread_rng()
+            .sample_iter(Alphanumeric)
+            .take(30)
+            .map(char::from)
+            .collect::<String>();
         format!(r"\\.\pipe\{}", name)
     }
 

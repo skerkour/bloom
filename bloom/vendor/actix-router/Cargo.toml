@@ -13,12 +13,12 @@
 [package]
 edition = "2018"
 name = "actix-router"
-version = "0.2.6"
+version = "0.2.7"
 authors = ["Nikolay Kim <fafhrd91@gmail.com>"]
 description = "Resource path matching library"
 homepage = "https://actix.rs"
-documentation = "https://docs.rs/actix-router/"
-keywords = ["actix"]
+documentation = "https://docs.rs/actix-router"
+keywords = ["actix", "router", "routing"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/actix/actix-net.git"
 

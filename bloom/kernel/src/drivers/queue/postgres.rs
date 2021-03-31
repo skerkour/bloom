@@ -114,7 +114,7 @@ impl Queue for PostgresQueue {
     }
 
     async fn pull(&self, number_of_jobs: u32) -> Result<Vec<Job>, crate::Error> {
-        let number_of_jobs = if (number_of_jobs > 100) { 100 } else { number_of_jobs };
+        let number_of_jobs = if number_of_jobs > 100 { 100 } else { number_of_jobs };
         let now = chrono::Utc::now();
         let query = "UPDATE kernel_queue
             SET status = $1, updated_at = $2

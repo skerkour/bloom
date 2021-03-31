@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "derive_more"
-version = "0.99.11"
+version = "0.99.13"
 authors = ["Jelte Fennema <github-tech@jeltef.nl>"]
 include = ["src/**/*.rs", "Cargo.toml", "LICENSE", "README.md", "CHANGELOG.md", "tests/**/*.rs"]
 autotests = true
@@ -32,7 +32,7 @@ proc-macro = true
 [[example]]
 name = "deny_missing_docs"
 path = "examples/deny_missing_docs.rs"
-required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into"]
+required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into", "is_variant"]
 
 [[test]]
 name = "add_assign"
@@ -140,19 +140,28 @@ path = "tests/try_into.rs"
 required-features = ["try_into"]
 
 [[test]]
+name = "is_variant"
+path = "tests/is_variant.rs"
+required-features = ["is_variant"]
+
+[[test]]
 name = "no_std"
 path = "tests/no_std.rs"
-required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "sum", "try_into"]
+required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "sum", "try_into", "is_variant"]
 
 [[test]]
 name = "generics"
 path = "tests/generics.rs"
-required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into"]
+required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into", "is_variant"]
 
 [[test]]
 name = "lib"
 path = "tests/lib.rs"
-required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into"]
+required-features = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "from", "from_str", "index", "index_mut", "into", "mul_assign", "mul", "not", "try_into", "is_variant"]
+[dependencies.convert_case]
+version = "0.4"
+optional = true
+
 [dependencies.proc-macro2]
 version = "1"
 
@@ -175,7 +184,7 @@ add_assign = []
 as_mut = []
 as_ref = []
 constructor = []
-default = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "error", "from", "from_str", "index", "index_mut", "into", "into_iterator", "iterator", "mul_assign", "mul", "not", "sum", "try_into"]
+default = ["add_assign", "add", "as_mut", "as_ref", "constructor", "deref", "deref_mut", "display", "error", "from", "from_str", "index", "index_mut", "into", "into_iterator", "iterator", "mul_assign", "mul", "not", "sum", "try_into", "is_variant"]
 deref = []
 deref_mut = []
 display = ["syn/extra-traits"]
@@ -187,6 +196,7 @@ index = []
 index_mut = []
 into = ["syn/extra-traits"]
 into_iterator = []
+is_variant = ["convert_case"]
 iterator = []
 mul = ["syn/extra-traits"]
 mul_assign = ["syn/extra-traits"]

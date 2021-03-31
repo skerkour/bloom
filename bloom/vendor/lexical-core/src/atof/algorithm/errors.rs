@@ -18,8 +18,8 @@ pub trait FloatErrors: Mantissa {
     fn error_is_accurate<F: Float>(count: u32, fp: &ExtendedFloat<Self>, kind: RoundingKind) -> bool;
 }
 
-/// Check if the error is accurate with a round-nearest rounding scheme.
 perftools_inline!{
+/// Check if the error is accurate with a round-nearest rounding scheme.
 fn nearest_error_is_accurate(errors: u64, fp: &ExtendedFloat<u64>, extrabits: u64)
     -> bool
 {
@@ -47,8 +47,8 @@ fn nearest_error_is_accurate(errors: u64, fp: &ExtendedFloat<u64>, extrabits: u6
     }
 }}
 
-/// Check if the error is accurate with a round-toward rounding scheme.
 perftools_inline!{
+/// Check if the error is accurate with a round-toward rounding scheme.
 #[cfg(feature = "rounding")]
 fn toward_error_is_accurate(errors: u64, fp: &ExtendedFloat<u64>, extrabits: u64)
     -> bool

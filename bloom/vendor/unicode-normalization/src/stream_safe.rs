@@ -32,25 +32,26 @@ impl<I: Iterator<Item = char>> Iterator for StreamSafe<I> {
 
     #[inline]
     fn next(&mut self) -> Option<char> {
-        if let Some(ch) = self.buffer.take() {
-            return Some(ch);
-        }
-        let next_ch = match self.iter.next() {
+        let next_ch = match self.buffer.take().or_else(|| self.iter.next()) {
             None => return None,
             Some(c) => c,
         };
         let d = classify_nonstarters(next_ch);
         if self.nonstarter_count + d.leading_nonstarters > MAX_NONSTARTERS {
+            // Since we're emitting a CGJ, the suffix of the emitted string in NFKD has no trailing
+            // nonstarters, so we can reset the counter to zero. Put `next_ch` back into the
+            // iterator (via `self.buffer`), and we'll reclassify it next iteration.
+            self.nonstarter_count = 0;
             self.buffer = Some(next_ch);
-            self.nonstarter_count = d.decomposition_len;
             return Some(COMBINING_GRAPHEME_JOINER);
         }
 
-        // No starters in the decomposition, so keep accumulating
+        // Is the character all nonstarters in NFKD? If so, increment our counter of contiguous
+        // nonstarters in NKFD.
         if d.leading_nonstarters == d.decomposition_len {
             self.nonstarter_count += d.decomposition_len;
         }
-        // Otherwise, restart the nonstarter counter.
+        // Otherwise, reset the counter to the decomposition's number of trailing nonstarters.
         else {
             self.nonstarter_count = d.trailing_nonstarters;
         }
@@ -129,6 +130,13 @@ mod tests {
         let woah_nelly = "Da\u{0300}\u{0301}\u{0302}\u{0303}\u{0304}\u{0305}\u{0306}\u{0307}\u{0308}\u{0309}\u{030a}\u{030b}\u{030c}\u{030d}\u{030e}\u{030f}\u{0310}\u{0311}\u{0312}\u{0313}\u{0314}\u{0315}\u{0316}\u{0317}\u{0318}\u{0319}\u{031a}\u{031b}\u{031c}\u{031d}\u{032e}\u{0300}\u{0301}\u{0302}\u{0303}\u{0304}\u{0305}\u{0306}\u{0307}\u{0308}\u{0309}\u{030a}\u{030b}\u{030c}\u{030d}\u{030e}\u{030f}\u{0310}\u{0311}\u{0312}\u{0313}\u{0314}\u{0315}\u{0316}\u{0317}\u{0318}\u{0319}\u{031a}\u{031b}\u{031c}\u{031d}\u{032e}ngerzone";
         let its_cool = "Da\u{0300}\u{0301}\u{0302}\u{0303}\u{0304}\u{0305}\u{0306}\u{0307}\u{0308}\u{0309}\u{030a}\u{030b}\u{030c}\u{030d}\u{030e}\u{030f}\u{0310}\u{0311}\u{0312}\u{0313}\u{0314}\u{0315}\u{0316}\u{0317}\u{0318}\u{0319}\u{031a}\u{031b}\u{031c}\u{031d}\u{034f}\u{032e}\u{0300}\u{0301}\u{0302}\u{0303}\u{0304}\u{0305}\u{0306}\u{0307}\u{0308}\u{0309}\u{030a}\u{030b}\u{030c}\u{030d}\u{030e}\u{030f}\u{0310}\u{0311}\u{0312}\u{0313}\u{0314}\u{0315}\u{0316}\u{0317}\u{0318}\u{0319}\u{031a}\u{031b}\u{031c}\u{034f}\u{031d}\u{032e}ngerzone";
         assert_eq!(stream_safe(woah_nelly), its_cool);
+    }
+
+    #[test]
+    fn test_all_nonstarters() {
+        let s = "\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}\u{0300}";
+        let expected = "\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{034F}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}\u{300}";
+        assert_eq!(stream_safe(s), expected);
     }
 
     #[test]

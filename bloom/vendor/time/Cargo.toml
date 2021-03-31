@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "time"
-version = "0.2.25"
+version = "0.2.26"
 authors = ["Jacob Pratt <the.z.cuber@gmail.com>"]
 build = "build.rs"
 include = ["src/**/*", "LICENSE-*", "README.md", "CHANGELOG.md", "build.rs"]
@@ -32,33 +32,33 @@ targets = ["x86_64-unknown-linux-gnu"]
 version = "0.4.2"
 
 [dependencies.rand]
-version = "0.7"
+version = "0.7.3"
 optional = true
 default-features = false
 
 [dependencies.serde]
-version = "1"
+version = "1.0.124"
 features = ["derive"]
 optional = true
 default-features = false
 
 [dependencies.standback]
-version = "0.2.5"
+version = "0.2.15"
 default-features = false
 
 [dependencies.time-macros]
-version = "0.1"
+version = "0.1.1"
 [dev-dependencies.rand]
-version = "0.7"
+version = "0.7.3"
 default-features = false
 
 [dev-dependencies.serde_json]
-version = "1"
+version = "1.0.64"
 
 [dev-dependencies.standback]
-version = "0.2"
+version = "0.2.15"
 [build-dependencies.version_check]
-version = "0.9"
+version = "0.9.2"
 
 [features]
 default = ["deprecated", "std"]
@@ -66,13 +66,13 @@ deprecated = []
 panicking-api = []
 std = ["libc", "winapi", "stdweb", "standback/std"]
 [target."cfg(target_arch = \"wasm32\")".dependencies.stdweb]
-version = "0.4"
+version = "0.4.20"
 optional = true
 default-features = false
 [target."cfg(unix)".dependencies.libc]
-version = "0.2"
+version = "0.2.89"
 optional = true
 [target."cfg(windows)".dependencies.winapi]
-version = "0.3"
+version = "0.3.9"
 features = ["minwinbase", "minwindef", "timezoneapi"]
 optional = true

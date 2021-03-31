@@ -480,6 +480,21 @@ fn parse_array(pair: Pair<Rule>) -> TeraResult<ExprVal> {
     Ok(ExprVal::Array(vals))
 }
 
+fn parse_string_array(pair: Pair<Rule>) -> Vec<String> {
+    let mut vals = vec![];
+
+    for p in pair.into_inner() {
+        match p.as_rule() {
+            Rule::string => {
+                vals.push(replace_string_markers(p.as_span().as_str()));
+            }
+            _ => unreachable!("Got {:?} in parse_string_array", p.as_rule()),
+        }
+    }
+
+    vals
+}
+
 fn parse_macro_call(pair: Pair<Rule>) -> TeraResult<MacroCall> {
     let mut namespace = None;
     let mut name = None;
@@ -548,8 +563,7 @@ fn parse_import_macro(pair: Pair<Rule>) -> Node {
     Node::ImportMacro(ws, file.unwrap(), ident.unwrap())
 }
 
-/// `extends` and `include` have the same structure so only way fn to parse them both
-fn parse_extends_include(pair: Pair<Rule>) -> (WS, String) {
+fn parse_extends(pair: Pair<Rule>) -> Node {
     let mut ws = WS::default();
     let mut file = None;
 
@@ -566,7 +580,32 @@ fn parse_extends_include(pair: Pair<Rule>) -> (WS, String) {
         };
     }
 
-    (ws, file.unwrap())
+    Node::Extends(ws, file.unwrap())
+}
+
+fn parse_include(pair: Pair<Rule>) -> Node {
+    let mut ws = WS::default();
+    let mut files = vec![];
+    let mut ignore_missing = false;
+
+    for p in pair.into_inner() {
+        match p.as_rule() {
+            Rule::tag_start => {
+                ws.left = p.as_span().as_str() == "{%-";
+            }
+            Rule::string => {
+                files.push(replace_string_markers(p.as_span().as_str()));
+            }
+            Rule::string_array => files.extend(parse_string_array(p)),
+            Rule::ignore_missing => ignore_missing = true,
+            Rule::tag_end => {
+                ws.right = p.as_span().as_str() == "-%}";
+            }
+            _ => unreachable!(),
+        };
+    }
+
+    Node::Include(ws, files, ignore_missing)
 }
 
 fn parse_set_tag(pair: Pair<Rule>, global: bool) -> TeraResult<Node> {
@@ -903,6 +942,28 @@ fn parse_continue_tag(pair: Pair<Rule>) -> Node {
     Node::Continue(ws)
 }
 
+fn parse_comment_tag(pair: Pair<Rule>) -> Node {
+    let mut ws = WS::default();
+    let mut content = String::new();
+
+    for p in pair.into_inner() {
+        match p.as_rule() {
+            Rule::comment_start => {
+                ws.left = p.as_span().as_str() == "{#-";
+            }
+            Rule::comment_end => {
+                ws.right = p.as_span().as_str() == "-#}";
+            }
+            Rule::comment_text => {
+                content = p.as_str().to_owned();
+            }
+            _ => unreachable!(),
+        };
+    }
+
+    Node::Comment(ws, content)
+}
+
 fn parse_if(pair: Pair<Rule>) -> TeraResult<Node> {
     // the `endif` tag ws handling
     let mut end_ws = WS::default();
@@ -986,12 +1047,8 @@ fn parse_content(pair: Pair<Rule>) -> TeraResult<Vec<Node>> {
 
     for p in pair.into_inner() {
         match p.as_rule() {
-            Rule::include_tag => {
-                let (ws, file) = parse_extends_include(p);
-                nodes.push(Node::Include(ws, file));
-            }
-            // Ignore comments
-            Rule::comment_tag => (),
+            Rule::include_tag => nodes.push(parse_include(p)),
+            Rule::comment_tag => nodes.push(parse_comment_tag(p)),
             Rule::super_tag => nodes.push(Node::Super),
             Rule::set_tag => nodes.push(parse_set_tag(p, false)?),
             Rule::set_global_tag => nodes.push(parse_set_tag(p, true)?),
@@ -1036,6 +1093,7 @@ pub fn parse(input: &str) -> TeraResult<Vec<Node>> {
                     Rule::all_chars => "a character".to_string(),
                     Rule::array => "an array of values".to_string(),
                     Rule::array_filter => "an array of values with an optional filter".to_string(),
+                    Rule::string_array => "an array of strings".to_string(),
                     Rule::basic_val => "a value".to_string(),
                     Rule::basic_op => "a mathematical operator".to_string(),
                     Rule::comparison_op => "a comparison operator".to_string(),
@@ -1099,8 +1157,10 @@ pub fn parse(input: &str) -> TeraResult<Vec<Node>> {
                     Rule::raw_text => "some raw text".to_string(),
                     Rule::raw => "a raw block (`{% raw %}...{% endraw %}`".to_string(),
                     Rule::endraw_tag => "`{% endraw %}`".to_string(),
+                    Rule::ignore_missing => "ignore missing mark for include tag".to_string(),
                     Rule::include_tag => r#"an include tag (`{% include "..." %}`)"#.to_string(),
                     Rule::comment_tag => "a comment tag (`{#...#}`)".to_string(),
+                    Rule::comment_text => "the context of a comment (`{# ... #}`)".to_string(),
                     Rule::variable_tag => "a variable tag (`{{ ... }}`)".to_string(),
                     Rule::filter_tag | Rule::filter_section => {
                         "a filter section (`{% filter something %}...{% endfilter %}`)".to_string()
@@ -1150,10 +1210,7 @@ pub fn parse(input: &str) -> TeraResult<Vec<Node>> {
     // We must have at least a `template` pair if we got there
     for p in pairs.next().unwrap().into_inner() {
         match p.as_rule() {
-            Rule::extends_tag => {
-                let (ws, file) = parse_extends_include(p);
-                nodes.push(Node::Extends(ws, file));
-            }
+            Rule::extends_tag => nodes.push(parse_extends(p)),
             Rule::import_macro_tag => nodes.push(parse_import_macro(p)),
             Rule::content => nodes.extend(parse_content(p)?),
             Rule::comment_tag => (),

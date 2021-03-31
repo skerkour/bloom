@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "futures"
-version = "0.3.12"
+version = "0.3.13"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 description = "An implementation of futures and streams featuring zero allocations,\ncomposability, and iterator-like interfaces.\n"
 homepage = "https://rust-lang.github.io/futures-rs"
@@ -30,33 +30,33 @@ rustdoc-args = ["--cfg", "docsrs"]
 [package.metadata.playground]
 features = ["std", "async-await", "compat", "io-compat", "executor", "thread-pool"]
 [dependencies.futures-channel]
-version = "0.3.12"
+version = "0.3.13"
 features = ["sink"]
 default-features = false
 
 [dependencies.futures-core]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures-executor]
-version = "0.3.12"
+version = "0.3.13"
 optional = true
 default-features = false
 
 [dependencies.futures-io]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures-sink]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures-task]
-version = "0.3.12"
+version = "0.3.13"
 default-features = false
 
 [dependencies.futures-util]
-version = "0.3.12"
+version = "0.3.13"
 features = ["sink"]
 default-features = false
 [dev-dependencies.assert_matches]
@@ -67,6 +67,9 @@ version = "1.0.1"
 
 [dev-dependencies.pin-utils]
 version = "0.1.0"
+
+[dev-dependencies.static_assertions]
+version = "1"
 
 [dev-dependencies.tokio]
 version = "0.1.11"

@@ -12,9 +12,9 @@
 
 [package]
 name = "tap"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Elliott Linder <elliott.darfink@gmail.com>", "myrrlyn <self@myrrlyn.dev>"]
-include = ["cargo.toml", "src/**/*.rs"]
+include = ["Cargo.toml", "README.md", "LICENSE.txt", "src/**/*.rs"]
 description = "Generic extensions for tapping values in Rust"
 homepage = "https://github.com/myrrlyn/tap"
 documentation = "https://docs.rs/tap"

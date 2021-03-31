@@ -509,7 +509,7 @@ where
     ///
     /// Like `Vec::swap_remove`, the pair is removed by swapping it with the
     /// last element of the map and popping it off. **This perturbs
-    /// the postion of what used to be the last element!**
+    /// the position of what used to be the last element!**
     ///
     /// Return `None` if `key` is not in map.
     ///
@@ -525,7 +525,7 @@ where
     ///
     /// Like `Vec::swap_remove`, the pair is removed by swapping it with the
     /// last element of the map and popping it off. **This perturbs
-    /// the postion of what used to be the last element!**
+    /// the position of what used to be the last element!**
     ///
     /// Return `None` if `key` is not in map.
     ///
@@ -545,7 +545,7 @@ where
     ///
     /// Like `Vec::swap_remove`, the pair is removed by swapping it with the
     /// last element of the map and popping it off. **This perturbs
-    /// the postion of what used to be the last element!**
+    /// the position of what used to be the last element!**
     ///
     /// Return `None` if `key` is not in map.
     ///
@@ -751,7 +751,7 @@ impl<K, V, S> IndexMap<K, V, S> {
     ///
     /// Like `Vec::swap_remove`, the pair is removed by swapping it with the
     /// last element of the map and popping it off. **This perturbs
-    /// the postion of what used to be the last element!**
+    /// the position of what used to be the last element!**
     ///
     /// Computes in **O(1)** time (average).
     pub fn swap_remove_index(&mut self, index: usize) -> Option<(K, V)> {
@@ -1646,6 +1646,28 @@ mod tests {
         assert_eq!(&mut TestEnum::NonDefaultValue, map.entry(1).or_default());
 
         assert_eq!(&mut TestEnum::DefaultValue, map.entry(2).or_default());
+    }
+
+    #[test]
+    fn occupied_entry_key() {
+        // These keys match hash and equality, but their addresses are distinct.
+        let (k1, k2) = (&mut 1, &mut 1);
+        let k1_ptr = k1 as *const i32;
+        let k2_ptr = k2 as *const i32;
+        assert_ne!(k1_ptr, k2_ptr);
+
+        let mut map = IndexMap::new();
+        map.insert(k1, "value");
+        match map.entry(k2) {
+            Entry::Occupied(ref e) => {
+                // `OccupiedEntry::key` should reference the key in the map,
+                // not the key that was used to find the entry.
+                let ptr = *e.key() as *const i32;
+                assert_eq!(ptr, k1_ptr);
+                assert_ne!(ptr, k2_ptr);
+            }
+            Entry::Vacant(_) => panic!(),
+        }
     }
 
     #[test]

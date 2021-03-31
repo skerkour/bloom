@@ -87,6 +87,7 @@ impl GenerateTokens {
             // * https://github.com/taiki-e/pin-project/pull/53#issuecomment-525906867
             // * https://github.com/taiki-e/pin-project/pull/70
             #allowed_lints
+            #[allow(clippy::semicolon_if_nothing_returned)]
             #[allow(clippy::used_underscore_binding)]
             const _: () = {
                 #scoped

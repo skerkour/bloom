@@ -1557,9 +1557,7 @@ pub trait ByteOrder:
     /// LittleEndian::write_f32_into(&numbers_given, &mut bytes);
     ///
     /// let mut numbers_got = [0.0; 4];
-    /// unsafe {
-    ///     LittleEndian::read_f32_into(&bytes, &mut numbers_got);
-    /// }
+    /// LittleEndian::read_f32_into(&bytes, &mut numbers_got);
     /// assert_eq!(numbers_given, numbers_got);
     /// ```
     fn write_f32_into(src: &[f32], dst: &mut [u8]) {
@@ -1588,9 +1586,7 @@ pub trait ByteOrder:
     /// LittleEndian::write_f64_into(&numbers_given, &mut bytes);
     ///
     /// let mut numbers_got = [0.0; 4];
-    /// unsafe {
-    ///     LittleEndian::read_f64_into(&bytes, &mut numbers_got);
-    /// }
+    /// LittleEndian::read_f64_into(&bytes, &mut numbers_got);
     /// assert_eq!(numbers_given, numbers_got);
     /// ```
     fn write_f64_into(src: &[f64], dst: &mut [u8]) {
@@ -1696,7 +1692,7 @@ pub trait ByteOrder:
     #[inline]
     fn from_slice_i16(src: &mut [i16]) {
         let src = unsafe {
-            slice::from_raw_parts_mut(src.as_ptr() as *mut u16, src.len())
+            slice::from_raw_parts_mut(src.as_mut_ptr() as *mut u16, src.len())
         };
         Self::from_slice_u16(src);
     }
@@ -1721,7 +1717,7 @@ pub trait ByteOrder:
     #[inline]
     fn from_slice_i32(src: &mut [i32]) {
         let src = unsafe {
-            slice::from_raw_parts_mut(src.as_ptr() as *mut u32, src.len())
+            slice::from_raw_parts_mut(src.as_mut_ptr() as *mut u32, src.len())
         };
         Self::from_slice_u32(src);
     }
@@ -1746,7 +1742,7 @@ pub trait ByteOrder:
     #[inline]
     fn from_slice_i64(src: &mut [i64]) {
         let src = unsafe {
-            slice::from_raw_parts_mut(src.as_ptr() as *mut u64, src.len())
+            slice::from_raw_parts_mut(src.as_mut_ptr() as *mut u64, src.len())
         };
         Self::from_slice_u64(src);
     }
@@ -1771,7 +1767,7 @@ pub trait ByteOrder:
     #[inline]
     fn from_slice_i128(src: &mut [i128]) {
         let src = unsafe {
-            slice::from_raw_parts_mut(src.as_ptr() as *mut u128, src.len())
+            slice::from_raw_parts_mut(src.as_mut_ptr() as *mut u128, src.len())
         };
         Self::from_slice_u128(src);
     }
@@ -1899,7 +1895,13 @@ pub type NativeEndian = LittleEndian;
 #[cfg(target_endian = "big")]
 pub type NativeEndian = BigEndian;
 
-macro_rules! write_num_bytes {
+/// Copies $size bytes from a number $n to a &mut [u8] $dst. $ty represents the
+/// numeric type of $n and $which must be either to_be or to_le, depending on
+/// which endianness one wants to use when writing to $dst.
+///
+/// This macro is only safe to call when $ty is a numeric type and $size ==
+/// size_of::<$ty>() and where $dst is a &mut [u8].
+macro_rules! unsafe_write_num_bytes {
     ($ty:ty, $size:expr, $n:expr, $dst:expr, $which:ident) => {{
         assert!($size <= $dst.len());
         unsafe {
@@ -1910,7 +1912,13 @@ macro_rules! write_num_bytes {
     }};
 }
 
-macro_rules! read_slice {
+/// Copies a &[u8] $src into a &mut [<numeric>] $dst for the endianness given
+/// by $which (must be either to_be or to_le).
+///
+/// This macro is only safe to call when $src and $dst are &[u8] and &mut [u8],
+/// respectively. The macro will panic if $src.len() != $size * $dst.len(),
+/// where $size represents the size of the integers encoded in $src.
+macro_rules! unsafe_read_slice {
     ($src:expr, $dst:expr, $size:expr, $which:ident) => {{
         assert_eq!($src.len(), $size * $dst.len());
 
@@ -1927,10 +1935,16 @@ macro_rules! read_slice {
     }};
 }
 
-macro_rules! write_slice_native {
-    ($src:expr, $dst:expr, $ty:ty, $size:expr) => {{
-        assert!($size == ::core::mem::size_of::<$ty>());
-        assert_eq!($size * $src.len(), $dst.len());
+/// Copies a &[$ty] $src into a &mut [u8] $dst, where $ty must be a numeric
+/// type. This panics if size_of::<$ty>() * $src.len() != $dst.len().
+///
+/// This macro is only safe to call when $src is a slice of numeric types and
+/// $dst is a &mut [u8] and where $ty represents the type of the integers in
+/// $src.
+macro_rules! unsafe_write_slice_native {
+    ($src:expr, $dst:expr, $ty:ty) => {{
+        let size = core::mem::size_of::<$ty>();
+        assert_eq!(size * $src.len(), $dst.len());
 
         unsafe {
             copy_nonoverlapping(
@@ -2006,22 +2020,22 @@ impl ByteOrder for BigEndian {
 
     #[inline]
     fn write_u16(buf: &mut [u8], n: u16) {
-        write_num_bytes!(u16, 2, n, buf, to_be);
+        unsafe_write_num_bytes!(u16, 2, n, buf, to_be);
     }
 
     #[inline]
     fn write_u32(buf: &mut [u8], n: u32) {
-        write_num_bytes!(u32, 4, n, buf, to_be);
+        unsafe_write_num_bytes!(u32, 4, n, buf, to_be);
     }
 
     #[inline]
     fn write_u64(buf: &mut [u8], n: u64) {
-        write_num_bytes!(u64, 8, n, buf, to_be);
+        unsafe_write_num_bytes!(u64, 8, n, buf, to_be);
     }
 
     #[inline]
     fn write_u128(buf: &mut [u8], n: u128) {
-        write_num_bytes!(u128, 16, n, buf, to_be);
+        unsafe_write_num_bytes!(u128, 16, n, buf, to_be);
     }
 
     #[inline]
@@ -2054,28 +2068,28 @@ impl ByteOrder for BigEndian {
 
     #[inline]
     fn read_u16_into(src: &[u8], dst: &mut [u16]) {
-        read_slice!(src, dst, 2, to_be);
+        unsafe_read_slice!(src, dst, 2, to_be);
     }
 
     #[inline]
     fn read_u32_into(src: &[u8], dst: &mut [u32]) {
-        read_slice!(src, dst, 4, to_be);
+        unsafe_read_slice!(src, dst, 4, to_be);
     }
 
     #[inline]
     fn read_u64_into(src: &[u8], dst: &mut [u64]) {
-        read_slice!(src, dst, 8, to_be);
+        unsafe_read_slice!(src, dst, 8, to_be);
     }
 
     #[inline]
     fn read_u128_into(src: &[u8], dst: &mut [u128]) {
-        read_slice!(src, dst, 16, to_be);
+        unsafe_read_slice!(src, dst, 16, to_be);
     }
 
     #[inline]
     fn write_u16_into(src: &[u16], dst: &mut [u8]) {
         if cfg!(target_endian = "big") {
-            write_slice_native!(src, dst, u16, 2);
+            unsafe_write_slice_native!(src, dst, u16);
         } else {
             write_slice!(src, dst, u16, 2, Self::write_u16);
         }
@@ -2084,7 +2098,7 @@ impl ByteOrder for BigEndian {
     #[inline]
     fn write_u32_into(src: &[u32], dst: &mut [u8]) {
         if cfg!(target_endian = "big") {
-            write_slice_native!(src, dst, u32, 4);
+            unsafe_write_slice_native!(src, dst, u32);
         } else {
             write_slice!(src, dst, u32, 4, Self::write_u32);
         }
@@ -2093,7 +2107,7 @@ impl ByteOrder for BigEndian {
     #[inline]
     fn write_u64_into(src: &[u64], dst: &mut [u8]) {
         if cfg!(target_endian = "big") {
-            write_slice_native!(src, dst, u64, 8);
+            unsafe_write_slice_native!(src, dst, u64);
         } else {
             write_slice!(src, dst, u64, 8, Self::write_u64);
         }
@@ -2102,7 +2116,7 @@ impl ByteOrder for BigEndian {
     #[inline]
     fn write_u128_into(src: &[u128], dst: &mut [u8]) {
         if cfg!(target_endian = "big") {
-            write_slice_native!(src, dst, u128, 16);
+            unsafe_write_slice_native!(src, dst, u128);
         } else {
             write_slice!(src, dst, u128, 16, Self::write_u128);
         }
@@ -2214,22 +2228,22 @@ impl ByteOrder for LittleEndian {
 
     #[inline]
     fn write_u16(buf: &mut [u8], n: u16) {
-        write_num_bytes!(u16, 2, n, buf, to_le);
+        unsafe_write_num_bytes!(u16, 2, n, buf, to_le);
     }
 
     #[inline]
     fn write_u32(buf: &mut [u8], n: u32) {
-        write_num_bytes!(u32, 4, n, buf, to_le);
+        unsafe_write_num_bytes!(u32, 4, n, buf, to_le);
     }
 
     #[inline]
     fn write_u64(buf: &mut [u8], n: u64) {
-        write_num_bytes!(u64, 8, n, buf, to_le);
+        unsafe_write_num_bytes!(u64, 8, n, buf, to_le);
     }
 
     #[inline]
     fn write_u128(buf: &mut [u8], n: u128) {
-        write_num_bytes!(u128, 16, n, buf, to_le);
+        unsafe_write_num_bytes!(u128, 16, n, buf, to_le);
     }
 
     #[inline]
@@ -2254,28 +2268,28 @@ impl ByteOrder for LittleEndian {
 
     #[inline]
     fn read_u16_into(src: &[u8], dst: &mut [u16]) {
-        read_slice!(src, dst, 2, to_le);
+        unsafe_read_slice!(src, dst, 2, to_le);
     }
 
     #[inline]
     fn read_u32_into(src: &[u8], dst: &mut [u32]) {
-        read_slice!(src, dst, 4, to_le);
+        unsafe_read_slice!(src, dst, 4, to_le);
     }
 
     #[inline]
     fn read_u64_into(src: &[u8], dst: &mut [u64]) {
-        read_slice!(src, dst, 8, to_le);
+        unsafe_read_slice!(src, dst, 8, to_le);
     }
 
     #[inline]
     fn read_u128_into(src: &[u8], dst: &mut [u128]) {
-        read_slice!(src, dst, 16, to_le);
+        unsafe_read_slice!(src, dst, 16, to_le);
     }
 
     #[inline]
     fn write_u16_into(src: &[u16], dst: &mut [u8]) {
         if cfg!(target_endian = "little") {
-            write_slice_native!(src, dst, u16, 2);
+            unsafe_write_slice_native!(src, dst, u16);
         } else {
             write_slice!(src, dst, u16, 2, Self::write_u16);
         }
@@ -2284,7 +2298,7 @@ impl ByteOrder for LittleEndian {
     #[inline]
     fn write_u32_into(src: &[u32], dst: &mut [u8]) {
         if cfg!(target_endian = "little") {
-            write_slice_native!(src, dst, u32, 4);
+            unsafe_write_slice_native!(src, dst, u32);
         } else {
             write_slice!(src, dst, u32, 4, Self::write_u32);
         }
@@ -2293,7 +2307,7 @@ impl ByteOrder for LittleEndian {
     #[inline]
     fn write_u64_into(src: &[u64], dst: &mut [u8]) {
         if cfg!(target_endian = "little") {
-            write_slice_native!(src, dst, u64, 8);
+            unsafe_write_slice_native!(src, dst, u64);
         } else {
             write_slice!(src, dst, u64, 8, Self::write_u64);
         }
@@ -2302,7 +2316,7 @@ impl ByteOrder for LittleEndian {
     #[inline]
     fn write_u128_into(src: &[u128], dst: &mut [u8]) {
         if cfg!(target_endian = "little") {
-            write_slice_native!(src, dst, u128, 16);
+            unsafe_write_slice_native!(src, dst, u128);
         } else {
             write_slice!(src, dst, u128, 16, Self::write_u128);
         }

@@ -1,3 +1,8 @@
+# v0.11.2
+
+- Fix panic when LZW code size is invalid
+- Added option to omit check for lzw end code
+
 # v0.11.1
 
 - Frames out-of-bounds of the screen descriptor are again accepted by default.

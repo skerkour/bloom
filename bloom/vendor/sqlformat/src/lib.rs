@@ -4,6 +4,8 @@
 
 #![type_length_limit = "99999999"]
 #![forbid(unsafe_code)]
+// Maintains semver compatibility for older Rust versions
+#![allow(clippy::manual_strip)]
 
 mod formatter;
 mod indentation;

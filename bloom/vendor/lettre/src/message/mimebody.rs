@@ -6,15 +6,12 @@ use mime::Mime;
 use rand::Rng;
 
 /// MIME part variants
-///
 #[derive(Debug, Clone)]
 pub enum Part {
     /// Single part with content
-    ///
     Single(SinglePart),
 
     /// Multiple parts of content
-    ///
     Multi(MultiPart),
 }
 
@@ -37,11 +34,9 @@ impl Part {
 }
 
 /// Parts of multipart body
-///
 pub type Parts = Vec<Part>;
 
 /// Creates builder for single part
-///
 #[derive(Debug, Clone)]
 pub struct SinglePartBuilder {
     headers: Headers,
@@ -92,17 +87,16 @@ impl Default for SinglePartBuilder {
 /// # Example
 ///
 /// ```
-/// use lettre::message::{SinglePart, header};
+/// use lettre::message::{header, SinglePart};
 ///
 /// # use std::error::Error;
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let part = SinglePart::builder()
-///      .header(header::ContentType("text/plain; charset=utf8".parse()?))
-///      .body(String::from("Текст письма в уникоде"));
+///     .header(header::ContentType("text/plain; charset=utf8".parse()?))
+///     .body(String::from("Текст письма в уникоде"));
 /// # Ok(())
 /// # }
 /// ```
-///
 #[derive(Debug, Clone)]
 pub struct SinglePart {
     headers: Headers,
@@ -114,30 +108,6 @@ impl SinglePart {
     #[inline]
     pub fn builder() -> SinglePartBuilder {
         SinglePartBuilder::new()
-    }
-
-    #[doc(hidden)]
-    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
-    pub fn seven_bit() -> SinglePartBuilder {
-        Self::builder().header(ContentTransferEncoding::SevenBit)
-    }
-
-    #[doc(hidden)]
-    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
-    pub fn quoted_printable() -> SinglePartBuilder {
-        Self::builder().header(ContentTransferEncoding::QuotedPrintable)
-    }
-
-    #[doc(hidden)]
-    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
-    pub fn base64() -> SinglePartBuilder {
-        Self::builder().header(ContentTransferEncoding::Base64)
-    }
-
-    #[doc(hidden)]
-    #[deprecated = "Replaced by SinglePart::builder(), which chooses the best Content-Transfer-Encoding based on the provided body"]
-    pub fn eight_bit() -> SinglePartBuilder {
-        Self::builder().header(ContentTransferEncoding::EightBit)
     }
 
     /// Get the headers from singlepart
@@ -170,7 +140,6 @@ impl EmailFormat for SinglePart {
 }
 
 /// The kind of multipart
-///
 #[derive(Debug, Clone)]
 pub enum MultiPartKind {
     /// Mixed kind to combine unrelated content parts
@@ -208,20 +177,19 @@ impl MultiPartKind {
     fn to_mime<S: Into<String>>(&self, boundary: Option<S>) -> Mime {
         let boundary = boundary.map_or_else(make_boundary, |s| s.into());
 
-        use self::MultiPartKind::*;
         format!(
             "multipart/{}; boundary=\"{}\"{}",
             match self {
-                Mixed => "mixed",
-                Alternative => "alternative",
-                Related => "related",
-                Encrypted { .. } => "encrypted",
-                Signed { .. } => "signed",
+                Self::Mixed => "mixed",
+                Self::Alternative => "alternative",
+                Self::Related => "related",
+                Self::Encrypted { .. } => "encrypted",
+                Self::Signed { .. } => "signed",
             },
             boundary,
             match self {
-                Encrypted { protocol } => format!("; protocol=\"{}\"", protocol),
-                Signed { protocol, micalg } =>
+                Self::Encrypted { protocol } => format!("; protocol=\"{}\"", protocol),
+                Self::Signed { protocol, micalg } =>
                     format!("; protocol=\"{}\"; micalg=\"{}\"", protocol, micalg),
                 _ => String::new(),
             }
@@ -231,18 +199,17 @@ impl MultiPartKind {
     }
 
     fn from_mime(m: &Mime) -> Option<Self> {
-        use self::MultiPartKind::*;
         match m.subtype().as_ref() {
-            "mixed" => Some(Mixed),
-            "alternative" => Some(Alternative),
-            "related" => Some(Related),
+            "mixed" => Some(Self::Mixed),
+            "alternative" => Some(Self::Alternative),
+            "related" => Some(Self::Related),
             "signed" => m.get_param("protocol").and_then(|p| {
-                m.get_param("micalg").map(|micalg| Signed {
+                m.get_param("micalg").map(|micalg| Self::Signed {
                     protocol: p.as_str().to_owned(),
                     micalg: micalg.as_str().to_owned(),
                 })
             }),
-            "encrypted" => m.get_param("protocol").map(|p| Encrypted {
+            "encrypted" => m.get_param("protocol").map(|p| Self::Encrypted {
                 protocol: p.as_str().to_owned(),
             }),
             _ => None,
@@ -257,7 +224,6 @@ impl From<MultiPartKind> for Mime {
 }
 
 /// Multipart builder
-///
 #[derive(Debug, Clone)]
 pub struct MultiPartBuilder {
     headers: Headers,
@@ -323,7 +289,6 @@ impl Default for MultiPartBuilder {
 }
 
 /// Multipart variant with parts
-///
 #[derive(Debug, Clone)]
 pub struct MultiPart {
     headers: Headers,

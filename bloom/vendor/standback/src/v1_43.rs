@@ -1,5 +1,6 @@
-use crate::traits::{Float, Integer};
 use core::iter::FusedIterator;
+
+use crate::traits::{Float, Integer};
 
 pub mod f32 {
     pub const LOG10_2: f32 = 0.301029995663981195213738894724493027_f32;
@@ -120,4 +121,6 @@ macro_rules! impl_int_v1_43 {
     )*}
 }
 
-impl_int_v1_43![i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize];
+impl_int_v1_43![
+    i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize
+];

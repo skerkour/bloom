@@ -73,8 +73,3 @@ Your crate root: (`lib.rs`/`main.rs`)
 ```
 
 If you intend to use `offset_of!` inside a `const fn`, also add the `const_fn` compiler feature.
-
-### Raw references ###
-Recent nightlies support [a way to create raw pointers](https://github.com/rust-lang/rust/issues/73394) that avoids creating intermediate safe references.
-`memoffset` can make use of that feature to avoid what is technically Undefined Behavior.
-Use the `unstable_raw` feature to enable this.

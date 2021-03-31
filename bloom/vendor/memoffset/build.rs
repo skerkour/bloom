@@ -16,4 +16,7 @@ fn main() {
     if ac.probe_rustc_version(1, 40) {
         println!("cargo:rustc-cfg=doctests");
     }
+    if ac.probe_rustc_version(1, 51) {
+        println!("cargo:rustc-cfg=raw_ref_macros");
+    }
 }

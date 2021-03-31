@@ -1,5 +1,6 @@
-use crate::traits::Sealed;
 use core::mem::{size_of, transmute};
+
+use crate::traits::Sealed;
 
 macro_rules! impl_int_v1_32 {
     ($(($trait:ident, $type:ty)),+) => {$(

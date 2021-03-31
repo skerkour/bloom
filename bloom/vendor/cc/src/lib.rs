@@ -1414,7 +1414,7 @@ impl Build {
                     cmd.push_opt_unless_duplicate("-DANDROID".into());
                 }
 
-                if !target.contains("-ios") {
+                if !target.contains("apple-ios") {
                     cmd.push_cc_arg("-ffunction-sections".into());
                     cmd.push_cc_arg("-fdata-sections".into());
                 }
@@ -1467,6 +1467,20 @@ impl Build {
                             let ios = if arch == "arm64" { "ios" } else { "ios13.0" };
                             cmd.args
                                 .push(format!("--target={}-apple-{}-macabi", arch, ios).into());
+                        }
+                    } else if target.contains("ios-sim") {
+                        if let Some(arch) =
+                            map_darwin_target_from_rust_to_compiler_architecture(target)
+                        {
+                            let deployment_target = env::var("IPHONEOS_DEPLOYMENT_TARGET")
+                                .unwrap_or_else(|_| "7.0".into());
+                            cmd.args.push(
+                                format!(
+                                    "--target={}-apple-ios{}-simulator",
+                                    arch, deployment_target
+                                )
+                                .into(),
+                            );
                         }
                     } else {
                         cmd.args.push(format!("--target={}", target).into());
@@ -1600,7 +1614,7 @@ impl Build {
                     cmd.args.push("-march=i686".into());
                 }
 
-                // Looks like `musl-gcc` makes is hard for `-m32` to make its way
+                // Looks like `musl-gcc` makes it hard for `-m32` to make its way
                 // all the way to the linker, so we need to actually instruct the
                 // linker that we're generating 32-bit executables as well. This'll
                 // typically only be used for build scripts which transitively use
@@ -1677,14 +1691,17 @@ impl Build {
                     let mut parts = target.split('-');
                     if let Some(arch) = parts.next() {
                         let arch = &arch[5..];
-                        cmd.args.push(("-march=rv".to_owned() + arch).into());
                         if target.contains("linux") && arch.starts_with("64") {
+                            cmd.args.push(("-march=rv64gc").into());
                             cmd.args.push("-mabi=lp64d".into());
                         } else if target.contains("linux") && arch.starts_with("32") {
+                            cmd.args.push(("-march=rv32gc").into());
                             cmd.args.push("-mabi=ilp32d".into());
                         } else if arch.starts_with("64") {
+                            cmd.args.push(("-march=rv".to_owned() + arch).into());
                             cmd.args.push("-mabi=lp64".into());
                         } else {
+                            cmd.args.push(("-march=rv".to_owned() + arch).into());
                             cmd.args.push("-mabi=ilp32".into());
                         }
                         cmd.args.push("-mcmodel=medany".into());
@@ -1693,9 +1710,7 @@ impl Build {
             }
         }
 
-        if target.contains("-ios") {
-            // FIXME: potential bug. iOS is always compiled with Clang, but Gcc compiler may be
-            // detected instead.
+        if target.contains("apple-ios") {
             self.ios_flags(cmd)?;
         }
 
@@ -2044,6 +2059,8 @@ impl Build {
                     } else {
                         format!("{}.exe", gnu)
                     }
+                } else if target.contains("apple-ios") {
+                    clang.to_string()
                 } else if target.contains("android") {
                     autodetect_android_compiler(&target, &host, gnu, clang)
                 } else if target.contains("cloudabi") {
@@ -2420,6 +2437,9 @@ impl Build {
                 "riscv-none-embed",
             ]),
             "riscv64gc-unknown-linux-gnu" => Some("riscv64-linux-gnu"),
+            "riscv32gc-unknown-linux-gnu" => Some("riscv32-linux-gnu"),
+            "riscv64gc-unknown-linux-musl" => Some("riscv64-linux-musl"),
+            "riscv32gc-unknown-linux-musl" => Some("riscv32-linux-musl"),
             "s390x-unknown-linux-gnu" => Some("s390x-linux-gnu"),
             "sparc-unknown-linux-gnu" => Some("sparc-linux-gnu"),
             "sparc64-unknown-linux-gnu" => Some("sparc64-linux-gnu"),
@@ -2643,11 +2663,7 @@ impl Tool {
         let family = if let Some(fname) = path.file_name().and_then(|p| p.to_str()) {
             if fname.contains("clang-cl") {
                 ToolFamily::Msvc { clang_cl: true }
-            } else if fname.contains("cl")
-                && !fname.contains("cloudabi")
-                && !fname.contains("uclibc")
-                && !fname.contains("clang")
-            {
+            } else if fname.ends_with("cl") || fname == "cl.exe" {
                 ToolFamily::Msvc { clang_cl: false }
             } else if fname.contains("clang") {
                 match clang_driver {

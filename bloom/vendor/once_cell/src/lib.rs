@@ -233,10 +233,11 @@
 //! and [`lazy_cell`](https://github.com/indiv0/lazycell/) crates and [`std::sync::Once`]. In some sense,
 //! `once_cell` just streamlines and unifies those APIs.
 //!
-//! To implement a sync flavor of `OnceCell`, this crates uses either a custom re-implementation of
-//! `std::sync::Once` or `parking_lot::Mutex`. This is controlled by the `parking_lot` feature, which
-//! is enabled by default. Performance is the same for both cases, but the `parking_lot` based `OnceCell<T>`
-//! is smaller by up to 16 bytes.
+//! To implement a sync flavor of `OnceCell`, this crates uses either a custom
+//! re-implementation of `std::sync::Once` or `parking_lot::Mutex`. This is
+//! controlled by the `parking_lot` feature (disabled by default). Performance
+//! is the same for both cases, but the `parking_lot` based `OnceCell<T>` is
+//! smaller by up to 16 bytes.
 //!
 //! This crate uses `unsafe`.
 //!
@@ -277,7 +278,6 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature = "unstable")]
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
@@ -598,6 +598,17 @@ pub mod unsync {
         /// ```
         pub const fn new(init: F) -> Lazy<T, F> {
             Lazy { cell: OnceCell::new(), init: Cell::new(Some(init)) }
+        }
+
+        /// Consumes this `Lazy` returning the stored value.
+        ///
+        /// Returns `Ok(value)` if `Lazy` is initialized and `Err(f)` otherwise.
+        pub fn into_value(this: Lazy<T, F>) -> Result<T, F> {
+            let cell = this.cell;
+            let init = this.init;
+            cell.into_inner().ok_or_else(|| {
+                init.take().unwrap_or_else(|| panic!("Lazy instance has previously been poisoned"))
+            })
         }
     }
 
@@ -980,6 +991,17 @@ pub mod sync {
         pub const fn new(f: F) -> Lazy<T, F> {
             Lazy { cell: OnceCell::new(), init: Cell::new(Some(f)) }
         }
+
+        /// Consumes this `Lazy` returning the stored value.
+        ///
+        /// Returns `Ok(value)` if `Lazy` is initialized and `Err(f)` otherwise.
+        pub fn into_value(this: Lazy<T, F>) -> Result<T, F> {
+            let cell = this.cell;
+            let init = this.init;
+            cell.into_inner().ok_or_else(|| {
+                init.take().unwrap_or_else(|| panic!("Lazy instance has previously been poisoned"))
+            })
+        }
     }
 
     impl<T, F: FnOnce() -> T> Lazy<T, F> {
@@ -1043,5 +1065,16 @@ pub mod sync {
     fn _dummy() {}
 }
 
-#[cfg(feature = "unstable")]
+#[cfg(feature = "race")]
 pub mod race;
+
+#[cfg(feature = "std")]
+unsafe fn take_unchecked<T>(val: &mut Option<T>) -> T {
+    match val.take() {
+        Some(it) => it,
+        None => {
+            debug_assert!(false);
+            std::hint::unreachable_unchecked()
+        }
+    }
+}

@@ -44,24 +44,24 @@ if #[cfg(limb_width_64)] {
     type SignedWide = i64;
 }}   // cfg_if
 
-/// Cast to limb type.
 perftools_inline!{
+/// Cast to limb type.
 pub(super) fn as_limb<T: Integer>(t: T)
     -> Limb
 {
     as_cast(t)
 }}
 
-/// Cast to wide type.
 perftools_inline!{
+/// Cast to wide type.
 fn as_wide<T: Integer>(t: T)
     -> Wide
 {
     as_cast(t)
 }}
 
-/// Cast tosigned wide type.
 perftools_inline!{
+/// Cast tosigned wide type.
 fn as_signed_wide<T: Integer>(t: T)
     -> SignedWide
 {
@@ -71,41 +71,41 @@ fn as_signed_wide<T: Integer>(t: T)
 // SPLIT
 // -----
 
-/// Split u16 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u16 into limbs, in little-endian order.
 fn split_u16(x: u16) -> [Limb; 1] {
     [as_limb(x)]
 }}
 
-/// Split u32 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u32 into limbs, in little-endian order.
 fn split_u32(x: u32) -> [Limb; 1] {
     [as_limb(x)]
 }}
 
-/// Split u64 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u64 into limbs, in little-endian order.
 #[cfg(limb_width_32)]
 fn split_u64(x: u64) -> [Limb; 2] {
     [as_limb(x), as_limb(x >> 32)]
 }}
 
-/// Split u64 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u64 into limbs, in little-endian order.
 #[cfg(limb_width_64)]
 fn split_u64(x: u64) -> [Limb; 1] {
     [as_limb(x)]
 }}
 
-/// Split u128 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u128 into limbs, in little-endian order.
 #[cfg(limb_width_32)]
 fn split_u128(x: u128) -> [Limb; 4] {
     [as_limb(x), as_limb(x >> 32), as_limb(x >> 64), as_limb(x >> 96)]
 }}
 
-/// Split u128 into limbs, in little-endian order.
 perftools_inline!{
+/// Split u128 into limbs, in little-endian order.
 #[cfg(limb_width_64)]
 fn split_u128(x: u128) -> [Limb; 2] {
     [as_limb(x), as_limb(x >> 64)]
@@ -116,8 +116,8 @@ fn split_u128(x: u128) -> [Limb; 2] {
 
 // NONZERO
 
-/// Check if any of the remaining bits are non-zero.
 perftools_inline!{
+/// Check if any of the remaining bits are non-zero.
 pub fn nonzero<T: Integer>(x: &[T], rindex: usize) -> bool {
     let len = x.len();
     let slc = &x[..len-rindex];
@@ -126,16 +126,16 @@ pub fn nonzero<T: Integer>(x: &[T], rindex: usize) -> bool {
 
 // HI16
 
-/// Shift 16-bit integer to high 16-bits.
 perftools_inline!{
+/// Shift 16-bit integer to high 16-bits.
 fn u16_to_hi16_1(r0: u16) -> (u16, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
     (r0 << ls, false)
 }}
 
-/// Shift 2 16-bit integers to high 16-bits.
 perftools_inline!{
+/// Shift 2 16-bit integers to high 16-bits.
 fn u16_to_hi16_2(r0: u16, r1: u16) -> (u16, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
@@ -148,29 +148,29 @@ fn u16_to_hi16_2(r0: u16, r1: u16) -> (u16, bool) {
     (v, n)
 }}
 
-/// Shift 32-bit integer to high 16-bits.
 perftools_inline!{
+/// Shift 32-bit integer to high 16-bits.
 fn u32_to_hi16_1(r0: u32) -> (u16, bool) {
     let r0 = u32_to_hi32_1(r0).0;
     ((r0 >> 16).as_u16(), r0.as_u16() != 0)
 }}
 
-/// Shift 2 32-bit integers to high 16-bits.
 perftools_inline!{
+/// Shift 2 32-bit integers to high 16-bits.
 fn u32_to_hi16_2(r0: u32, r1: u32) -> (u16, bool) {
     let (r0, n) = u32_to_hi32_2(r0, r1);
     ((r0 >> 16).as_u16(), n || r0.as_u16() != 0)
 }}
 
-/// Shift 64-bit integer to high 16-bits.
 perftools_inline!{
+/// Shift 64-bit integer to high 16-bits.
 fn u64_to_hi16_1(r0: u64) -> (u16, bool) {
     let r0 = u64_to_hi64_1(r0).0;
     ((r0 >> 48).as_u16(), r0.as_u16() != 0)
 }}
 
-/// Shift 2 64-bit integers to high 16-bits.
 perftools_inline!{
+/// Shift 2 64-bit integers to high 16-bits.
 fn u64_to_hi16_2(r0: u64, r1: u64) -> (u16, bool) {
     let (r0, n) = u64_to_hi64_2(r0, r1);
     ((r0 >> 48).as_u16(), n || r0.as_u16() != 0)
@@ -184,8 +184,8 @@ trait Hi16<T>: SliceLike<T> {
     /// Get the hi16 bits from a 2-limb slice.
     fn hi16_2(&self) -> (u16, bool);
 
-    /// High-level exporter to extract the high 16 bits from a little-endian slice.
     perftools_inline!{
+    /// High-level exporter to extract the high 16 bits from a little-endian slice.
     fn hi16(&self) -> (u16, bool) {
         match self.len() {
             0 => (0, false),
@@ -257,16 +257,16 @@ impl Hi16<u64> for [u64] {
 
 // HI32
 
-/// Shift 32-bit integer to high 32-bits.
 perftools_inline!{
+/// Shift 32-bit integer to high 32-bits.
 fn u32_to_hi32_1(r0: u32) -> (u32, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
     (r0 << ls, false)
 }}
 
-/// Shift 2 32-bit integers to high 32-bits.
 perftools_inline!{
+/// Shift 2 32-bit integers to high 32-bits.
 fn u32_to_hi32_2(r0: u32, r1: u32) -> (u32, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
@@ -279,15 +279,15 @@ fn u32_to_hi32_2(r0: u32, r1: u32) -> (u32, bool) {
     (v, n)
 }}
 
-/// Shift 64-bit integer to high 32-bits.
 perftools_inline!{
+/// Shift 64-bit integer to high 32-bits.
 fn u64_to_hi32_1(r0: u64) -> (u32, bool) {
     let r0 = u64_to_hi64_1(r0).0;
     ((r0 >> 32).as_u32(), r0.as_u32() != 0)
 }}
 
-/// Shift 2 64-bit integers to high 32-bits.
 perftools_inline!{
+/// Shift 2 64-bit integers to high 32-bits.
 fn u64_to_hi32_2(r0: u64, r1: u64) -> (u32, bool) {
     let (r0, n) = u64_to_hi64_2(r0, r1);
     ((r0 >> 32).as_u32(), n || r0.as_u32() != 0)
@@ -304,8 +304,8 @@ trait Hi32<T>: SliceLike<T> {
     /// Get the hi32 bits from a 3-limb slice.
     fn hi32_3(&self) -> (u32, bool);
 
-    /// High-level exporter to extract the high 32 bits from a little-endian slice.
     perftools_inline!{
+    /// High-level exporter to extract the high 32 bits from a little-endian slice.
     fn hi32(&self) -> (u32, bool) {
         match self.len() {
             0 => (0, false),
@@ -397,16 +397,16 @@ impl Hi32<u64> for [u64] {
 
 // HI64
 
-/// Shift 64-bit integer to high 64-bits.
 perftools_inline!{
+/// Shift 64-bit integer to high 64-bits.
 fn u64_to_hi64_1(r0: u64) -> (u64, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
     (r0 << ls, false)
 }}
 
-/// Shift 2 64-bit integers to high 64-bits.
 perftools_inline!{
+/// Shift 2 64-bit integers to high 64-bits.
 fn u64_to_hi64_2(r0: u64, r1: u64) -> (u64, bool) {
     debug_assert!(r0 != 0);
     let ls = r0.leading_zeros();
@@ -436,8 +436,8 @@ trait Hi64<T>: SliceLike<T> {
     /// Get the hi64 bits from a 5-limb slice.
     fn hi64_5(&self) -> (u64, bool);
 
-    /// High-level exporter to extract the high 64 bits from a little-endian slice.
     perftools_inline!{
+    /// High-level exporter to extract the high 64 bits from a little-endian slice.
     fn hi64(&self) -> (u64, bool) {
         match self.len() {
             0 => (0, false),
@@ -580,15 +580,15 @@ impl Hi64<u64> for [u64] {
 
 // HI128
 
-/// Shift 128-bit integer to high 128-bits.
 perftools_inline!{
+/// Shift 128-bit integer to high 128-bits.
 fn u128_to_hi128_1(r0: u128) -> (u128, bool) {
     let ls = r0.leading_zeros();
     (r0 << ls, false)
 }}
 
-/// Shift 2 128-bit integers to high 128-bits.
 perftools_inline!{
+/// Shift 2 128-bit integers to high 128-bits.
 fn u128_to_hi128_2(r0: u128, r1: u128) -> (u128, bool) {
     let ls = r0.leading_zeros();
     let rs = 128 - ls;
@@ -626,8 +626,8 @@ trait Hi128<T>: SliceLike<T> {
     /// Get the hi128 bits from a 5-limb slice.
     fn hi128_9(&self) -> (u128, bool);
 
-    /// High-level exporter to extract the high 128 bits from a little-endian slice.
     perftools_inline!{
+    /// High-level exporter to extract the high 128 bits from a little-endian slice.
     fn hi128(&self) -> (u128, bool) {
         match self.len() {
             0 => (0, false),
@@ -899,16 +899,16 @@ use super::*;
 
 // ADDITION
 
-/// Add two small integers and return the resulting value and if overflow happens.
 perftools_inline!{
+/// Add two small integers and return the resulting value and if overflow happens.
 pub fn add(x: Limb, y: Limb)
     -> (Limb, bool)
 {
     x.overflowing_add(y)
 }}
 
-/// AddAssign two small integers and return if overflow happens.
 perftools_inline!{
+/// AddAssign two small integers and return if overflow happens.
 pub fn iadd(x: &mut Limb, y: Limb)
     -> bool
 {
@@ -919,16 +919,16 @@ pub fn iadd(x: &mut Limb, y: Limb)
 
 // SUBTRACTION
 
-/// Subtract two small integers and return the resulting value and if overflow happens.
 perftools_inline!{
+/// Subtract two small integers and return the resulting value and if overflow happens.
 pub fn sub(x: Limb, y: Limb)
     -> (Limb, bool)
 {
     x.overflowing_sub(y)
 }}
 
-/// SubAssign two small integers and return if overflow happens.
 perftools_inline!{
+/// SubAssign two small integers and return if overflow happens.
 pub fn isub(x: &mut Limb, y: Limb)
     -> bool
 {
@@ -939,10 +939,10 @@ pub fn isub(x: &mut Limb, y: Limb)
 
 // MULTIPLICATION
 
+perftools_inline!{
 /// Multiply two small integers (with carry) (and return the overflow contribution).
 ///
 /// Returns the (low, high) components.
-perftools_inline!{
 pub fn mul(x: Limb, y: Limb, carry: Limb)
     -> (Limb, Limb)
 {
@@ -950,11 +950,11 @@ pub fn mul(x: Limb, y: Limb, carry: Limb)
     // the following is always true:
     // `Wide::max_value() - (Narrow::max_value() * Narrow::max_value()) >= Narrow::max_value()`
     let z: Wide = as_wide(x) * as_wide(y) + as_wide(carry);
-    (as_limb(z), as_limb(z >> Limb::BITS))
+    (as_limb(z), as_limb(z >> <Limb as Integer>::BITS))
 }}
 
-/// Multiply two small integers (with carry) (and return if overflow happens).
 perftools_inline!{
+/// Multiply two small integers (with carry) (and return if overflow happens).
 pub fn imul(x: &mut Limb, y: Limb, carry: Limb)
     -> Limb
 {
@@ -965,21 +965,21 @@ pub fn imul(x: &mut Limb, y: Limb, carry: Limb)
 
 // DIVISION
 
+perftools_inline!{
 /// Divide two small integers (with remainder) (and return the remainder contribution).
 ///
 /// Returns the (value, remainder) components.
-perftools_inline!{
 pub fn div(x: Limb, y: Limb, rem: Limb)
     -> (Limb, Limb)
 {
     // Cannot overflow, as long as wide is 2x as wide.
-    let x = as_wide(x) | (as_wide(rem) << Limb::BITS);
+    let x = as_wide(x) | (as_wide(rem) << <Limb as Integer>::BITS);
     let y = as_wide(y);
     (as_limb(x / y), as_limb(x % y))
 }}
 
-/// DivAssign two small integers and return the remainder.
 perftools_inline!{
+/// DivAssign two small integers and return the remainder.
 pub fn idiv(x: &mut Limb, y: Limb, rem: Limb)
     -> Limb
 {
@@ -1004,16 +1004,16 @@ use super::super::large_powers::*;
 
 // PROPERTIES
 
+perftools_inline!{
 /// Get the number of leading zero values in the storage.
 /// Assumes the value is normalized.
-perftools_inline!{
 pub fn leading_zero_limbs(_: &[Limb]) -> usize {
     0
 }}
 
+perftools_inline!{
 /// Get the number of trailing zero values in the storage.
 /// Assumes the value is normalized.
-perftools_inline!{
 pub fn trailing_zero_limbs(x: &[Limb]) -> usize {
     let mut iter = x.iter().enumerate();
     let opt = iter.find(|&tup| !tup.1.is_zero());
@@ -1024,8 +1024,8 @@ pub fn trailing_zero_limbs(x: &[Limb]) -> usize {
     value
 }}
 
-/// Get number of leading zero bits in the storage.
 perftools_inline!{
+/// Get number of leading zero bits in the storage.
 pub fn leading_zeros(x: &[Limb]) -> usize {
     if x.is_empty() {
         0
@@ -1034,13 +1034,13 @@ pub fn leading_zeros(x: &[Limb]) -> usize {
     }
 }}
 
+perftools_inline!{
 /// Get number of trailing zero bits in the storage.
 /// Assumes the value is normalized.
-perftools_inline!{
 pub fn trailing_zeros(x: &[Limb]) -> usize {
     // Get the index of the last non-zero value
     let index = trailing_zero_limbs(x);
-    let mut count = index.saturating_mul(Limb::BITS);
+    let mut count = index.saturating_mul(<Limb as Integer>::BITS);
     if let Some(value) = x.get(index) {
         count = count.saturating_add(value.trailing_zeros().as_usize());
     }
@@ -1049,39 +1049,39 @@ pub fn trailing_zeros(x: &[Limb]) -> usize {
 
 // BIT LENGTH
 
-/// Calculate the bit-length of the big-integer.
 perftools_inline!{
+/// Calculate the bit-length of the big-integer.
 pub fn bit_length(x: &[Limb]) -> usize {
     // Avoid overflowing, calculate via total number of bits
     // minus leading zero bits.
     let nlz = leading_zeros(x);
-    Limb::BITS.checked_mul(x.len())
+    <Limb as Integer>::BITS.checked_mul(x.len())
         .map(|v| v - nlz)
         .unwrap_or(usize::max_value())
 }}
 
 // BIT LENGTH
 
-/// Calculate the limb-length of the big-integer.
 perftools_inline!{
+/// Calculate the limb-length of the big-integer.
 pub fn limb_length(x: &[Limb]) -> usize {
     x.len()
 }}
 
 // SHR
 
+perftools_inline!{
 /// Shift-right bits inside a buffer and returns the truncated bits.
 ///
 /// Returns the truncated bits.
 ///
-/// Assumes `n < Limb::BITS`, IE, internally shifting bits.
-perftools_inline!{
+/// Assumes `n < <Limb as Integer>::BITS`, IE, internally shifting bits.
 pub fn ishr_bits<T>(x: &mut T, n: usize)
     -> Limb
     where T: CloneableVecLike<Limb>
 {
-    // Need to shift by the number of `bits % Limb::BITS`.
-    let bits = Limb::BITS;
+    // Need to shift by the number of `bits % <Limb as Integer>::BITS`.
+    let bits = <Limb as Integer>::BITS;
     debug_assert!(n < bits && n != 0);
 
     // Internally, for each item, we shift left by n, and add the previous
@@ -1102,10 +1102,10 @@ pub fn ishr_bits<T>(x: &mut T, n: usize)
     prev & lower_n_mask(as_limb(rshift))
 }}
 
+perftools_inline!{
 /// Shift-right `n` limbs inside a buffer and returns if all the truncated limbs are zero.
 ///
 /// Assumes `n` is not 0.
-perftools_inline!{
 pub fn ishr_limbs<T>(x: &mut T, n: usize)
     -> bool
     where T: CloneableVecLike<Limb>
@@ -1122,15 +1122,15 @@ pub fn ishr_limbs<T>(x: &mut T, n: usize)
     }
 }}
 
-/// Shift-left buffer by n bits and return if we should round-up.
 perftools_inline!{
+/// Shift-left buffer by n bits and return if we should round-up.
 pub fn ishr<T>(x: &mut T, n: usize)
     -> bool
     where T: CloneableVecLike<Limb>
 {
-    let bits = Limb::BITS;
-    // Need to pad with zeros for the number of `bits / Limb::BITS`,
-    // and shift-left with carry for `bits % Limb::BITS`.
+    let bits = <Limb as Integer>::BITS;
+    // Need to pad with zeros for the number of `bits / <Limb as Integer>::BITS`,
+    // and shift-left with carry for `bits % <Limb as Integer>::BITS`.
     let rem = n % bits;
     let div = n / bits;
     let is_zero = match div.is_zero() {
@@ -1165,8 +1165,8 @@ pub fn ishr<T>(x: &mut T, n: usize)
     roundup
 }}
 
-/// Shift-left buffer by n bits.
 perftools_inline!{
+/// Shift-left buffer by n bits.
 pub fn shr<T>(x: &[Limb], n: usize)
     -> (T, bool)
     where T: CloneableVecLike<Limb>
@@ -1179,15 +1179,15 @@ pub fn shr<T>(x: &[Limb], n: usize)
 
 // SHL
 
+perftools_inline!{
 /// Shift-left bits inside a buffer.
 ///
-/// Assumes `n < Limb::BITS`, IE, internally shifting bits.
-perftools_inline!{
+/// Assumes `n < <Limb as Integer>::BITS`, IE, internally shifting bits.
 pub fn ishl_bits<T>(x: &mut T, n: usize)
     where T: CloneableVecLike<Limb>
 {
-    // Need to shift by the number of `bits % Limb::BITS)`.
-    let bits = Limb::BITS;
+    // Need to shift by the number of `bits % <Limb as Integer>::BITS)`.
+    let bits = <Limb as Integer>::BITS;
     debug_assert!(n < bits);
     if n.is_zero() {
         return;
@@ -1215,10 +1215,10 @@ pub fn ishl_bits<T>(x: &mut T, n: usize)
     }
 }}
 
+perftools_inline!{
 /// Shift-left bits inside a buffer.
 ///
-/// Assumes `n < Limb::BITS`, IE, internally shifting bits.
-perftools_inline!{
+/// Assumes `n < <Limb as Integer>::BITS`, IE, internally shifting bits.
 pub fn shl_bits<T>(x: &[Limb], n: usize)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1229,10 +1229,10 @@ pub fn shl_bits<T>(x: &[Limb], n: usize)
     z
 }}
 
+perftools_inline!{
 /// Shift-left `n` digits inside a buffer.
 ///
 /// Assumes `n` is not 0.
-perftools_inline!{
 pub fn ishl_limbs<T>(x: &mut T, n: usize)
     where T: CloneableVecLike<Limb>
 {
@@ -1242,14 +1242,14 @@ pub fn ishl_limbs<T>(x: &mut T, n: usize)
     }
 }}
 
-/// Shift-left buffer by n bits.
 perftools_inline!{
+/// Shift-left buffer by n bits.
 pub fn ishl<T>(x: &mut T, n: usize)
     where T: CloneableVecLike<Limb>
 {
-    let bits = Limb::BITS;
-    // Need to pad with zeros for the number of `bits / Limb::BITS`,
-    // and shift-left with carry for `bits % Limb::BITS`.
+    let bits = <Limb as Integer>::BITS;
+    // Need to pad with zeros for the number of `bits / <Limb as Integer>::BITS`,
+    // and shift-left with carry for `bits % <Limb as Integer>::BITS`.
     let rem = n % bits;
     let div = n / bits;
     ishl_bits(x, rem);
@@ -1258,8 +1258,8 @@ pub fn ishl<T>(x: &mut T, n: usize)
     }
 }}
 
-/// Shift-left buffer by n bits.
 perftools_inline!{
+/// Shift-left buffer by n bits.
 pub fn shl<T>(x: &[Limb], n: usize)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1272,8 +1272,8 @@ pub fn shl<T>(x: &[Limb], n: usize)
 
 // NORMALIZE
 
-/// Normalize the container by popping any leading zeros.
 perftools_inline!{
+/// Normalize the container by popping any leading zeros.
 pub fn normalize<T>(x: &mut T)
     where T: CloneableVecLike<Limb>
 {
@@ -1284,13 +1284,13 @@ pub fn normalize<T>(x: &mut T)
     }
 }}
 
-/// ADDITION
+// ADDITION
 
+perftools_inline!{
 /// Implied AddAssign implementation for adding a small integer to bigint.
 ///
 /// Allows us to choose a start-index in x to store, to allow incrementing
 /// from a non-zero start.
-perftools_inline!{
 pub fn iadd_impl<T>(x: &mut T, y: Limb, xstart: usize)
     where T: CloneableVecLike<Limb>
 {
@@ -1315,16 +1315,16 @@ pub fn iadd_impl<T>(x: &mut T, y: Limb, xstart: usize)
     }
 }}
 
-/// AddAssign small integer to bigint.
 perftools_inline!{
+/// AddAssign small integer to bigint.
 pub fn iadd<T>(x: &mut T, y: Limb)
     where T: CloneableVecLike<Limb>
 {
     iadd_impl(x, y, 0);
 }}
 
-/// Add small integer to bigint.
 perftools_inline!{
+/// Add small integer to bigint.
 pub fn add<T>(x: &[Limb], y: Limb)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1337,9 +1337,9 @@ pub fn add<T>(x: &[Limb], y: Limb)
 
 // SUBTRACTION
 
+perftools_inline!{
 /// SubAssign small integer to bigint.
 /// Does not do overflowing subtraction.
-perftools_inline!{
 pub fn isub_impl<T>(x: &mut T, y: Limb, xstart: usize)
     where T: CloneableVecLike<Limb>
 {
@@ -1357,17 +1357,17 @@ pub fn isub_impl<T>(x: &mut T, y: Limb, xstart: usize)
     normalize(x);
 }}
 
+perftools_inline!{
 /// SubAssign small integer to bigint.
 /// Does not do overflowing subtraction.
-perftools_inline!{
 pub fn isub<T>(x: &mut T, y: Limb)
     where T: CloneableVecLike<Limb>
 {
     isub_impl(x, y, 0);
 }}
 
-/// Sub small integer to bigint.
 perftools_inline!{
+/// Sub small integer to bigint.
 pub fn sub<T>(x: &[Limb], y: Limb)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1380,8 +1380,8 @@ pub fn sub<T>(x: &[Limb], y: Limb)
 
 // MULTIPLICATION
 
-/// MulAssign small integer to bigint.
 perftools_inline!{
+/// MulAssign small integer to bigint.
 pub fn imul<T>(x: &mut T, y: Limb)
     where T: CloneableVecLike<Limb>
 {
@@ -1397,8 +1397,8 @@ pub fn imul<T>(x: &mut T, y: Limb)
     }
 }}
 
-/// Mul small integer to bigint.
 perftools_inline!{
+/// Mul small integer to bigint.
 pub fn mul<T>(x: &[Limb], y: Limb)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1497,8 +1497,8 @@ pub fn imul_power<T>(x: &mut T, radix: u32, n: u32)
     }
 }
 
-/// Mul by a power.
 perftools_inline!{
+/// Mul by a power.
 pub fn mul_power<T>(x: &[Limb], radix: u32, n: u32)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1509,10 +1509,10 @@ pub fn mul_power<T>(x: &[Limb], radix: u32, n: u32)
     z
 }}
 
-/// DIVISION
+// DIVISION
 
-/// DivAssign small integer to bigint and get the remainder.
 perftools_inline!{
+/// DivAssign small integer to bigint and get the remainder.
 pub fn idiv<T>(x: &mut T, y: Limb)
     -> Limb
     where T: CloneableVecLike<Limb>
@@ -1527,8 +1527,8 @@ pub fn idiv<T>(x: &mut T, y: Limb)
     rem
 }}
 
-/// Div small integer to bigint and get the remainder.
 perftools_inline!{
+/// Div small integer to bigint and get the remainder.
 pub fn div<T>(x: &[Limb], y: Limb)
     -> (T, Limb)
     where T: CloneableVecLike<Limb>
@@ -1541,12 +1541,12 @@ pub fn div<T>(x: &[Limb], y: Limb)
 
 // POWER
 
+perftools_inline!{
 /// Calculate x^n, using exponentiation by squaring.
 ///
 /// This algorithm is slow, using `mul_power` should generally be preferred,
 /// as although it's not asymptotically faster, it precalculates a lot
 /// of results.
-perftools_inline!{
 pub fn ipow<T>(x: &mut T, mut n: Limb)
     where T: CloneableVecLike<Limb>
 {
@@ -1572,8 +1572,8 @@ pub fn ipow<T>(x: &mut T, mut n: Limb)
     }
 }}
 
-/// Calculate x^n, using exponentiation by squaring.
 perftools_inline!{
+/// Calculate x^n, using exponentiation by squaring.
 pub fn pow<T>(x: &[Limb], n: Limb)
     -> T
     where T: CloneableVecLike<Limb>
@@ -1598,8 +1598,8 @@ use super::*;
 
 // RELATIVE OPERATORS
 
-/// Compare `x` to `y`, in little-endian order.
 perftools_inline!{
+/// Compare `x` to `y`, in little-endian order.
 pub fn compare(x: &[Limb], y: &[Limb]) -> cmp::Ordering {
     if x.len() > y.len() {
         return cmp::Ordering::Greater;
@@ -1619,34 +1619,34 @@ pub fn compare(x: &[Limb], y: &[Limb]) -> cmp::Ordering {
     }
 }}
 
-/// Check if x is greater than y.
 perftools_inline!{
+/// Check if x is greater than y.
 pub fn greater(x: &[Limb], y: &[Limb]) -> bool {
     compare(x, y) == cmp::Ordering::Greater
 }}
 
-/// Check if x is greater than or equal to y.
 perftools_inline!{
+/// Check if x is greater than or equal to y.
 pub fn greater_equal(x: &[Limb], y: &[Limb]) -> bool {
     !less(x, y)
 }}
 
-/// Check if x is less than y.
 perftools_inline!{
+/// Check if x is less than y.
 pub fn less(x: &[Limb], y: &[Limb]) -> bool {
     compare(x, y) == cmp::Ordering::Less
 }}
 
-/// Check if x is less than or equal to y.
 perftools_inline!{
+/// Check if x is less than or equal to y.
 pub fn less_equal(x: &[Limb], y: &[Limb]) -> bool {
     !greater(x, y)
 }}
 
+perftools_inline!{
 /// Check if x is equal to y.
 /// Slightly optimized for equality comparisons, since it reduces the number
 /// of comparisons relative to `compare`.
-perftools_inline!{
 pub fn equal(x: &[Limb], y: &[Limb]) -> bool {
     let mut iter = x.iter().rev().zip(y.iter().rev());
     x.len() == y.len() && iter.all(|(&xi, &yi)| xi == yi)
@@ -1687,16 +1687,16 @@ pub fn iadd_impl<T>(x: &mut T, y: &[Limb], xstart: usize)
     }
 }
 
-/// AddAssign bigint to bigint.
 perftools_inline!{
+/// AddAssign bigint to bigint.
 pub fn iadd<T>(x: &mut T, y: &[Limb])
     where T: CloneableVecLike<Limb>
 {
     iadd_impl(x, y, 0)
 }}
 
-/// Add bigint to bigint.
 perftools_inline!{
+/// Add bigint to bigint.
 pub fn add<T>(x: &[Limb], y: &[Limb])
     -> T
     where T: CloneableVecLike<Limb>
@@ -1736,8 +1736,8 @@ pub fn isub<T>(x: &mut T, y: &[Limb])
     }
 }
 
-/// Sub bigint to bigint.
 perftools_inline!{
+/// Sub bigint to bigint.
 pub fn sub<T>(x: &[Limb], y: &[Limb])
     -> T
     where T: CloneableVecLike<Limb>
@@ -1786,8 +1786,8 @@ fn long_mul<T>(x: &[Limb], y: &[Limb])
     z
 }
 
-/// Split two buffers into halfway, into (lo, hi).
 perftools_inline!{
+/// Split two buffers into halfway, into (lo, hi).
 pub fn karatsuba_split<'a>(z: &'a [Limb], m: usize)
     -> (&'a [Limb], &'a [Limb])
 {
@@ -1862,8 +1862,8 @@ fn karatsuba_uneven_mul<T>(x: &[Limb], mut y: &[Limb])
     result
 }
 
-/// Forwarder to the proper Karatsuba algorithm.
 perftools_inline!{
+/// Forwarder to the proper Karatsuba algorithm.
 fn karatsuba_mul_fwd<T>(x: &[Limb], y: &[Limb])
     -> T
     where T: CloneableVecLike<Limb>
@@ -1875,8 +1875,8 @@ fn karatsuba_mul_fwd<T>(x: &[Limb], y: &[Limb])
     }
 }}
 
-/// MulAssign bigint to bigint.
 perftools_inline!{
+/// MulAssign bigint to bigint.
 pub fn imul<T>(x: &mut T, y: &[Limb])
     where T: CloneableVecLike<Limb>
 {
@@ -1891,8 +1891,8 @@ pub fn imul<T>(x: &mut T, y: &[Limb])
     }
 }}
 
-/// Mul bigint to bigint.
 perftools_inline!{
+/// Mul bigint to bigint.
 pub fn mul<T>(x: &[Limb], y: &[Limb])
     -> T
     where T: CloneableVecLike<Limb>
@@ -1906,7 +1906,7 @@ pub fn mul<T>(x: &[Limb], y: &[Limb])
 // DIVISION
 
 /// Constants for algorithm D.
-const ALGORITHM_D_B: Wide = 1 << Limb::BITS;
+const ALGORITHM_D_B: Wide = 1 << <Limb as Integer>::BITS;
 const ALGORITHM_D_M: Wide = ALGORITHM_D_B - 1;
 
 /// Calculate qhat (an estimate for the quotient).
@@ -1926,7 +1926,7 @@ fn calculate_qhat(x: &[Limb], y: &[Limb], j: usize)
     //  rhat = (x[j+n]*B + x[j+n-1]) - qhat*y[n-1];
     let x_jn = as_wide(x[j+n]);
     let x_jn1 = as_wide(x[j+n-1]);
-    let num = (x_jn << Limb::BITS) + x_jn1;
+    let num = (x_jn << <Limb as Integer>::BITS) + x_jn1;
     let den = as_wide(y[n-1]);
     let mut qhat = num / den;
     let mut rhat = num - qhat * den;
@@ -1943,7 +1943,7 @@ fn calculate_qhat(x: &[Limb], y: &[Limb], j: usize)
     let y_n2 = as_wide(y[n-2]);
     let y_n1 = as_wide(y[n-1]);
     // This only happens when the leading bit of qhat is set.
-    while qhat >= ALGORITHM_D_B || qhat * y_n2 > (rhat << Limb::BITS) + x_jn2 {
+    while qhat >= ALGORITHM_D_B || qhat * y_n2 > (rhat << <Limb as Integer>::BITS) + x_jn2 {
         qhat -= 1;
         rhat += y_n1;
         if rhat >= ALGORITHM_D_B {
@@ -1983,7 +1983,7 @@ fn multiply_and_subtract<T>(x: &mut T, y: &T, qhat: Wide, j: usize)
         let p = qhat * y_i;
         t = x_ij.wrapping_sub(k).wrapping_sub(as_signed_wide(p & ALGORITHM_D_M));
         x[i+j] = as_limb(t);
-        k = as_signed_wide(p >> Limb::BITS) - (t >> Limb::BITS);
+        k = as_signed_wide(p >> <Limb as Integer>::BITS) - (t >> <Limb as Integer>::BITS);
     }
     t = as_signed_wide(x[j+n]) - k;
     x[j+n] = as_limb(t);
@@ -1991,11 +1991,11 @@ fn multiply_and_subtract<T>(x: &mut T, y: &T, qhat: Wide, j: usize)
     t
 }
 
+perftools_inline!{
 /// Calculate the quotient from the estimate and the test.
 ///
 /// This is a mix of step D5 and D6 in Algorithm D, so the algorithm
 /// may work for single passes, without a quotient buffer.
-perftools_inline!{
 fn test_quotient(qhat: Wide, t: SignedWide)
     -> Wide
 {
@@ -2039,7 +2039,7 @@ fn add_back<T>(x: &mut T, y: &T, mut t: SignedWide, j: usize)
         for i in 0..n {
             t = as_signed_wide(as_wide(x[i+j]) + as_wide(y[i])) + k;
             x[i+j] = as_limb(t);
-            k = t >> Limb::BITS;
+            k = t >> <Limb as Integer>::BITS;
         }
         let x_jn = as_signed_wide(x[j+n]) + k;
         x[j+n] = as_limb(x_jn);
@@ -2062,7 +2062,7 @@ fn calculate_remainder<T>(x: &[Limb], y: &[Limb], s: usize)
     let n = y.len();
     let mut r = T::default();
     r.reserve_exact(n);
-    let rs = Limb::BITS - s;
+    let rs = <Limb as Integer>::BITS - s;
     for i in 0..n-1 {
         let xi = as_wide(x[i]) >> s;
         let xi1 = as_wide(x[i+1]) << rs;
@@ -2123,8 +2123,8 @@ fn algorithm_d_div<T>(x: &[Limb], y: &[Limb])
     (q, r)
 }
 
-/// DivAssign bigint to bigint.
 perftools_inline!{
+/// DivAssign bigint to bigint.
 pub fn idiv<T>(x: &mut T, y: &[Limb])
     -> T
     where T: CloneableVecLike<Limb>
@@ -2150,8 +2150,8 @@ pub fn idiv<T>(x: &mut T, y: &[Limb])
     }
 }}
 
-/// Div bigint to bigint.
 perftools_inline!{
+/// Div bigint to bigint.
 pub fn div<T>(x: &[Limb], y: &[Limb])
     -> (T, T)
     where T: CloneableVecLike<Limb>
@@ -2199,9 +2199,9 @@ pub fn quorem<T>(x: &mut T, y: &T)
         let mut carry: Wide = 0;
         for j in 0..m {
             let p = as_wide(y[j]) * as_wide(q) + carry;
-            carry = p >> Limb::BITS;
+            carry = p >> <Limb as Integer>::BITS;
             let t = as_wide(x[j]).wrapping_sub(p & mask).wrapping_sub(borrow);
-            borrow = (t >> Limb::BITS) & 1;
+            borrow = (t >> <Limb as Integer>::BITS) & 1;
             x[j] = as_limb(t);
         }
         small::normalize(x);
@@ -2214,9 +2214,9 @@ pub fn quorem<T>(x: &mut T, y: &T)
         let mut carry: Wide = 0;
         for j in 0..m {
             let p = as_wide(y[j]) + carry;
-            carry = p >> Limb::BITS;
+            carry = p >> <Limb as Integer>::BITS;
             let t = as_wide(x[j]).wrapping_sub(p & mask).wrapping_sub(borrow);
-            borrow = (t >> Limb::BITS) & 1;
+            borrow = (t >> <Limb as Integer>::BITS) & 1;
             x[j] = as_limb(t);
         }
         small::normalize(x);
@@ -2234,8 +2234,8 @@ use super::large_powers::*;
 /// Generate the imul_pown wrappers.
 macro_rules! imul_power {
     ($name:ident, $base:expr) => (
-        /// Multiply by a power of $base.
         perftools_inline!{
+        /// Multiply by a power of $base.
         fn $name(&mut self, n: u32) {
             self.imul_power_impl($base, n)
         }}
@@ -2264,120 +2264,120 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
 
     // ZERO
 
-    /// Check if the value is a normalized 0.
     perftools_inline!{
+    /// Check if the value is a normalized 0.
     fn is_zero(&self) -> bool {
         self.limb_length() == 0
     }}
 
     // RELATIVE OPERATIONS
 
-    /// Compare self to y.
     perftools_inline!{
+    /// Compare self to y.
     fn compare(&self, y: &Self) -> cmp::Ordering {
         large::compare(self.data(), y.data())
     }}
 
-    /// Check if self is greater than y.
     perftools_inline!{
+    /// Check if self is greater than y.
     fn greater(&self, y: &Self) -> bool {
         large::greater(self.data(), y.data())
     }}
 
-    /// Check if self is greater than or equal to y.
     perftools_inline!{
+    /// Check if self is greater than or equal to y.
     fn greater_equal(&self, y: &Self) -> bool {
         large::greater_equal(self.data(), y.data())
     }}
 
-    /// Check if self is less than y.
     perftools_inline!{
+    /// Check if self is less than y.
     fn less(&self, y: &Self) -> bool {
         large::less(self.data(), y.data())
     }}
 
-    /// Check if self is less than or equal to y.
     perftools_inline!{
+    /// Check if self is less than or equal to y.
     fn less_equal(&self, y: &Self) -> bool {
         large::less_equal(self.data(), y.data())
     }}
 
-    /// Check if self is equal to y.
     perftools_inline!{
+    /// Check if self is equal to y.
     fn equal(&self, y: &Self) -> bool {
         large::equal(self.data(), y.data())
     }}
 
     // PROPERTIES
 
+    perftools_inline!{
     /// Get the number of leading zero digits in the storage.
     /// Assumes the value is normalized.
-    perftools_inline!{
     fn leading_zero_limbs(&self) -> usize {
         small::leading_zero_limbs(self.data())
     }}
 
+    perftools_inline!{
     /// Get the number of trailing zero digits in the storage.
     /// Assumes the value is normalized.
-    perftools_inline!{
     fn trailing_zero_limbs(&self) -> usize {
         small::trailing_zero_limbs(self.data())
     }}
 
+    perftools_inline!{
     /// Get number of leading zero bits in the storage.
     /// Assumes the value is normalized.
-    perftools_inline!{
     fn leading_zeros(&self) -> usize {
         small::leading_zeros(self.data())
     }}
 
+    perftools_inline!{
     /// Get number of trailing zero bits in the storage.
     /// Assumes the value is normalized.
-    perftools_inline!{
     fn trailing_zeros(&self) -> usize {
         small::trailing_zeros(self.data())
     }}
 
+    perftools_inline!{
     /// Calculate the bit-length of the big-integer.
     /// Returns usize::max_value() if the value overflows,
     /// IE, if `self.data().len() > usize::max_value() / 8`.
-    perftools_inline!{
     fn bit_length(&self) -> usize {
         small::bit_length(self.data())
     }}
 
-    /// Calculate the digit-length of the big-integer.
     perftools_inline!{
+    /// Calculate the digit-length of the big-integer.
     fn limb_length(&self) -> usize {
         small::limb_length(self.data())
     }}
 
-    /// Get the high 16-bits from the bigint and if there are remaining bits.
     perftools_inline!{
+    /// Get the high 16-bits from the bigint and if there are remaining bits.
     fn hi16(&self) -> (u16, bool) {
         self.data().as_slice().hi16()
     }}
 
-    /// Get the high 32-bits from the bigint and if there are remaining bits.
     perftools_inline!{
+    /// Get the high 32-bits from the bigint and if there are remaining bits.
     fn hi32(&self) -> (u32, bool) {
         self.data().as_slice().hi32()
     }}
 
-    /// Get the high 64-bits from the bigint and if there are remaining bits.
     perftools_inline!{
+    /// Get the high 64-bits from the bigint and if there are remaining bits.
     fn hi64(&self) -> (u64, bool) {
         self.data().as_slice().hi64()
     }}
 
-    /// Get the high 128-bits from the bigint and if there are remaining bits.
     perftools_inline!{
+    /// Get the high 128-bits from the bigint and if there are remaining bits.
     fn hi128(&self) -> (u128, bool) {
         self.data().as_slice().hi128()
     }}
 
-    /// Pad the buffer with zeros to the least-significant bits.
     perftools_inline!{
+    /// Pad the buffer with zeros to the least-significant bits.
     fn pad_zero_digits(&mut self, n: usize) -> usize {
         small::ishl_limbs(self.data_mut(), n);
         n
@@ -2387,8 +2387,8 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
 
     // CREATION
 
-    /// Create new big integer from u16.
     perftools_inline!{
+    /// Create new big integer from u16.
     fn from_u16(x: u16) -> Self {
         let mut v = Self::default();
         let slc = split_u16(x);
@@ -2397,8 +2397,8 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
         v
     }}
 
-    /// Create new big integer from u32.
     perftools_inline!{
+    /// Create new big integer from u32.
     fn from_u32(x: u32) -> Self {
         let mut v = Self::default();
         let slc = split_u32(x);
@@ -2407,8 +2407,8 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
         v
     }}
 
-    /// Create new big integer from u64.
     perftools_inline!{
+    /// Create new big integer from u64.
     fn from_u64(x: u64) -> Self {
         let mut v = Self::default();
         let slc = split_u64(x);
@@ -2417,8 +2417,8 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
         v
     }}
 
-    /// Create new big integer from u128.
     perftools_inline!{
+    /// Create new big integer from u128.
     fn from_u128(x: u128) -> Self {
         let mut v = Self::default();
         let slc = split_u128(x);
@@ -2429,36 +2429,36 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
 
     // NORMALIZE
 
-    /// Normalize the integer, so any leading zero values are removed.
     perftools_inline!{
+    /// Normalize the integer, so any leading zero values are removed.
     fn normalize(&mut self) {
         small::normalize(self.data_mut());
     }}
 
-    /// Get if the big integer is normalized.
     perftools_inline!{
+    /// Get if the big integer is normalized.
     fn is_normalized(&self) -> bool {
         self.data().is_empty() || !self.data().rindex(0).is_zero()
     }}
 
     // SHIFTS
 
-    /// Shift-left the entire buffer n bits.
     perftools_inline!{
+    /// Shift-left the entire buffer n bits.
     fn ishl(&mut self, n: usize) {
         small::ishl(self.data_mut(), n);
     }}
 
-    /// Shift-left the entire buffer n bits.
     perftools_inline!{
+    /// Shift-left the entire buffer n bits.
     fn shl(&self, n: usize) -> Self {
         let mut x = self.clone();
         x.ishl(n);
         x
     }}
 
-    /// Shift-right the entire buffer n bits.
     perftools_inline!{
+    /// Shift-right the entire buffer n bits.
     fn ishr(&mut self, n: usize, mut roundup: bool) {
         roundup &= small::ishr(self.data_mut(), n);
 
@@ -2472,8 +2472,8 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
         }
     }}
 
-    /// Shift-right the entire buffer n bits.
     perftools_inline!{
+    /// Shift-right the entire buffer n bits.
     fn shr(&self, n: usize, roundup: bool) -> Self {
         let mut x = self.clone();
         x.ishr(n, roundup);
@@ -2485,28 +2485,28 @@ pub(in crate::atof::algorithm) trait SharedOps: Clone + Sized + Default {
 pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
     // SMALL POWERS
 
-    /// Get the small powers from the radix.
     perftools_inline!{
+    /// Get the small powers from the radix.
     fn small_powers(radix: u32) -> &'static [Limb] {
         get_small_powers(radix)
     }}
 
-    /// Get the large powers from the radix.
     perftools_inline!{
+    /// Get the large powers from the radix.
     fn large_powers(radix: u32) -> &'static [&'static [Limb]] {
         get_large_powers(radix)
     }}
 
     // ADDITION
 
-    /// AddAssign small integer.
     perftools_inline!{
+    /// AddAssign small integer.
     fn iadd_small(&mut self, y: Limb) {
         small::iadd(self.data_mut(), y);
     }}
 
-    /// Add small integer to a copy of self.
     perftools_inline!{
+    /// Add small integer to a copy of self.
     fn add_small(&self, y: Limb) -> Self {
         let mut x = self.clone();
         x.iadd_small(y);
@@ -2515,16 +2515,16 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     // SUBTRACTION
 
+    perftools_inline!{
     /// SubAssign small integer.
     /// Warning: Does no overflow checking, x must be >= y.
-    perftools_inline!{
     fn isub_small(&mut self, y: Limb) {
         small::isub(self.data_mut(), y);
     }}
 
+    perftools_inline!{
     /// Sub small integer to a copy of self.
     /// Warning: Does no overflow checking, x must be >= y.
-    perftools_inline!{
     fn sub_small(&mut self, y: Limb) -> Self {
         let mut x = self.clone();
         x.isub_small(y);
@@ -2533,22 +2533,22 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     // MULTIPLICATION
 
-    /// MulAssign small integer.
     perftools_inline!{
+    /// MulAssign small integer.
     fn imul_small(&mut self, y: Limb) {
         small::imul(self.data_mut(), y);
     }}
 
-    /// Mul small integer to a copy of self.
     perftools_inline!{
+    /// Mul small integer to a copy of self.
     fn mul_small(&self, y: Limb) -> Self {
         let mut x = self.clone();
         x.imul_small(y);
         x
     }}
 
-    /// MulAssign by a power.
     perftools_inline!{
+    /// MulAssign by a power.
     fn imul_power_impl(&mut self, radix: u32, n: u32) {
         small::imul_power(self.data_mut(), radix, n);
     }}
@@ -2595,24 +2595,24 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
         }
     }}
 
-    /// Multiply by a power of 2.
     perftools_inline!{
+    /// Multiply by a power of 2.
     fn imul_pow2(&mut self, n: u32) {
         self.ishl(n.as_usize())
     }}
 
     imul_power!(imul_pow3, 3);
 
-    /// Multiply by a power of 4.
     perftools_inline!{
+    /// Multiply by a power of 4.
     fn imul_pow4(&mut self, n: u32) {
         self.imul_pow2(2*n);
     }}
 
     imul_power!(imul_pow5, 5);
 
-    /// Multiply by a power of 6.
     perftools_inline!{
+    /// Multiply by a power of 6.
     fn imul_pow6(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow2(n);
@@ -2620,21 +2620,21 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow7, 7);
 
-    /// Multiply by a power of 8.
     perftools_inline!{
+    /// Multiply by a power of 8.
     fn imul_pow8(&mut self, n: u32) {
         self.imul_pow2(3*n);
     }}
 
-    /// Multiply by a power of 9.
     perftools_inline!{
+    /// Multiply by a power of 9.
     fn imul_pow9(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow3(n);
     }}
 
-    /// Multiply by a power of 10.
     perftools_inline!{
+    /// Multiply by a power of 10.
     fn imul_pow10(&mut self, n: u32) {
         self.imul_pow5(n);
         self.imul_pow2(n);
@@ -2642,8 +2642,8 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow11, 11);
 
-    /// Multiply by a power of 12.
     perftools_inline!{
+    /// Multiply by a power of 12.
     fn imul_pow12(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow4(n);
@@ -2651,30 +2651,30 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow13, 13);
 
-    /// Multiply by a power of 14.
     perftools_inline!{
+    /// Multiply by a power of 14.
     fn imul_pow14(&mut self, n: u32) {
         self.imul_pow7(n);
         self.imul_pow2(n);
     }}
 
-    /// Multiply by a power of 15.
     perftools_inline!{
+    /// Multiply by a power of 15.
     fn imul_pow15(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow5(n);
     }}
 
-    /// Multiply by a power of 16.
     perftools_inline!{
+    /// Multiply by a power of 16.
     fn imul_pow16(&mut self, n: u32) {
         self.imul_pow2(4*n);
     }}
 
     imul_power!(imul_pow17, 17);
 
-    /// Multiply by a power of 18.
     perftools_inline!{
+    /// Multiply by a power of 18.
     fn imul_pow18(&mut self, n: u32) {
         self.imul_pow9(n);
         self.imul_pow2(n);
@@ -2682,22 +2682,22 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow19, 19);
 
-    /// Multiply by a power of 20.
     perftools_inline!{
+    /// Multiply by a power of 20.
     fn imul_pow20(&mut self, n: u32) {
         self.imul_pow5(n);
         self.imul_pow4(n);
     }}
 
-    /// Multiply by a power of 21.
     perftools_inline!{
+    /// Multiply by a power of 21.
     fn imul_pow21(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow7(n);
     }}
 
-    /// Multiply by a power of 22.
     perftools_inline!{
+    /// Multiply by a power of 22.
     fn imul_pow22(&mut self, n: u32) {
         self.imul_pow11(n);
         self.imul_pow2(n);
@@ -2705,36 +2705,36 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow23, 23);
 
-    /// Multiply by a power of 24.
     perftools_inline!{
+    /// Multiply by a power of 24.
     fn imul_pow24(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow8(n);
     }}
 
-    /// Multiply by a power of 25.
     perftools_inline!{
+    /// Multiply by a power of 25.
     fn imul_pow25(&mut self, n: u32) {
         self.imul_pow5(n);
         self.imul_pow5(n);
     }}
 
-    /// Multiply by a power of 26.
     perftools_inline!{
+    /// Multiply by a power of 26.
     fn imul_pow26(&mut self, n: u32) {
         self.imul_pow13(n);
         self.imul_pow2(n);
     }}
 
-    /// Multiply by a power of 27.
     perftools_inline!{
+    /// Multiply by a power of 27.
     fn imul_pow27(&mut self, n: u32) {
         self.imul_pow9(n);
         self.imul_pow3(n);
     }}
 
-    /// Multiply by a power of 28.
     perftools_inline!{
+    /// Multiply by a power of 28.
     fn imul_pow28(&mut self, n: u32) {
         self.imul_pow7(n);
         self.imul_pow4(n);
@@ -2742,8 +2742,8 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow29, 29);
 
-    /// Multiply by a power of 30.
     perftools_inline!{
+    /// Multiply by a power of 30.
     fn imul_pow30(&mut self, n: u32) {
         self.imul_pow15(n);
         self.imul_pow2(n);
@@ -2751,35 +2751,35 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     imul_power!(imul_pow31, 31);
 
-    /// Multiply by a power of 32.
     perftools_inline!{
+    /// Multiply by a power of 32.
     fn imul_pow32(&mut self, n: u32) {
         self.imul_pow2(5*n);
     }}
 
-    /// Multiply by a power of 33.
     perftools_inline!{
+    /// Multiply by a power of 33.
     fn imul_pow33(&mut self, n: u32) {
         self.imul_pow3(n);
         self.imul_pow11(n);
     }}
 
-    /// Multiply by a power of 34.
     perftools_inline!{
+    /// Multiply by a power of 34.
     fn imul_pow34(&mut self, n: u32) {
         self.imul_pow17(n);
         self.imul_pow2(n);
     }}
 
-    /// Multiply by a power of 35.
     perftools_inline!{
+    /// Multiply by a power of 35.
     fn imul_pow35(&mut self, n: u32) {
         self.imul_pow5(n);
         self.imul_pow7(n);
     }}
 
-    /// Multiply by a power of 36.
     perftools_inline!{
+    /// Multiply by a power of 36.
     fn imul_pow36(&mut self, n: u32) {
         self.imul_pow9(n);
         self.imul_pow4(n);
@@ -2787,14 +2787,14 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     // DIVISION
 
-    /// DivAssign small integer, and return the remainder.
     perftools_inline!{
+    /// DivAssign small integer, and return the remainder.
     fn idiv_small(&mut self, y: Limb) -> Limb {
         small::idiv(self.data_mut(), y)
     }}
 
-    /// Div small integer to a copy of self, and return the remainder.
     perftools_inline!{
+    /// Div small integer to a copy of self, and return the remainder.
     fn div_small(&self, y: Limb) -> (Self, Limb) {
         let mut x = self.clone();
         let rem = x.idiv_small(y);
@@ -2803,14 +2803,14 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 
     // POWER
 
-    /// Calculate self^n
     perftools_inline!{
+    /// Calculate self^n
     fn ipow(&mut self, n: Limb) {
         small::ipow(self.data_mut(), n);
     }}
 
-    /// Calculate self^n
     perftools_inline!{
+    /// Calculate self^n
     fn pow(&self, n: Limb) -> Self {
         let mut x = self.clone();
         x.ipow(n);
@@ -2822,14 +2822,14 @@ pub(in crate::atof::algorithm) trait SmallOps: SharedOps {
 pub(in crate::atof::algorithm) trait LargeOps: SmallOps {
     // ADDITION
 
-    /// AddAssign large integer.
     perftools_inline!{
+    /// AddAssign large integer.
     fn iadd_large(&mut self, y: &Self) {
         large::iadd(self.data_mut(), y.data());
     }}
 
-    /// Add large integer to a copy of self.
     perftools_inline!{
+    /// Add large integer to a copy of self.
     fn add_large(&mut self, y: &Self) -> Self {
         let mut x = self.clone();
         x.iadd_large(y);
@@ -2838,16 +2838,16 @@ pub(in crate::atof::algorithm) trait LargeOps: SmallOps {
 
     // SUBTRACTION
 
+    perftools_inline!{
     /// SubAssign large integer.
     /// Warning: Does no overflow checking, x must be >= y.
-    perftools_inline!{
     fn isub_large(&mut self, y: &Self) {
         large::isub(self.data_mut(), y.data());
     }}
 
+    perftools_inline!{
     /// Sub large integer to a copy of self.
     /// Warning: Does no overflow checking, x must be >= y.
-    perftools_inline!{
     fn sub_large(&mut self, y: &Self) -> Self {
         let mut x = self.clone();
         x.isub_large(y);
@@ -2856,14 +2856,14 @@ pub(in crate::atof::algorithm) trait LargeOps: SmallOps {
 
     // MULTIPLICATION
 
-    /// MulAssign large integer.
     perftools_inline!{
+    /// MulAssign large integer.
     fn imul_large(&mut self, y: &Self) {
         large::imul(self.data_mut(), y.data());
     }}
 
-    /// Mul large integer to a copy of self.
     perftools_inline!{
+    /// Mul large integer to a copy of self.
     fn mul_large(&mut self, y: &Self) -> Self {
         let mut x = self.clone();
         x.imul_large(y);
@@ -2872,22 +2872,23 @@ pub(in crate::atof::algorithm) trait LargeOps: SmallOps {
 
     // DIVISION
 
-    /// DivAssign large integer and get remainder.
     perftools_inline!{
+    /// DivAssign large integer and get remainder.
     fn idiv_large(&mut self, y: &Self) -> Self {
         let mut rem = Self::default();
         *rem.data_mut() = large::idiv(self.data_mut(), y.data());
         rem
     }}
 
-    /// Div large integer to a copy of self and get quotient and remainder.
     perftools_inline!{
+    /// Div large integer to a copy of self and get quotient and remainder.
     fn div_large(&mut self, y: &Self) -> (Self, Self) {
         let mut x = self.clone();
         let rem = x.idiv_large(y);
         (x, rem)
     }}
 
+    perftools_inline!{
     /// Calculate the fast quotient for a single limb-bit quotient.
     ///
     /// This requires a non-normalized divisor, where there at least
@@ -2896,7 +2897,6 @@ pub(in crate::atof::algorithm) trait LargeOps: SmallOps {
     ///
     /// Warning: This is not a general-purpose division algorithm,
     /// it is highly specialized for peeling off singular digits.
-    perftools_inline!{
     fn quorem(&mut self, y: &Self) -> Limb {
         large::quorem(self.data_mut(), y.data())
     }}
@@ -3129,18 +3129,18 @@ mod tests {
     fn leading_zeros_test() {
         assert_eq!(Bigint::new().leading_zeros(), 0);
 
-        assert_eq!(Bigint::from_u16(0xFF).leading_zeros(), Limb::BITS-8);
-        assert_eq!(Bigint::from_u32(0xFF).leading_zeros(), Limb::BITS-8);
+        assert_eq!(Bigint::from_u16(0xFF).leading_zeros(), <Limb as Integer>::BITS-8);
+        assert_eq!(Bigint::from_u32(0xFF).leading_zeros(), <Limb as Integer>::BITS-8);
         assert_eq!(Bigint::from_u64(0xFF00000000).leading_zeros(), 24);
         assert_eq!(Bigint::from_u128(0xFF000000000000000000000000).leading_zeros(), 24);
 
-        assert_eq!(Bigint::from_u16(0xF).leading_zeros(), Limb::BITS-4);
-        assert_eq!(Bigint::from_u32(0xF).leading_zeros(), Limb::BITS-4);
+        assert_eq!(Bigint::from_u16(0xF).leading_zeros(), <Limb as Integer>::BITS-4);
+        assert_eq!(Bigint::from_u32(0xF).leading_zeros(), <Limb as Integer>::BITS-4);
         assert_eq!(Bigint::from_u64(0xF00000000).leading_zeros(), 28);
         assert_eq!(Bigint::from_u128(0xF000000000000000000000000).leading_zeros(), 28);
 
-        assert_eq!(Bigint::from_u16(0xF0).leading_zeros(), Limb::BITS-8);
-        assert_eq!(Bigint::from_u32(0xF0).leading_zeros(), Limb::BITS-8);
+        assert_eq!(Bigint::from_u16(0xF0).leading_zeros(), <Limb as Integer>::BITS-8);
+        assert_eq!(Bigint::from_u32(0xF0).leading_zeros(), <Limb as Integer>::BITS-8);
         assert_eq!(Bigint::from_u64(0xF000000000).leading_zeros(), 24);
         assert_eq!(Bigint::from_u128(0xF0000000000000000000000000).leading_zeros(), 24);
     }

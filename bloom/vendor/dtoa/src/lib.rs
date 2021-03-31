@@ -46,7 +46,22 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/dtoa/0.4.7")]
+#![doc(html_root_url = "https://docs.rs/dtoa/0.4.8")]
+#![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(
+        cast_lossless,
+        cast_possible_truncation,
+        if_not_else,
+        missing_errors_doc,
+        range_plus_one,
+        shadow_unrelated,
+        transmute_float_to_int,
+        unreadable_literal,
+        unseparated_literal_suffix
+    )
+)]
 
 #[macro_use] mod diyfp;
 #[macro_use] mod dtoa;
@@ -61,7 +76,7 @@ pub fn write<W: io::Write, V: Floating>(wr: W, value: V) -> io::Result<usize> {
 
 /// An floating point number that can be formatted by `dtoa::write`.
 pub trait Floating {
-    fn write<W: io::Write>(self, W) -> io::Result<usize>;
+    fn write<W: io::Write>(self, wr: W) -> io::Result<usize>;
 }
 
 impl Floating for f32 {

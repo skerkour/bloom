@@ -1,5 +1,11 @@
 # Version 0.14
 
+## Version 0.14.4 (Feb 1, 2021)
+
+### Changes and Fixes
+
+  * `rand` and `base64` dependencies were updated to their latest versions.
+
 ## Version 0.14.3 (Nov 5, 2020)
 
 ### Changes and Fixes

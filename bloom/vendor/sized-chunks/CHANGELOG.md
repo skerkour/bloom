@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project
 adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.4] - 2021-02-17
+
+### FIXED
+
+-  `InlineArray` can be used in recursive types again.
+
+### CHANGED
+
+-  `InlineArray::new()` now panics when it can't store elements with large alignment
+    (this was UB prior to 0.6.3). Alignments of `usize` and smaller are always supported.
+    Larger alignments are supported if the capacity-providing type has sufficient alignment.
+
+## [0.6.3] - 2021-02-14
+
+### FIXED
+
+-   Multilple soundness fixes: `InlineArray` handles large alignment, panic safety in `Chunk`'s
+    `clone` and `from_iter`, capacity checks in `unit()`, `pair()` and `from()`.
+-   `InlineArray` can now handle zero sized values. This relies on conditionals in const functions,
+    a feature which was introduced in Rust 1.46.0, which means this is now the minimum Rust version
+    this crate will work on.
+
 ## [0.6.2] - 2020-05-15
 
 ### FIXED

@@ -14,9 +14,9 @@
 /// ```
 use core::fmt;
 
-use crate::alloc::sync::Arc;
 use crate::guard::Guard;
 use crate::internal::{Global, Local};
+use crate::primitive::sync::Arc;
 
 /// An epoch-based garbage collector.
 pub struct Collector {
@@ -109,7 +109,7 @@ impl fmt::Debug for LocalHandle {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(crossbeam_loom)))]
 mod tests {
     use std::mem;
     use std::sync::atomic::{AtomicUsize, Ordering};
@@ -151,9 +151,9 @@ mod tests {
                 let a = Owned::new(7).into_shared(guard);
                 guard.defer_destroy(a);
 
-                assert!(!(*(*guard.local).bag.get()).is_empty());
+                assert!(!(*guard.local).bag.with(|b| (*b).is_empty()));
 
-                while !(*(*guard.local).bag.get()).is_empty() {
+                while !(*guard.local).bag.with(|b| (*b).is_empty()) {
                     guard.flush();
                 }
             }
@@ -172,7 +172,7 @@ mod tests {
                 let a = Owned::new(7).into_shared(guard);
                 guard.defer_destroy(a);
             }
-            assert!(!(*(*guard.local).bag.get()).is_empty());
+            assert!(!(*guard.local).bag.with(|b| (*b).is_empty()));
         }
     }
 
@@ -199,6 +199,7 @@ mod tests {
         .unwrap();
     }
 
+    #[cfg(not(crossbeam_sanitize))] // TODO: assertions failed due to `cfg(crossbeam_sanitize)` reduce `internal::MAX_OBJECTS`
     #[test]
     fn incremental() {
         const COUNT: usize = 100_000;

@@ -13,14 +13,13 @@
 [package]
 edition = "2018"
 name = "const_fn"
-version = "0.4.5"
+version = "0.4.6"
 authors = ["Taiki Endo <te316e89@gmail.com>"]
-exclude = ["/.github", "/scripts"]
+exclude = ["/.*", "/tools"]
 description = "An attribute for easy generation of const functions with conditional compilations.\n"
 documentation = "https://docs.rs/const_fn"
-readme = "README.md"
 keywords = ["macros", "attribute", "const", "static"]
-categories = ["rust-patterns", "no-std"]
+categories = ["no-std", "rust-patterns"]
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/taiki-e/const_fn"
 [package.metadata.docs.rs]

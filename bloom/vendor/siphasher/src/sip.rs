@@ -18,7 +18,7 @@ use core::ptr;
 
 /// An implementation of SipHash 1-3.
 ///
-/// See: <https://131002.net/siphash/>
+/// See: <https://www.aumasson.jp/siphash/siphash.pdf>
 #[derive(Debug, Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SipHasher13 {
@@ -27,7 +27,7 @@ pub struct SipHasher13 {
 
 /// An implementation of SipHash 2-4.
 ///
-/// See: <https://131002.net/siphash/>
+/// See: <https://www.aumasson.jp/siphash/siphash.pdf>
 #[derive(Debug, Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SipHasher24 {
@@ -36,7 +36,7 @@ pub struct SipHasher24 {
 
 /// An implementation of SipHash 2-4.
 ///
-/// See: <https://131002.net/siphash/>
+/// See: <https://www.aumasson.jp/siphash/siphash.pdf>
 ///
 /// SipHash is a general-purpose hashing function: it runs at a good
 /// speed (competitive with Spooky and City) and permits strong _keyed_

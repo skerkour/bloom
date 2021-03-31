@@ -227,7 +227,8 @@ pub const S_ISGID: ::mode_t = 0x400;
 pub const S_ISVTX: ::mode_t = 0x200;
 
 cfg_if! {
-    if #[cfg(not(any(target_os = "illumos", target_os = "solaris")))] {
+    if #[cfg(not(any(target_os = "haiku", target_os = "illumos",
+                     target_os = "solaris")))] {
         pub const IF_NAMESIZE: ::size_t = 16;
         pub const IFNAMSIZ: ::size_t = IF_NAMESIZE;
     }
@@ -260,12 +261,15 @@ pub const LOG_LOCAL5: ::c_int = 21 << 3;
 pub const LOG_LOCAL6: ::c_int = 22 << 3;
 pub const LOG_LOCAL7: ::c_int = 23 << 3;
 
-pub const LOG_PID: ::c_int = 0x01;
-pub const LOG_CONS: ::c_int = 0x02;
-pub const LOG_ODELAY: ::c_int = 0x04;
-pub const LOG_NDELAY: ::c_int = 0x08;
-pub const LOG_NOWAIT: ::c_int = 0x10;
-
+cfg_if! {
+    if #[cfg(not(target_os = "haiku"))] {
+        pub const LOG_PID: ::c_int = 0x01;
+        pub const LOG_CONS: ::c_int = 0x02;
+        pub const LOG_ODELAY: ::c_int = 0x04;
+        pub const LOG_NDELAY: ::c_int = 0x08;
+        pub const LOG_NOWAIT: ::c_int = 0x10;
+    }
+}
 pub const LOG_PRIMASK: ::c_int = 7;
 pub const LOG_FACMASK: ::c_int = 0x3f8;
 
@@ -454,10 +458,7 @@ extern "C" {
         ptr: *mut *mut c_char,
         sizeloc: *mut size_t,
     ) -> *mut FILE;
-    pub fn open_wmemstream(
-        ptr: *mut *mut wchar_t,
-        sizeloc: *mut size_t,
-    ) -> *mut FILE;
+
     pub fn fflush(file: *mut FILE) -> c_int;
     pub fn fclose(file: *mut FILE) -> c_int;
     pub fn remove(filename: *const c_char) -> c_int;
@@ -622,15 +623,24 @@ extern "C" {
         ...
     ) -> ::c_int;
     pub fn sprintf(s: *mut ::c_char, format: *const ::c_char, ...) -> ::c_int;
-    #[cfg_attr(target_os = "linux", link_name = "__isoc99_fscanf")]
+    #[cfg_attr(
+        all(target_os = "linux", not(target_env = "uclibc")),
+        link_name = "__isoc99_fscanf"
+    )]
     pub fn fscanf(
         stream: *mut ::FILE,
         format: *const ::c_char,
         ...
     ) -> ::c_int;
-    #[cfg_attr(target_os = "linux", link_name = "__isoc99_scanf")]
+    #[cfg_attr(
+        all(target_os = "linux", not(target_env = "uclibc")),
+        link_name = "__isoc99_scanf"
+    )]
     pub fn scanf(format: *const ::c_char, ...) -> ::c_int;
-    #[cfg_attr(target_os = "linux", link_name = "__isoc99_sscanf")]
+    #[cfg_attr(
+        all(target_os = "linux", not(target_env = "uclibc")),
+        link_name = "__isoc99_sscanf"
+    )]
     pub fn sscanf(s: *const ::c_char, format: *const ::c_char, ...)
         -> ::c_int;
     pub fn getchar_unlocked() -> ::c_int;
@@ -1573,6 +1583,17 @@ extern "C" {
 }
 
 cfg_if! {
+    if #[cfg(not(target_env = "uclibc"))] {
+        extern "C" {
+            pub fn open_wmemstream(
+                ptr: *mut *mut wchar_t,
+                sizeloc: *mut size_t,
+            ) -> *mut FILE;
+        }
+    }
+}
+
+cfg_if! {
     if #[cfg(not(target_os = "redox"))] {
         extern {
             pub fn getsid(pid: pid_t) -> pid_t;
@@ -1627,13 +1648,11 @@ cfg_if! {
 }
 
 cfg_if! {
-    if #[cfg(target_env = "uclibc")] {
-        mod uclibc;
-        pub use self::uclibc::*;
-    } else if #[cfg(target_env = "newlib")] {
+    if #[cfg(target_env = "newlib")] {
         mod newlib;
         pub use self::newlib::*;
     } else if #[cfg(any(target_os = "linux",
+                        target_os = "l4re",
                         target_os = "android",
                         target_os = "emscripten"))] {
         mod linux_like;

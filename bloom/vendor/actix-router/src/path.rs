@@ -50,20 +50,20 @@ impl<T: ResourcePath> Path<T> {
         }
     }
 
-    #[inline]
     /// Get reference to inner path instance
+    #[inline]
     pub fn get_ref(&self) -> &T {
         &self.path
     }
 
-    #[inline]
     /// Get mutable reference to inner path instance
+    #[inline]
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.path
     }
 
-    #[inline]
     /// Path
+    #[inline]
     pub fn path(&self) -> &str {
         let skip = self.skip as usize;
         let path = self.path.path();
@@ -74,23 +74,23 @@ impl<T: ResourcePath> Path<T> {
         }
     }
 
-    #[inline]
     /// Set new path
+    #[inline]
     pub fn set(&mut self, path: T) {
         self.skip = 0;
         self.path = path;
         self.segments.clear();
     }
 
-    #[inline]
     /// Reset state
+    #[inline]
     pub fn reset(&mut self) {
         self.skip = 0;
         self.segments.clear();
     }
 
-    #[inline]
     /// Skip first `n` chars in path
+    #[inline]
     pub fn skip(&mut self, n: u16) {
         self.skip += n;
     }
@@ -109,14 +109,14 @@ impl<T: ResourcePath> Path<T> {
         self.segments.push((name, PathItem::Static(value)));
     }
 
-    #[inline]
     /// Check if there are any matched patterns
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.segments.is_empty()
     }
 
-    #[inline]
     /// Check number of extracted parameters
+    #[inline]
     pub fn len(&self) -> usize {
         self.segments.len()
     }

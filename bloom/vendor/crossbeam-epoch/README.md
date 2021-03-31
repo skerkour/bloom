@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/crossbeam-rs/crossbeam/workflows/CI/badge.svg)](
 https://github.com/crossbeam-rs/crossbeam/actions)
-[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](
+[![License](https://img.shields.io/badge/license-MIT_OR_Apache--2.0-blue.svg)](
 https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch#license)
 [![Cargo](https://img.shields.io/crates/v/crossbeam-epoch.svg)](
 https://crates.io/crates/crossbeam-epoch)
@@ -20,7 +20,7 @@ immediately. Epoch-based GC is an efficient mechanism for deferring destruction 
 shared objects until no pointers to them can exist.
 
 Everything in this crate except the global GC can be used in `no_std` environments, provided that
-features `alloc` and `nightly` are enabled.
+`alloc` feature is enabled.
 
 ## Usage
 

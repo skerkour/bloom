@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "lettre"
-version = "0.10.0-alpha.5"
+version = "0.10.0-beta.3"
 authors = ["Alexis Mousset <contact@amousset.me>", "Paolo Barbolini <paolo@paolo565.org>"]
 description = "Email client"
 homepage = "https://lettre.rs"
@@ -117,7 +117,7 @@ optional = true
 version = "0.2"
 
 [dependencies.mime]
-version = "0.3"
+version = "0.3.4"
 optional = true
 
 [dependencies.native-tls]
@@ -126,7 +126,7 @@ optional = true
 
 [dependencies.nom]
 version = "6"
-features = ["alloc"]
+features = ["alloc", "std"]
 optional = true
 default-features = false
 
@@ -249,7 +249,7 @@ version = "2"
 async-std1 = ["async-std", "async-trait", "futures-io", "futures-util"]
 async-std1-rustls-tls = ["async-std1", "rustls-tls", "async-rustls"]
 builder = ["mime", "base64", "hyperx", "rand", "quoted_printable"]
-default = ["file-transport", "file-transport-envelope", "smtp-transport", "native-tls", "hostname", "r2d2", "sendmail-transport", "builder"]
+default = ["smtp-transport", "native-tls", "hostname", "r2d2", "builder"]
 file-transport = []
 file-transport-envelope = ["serde", "serde_json", "file-transport"]
 rustls-tls = ["webpki", "webpki-roots", "rustls"]

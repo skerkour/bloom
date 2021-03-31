@@ -33,9 +33,9 @@ impl From<u128> for Hash128 {
     }
 }
 
-impl Into<u128> for Hash128 {
-    fn into(self) -> u128 {
-        (self.h1 as u128) | ((self.h2 as u128) << 64)
+impl From<Hash128> for u128 {
+    fn from(h: Hash128) -> u128 {
+        (h.h1 as u128) | ((h.h2 as u128) << 64)
     }
 }
 

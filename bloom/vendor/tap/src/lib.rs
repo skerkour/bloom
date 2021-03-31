@@ -138,5 +138,10 @@ pub mod tap;
 
 /// Reëxports all traits in one place, for easy import.
 pub mod prelude {
+	#[doc(inline)]
 	pub use crate::{conv::*, pipe::*, tap::*};
 }
+
+// also make traits available at crate root
+#[doc(inline)]
+pub use prelude::*;

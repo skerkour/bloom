@@ -13,9 +13,10 @@
 [package]
 edition = "2018"
 name = "whoami"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Jeron Aldaron Lau <jeronlau@plopgrizzly.com>"]
-include = ["Cargo.toml", "src/*"]
+build = "build.rs"
+include = ["Cargo.toml", "src/*", "build.rs"]
 description = "Retrieve the current user and environment."
 homepage = "https://github.com/libcala/whoami/blob/main/CHANGELOG.md"
 documentation = "https://docs.rs/whoami"

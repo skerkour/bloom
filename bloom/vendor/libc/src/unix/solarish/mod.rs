@@ -946,10 +946,15 @@ pub const SIGEV_NONE: ::c_int = 1;
 pub const SIGEV_SIGNAL: ::c_int = 2;
 pub const SIGEV_THREAD: ::c_int = 3;
 
+pub const IP_RECVDSTADDR: ::c_int = 0x7;
+pub const IP_SEC_OPT: ::c_int = 0x22;
+
 pub const IPV6_UNICAST_HOPS: ::c_int = 0x5;
 pub const IPV6_MULTICAST_IF: ::c_int = 0x6;
 pub const IPV6_MULTICAST_HOPS: ::c_int = 0x7;
 pub const IPV6_MULTICAST_LOOP: ::c_int = 0x8;
+pub const IPV6_RECVPKTINFO: ::c_int = 0x12;
+pub const IPV6_SEC_OPT: ::c_int = 0x22;
 pub const IPV6_V6ONLY: ::c_int = 0x27;
 
 cfg_if! {
@@ -994,10 +999,12 @@ pub const O_EXCL: ::c_int = 1024;
 pub const O_NOCTTY: ::c_int = 2048;
 pub const O_TRUNC: ::c_int = 512;
 pub const O_NOFOLLOW: ::c_int = 0x20000;
+pub const O_DIRECTORY: ::c_int = 0x1000000;
 pub const O_SEARCH: ::c_int = 0x200000;
 pub const O_EXEC: ::c_int = 0x400000;
 pub const O_CLOEXEC: ::c_int = 0x800000;
 pub const O_ACCMODE: ::c_int = 0x600003;
+pub const O_XATTR: ::c_int = 0x4000;
 pub const S_IFIFO: mode_t = 4096;
 pub const S_IFCHR: mode_t = 8192;
 pub const S_IFBLK: mode_t = 24576;
@@ -1036,6 +1043,12 @@ pub const F_DUPFD_CLOEXEC: ::c_int = 37;
 pub const F_SETLK: ::c_int = 6;
 pub const F_SETLKW: ::c_int = 7;
 pub const F_GETLK: ::c_int = 14;
+pub const F_ALLOCSP: ::c_int = 10;
+pub const F_FREESP: ::c_int = 11;
+pub const F_BLOCKS: ::c_int = 18;
+pub const F_BLKSIZE: ::c_int = 19;
+pub const F_SHARE: ::c_int = 40;
+pub const F_UNSHARE: ::c_int = 41;
 pub const SIGHUP: ::c_int = 1;
 pub const SIGINT: ::c_int = 2;
 pub const SIGQUIT: ::c_int = 3;
@@ -1264,10 +1277,13 @@ pub const EAI_SYSTEM: ::c_int = 11;
 pub const EAI_OVERFLOW: ::c_int = 12;
 
 pub const F_DUPFD: ::c_int = 0;
+pub const F_DUP2FD: ::c_int = 9;
+pub const F_DUP2FD_CLOEXEC: ::c_int = 36;
 pub const F_GETFD: ::c_int = 1;
 pub const F_SETFD: ::c_int = 2;
 pub const F_GETFL: ::c_int = 3;
 pub const F_SETFL: ::c_int = 4;
+pub const F_GETXFL: ::c_int = 45;
 
 pub const SIGTRAP: ::c_int = 5;
 
@@ -1414,6 +1430,8 @@ pub const TCP_RTO_INITIAL: ::c_int = 0x19;
 pub const TCP_RTO_MIN: ::c_int = 0x1a;
 pub const TCP_RTO_MAX: ::c_int = 0x1b;
 pub const TCP_LINGER2: ::c_int = 0x1c;
+
+pub const UDP_NAT_T_ENDPOINT: ::c_int = 0x0103;
 
 pub const SOL_SOCKET: ::c_int = 0xffff;
 pub const SO_DEBUG: ::c_int = 0x01;
@@ -2085,12 +2103,14 @@ const _CMSG_HDR_ALIGNMENT: usize = 4;
 
 const _CMSG_DATA_ALIGNMENT: usize = ::mem::size_of::<::c_int>();
 
-fn _CMSG_HDR_ALIGN(p: usize) -> usize {
-    (p + _CMSG_HDR_ALIGNMENT - 1) & !(_CMSG_HDR_ALIGNMENT - 1)
-}
+const_fn! {
+    {const} fn _CMSG_HDR_ALIGN(p: usize) -> usize {
+        (p + _CMSG_HDR_ALIGNMENT - 1) & !(_CMSG_HDR_ALIGNMENT - 1)
+    }
 
-fn _CMSG_DATA_ALIGN(p: usize) -> usize {
-    (p + _CMSG_DATA_ALIGNMENT - 1) & !(_CMSG_DATA_ALIGNMENT - 1)
+    {const} fn _CMSG_DATA_ALIGN(p: usize) -> usize {
+        (p + _CMSG_DATA_ALIGNMENT - 1) & !(_CMSG_DATA_ALIGNMENT - 1)
+    }
 }
 
 f! {
@@ -2128,7 +2148,7 @@ f! {
         }
     }
 
-    pub fn CMSG_SPACE(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_SPACE(length: ::c_uint) -> ::c_uint {
         _CMSG_HDR_ALIGN(::mem::size_of::<::cmsghdr>() as usize
             + length as usize) as ::c_uint
     }
@@ -2533,7 +2553,7 @@ extern "C" {
 
     // The epoll functions are actually only present on illumos.  However,
     // there are things using epoll on illumos (built using the
-    // x86_64-sun-solaris target) which would break until the illumos target is
+    // x86_64-pc-solaris target) which would break until the illumos target is
     // present in rustc.
     pub fn epoll_pwait(
         epfd: ::c_int,

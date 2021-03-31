@@ -26,7 +26,7 @@ extern "C" fn restorer() -> ! {
 /// * `EIO` - an I/O error occurred
 /// * `ENOENT` - `path` does not exit
 /// * `ENOTDIR` - `path` is not a directory
-pub fn chdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+pub fn chdir<T: AsRef<str>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_CHDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
@@ -34,7 +34,7 @@ pub fn chdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
     since = "0.1.55",
     note = "use fchmod instead"
 )]
-pub fn chmod<T: AsRef<[u8]>>(path: T, mode: usize) -> Result<usize> {
+pub fn chmod<T: AsRef<str>>(path: T, mode: usize) -> Result<usize> {
     unsafe { syscall3(SYS_CHMOD, path.as_ref().as_ptr() as usize, path.as_ref().len(), mode) }
 }
 
@@ -115,7 +115,7 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
 }
 
 /// Rename a file
-pub fn frename<T: AsRef<[u8]>>(fd: usize, path: T) -> Result<usize> {
+pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
     unsafe { syscall3(SYS_FRENAME, fd, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
@@ -242,7 +242,7 @@ pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
 }
 
 /// Open a file
-pub fn open<T: AsRef<[u8]>>(path: T, flags: usize) -> Result<usize> {
+pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
     unsafe { syscall3(SYS_OPEN, path.as_ref().as_ptr() as usize, path.as_ref().len(), flags) }
 }
 
@@ -326,7 +326,7 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 }
 
 /// Remove a directory
-pub fn rmdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_RMDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
@@ -376,7 +376,7 @@ pub fn umask(mask: usize) -> Result<usize> {
 }
 
 /// Remove a file
-pub fn unlink<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 

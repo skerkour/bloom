@@ -1575,7 +1575,8 @@ impl Bump {
         }
     }
 
-    /// Calculates the number of bytes currently allocated across all chunks.
+    /// Calculates the number of bytes currently allocated across all chunks in
+    /// this bump arena.
     ///
     /// If you allocate types of different alignments or types with
     /// larger-than-typical alignment in the same arena, some padding
@@ -1799,6 +1800,17 @@ unsafe impl<'a> Allocator for &'a Bump {
         Bump::grow(self, ptr, old_layout, new_size)
             .map(|p| NonNull::slice_from_raw_parts(p, new_size))
             .map_err(|_| AllocError)
+    }
+
+    unsafe fn grow_zeroed(
+        &self,
+        ptr: NonNull<u8>,
+        old_layout: Layout,
+        new_layout: Layout,
+    ) -> Result<NonNull<[u8]>, AllocError> {
+        let mut ptr = self.grow(ptr, old_layout, new_layout)?;
+        ptr.as_mut()[old_layout.size()..].fill(0);
+        Ok(ptr)
     }
 }
 

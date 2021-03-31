@@ -159,6 +159,20 @@
 //! ```
 //!
 //! Support for `actix-web 2.0.0` is available via the `actix2` feature.
+//!
+//! ## Use with `warp` filters
+//!
+//! The `warp` feature enables the use of `serde_qs::warp::query()`, which
+//! is a substitute for the `warp::query::query()` filter and can be used like this:
+//!
+//! ```ignore
+//! serde_qs::warp::query(Config::default())
+//!     .and_then(|info| async move {
+//!         Ok::<_, Rejection>(format!("Welcome {}!", info.username))
+//!     })
+//!     .recover(serde_qs::warp::recover_fn);
+//! ```
+//!
 
 #[macro_use]
 extern crate serde;
@@ -168,6 +182,8 @@ pub mod actix;
 mod de;
 mod error;
 mod ser;
+#[cfg(feature = "warp")]
+pub mod warp;
 
 #[doc(inline)]
 pub use de::Config;

@@ -1,10 +1,9 @@
+use core::cell::RefCell;
+use core::hash::{Hash, Hasher};
+use core::mem;
+use core::ops::{Bound, RangeBounds};
+
 use crate::traits::Sealed;
-use core::{
-    cell::RefCell,
-    hash::{Hash, Hasher},
-    mem,
-    ops::{Bound, RangeBounds},
-};
 
 pub trait RefCell_v1_35<T>: Sealed<RefCell<T>> {
     fn replace_with<F: FnOnce(&mut T) -> T>(&self, f: F) -> T;

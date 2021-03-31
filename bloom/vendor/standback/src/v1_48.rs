@@ -1,15 +1,12 @@
-use crate::traits::Sealed;
 use core::ops::Range;
 
-// We are unable to shim the `Future` trait, which stabilized in 1.36. Because
-// of this, the module needs to be gated.
+use crate::traits::Sealed;
+
 #[cfg(__standback_since_1_36)]
 pub(crate) mod future {
-    use core::{
-        future::Future,
-        pin::Pin,
-        task::{Context, Poll},
-    };
+    use core::future::Future;
+    use core::pin::Pin;
+    use core::task::{Context, Poll};
 
     pub struct Ready<T>(Option<T>);
 

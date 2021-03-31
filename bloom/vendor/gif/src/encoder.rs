@@ -87,6 +87,7 @@ impl From<FormatErrorKind> for EncodingError {
 
 
 /// Number of repetitions
+#[derive(Copy, Clone, Debug)]
 pub enum Repeat {
     /// Finite number of repetitions
     Finite(u16),

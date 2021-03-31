@@ -1108,13 +1108,10 @@ mod tests {
             });
 
             let cp = t!(CompletionPort::new(1));
-            let domain = match addr {
-                SocketAddr::V4(..) => Domain::ipv4(),
-                SocketAddr::V6(..) => Domain::ipv6(),
-            };
-            let socket = t!(Socket::new(domain, Type::stream(), None));
+            let domain = Domain::for_address(addr);
+            let socket = t!(Socket::new(domain, Type::STREAM, None));
             t!(socket.bind(&addr_template.into()));
-            let socket = socket.into_tcp_stream();
+            let socket = TcpStream::from(socket);
             t!(cp.add_socket(1, &socket));
 
             let a = Overlapped::zero();
@@ -1268,11 +1265,8 @@ mod tests {
             });
 
             let cp = t!(CompletionPort::new(1));
-            let domain = match addr {
-                SocketAddr::V4(..) => Domain::ipv4(),
-                SocketAddr::V6(..) => Domain::ipv6(),
-            };
-            let socket = t!(Socket::new(domain, Type::stream(), None)).into_tcp_stream();
+            let domain = Domain::for_address(addr);
+            let socket = TcpStream::from(t!(Socket::new(domain, Type::STREAM, None)));
             t!(cp.add_socket(1, &l));
 
             let a = Overlapped::zero();

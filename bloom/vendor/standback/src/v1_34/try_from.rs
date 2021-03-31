@@ -1,5 +1,7 @@
-use crate::{array::TryFromSliceError, convert::Infallible};
 use core::fmt;
+
+use crate::array::TryFromSliceError;
+use crate::convert::Infallible;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct TryFromIntError(pub(crate) ());
@@ -263,8 +265,6 @@ impl_length_at_most_32![
     26, 27, 28, 29, 30, 31, 32
 ];
 
-// Although we aren't able to `impl<T, U: Into<T>> TryFrom<U> for T`, we are
-// able to implement it for any given type.
 macro_rules! impl_identity {
     ($($type:ty),*) => {$(
         impl TryFrom<$type> for $type {
@@ -277,8 +277,6 @@ macro_rules! impl_identity {
     )*}
 }
 
-// Implement for some primitives. Other types can be trivially added upon
-// request.
 impl_identity![
     (),
     bool,

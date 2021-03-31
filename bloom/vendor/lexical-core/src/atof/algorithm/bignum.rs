@@ -20,8 +20,8 @@ if #[cfg(feature = "radix")] {
     type IntStorageType = arrayvec::ArrayVec<[Limb; 64]>;
 }}  // cfg_if
 
-/// Calculate the integral ceiling of the binary factor from a basen number.
 perftools_inline!{
+/// Calculate the integral ceiling of the binary factor from a basen number.
 pub(super) fn integral_binary_factor(radix: u32)
     -> u32
 {

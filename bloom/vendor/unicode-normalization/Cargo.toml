@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "unicode-normalization"
-version = "0.1.16"
+version = "0.1.17"
 authors = ["kwantam <kwantam@gmail.com>", "Manish Goregaokar <manishsmail@gmail.com>"]
 exclude = ["target/*", "Cargo.lock", "scripts/tmp", "*.txt", "tests/*"]
 description = "This crate provides functions for normalization of\nUnicode strings, including Canonical and Compatible\nDecomposition and Recomposition, as described in\nUnicode Standard Annex #15.\n"

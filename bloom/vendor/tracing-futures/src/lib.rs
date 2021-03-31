@@ -15,6 +15,10 @@
 //! * [`WithSubscriber`] allows a `tracing` [`Subscriber`] to be attached to a
 //!   future, sink, stream, or executor.
 //!
+//! *Compiler support: [requires `rustc` 1.42+][msrv]*
+//!
+//! [msrv]: #supported-rust-versions
+//!
 //! # Feature flags
 //!
 //! This crate provides a number of feature flags that enable compatibility
@@ -25,7 +29,7 @@
 //!    `tokio::executor::Executor`, `tokio::runtime::Runtime`, and
 //!    `tokio::runtime::current_thread`. Enabled by default.
 //! - `tokio-executor`: Enables compatibility with the `tokio-executor`
-//!    crate, including  [`Instrument`] and [`WithSubscriber`]
+//!    crate, including [`Instrument`] and [`WithSubscriber`]
 //!    implementations for types implementing `tokio_executor::Executor`.
 //!    This is intended primarily for use in crates which depend on
 //!    `tokio-executor` rather than `tokio`; in general the `tokio` feature
@@ -43,7 +47,7 @@
 //!
 //!   ```toml
 //!   [dependencies]
-//!   tracing-futures = { version = "0.2.3", default-features = false }
+//!   tracing-futures = { version = "0.2.5", default-features = false }
 //!   ```
 //!
 //! The `tokio`, `std-future` and `std` features are enabled by default.
@@ -54,7 +58,26 @@
 //! [`Instrument`]: trait.Instrument.html
 //! [`WithSubscriber`]: trait.WithSubscriber.html
 //! [`futures`]: https://crates.io/crates/futures
-#![doc(html_root_url = "https://docs.rs/tracing-futures/0.2.3")]
+//!
+//! ## Supported Rust Versions
+//!
+//! Tracing is built against the latest stable release. The minimum supported
+//! version is 1.42. The current Tracing version is not guaranteed to build on
+//! Rust versions earlier than the minimum supported version.
+//!
+//! Tracing follows the same compiler support policies as the rest of the Tokio
+//! project. The current stable Rust compiler and the three most recent minor
+//! versions before it will always be supported. For example, if the current
+//! stable compiler version is 1.45, the minimum supported version will not be
+//! increased past 1.42, three minor versions prior. Increasing the minimum
+//! supported compiler version is not considered a semver breaking change as
+//! long as doing so complies with this policy.
+//!
+#![doc(html_root_url = "https://docs.rs/tracing-futures/0.2.5")]
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/tokio-rs/tracing/master/assets/logo-type.png",
+    issue_tracker_base_url = "https://github.com/tokio-rs/tracing/issues/"
+)]
 #![warn(
     missing_debug_implementations,
     missing_docs,
@@ -78,7 +101,7 @@
     while_true
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg), deny(broken_intra_doc_links))]
 #[cfg(feature = "std-future")]
 use pin_project::pin_project;
 
@@ -87,8 +110,10 @@ pub(crate) mod stdlib;
 #[cfg(feature = "std-future")]
 use crate::stdlib::{pin::Pin, task::Context};
 
-use tracing::dispatcher;
-use tracing::{Dispatch, Span};
+#[cfg(feature = "std")]
+use tracing::{dispatcher, Dispatch};
+
+use tracing::Span;
 
 /// Implementations for `Instrument`ed future executors.
 pub mod executor;
@@ -650,8 +675,7 @@ mod tests {
                 .drop_span(span::mock().named("foo"))
                 .run_with_handle();
             with_default(subscriber, || {
-                stream::iter(&[1, 2, 3])
-                    .instrument(tracing::trace_span!("foo"))
+                Instrument::instrument(stream::iter(&[1, 2, 3]), tracing::trace_span!("foo"))
                     .for_each(|_| future::ready(()))
                     .now_or_never()
                     .unwrap();
@@ -671,8 +695,7 @@ mod tests {
                 .drop_span(span::mock().named("foo"))
                 .run_with_handle();
             with_default(subscriber, || {
-                sink::drain()
-                    .instrument(tracing::trace_span!("foo"))
+                Instrument::instrument(sink::drain(), tracing::trace_span!("foo"))
                     .send(1u8)
                     .now_or_never()
                     .unwrap()

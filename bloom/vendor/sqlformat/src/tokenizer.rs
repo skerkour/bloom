@@ -10,7 +10,7 @@ use nom::{AsChar, Err, IResult};
 use std::borrow::Cow;
 use unicode_categories::UnicodeCategories;
 
-pub(crate) fn tokenize<'a>(mut input: &'a str) -> Vec<Token<'a>> {
+pub(crate) fn tokenize(mut input: &str) -> Vec<Token<'_>> {
     let mut tokens = Vec::new();
     let mut token = None;
 
@@ -90,7 +90,7 @@ fn get_next_token<'a>(
         .or_else(|_| get_operator_token(input))
 }
 
-fn get_whitespace_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_whitespace_token(input: &str) -> IResult<&str, Token<'_>> {
     take_while1(char::is_whitespace)(input).map(|(input, token)| {
         (
             input,
@@ -103,11 +103,11 @@ fn get_whitespace_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn get_comment_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_comment_token(input: &str) -> IResult<&str, Token<'_>> {
     get_line_comment_token(input).or_else(|_| get_block_comment_token(input))
 }
 
-fn get_line_comment_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_line_comment_token(input: &str) -> IResult<&str, Token<'_>> {
     recognize(tuple((alt((tag("#"), tag("--"))), not_line_ending)))(input).map(|(input, token)| {
         (
             input,
@@ -120,7 +120,7 @@ fn get_line_comment_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn get_block_comment_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_block_comment_token(input: &str) -> IResult<&str, Token<'_>> {
     recognize(tuple((
         tag("/*"),
         alt((take_until("*/"), recognize(many0(anychar)))),
@@ -175,7 +175,7 @@ pub fn take_till_escaping<'a, Error: ParseError<&'a str>>(
 // 3. double quoted string using "" or \" to escape
 // 4. single quoted string using '' or \' to escape
 // 5. national character quoted string using N'' or N\' to escape
-fn get_string_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_string_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((
         recognize(tuple((
             char('`'),
@@ -216,7 +216,7 @@ fn get_string_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
 }
 
 // Like above but it doesn't replace double quotes
-fn get_placeholder_string_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_placeholder_string_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((
         recognize(tuple((
             char('`'),
@@ -256,7 +256,7 @@ fn get_placeholder_string_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a
     })
 }
 
-fn get_open_paren_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_open_paren_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((tag("("), terminated(tag_no_case("CASE"), end_of_word)))(input).map(|(input, token)| {
         (
             input,
@@ -269,7 +269,7 @@ fn get_open_paren_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn get_close_paren_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_close_paren_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((tag(")"), terminated(tag_no_case("END"), end_of_word)))(input).map(|(input, token)| {
         (
             input,
@@ -282,7 +282,7 @@ fn get_close_paren_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn get_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_placeholder_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((
         get_ident_named_placeholder_token,
         get_string_named_placeholder_token,
@@ -290,7 +290,7 @@ fn get_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     ))(input)
 }
 
-fn get_indexed_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_indexed_placeholder_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((
         recognize(tuple((alt((char('?'), char('$'))), digit1))),
         recognize(char('?')),
@@ -301,8 +301,8 @@ fn get_indexed_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'
             Token {
                 kind: TokenKind::Placeholder,
                 value: token,
-                key: if let Some(value) = token.strip_prefix('$') {
-                    let index = value.parse::<usize>().unwrap();
+                key: if token.starts_with('$') {
+                    let index = token[1..].parse::<usize>().unwrap();
                     Some(PlaceholderKind::OneIndexed(index))
                 } else if token.len() > 1 {
                     let index = token[1..].parse::<usize>().unwrap();
@@ -315,7 +315,7 @@ fn get_indexed_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'
     })
 }
 
-fn get_ident_named_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_ident_named_placeholder_token(input: &str) -> IResult<&str, Token<'_>> {
     recognize(tuple((
         alt((char('@'), char(':'))),
         take_while1(|item: char| {
@@ -335,7 +335,7 @@ fn get_ident_named_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Tok
     })
 }
 
-fn get_string_named_placeholder_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_string_named_placeholder_token(input: &str) -> IResult<&str, Token<'_>> {
     recognize(tuple((
         alt((char('@'), char(':'))),
         get_placeholder_string_token,
@@ -358,7 +358,7 @@ fn get_escaped_placeholder_key<'a>(key: &'a str, quote_char: &str) -> Cow<'a, st
     Cow::Owned(key.replace(&format!("\\{}", quote_char), quote_char))
 }
 
-fn get_number_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_number_token(input: &str) -> IResult<&str, Token<'_>> {
     recognize(tuple((opt(tag("-")), alt((decimal_number, digit1)))))(input).map(|(input, token)| {
         (
             input,
@@ -371,7 +371,7 @@ fn get_number_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn decimal_number<'a>(input: &'a str) -> IResult<&'a str, &'a str> {
+fn decimal_number(input: &str) -> IResult<&str, &str> {
     recognize(tuple((digit1, tag("."), digit0)))(input)
 }
 
@@ -405,7 +405,7 @@ fn get_uc_words(input: &str, words: usize) -> String {
         .to_ascii_uppercase()
 }
 
-fn get_top_level_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_top_level_reserved_token(input: &str) -> IResult<&str, Token<'_>> {
     let uc_input = get_uc_words(input, 3);
     let result: IResult<&str, &str> = alt((
         terminated(tag("ADD"), end_of_word),
@@ -452,7 +452,7 @@ fn get_top_level_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a
     }
 }
 
-fn get_newline_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_newline_reserved_token(input: &str) -> IResult<&str, Token<'_>> {
     let uc_input = get_uc_words(input, 3);
     let result: IResult<&str, &str> = alt((
         terminated(tag("AND"), end_of_word),
@@ -489,7 +489,7 @@ fn get_newline_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>>
     }
 }
 
-fn get_top_level_reserved_token_no_indent<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_top_level_reserved_token_no_indent(input: &str) -> IResult<&str, Token<'_>> {
     let uc_input = get_uc_words(input, 2);
     let result: IResult<&str, &str> = alt((
         terminated(tag("INTERSECT"), end_of_word),
@@ -516,7 +516,7 @@ fn get_top_level_reserved_token_no_indent<'a>(input: &'a str) -> IResult<&'a str
     }
 }
 
-fn get_plain_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_plain_reserved_token(input: &str) -> IResult<&str, Token<'_>> {
     let uc_input = get_uc_words(input, 1);
     let result: IResult<&str, &str> = alt((
         terminated(tag("ACCESSIBLE"), end_of_word),
@@ -876,7 +876,7 @@ fn get_plain_reserved_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     }
 }
 
-fn get_word_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_word_token(input: &str) -> IResult<&str, Token<'_>> {
     take_while1(is_word_character)(input).map(|(input, token)| {
         (
             input,
@@ -889,7 +889,7 @@ fn get_word_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn get_operator_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
+fn get_operator_token(input: &str) -> IResult<&str, Token<'_>> {
     alt((
         tag("!="),
         tag("<>"),
@@ -926,7 +926,7 @@ fn get_operator_token<'a>(input: &'a str) -> IResult<&'a str, Token<'a>> {
     })
 }
 
-fn end_of_word<'a>(input: &'a str) -> IResult<&'a str, &'a str> {
+fn end_of_word(input: &str) -> IResult<&str, &str> {
     peek(alt((
         eof,
         verify(take(1usize), |val: &str| {

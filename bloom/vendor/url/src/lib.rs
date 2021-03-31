@@ -73,6 +73,9 @@ assert!(data_url.fragment() == Some(""));
 # run().unwrap();
 ```
 
+## Serde
+
+Enable the `serde` feature to include `Deserialize` and `Serialize` implementations for `url::Url`.
 
 # Base URL
 
@@ -103,9 +106,21 @@ assert_eq!(css_url.as_str(), "http://servo.github.io/rust-url/main.css");
 # Ok(())
 # }
 # run().unwrap();
+```
+
+# Feature: `serde`
+
+If you enable the `serde` feature, [`Url`](struct.Url.html) will implement
+[`serde::Serialize`](https://docs.rs/serde/1/serde/trait.Serialize.html) and
+[`serde::Deserialize`](https://docs.rs/serde/1/serde/trait.Deserialize.html).
+See [serde documentation](https://serde.rs) for more information.
+
+```toml
+url = { version = "2", features = ["serde"] }
+```
 */
 
-#![doc(html_root_url = "https://docs.rs/url/2.1.1")]
+#![doc(html_root_url = "https://docs.rs/url/2.2.1")]
 
 #[macro_use]
 extern crate matches;
@@ -119,8 +134,6 @@ use crate::parser::{to_u32, Context, Parser, SchemeType, PATH_SEGMENT, USERINFO}
 use percent_encoding::{percent_decode, percent_encode, utf8_percent_encode};
 use std::borrow::Borrow;
 use std::cmp;
-#[cfg(feature = "serde")]
-use std::error::Error;
 use std::fmt::{self, Write};
 use std::hash;
 use std::io;
@@ -717,8 +730,9 @@ impl Url {
     /// # run().unwrap();
     /// ```
     pub fn username(&self) -> &str {
-        if self.has_authority() {
-            self.slice(self.scheme_end + ("://".len() as u32)..self.username_end)
+        let scheme_separator_len = "://".len() as u32;
+        if self.has_authority() && self.username_end > self.scheme_end + scheme_separator_len {
+            self.slice(self.scheme_end + scheme_separator_len..self.username_end)
         } else {
             ""
         }
@@ -789,7 +803,8 @@ impl Url {
 
     /// Return the string representation of the host (domain or IP address) for this URL, if any.
     ///
-    /// Non-ASCII domains are punycode-encoded per IDNA.
+    /// Non-ASCII domains are punycode-encoded per IDNA if this is the host
+    /// of a special URL, or percent encoded for non-special URLs.
     /// IPv6 addresses are given between `[` and `]` brackets.
     ///
     /// Cannot-be-a-base URLs (typical of `data:` and `mailto:`) and some `file:` URLs
@@ -828,7 +843,8 @@ impl Url {
     }
 
     /// Return the parsed representation of the host for this URL.
-    /// Non-ASCII domain labels are punycode-encoded per IDNA.
+    /// Non-ASCII domain labels are punycode-encoded per IDNA if this is the host
+    /// of a special URL, or percent encoded for non-special URLs.
     ///
     /// Cannot-be-a-base URLs (typical of `data:` and `mailto:`) and some `file:` URLs
     /// don’t have a host.
@@ -867,6 +883,8 @@ impl Url {
     }
 
     /// If this URL has a host and it is a domain name (not an IP address), return it.
+    /// Non-ASCII domains are punycode-encoded per IDNA if this is the host
+    /// of a special URL, or percent encoded for non-special URLs.
     ///
     /// # Examples
     ///
@@ -1080,6 +1098,7 @@ impl Url {
     /// # }
     /// # run().unwrap();
     /// ```
+    #[allow(clippy::manual_strip)] // introduced in 1.45, MSRV is 1.36
     pub fn path_segments(&self) -> Option<str::Split<'_, char>> {
         let path = self.path();
         if path.starts_with('/') {
@@ -1414,6 +1433,7 @@ impl Url {
     /// Return an object with methods to manipulate this URL’s path segments.
     ///
     /// Return `Err(())` if this URL is cannot-be-a-base.
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn path_segments_mut(&mut self) -> Result<PathSegmentsMut<'_>, ()> {
         if self.cannot_be_a_base() {
             Err(())
@@ -1497,6 +1517,7 @@ impl Url {
     /// # }
     /// # run().unwrap();
     /// ```
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn set_port(&mut self, mut port: Option<u16>) -> Result<(), ()> {
         // has_host implies !cannot_be_a_base
         if !self.has_host() || self.host() == Some(Host::Domain("")) || self.scheme() == "file" {
@@ -1636,7 +1657,7 @@ impl Url {
         }
 
         if let Some(host) = host {
-            if host == "" && SchemeType::from(self.scheme()).is_special() {
+            if host.is_empty() && SchemeType::from(self.scheme()).is_special() {
                 return Err(ParseError::EmptyHost);
             }
             let mut host_substr = host;
@@ -1767,6 +1788,7 @@ impl Url {
     /// # run().unwrap();
     /// ```
     ///
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn set_ip_host(&mut self, address: IpAddr) -> Result<(), ()> {
         if self.cannot_be_a_base() {
             return Err(());
@@ -1806,6 +1828,7 @@ impl Url {
     /// # }
     /// # run().unwrap();
     /// ```
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn set_password(&mut self, password: Option<&str>) -> Result<(), ()> {
         // has_host implies !cannot_be_a_base
         if !self.has_host() || self.host() == Some(Host::Domain("")) || self.scheme() == "file" {
@@ -1898,6 +1921,7 @@ impl Url {
     /// # }
     /// # run().unwrap();
     /// ```
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn set_username(&mut self, username: &str) -> Result<(), ()> {
         // has_host implies !cannot_be_a_base
         if !self.has_host() || self.host() == Some(Host::Domain("")) || self.scheme() == "file" {
@@ -2059,6 +2083,7 @@ impl Url {
     /// # }
     /// # run().unwrap();
     /// ```
+    #[allow(clippy::result_unit_err, clippy::suspicious_operation_groupings)]
     pub fn set_scheme(&mut self, scheme: &str) -> Result<(), ()> {
         let mut parser = Parser::for_setter(String::new());
         let remaining = parser.parse_scheme(parser::Input::new(scheme))?;
@@ -2138,6 +2163,7 @@ impl Url {
     /// # }
     /// ```
     #[cfg(any(unix, windows, target_os = "redox"))]
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn from_file_path<P: AsRef<Path>>(path: P) -> Result<Url, ()> {
         let mut serialization = "file://".to_owned();
         let host_start = serialization.len() as u32;
@@ -2174,6 +2200,7 @@ impl Url {
     /// Note that `std::path` does not consider trailing slashes significant
     /// and usually does not include them (e.g. in `Path::parent()`).
     #[cfg(any(unix, windows, target_os = "redox"))]
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn from_directory_path<P: AsRef<Path>>(path: P) -> Result<Url, ()> {
         let mut url = Url::from_file_path(path)?;
         if !url.serialization.ends_with('/') {
@@ -2290,6 +2317,7 @@ impl Url {
     /// for a Windows path, is not UTF-8.)
     #[inline]
     #[cfg(any(unix, windows, target_os = "redox"))]
+    #[allow(clippy::clippy::result_unit_err)]
     pub fn to_file_path(&self) -> Result<PathBuf, ()> {
         if let Some(segments) = self.path_segments() {
             let host = match self.host() {
@@ -2354,6 +2382,8 @@ impl fmt::Debug for Url {
         formatter
             .debug_struct("Url")
             .field("scheme", &self.scheme())
+            .field("username", &self.username())
+            .field("password", &self.password())
             .field("host", &self.host())
             .field("port", &self.port())
             .field("path", &self.path())
@@ -2471,8 +2501,10 @@ impl<'de> serde::Deserialize<'de> for Url {
             where
                 E: Error,
             {
-                Url::parse(s)
-                    .map_err(|err| Error::invalid_value(Unexpected::Str(s), &err.description()))
+                Url::parse(s).map_err(|err| {
+                    let err_s = format!("{}", err);
+                    Error::invalid_value(Unexpected::Str(s), &err_s.as_str())
+                })
             }
         }
 

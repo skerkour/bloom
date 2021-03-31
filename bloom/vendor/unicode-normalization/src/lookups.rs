@@ -64,6 +64,17 @@ pub(crate) fn compatibility_fully_decomposed(c: char) -> Option<&'static [char]>
     )
 }
 
+pub(crate) fn cjk_compat_variants_fully_decomposed(c: char) -> Option<&'static [char]> {
+    mph_lookup(
+        c.into(),
+        CJK_COMPAT_VARIANTS_DECOMPOSED_SALT,
+        CJK_COMPAT_VARIANTS_DECOMPOSED_KV,
+        pair_lookup_fk,
+        pair_lookup_fv_opt,
+        None,
+    )
+}
+
 /// Return whether the given character is a combining mark (`General_Category=Mark`)
 pub fn is_combining_mark(c: char) -> bool {
     mph_lookup(

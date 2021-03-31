@@ -1,8 +1,7 @@
+use core::fmt;
+use core::ops::{Deref, DerefMut};
+
 use crate::marker::Unpin;
-use core::{
-    fmt,
-    ops::{Deref, DerefMut},
-};
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]

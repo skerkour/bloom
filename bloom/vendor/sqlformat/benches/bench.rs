@@ -157,6 +157,32 @@ fn issue_633_2(c: &mut Criterion) {
     });
 }
 
+fn issue_633_3(c: &mut Criterion) {
+    const SIZE: usize = 1000;
+
+    let mut input = String::with_capacity(100_000);
+    input.push_str("INSERT INTO test_table(a) values ");
+    let mut is_first = true;
+    for _ in 0..SIZE {
+        if is_first {
+            is_first = false;
+        } else {
+            input.push_str(", ");
+        }
+        input.push_str("(?)");
+    }
+
+    c.bench_function("issue 633 query 3", |b| {
+        b.iter(|| {
+            format(
+                black_box(&input),
+                black_box(&QueryParams::None),
+                black_box(FormatOptions::default()),
+            )
+        })
+    });
+}
+
 criterion_group!(
     benches,
     simple_query,
@@ -165,6 +191,7 @@ criterion_group!(
     query_with_explicit_indexed_params,
     query_with_implicit_indexed_params,
     issue_633,
-    issue_633_2
+    issue_633_2,
+    issue_633_3
 );
 criterion_main!(benches);

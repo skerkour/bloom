@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "parking_lot_core"
-version = "0.8.2"
+version = "0.8.3"
 authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
 description = "An advanced API for creating custom synchronization primitives."
 keywords = ["mutex", "condvar", "rwlock", "once", "thread"]
@@ -35,7 +35,7 @@ version = "0.5.1"
 optional = true
 
 [dependencies.smallvec]
-version = "1.0"
+version = "1.6.1"
 
 [dependencies.thread-id]
 version = "3.3.0"
@@ -45,7 +45,7 @@ optional = true
 deadlock_detection = ["petgraph", "thread-id", "backtrace"]
 nightly = []
 [target."cfg(target_os = \"redox\")".dependencies.redox_syscall]
-version = "0.1.56"
+version = "0.2.4"
 [target."cfg(unix)".dependencies.libc]
 version = "0.2.71"
 [target."cfg(windows)".dependencies.winapi]

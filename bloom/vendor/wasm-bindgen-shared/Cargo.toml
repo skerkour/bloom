@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "wasm-bindgen-shared"
-version = "0.2.70"
+version = "0.2.73"
 authors = ["The wasm-bindgen Developers"]
 links = "wasm_bindgen"
 description = "Shared support between wasm-bindgen and wasm-bindgen cli, an internal\ndependency.\n"

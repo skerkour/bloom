@@ -1,7 +1,12 @@
 //! Atomic types.
+//!
+//! * [`AtomicCell`], a thread-safe mutable memory location.
+//! * [`AtomicConsume`], for reading from primitive atomic types with "consume" ordering.
 
+#[cfg(not(crossbeam_loom))]
 use cfg_if::cfg_if;
 
+#[cfg(not(crossbeam_loom))]
 cfg_if! {
     // Use "wide" sequence lock if the pointer width <= 32 for preventing its counter against wrap
     // around.

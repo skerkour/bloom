@@ -10,7 +10,8 @@
 
 //! Functions for computing canonical and compatible decompositions for Unicode characters.
 use crate::lookups::{
-    canonical_fully_decomposed, compatibility_fully_decomposed, composition_table,
+    canonical_fully_decomposed, cjk_compat_variants_fully_decomposed,
+    compatibility_fully_decomposed, composition_table,
 };
 
 use core::{char, ops::FnMut};
@@ -34,6 +35,39 @@ pub fn decompose_compatible<F: FnMut(char)>(c: char, emit_char: F) {
     let decompose_char =
         |c| compatibility_fully_decomposed(c).or_else(|| canonical_fully_decomposed(c));
     decompose(c, decompose_char, emit_char)
+}
+
+/// Compute standard-variation decomposition for character.
+///
+/// [Standardized Variation Sequences] are used instead of the standard canonical
+/// decompositions, notably for CJK codepoints with singleton canonical decompositions,
+/// to avoid losing information. See the
+/// [Unicode Variation Sequence FAQ](http://unicode.org/faq/vs.html) and the
+/// "Other Enhancements" section of the
+/// [Unicode 6.3 Release Summary](https://www.unicode.org/versions/Unicode6.3.0/#Summary)
+/// for more information.
+#[inline]
+pub fn decompose_cjk_compat_variants<F>(c: char, mut emit_char: F)
+where
+    F: FnMut(char),
+{
+    // 7-bit ASCII never decomposes
+    if c <= '\x7f' {
+        emit_char(c);
+        return;
+    }
+
+    // Don't perform decomposition for Hangul
+
+    if let Some(decomposed) = cjk_compat_variants_fully_decomposed(c) {
+        for &d in decomposed {
+            emit_char(d);
+        }
+        return;
+    }
+
+    // Finally bottom out.
+    emit_char(c);
 }
 
 #[inline]

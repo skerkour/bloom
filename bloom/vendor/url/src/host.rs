@@ -38,7 +38,7 @@ impl From<Host<String>> for HostInternal {
 
 /// The host name of an URL.
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Debug, Eq, Ord, PartialOrd, Hash)]
 pub enum Host<S = String> {
     /// A DNS domain name, as '.' dot-separated labels.
     /// Non-ASCII labels are encoded in punycode per IDNA if this is the host of
@@ -172,6 +172,20 @@ impl<S: AsRef<str>> fmt::Display for Host<S> {
     }
 }
 
+impl<S, T> PartialEq<Host<T>> for Host<S>
+where
+    S: PartialEq<T>,
+{
+    fn eq(&self, other: &Host<T>) -> bool {
+        match (self, other) {
+            (Host::Domain(a), Host::Domain(b)) => a == b,
+            (Host::Ipv4(a), Host::Ipv4(b)) => a == b,
+            (Host::Ipv6(a), Host::Ipv6(b)) => a == b,
+            (_, _) => false,
+        }
+    }
+}
+
 fn write_ipv6(addr: &Ipv6Addr, f: &mut Formatter<'_>) -> fmt::Result {
     let segments = addr.segments();
     let (compress_start, compress_end) = longest_zero_sequence(&segments);
@@ -249,11 +263,11 @@ fn parse_ipv4number(mut input: &str) -> Result<Option<u32>, ()> {
     // So instead we check if the input looks like a real number and only return
     // an error when it's an overflow.
     let valid_number = match r {
-        8 => input.chars().all(|c| c >= '0' && c <= '7'),
-        10 => input.chars().all(|c| c >= '0' && c <= '9'),
-        16 => input
-            .chars()
-            .all(|c| (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')),
+        8 => input.chars().all(|c| ('0'..='7').contains(&c)),
+        10 => input.chars().all(|c| ('0'..='9').contains(&c)),
+        16 => input.chars().all(|c| {
+            ('0'..='9').contains(&c) || ('a'..='f').contains(&c) || ('A'..='F').contains(&c)
+        }),
         _ => false,
     };
 
@@ -288,7 +302,7 @@ fn parse_ipv4addr(input: &str) -> ParseResult<Option<Ipv4Addr>> {
     let mut numbers: Vec<u32> = Vec::new();
     let mut overflow = false;
     for part in parts {
-        if part == "" {
+        if part.is_empty() {
             return Ok(None);
         }
         match parse_ipv4number(part) {

@@ -26,11 +26,12 @@ fn main() {
 
     // Treat nightly & dev compilers as the equivalent of the then-beta.
     // As features are never stabilized in patch versions, we can safely ignore it.
-    let (effective_compiler_version, channel) = match rustc::triple() {
-        Some((version, channel, _)) if channel.is_dev() => (version.to_mmp().1 - 2, channel),
-        Some((version, channel, _)) if channel.is_nightly() => (version.to_mmp().1 - 1, channel),
-        Some((version, channel, _)) => (version.to_mmp().1, channel),
-        None => {
+    let rustc_info = (rustc::Version::read(), rustc::Channel::read());
+    let (effective_compiler_version, channel) = match rustc_info {
+        (Some(version), Some(channel)) if channel.is_dev() => (version.to_mmp().1 - 2, channel),
+        (Some(version), Some(channel)) if channel.is_nightly() => (version.to_mmp().1 - 1, channel),
+        (Some(version), Some(channel)) => (version.to_mmp().1, channel),
+        (None, _) | (_, None) => {
             warning!(
                 "Unable to determine rustc version. Assuming rustc 1.{}.0.",
                 MSRV

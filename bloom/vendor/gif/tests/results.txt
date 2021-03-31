@@ -1,0 +1,10 @@
+"tests/samples/alpha_gif_a.gif": 3871893825
+"tests/samples/anim-gr.gif": 291646878
+"tests/samples/beacon.gif": 2462153529
+"tests/samples/interlaced.gif": 2115495372
+"tests/samples/moon_impact.gif": 2438689726
+"tests/samples/sample_1.gif": 3275424619
+"tests/samples/2x2.gif": 3802149240
+"tests/samples/sample_big.gif": 4184562096
+"tests/samples/gifplayer-muybridge.gif": 4267078865
+"tests/samples/set_hsts.gif": 224161812

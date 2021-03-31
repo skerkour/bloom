@@ -1,18 +1,16 @@
-use crate::traits::Sealed;
-use core::{mem::ManuallyDrop, ptr};
+use core::mem::ManuallyDrop;
+use core::ptr;
 #[cfg(feature = "std")]
 use std::{
     sync::{Condvar, LockResult, MutexGuard, WaitTimeoutResult},
     time::{Duration, Instant},
 };
 
+use crate::traits::Sealed;
+
 #[cfg(feature = "std")]
 #[inline(always)]
 fn new_wait_timeout_result(value: bool) -> WaitTimeoutResult {
-    // Safety: WaitTimeoutResult is a thin wrapper around a boolean. As the
-    // structure is not public, we must transmute the provided boolean to
-    // construct the desired value. If the internal size changes in the future,
-    // this will stop compiling.
     unsafe { core::mem::transmute(value) }
 }
 

@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "bitvec"
-version = "0.19.4"
+version = "0.19.5"
 authors = ["myrrlyn <self@myrrlyn.dev>"]
 include = ["Cargo.toml", "src/**/*.rs", "benches/*.rs"]
 description = "A crate for manipulating memory, bit by bit"
@@ -31,7 +31,7 @@ features = ["atomic", "serde", "std"]
 name = "memcpy"
 harness = false
 [dependencies.funty]
-version = "1"
+version = "~1.1"
 default-features = false
 
 [dependencies.radium]

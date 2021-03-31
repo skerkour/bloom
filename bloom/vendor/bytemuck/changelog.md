@@ -1,5 +1,10 @@
 # `bytemuck` changelog
 
+## 1.5.1
+
+* Fix `bytes_of` failing on zero sized types.
+  [PR 53](https://github.com/Lokathor/bytemuck/pull/53)
+
 ## 1.5
 
 * Added `pod_collect_to_vec`, which will gather a slice into a vec,

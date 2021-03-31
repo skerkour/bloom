@@ -1,16 +1,12 @@
 use proc_macro::{Delimiter, Ident, Literal, Span, TokenStream, TokenTree};
 
-use crate::{
-    iter::TokenIter,
-    to_tokens::ToTokens,
-    utils::{parse_as_empty, tt_span},
-    Result,
-};
+use crate::{iter::TokenIter, to_tokens::ToTokens, utils::tt_span, Result};
 
 pub(crate) struct Func {
-    pub(crate) attrs: Vec<Attribute>,
-    pub(crate) sig: Vec<TokenTree>,
-    pub(crate) body: TokenTree,
+    attrs: Vec<Attribute>,
+    // [const] [async] [unsafe] [extern [<abi>]] fn
+    sig: Vec<TokenTree>,
+    body: TokenStream,
     pub(crate) print_const: bool,
 }
 
@@ -19,10 +15,9 @@ pub(crate) fn parse_input(input: TokenStream) -> Result<Func> {
 
     let attrs = parse_attrs(&mut input)?;
     let sig = parse_signature(&mut input);
-    let body = input.next();
-    parse_as_empty(input)?;
+    let body: TokenStream = input.collect();
 
-    if body.is_none()
+    if body.is_empty()
         || !sig
             .iter()
             .any(|tt| if let TokenTree::Ident(i) = tt { i.to_string() == "fn" } else { false })
@@ -33,7 +28,7 @@ pub(crate) fn parse_input(input: TokenStream) -> Result<Func> {
         ));
     }
 
-    Ok(Func { attrs, sig, body: body.unwrap(), print_const: true })
+    Ok(Func { attrs, sig, body, print_const: true })
 }
 
 impl ToTokens for Func {
@@ -58,18 +53,28 @@ fn parse_signature(input: &mut TokenIter) -> Vec<TokenTree> {
     let mut has_const = false;
     loop {
         match input.peek() {
-            Some(TokenTree::Group(group)) if group.delimiter() == Delimiter::Brace => break,
             None => break,
             Some(TokenTree::Ident(i)) if !has_const => {
                 match &*i.to_string() {
-                    "const" => has_const = true,
-                    "async" | "unsafe" | "extern" | "fn" => {
+                    "fn" => {
                         sig.push(TokenTree::Ident(Ident::new("const", i.span())));
+                        sig.push(input.next().unwrap());
+                        break;
+                    }
+                    "const" => {
                         has_const = true;
+                    }
+                    "async" | "unsafe" | "extern" => {
+                        has_const = true;
+                        sig.push(TokenTree::Ident(Ident::new("const", i.span())));
                     }
                     _ => {}
                 }
                 sig.push(input.next().unwrap());
+            }
+            Some(TokenTree::Ident(i)) if i.to_string() == "fn" => {
+                sig.push(input.next().unwrap());
+                break;
             }
             Some(_) => sig.push(input.next().unwrap()),
         }

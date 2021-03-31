@@ -13,9 +13,9 @@
 [package]
 edition = "2018"
 name = "url"
-version = "2.2.0"
+version = "2.2.1"
 authors = ["The rust-url developers"]
-include = ["src/**/*", "LICENSE-*", "README.md"]
+include = ["src/**/*", "LICENSE-*", "README.md", "tests/**"]
 description = "URL library for Rust, based on the WHATWG URL Standard"
 documentation = "https://docs.rs/url"
 readme = "../README.md"

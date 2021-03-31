@@ -95,7 +95,7 @@ fn test_siphash128_2_4() {
 
 #[test]
 fn test_siphash128_serde() {
-    let val64 = 0xdeadbeef_deadbeef_u64;
+    let val64 = 0xdead_beef_dead_beef_u64;
     let hash = hash(&val64);
     let serialized = serde_json::to_string(&hash).unwrap();
     let deserialized: [u8; 16] = serde_json::from_str(&serialized).unwrap();

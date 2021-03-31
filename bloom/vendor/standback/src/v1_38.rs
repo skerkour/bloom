@@ -1,5 +1,6 @@
-use crate::traits::{Float, Integer, Sealed};
 use core::time::Duration;
+
+use crate::traits::{Float, Integer, Sealed};
 
 pub trait ConstPtr_v1_38<T>: Sealed<*const T> {
     fn cast<U>(self) -> *const U;
@@ -277,11 +278,7 @@ impl EuclidFloat_v1_38 for f32 {
     #[inline]
     fn rem_euclid(self, rhs: f32) -> f32 {
         let r = self % rhs;
-        if r < 0.0 {
-            r + rhs.abs()
-        } else {
-            r
-        }
+        if r < 0.0 { r + rhs.abs() } else { r }
     }
 
     #[must_use = "method returns a new number and does not mutate the original value"]
@@ -301,11 +298,7 @@ impl EuclidFloat_v1_38 for f64 {
     #[inline]
     fn rem_euclid(self, rhs: f64) -> f64 {
         let r = self % rhs;
-        if r < 0.0 {
-            r + rhs.abs()
-        } else {
-            r
-        }
+        if r < 0.0 { r + rhs.abs() } else { r }
     }
 
     #[must_use = "method returns a new number and does not mutate the original value"]

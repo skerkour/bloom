@@ -12,7 +12,7 @@
 
 [package]
 name = "bstr"
-version = "0.2.14"
+version = "0.2.15"
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 exclude = ["/.github"]
 description = "A string type that is not required to be valid UTF-8."
@@ -46,7 +46,7 @@ version = "1.0.85"
 optional = true
 default-features = false
 [dev-dependencies.quickcheck]
-version = "0.8.1"
+version = "1"
 default-features = false
 
 [dev-dependencies.ucd-parse]

@@ -1,4 +1,4 @@
-//! # GIF en- and decoding library [![Build Status](https://travis-ci.org/image-rs/image-gif.svg?branch=master)](https://travis-ci.org/image-rs/image-gif)
+//! # GIF en- and decoding library [![Build Status](https://github.com/image-rs/image-gif/workflows/Rust%20CI/badge.svg)](https://github.com/image-rs/image-gif/actions)
 //! 
 //! GIF en- and decoder written in Rust ([API Documentation](https://docs.rs/gif)).
 //! 

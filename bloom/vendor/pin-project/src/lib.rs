@@ -61,10 +61,10 @@
 //! See [`#[pin_project]`][`pin_project`] attribute for more details, and
 //! see [examples] directory for more examples and generated code.
 //!
-//! [examples]: https://github.com/taiki-e/pin-project/blob/master/examples/README.md
-//! [enum-default-expanded]: https://github.com/taiki-e/pin-project/blob/master/examples/enum-default-expanded.rs
+//! [examples]: https://github.com/taiki-e/pin-project/blob/HEAD/examples/README.md
+//! [enum-default-expanded]: https://github.com/taiki-e/pin-project/blob/HEAD/examples/enum-default-expanded.rs
 //! [pin-projection]: core::pin#projections-and-structural-pinning
-//! [struct-default-expanded]: https://github.com/taiki-e/pin-project/blob/master/examples/struct-default-expanded.rs
+//! [struct-default-expanded]: https://github.com/taiki-e/pin-project/blob/HEAD/examples/struct-default-expanded.rs
 
 #![no_std]
 #![doc(test(

@@ -175,6 +175,12 @@ impl<'a> Default for Frame<'a> {
 
 impl Frame<'static> {
     /// Creates a frame from pixels in RGBA format.
+    ///
+    /// This is a lossy method. The `gif` format does not support arbitrary alpha but only a 1-bit
+    /// transparency mask per pixel. Any non-zero alpha value will be interpreted as a fully opaque
+    /// pixel. Additionally, only 256 colors can appear in a single frame. The palette will be
+    /// reduced by the NeuQuant algorithm if necessary. Different frames have independent palettes.
+    ///
     /// *Note: This method is not optimized for speed.*
     ///
     /// # Panics:
@@ -184,9 +190,15 @@ impl Frame<'static> {
     }
 
     /// Creates a frame from pixels in RGBA format.
+    ///
     /// `speed` is a value in the range [1, 30].
     /// The higher the value the faster it runs at the cost of image quality.
     /// A `speed` of 10 is a good compromise between speed and quality.
+    ///
+    /// This is a lossy method. The `gif` format does not support arbitrary alpha but only a 1-bit
+    /// transparency mask per pixel. Any non-zero alpha value will be interpreted as a fully opaque
+    /// pixel. Additionally, only 256 colors can appear in a single frame. The palette will be
+    /// reduced by the NeuQuant algorithm if necessary. Different frames have independent palettes.
     ///
     /// # Panics:
     /// *   If the length of pixels does not equal `width * height * 4`.
@@ -258,6 +270,11 @@ impl Frame<'static> {
     }
 
     /// Creates a frame from pixels in RGB format.
+    ///
+    /// This is a lossy method. In the `gif` format only 256 colors can appear in a single frame.
+    /// The palette will be reduced by the NeuQuant algorithm if necessary. Different frames have
+    /// independent palettes.
+    ///
     /// *Note: This method is not optimized for speed.*
     ///
     /// # Panics:
@@ -267,7 +284,13 @@ impl Frame<'static> {
     }
 
     /// Creates a frame from pixels in RGB format.
+    ///
     /// `speed` is a value in the range [1, 30].
+    ///
+    /// This is a lossy method. In the `gif` format only 256 colors can appear in a single frame.
+    /// The palette will be reduced by the NeuQuant algorithm if necessary. Different frames have
+    /// independent palettes.
+    ///
     /// The higher the value the faster it runs at the cost of image quality.
     /// A `speed` of 10 is a good compromise between speed and quality.
     ///

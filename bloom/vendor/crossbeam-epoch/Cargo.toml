@@ -13,12 +13,11 @@
 [package]
 edition = "2018"
 name = "crossbeam-epoch"
-version = "0.9.1"
+version = "0.9.3"
 authors = ["The Crossbeam Project Developers"]
 description = "Epoch-based garbage collection"
 homepage = "https://github.com/crossbeam-rs/crossbeam/tree/master/crossbeam-epoch"
 documentation = "https://docs.rs/crossbeam-epoch"
-readme = "README.md"
 keywords = ["lock-free", "rcu", "atomic", "garbage"]
 categories = ["concurrency", "memory-management", "no-std"]
 license = "MIT OR Apache-2.0"
@@ -27,10 +26,11 @@ repository = "https://github.com/crossbeam-rs/crossbeam"
 version = "1"
 
 [dependencies.const_fn]
-version = "0.4"
+version = "0.4.4"
+optional = true
 
 [dependencies.crossbeam-utils]
-version = "0.8"
+version = "0.8.3"
 default-features = false
 
 [dependencies.lazy_static]
@@ -44,11 +44,15 @@ version = "0.6"
 version = "1.1.0"
 default-features = false
 [dev-dependencies.rand]
-version = "0.7.3"
+version = "0.8"
 
 [features]
 alloc = []
 default = ["std"]
-nightly = ["crossbeam-utils/nightly"]
-sanitize = []
+loom = ["loom-crate", "crossbeam-utils/loom"]
+nightly = ["crossbeam-utils/nightly", "const_fn"]
 std = ["alloc", "crossbeam-utils/std", "lazy_static"]
+[target."cfg(crossbeam_loom)".dependencies.loom-crate]
+version = "0.4"
+optional = true
+package = "loom"

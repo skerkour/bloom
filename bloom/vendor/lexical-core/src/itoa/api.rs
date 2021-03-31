@@ -510,73 +510,73 @@ mod tests {
         #[test]
         fn u8_proptest(i in u8::min_value()..u8::max_value()) {
             let mut buffer = new_buffer();
-            i == u8::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, u8::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn i8_proptest(i in i8::min_value()..i8::max_value()) {
             let mut buffer = new_buffer();
-            i == i8::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, i8::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn u16_proptest(i in u16::min_value()..u16::max_value()) {
             let mut buffer = new_buffer();
-            i == u16::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, u16::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn i16_proptest(i in i16::min_value()..i16::max_value()) {
             let mut buffer = new_buffer();
-            i == i16::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, i16::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn u32_proptest(i in u32::min_value()..u32::max_value()) {
             let mut buffer = new_buffer();
-            i == u32::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, u32::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn i32_proptest(i in i32::min_value()..i32::max_value()) {
             let mut buffer = new_buffer();
-            i == i32::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, i32::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn u64_proptest(i in u64::min_value()..u64::max_value()) {
             let mut buffer = new_buffer();
-            i == u64::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, u64::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn i64_proptest(i in i64::min_value()..i64::max_value()) {
             let mut buffer = new_buffer();
-            i == i64::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, i64::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn u128_proptest(i in u128::min_value()..u128::max_value()) {
             let mut buffer = new_buffer();
-            i == u128::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, u128::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn i128_proptest(i in i128::min_value()..i128::max_value()) {
             let mut buffer = new_buffer();
-            i == i128::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, i128::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn usize_proptest(i in usize::min_value()..usize::max_value()) {
             let mut buffer = new_buffer();
-            i == usize::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, usize::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
 
         #[test]
         fn isize_proptest(i in isize::min_value()..isize::max_value()) {
             let mut buffer = new_buffer();
-            i == isize::from_lexical(i.to_lexical(&mut buffer)).unwrap()
+            assert_eq!(i, isize::from_lexical(i.to_lexical(&mut buffer)).unwrap())
         }
     }
 

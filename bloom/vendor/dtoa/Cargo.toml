@@ -12,7 +12,7 @@
 
 [package]
 name = "dtoa"
-version = "0.4.7"
+version = "0.4.8"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = ["performance.png"]
 description = "Fast functions for printing floating-point primitives to an io::Write"

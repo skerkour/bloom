@@ -11,7 +11,7 @@ use core::cmp::Ordering;
 use core::fmt::{Debug, Error, Formatter};
 use core::hash::{Hash, Hasher};
 use core::iter::FromIterator;
-use core::mem::MaybeUninit;
+use core::mem::{replace, MaybeUninit};
 use core::ops::{Bound, Range, RangeBounds};
 use core::ops::{Index, IndexMut};
 
@@ -253,6 +253,7 @@ where
     #[inline]
     #[must_use]
     pub fn unit(value: A) -> Self {
+        assert!(Self::CAPACITY >= 1);
         let mut buffer = Self {
             origin: 0.into(),
             length: 1,
@@ -268,6 +269,7 @@ where
     #[inline]
     #[must_use]
     pub fn pair(value1: A, value2: A) -> Self {
+        assert!(Self::CAPACITY >= 2);
         let mut buffer = Self {
             origin: 0.into(),
             length: 2,
@@ -714,10 +716,22 @@ where
             }
         }
         let mut index = self.raw(index);
-        for value in iter {
+        // Panic safety: unless and until we fill it fully, there's a hole somewhere in the middle
+        // and the destructor would drop non-existing elements. Therefore we pretend to be empty
+        // for a while (and leak the elements instead in case something bad happens).
+        let mut inserted = 0;
+        let length = replace(&mut self.length, 0);
+        for value in iter.take(insert_size) {
             unsafe { self.force_write(index, value) };
             index += 1;
+            inserted += 1;
         }
+        // This would/could create a hole in the middle if it was less
+        assert_eq!(
+            inserted, insert_size,
+            "Iterator has fewer elements than advertised",
+        );
+        self.length = length;
     }
 
     /// Remove the value at index `index`, shifting all the following values to
@@ -787,8 +801,12 @@ impl<A: Clone, N: ChunkLength<A>> Clone for RingBuffer<A, N> {
         let mut out = Self::new();
         out.origin = self.origin;
         out.length = self.length;
-        for index in out.range() {
+        let range = self.range();
+        // Panic safety. If we panic, we don't want to drop more than we have initialized.
+        out.length = 0;
+        for index in range {
             unsafe { out.force_write(index, (&*self.ptr(index)).clone()) };
+            out.length += 1;
         }
         out
     }
@@ -1003,6 +1021,8 @@ impl<'a, A, N: ChunkLength<A>> IntoIterator for &'a mut RingBuffer<A, N> {
 
 #[cfg(test)]
 mod test {
+    use typenum::U0;
+
     use super::*;
 
     #[test]
@@ -1120,5 +1140,17 @@ mod test {
             assert_eq!(30, counter.load(Ordering::Relaxed));
         }
         assert_eq!(0, counter.load(Ordering::Relaxed));
+    }
+
+    #[test]
+    #[should_panic(expected = "assertion failed: Self::CAPACITY >= 1")]
+    fn unit_on_empty() {
+        let _ = RingBuffer::<usize, U0>::unit(1);
+    }
+
+    #[test]
+    #[should_panic(expected = "assertion failed: Self::CAPACITY >= 2")]
+    fn pair_on_empty() {
+        let _ = RingBuffer::<usize, U0>::pair(1, 2);
     }
 }

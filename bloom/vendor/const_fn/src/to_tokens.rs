@@ -1,5 +1,6 @@
-use proc_macro::{Ident, Literal, TokenStream, TokenTree};
 use std::iter;
+
+use proc_macro::{Ident, Literal, TokenStream, TokenTree};
 
 pub(crate) trait ToTokens {
     fn to_tokens(&self, tokens: &mut TokenStream);

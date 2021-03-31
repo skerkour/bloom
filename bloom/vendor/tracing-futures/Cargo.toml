@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "tracing-futures"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["Eliza Weisman <eliza@buoyant.io>", "Tokio Contributors <team@tokio.rs>"]
 description = "Utilities for instrumenting `futures` with `tracing`.\n"
 homepage = "https://tokio.rs"
@@ -39,7 +39,7 @@ optional = true
 package = "futures"
 
 [dependencies.pin-project]
-version = "0.4"
+version = "1.0"
 optional = true
 
 [dependencies.tokio]

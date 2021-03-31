@@ -1078,8 +1078,10 @@ pub const SO_SNDTIMEO: ::c_int = 21;
 pub const SO_BINDTODEVICE: ::c_int = 25;
 pub const SO_TIMESTAMP: ::c_int = 29;
 pub const SO_ACCEPTCONN: ::c_int = 30;
+pub const SO_PEERSEC: ::c_int = 31;
 pub const SO_SNDBUFFORCE: ::c_int = 32;
 pub const SO_RCVBUFFORCE: ::c_int = 33;
+pub const SO_PASSSEC: ::c_int = 34;
 pub const SO_MARK: ::c_int = 36;
 pub const SO_PROTOCOL: ::c_int = 38;
 pub const SO_DOMAIN: ::c_int = 39;
@@ -2350,20 +2352,6 @@ f! {
     pub fn SO_EE_OFFENDER(ee: *const ::sock_extended_err) -> *mut ::sockaddr {
         ee.offset(1) as *mut ::sockaddr
     }
-
-    // Sadly, Android before 5.0 (API level 21), the accept4 syscall is not
-    // exposed by the libc. As work-around, we implement it through `syscall`
-    // directly. This workaround can be removed if the minimum version of
-    // Android is bumped. When the workaround is removed, `accept4` can be
-    // moved back to `linux_like/mod.rs`
-    pub fn accept4(
-        fd: ::c_int,
-        addr: *mut ::sockaddr,
-        len: *mut ::socklen_t,
-        flg: ::c_int
-    ) -> ::c_int {
-        syscall(SYS_accept4, fd, addr, len, flg) as ::c_int
-    }
 }
 
 extern "C" {
@@ -2823,6 +2811,8 @@ extern "C" {
     pub fn regfree(preg: *mut ::regex_t);
 
     pub fn android_set_abort_message(msg: *const ::c_char);
+
+    pub fn gettid() -> ::pid_t;
 }
 
 cfg_if! {
@@ -2838,6 +2828,17 @@ cfg_if! {
 }
 
 impl siginfo_t {
+    pub unsafe fn si_addr(&self) -> *mut ::c_void {
+        #[repr(C)]
+        struct siginfo_sigfault {
+            _si_signo: ::c_int,
+            _si_errno: ::c_int,
+            _si_code: ::c_int,
+            si_addr: *mut ::c_void,
+        }
+        (*(self as *const siginfo_t as *const siginfo_sigfault)).si_addr
+    }
+
     pub unsafe fn si_value(&self) -> ::sigval {
         #[repr(C)]
         struct siginfo_timer {
@@ -2849,5 +2850,67 @@ impl siginfo_t {
             si_sigval: ::sigval,
         }
         (*(self as *const siginfo_t as *const siginfo_timer)).si_sigval
+    }
+}
+
+cfg_if! {
+    if #[cfg(libc_union)] {
+        // Internal, for casts to access union fields
+        #[repr(C)]
+        struct sifields_sigchld {
+            si_pid: ::pid_t,
+            si_uid: ::uid_t,
+            si_status: ::c_int,
+            si_utime: ::c_long,
+            si_stime: ::c_long,
+        }
+        impl ::Copy for sifields_sigchld {}
+        impl ::Clone for sifields_sigchld {
+            fn clone(&self) -> sifields_sigchld {
+                *self
+            }
+        }
+
+        // Internal, for casts to access union fields
+        #[repr(C)]
+        union sifields {
+            _align_pointer: *mut ::c_void,
+            sigchld: sifields_sigchld,
+        }
+
+        // Internal, for casts to access union fields. Note that some variants
+        // of sifields start with a pointer, which makes the alignment of
+        // sifields vary on 32-bit and 64-bit architectures.
+        #[repr(C)]
+        struct siginfo_f {
+            _siginfo_base: [::c_int; 3],
+            sifields: sifields,
+        }
+
+        impl siginfo_t {
+            unsafe fn sifields(&self) -> &sifields {
+                &(*(self as *const siginfo_t as *const siginfo_f)).sifields
+            }
+
+            pub unsafe fn si_pid(&self) -> ::pid_t {
+                self.sifields().sigchld.si_pid
+            }
+
+            pub unsafe fn si_uid(&self) -> ::uid_t {
+                self.sifields().sigchld.si_uid
+            }
+
+            pub unsafe fn si_status(&self) -> ::c_int {
+                self.sifields().sigchld.si_status
+            }
+
+            pub unsafe fn si_utime(&self) -> ::c_long {
+                self.sifields().sigchld.si_utime
+            }
+
+            pub unsafe fn si_stime(&self) -> ::c_long {
+                self.sifields().sigchld.si_stime
+            }
+        }
     }
 }

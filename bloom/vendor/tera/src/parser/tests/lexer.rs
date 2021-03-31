@@ -141,6 +141,7 @@ fn lex_array() {
         "[1,2,3]",
         "[1, 2,3,]",
         "[1 + 1, 2,3 * 2,]",
+        "[\"foo\", \"bar\"]",
         "[1,true,'string', 0.5, hello(), macros::hey(arg=1)]",
     ];
 
@@ -428,6 +429,9 @@ fn lex_test() {
 #[test]
 fn lex_include_tag() {
     assert!(TeraParser::parse(Rule::include_tag, "{% include \"index.html\" %}").is_ok());
+    assert!(TeraParser::parse(Rule::include_tag, "{% include [\"index.html\"] %}").is_ok());
+    assert!(TeraParser::parse(Rule::include_tag, "{% include [\"index.html\"] ignore missing %}")
+        .is_ok());
 }
 
 #[test]
@@ -443,7 +447,16 @@ fn lex_extends_tag() {
 
 #[test]
 fn lex_comment_tag() {
-    assert!(TeraParser::parse(Rule::comment_tag, "{# #comment# {{}} {%%} #}").is_ok());
+    let inputs = vec![
+        "{# #comment# {{}} {%%} #}",
+        "{# #comment# {{}} {%%} #}",
+        "{#- #comment# {{}} {%%} #}",
+        "{# #comment# {{}} {%%} -#}",
+        "{#- #comment# {{}} {%%} -#}",
+    ];
+    for i in inputs {
+        assert_lex_rule!(Rule::comment_tag, i);
+    }
 }
 
 #[test]

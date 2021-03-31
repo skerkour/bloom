@@ -16,9 +16,9 @@ Application-level tracing for Rust.
 [Documentation][docs-url] | [Chat][discord-url]
 
 [crates-badge]: https://img.shields.io/crates/v/tracing.svg
-[crates-url]: https://crates.io/crates/tracing/0.1.23
+[crates-url]: https://crates.io/crates/tracing/0.1.25
 [docs-badge]: https://docs.rs/tracing/badge.svg
-[docs-url]: https://docs.rs/tracing/0.1.23
+[docs-url]: https://docs.rs/tracing/0.1.25
 [docs-master-badge]: https://img.shields.io/badge/docs-master-blue
 [docs-master-url]: https://tracing-rs.netlify.com/tracing
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
@@ -174,8 +174,7 @@ pub fn shave_all(yaks: usize) -> usize {
     //
     // local variables (`yaks`) can be used as field values
     // without an assignment, similar to struct initializers.
-    let span = span!(Level::TRACE, "shaving_yaks", yaks);
-    let _enter = span.enter();
+    let _span_ = span!(Level::TRACE, "shaving_yaks", yaks).entered();
 
     info!("shaving yaks");
 
@@ -212,11 +211,17 @@ If you are instrumenting code that make use of
 [`std::future::Future`](https://doc.rust-lang.org/stable/std/future/trait.Future.html)
 or async/await, be sure to use the
 [`tracing-futures`](https://docs.rs/tracing-futures) crate. This is needed
-because the following example _will not_ work:
+because the following examples _will not_ work:
 
 ```rust
 async {
     let _s = span.enter();
+    // ...
+}
+```
+```rust
+async {
+    let _s = tracing::span!(...).entered();
     // ...
 }
 ```
@@ -246,7 +251,7 @@ my_future
 is as long as the future's.
 
 The second, and preferred, option is through the
-[`#[instrument]`](https://docs.rs/tracing/0.1.23/tracing/attr.instrument.html)
+[`#[instrument]`](https://docs.rs/tracing/0.1.25/tracing/attr.instrument.html)
 attribute:
 
 ```rust
@@ -293,7 +298,7 @@ span.in_scope(|| {
 // Dropping the span will close it, indicating that it has ended.
 ```
 
-The [`#[instrument]`](https://docs.rs/tracing/0.1.23/tracing/attr.instrument.html) attribute macro
+The [`#[instrument]`](https://docs.rs/tracing/0.1.25/tracing/attr.instrument.html) attribute macro
 can reduce some of this boilerplate:
 
 ```rust

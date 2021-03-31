@@ -56,6 +56,7 @@ pub struct DecodeOptions {
     memory_limit: MemoryLimit,
     color_output: ColorOutput,
     check_frame_consistency: bool,
+    check_for_end_code: bool,
 }
 
 impl DecodeOptions {
@@ -65,6 +66,7 @@ impl DecodeOptions {
             memory_limit: MemoryLimit(50_000_000), // 50 MB
             color_output: ColorOutput::Indexed,
             check_frame_consistency: false,
+            check_for_end_code: false,
         }
     }
 
@@ -90,6 +92,21 @@ impl DecodeOptions {
     /// caller, for example to emulate a specific style.
     pub fn check_frame_consistency(&mut self, check: bool) {
         self.check_frame_consistency = check;
+    }
+
+    /// Configure if LZW encoded blocks must end with a marker end code.
+    ///
+    /// The default is `false`.
+    ///
+    /// When turned on, all image data blocks—which are LZW encoded—must contain a special bit
+    /// sequence signalling the end of the data. LZW processing terminates when this code is
+    /// encountered. The specification states that it must be the last code output by the encoder
+    /// for an image.
+    ///
+    /// When turned off then image data blocks can simply end. Note that this might silently ignore
+    /// some bits of the last or second to last byte.
+    pub fn check_lzw_end_code(&mut self, check: bool) {
+        self.check_for_end_code = check;
     }
 
     /// Reads the logical screen descriptor including the global color palette

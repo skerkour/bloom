@@ -3,6 +3,8 @@ error: expected item after attributes
   |
 4 | hidden_repr_macro! {} //~ ERROR expected item after attributes
   | ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in a macro (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: expected item after attributes
   --> $DIR/packed_sneaky-3.rs:13:9

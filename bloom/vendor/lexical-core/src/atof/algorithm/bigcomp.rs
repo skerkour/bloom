@@ -71,14 +71,14 @@ pub(super) fn round_to_native<F>(f: F, order: cmp::Ordering, kind: RoundingKind)
 
 // SHARED
 
-/// Calculate `b` from a a representation of `b` as a float.
 perftools_inline!{
+/// Calculate `b` from a a representation of `b` as a float.
 pub(super) fn b<F: FloatType>(f: F) -> F::ExtendedFloat {
     f.into()
 }}
 
-/// Calculate `b+h` from a a representation of `b` as a float.
 perftools_inline!{
+/// Calculate `b+h` from a a representation of `b` as a float.
 pub(super) fn bh<F: FloatType>(f: F) -> F::ExtendedFloat {
     // None of these can overflow.
     let mut b = b(f);
@@ -89,8 +89,8 @@ pub(super) fn bh<F: FloatType>(f: F) -> F::ExtendedFloat {
     b
 }}
 
-/// Generate the theoretical float type for the rounding kind.
 perftools_inline!{
+/// Generate the theoretical float type for the rounding kind.
 #[allow(unused_variables)]
 pub(super) fn theoretical_float<F>(f: F, kind: RoundingKind)
     -> F::ExtendedFloat
@@ -112,11 +112,11 @@ pub(super) fn theoretical_float<F>(f: F, kind: RoundingKind)
 
 // BIGCOMP
 
+perftools_inline!{
 /// Get the appropriate scaling factor from the digit count.
 ///
 /// * `radix`           - Radix for the number parsing.
 /// * `sci_exponent`    - Exponent of basen string in scientific notation.
-perftools_inline!{
 pub fn scaling_factor(radix: u32, sci_exponent: u32)
     -> Bigfloat
 {
@@ -154,7 +154,7 @@ pub(super) fn make_ratio<F: Float>(radix: u32, sci_exponent: i32, f: F, kind: Ro
     // Scale the denominator so it has the number of bits
     // in the radix as the number of leading zeros.
     let wlz = integral_binary_factor(radix).as_usize();
-    let nlz = den.leading_zeros().wrapping_sub(wlz) & (u32::BITS - 1);
+    let nlz = den.leading_zeros().wrapping_sub(wlz) & (<u32 as Integer>::BITS - 1);
     small::ishl_bits(den.data_mut(), nlz);
     den.exp -= nlz.as_i32();
 
@@ -167,12 +167,12 @@ pub(super) fn make_ratio<F: Float>(radix: u32, sci_exponent: i32, f: F, kind: Ro
         small::ishl(num.data_mut(), shift);
         num.exp -= shift.as_i32()
     } else if diff > 0 {
-        // Need to shift denominator left, go by a power of Limb::BITS.
+        // Need to shift denominator left, go by a power of <Limb as Integer>::BITS.
         // After this, the numerator will be non-normalized, and the
         // denominator will be normalized.
         // We need to add one to the quotient,since we're calculating the
         // ceiling of the divmod.
-        let (q, r) = shift.ceil_divmod(Limb::BITS);
+        let (q, r) = shift.ceil_divmod(<Limb as Integer>::BITS);
         // Since we're using a power from the denominator to the
         // numerator, we to invert r, not add u32::BITS.
         let r = -r;
@@ -180,7 +180,7 @@ pub(super) fn make_ratio<F: Float>(radix: u32, sci_exponent: i32, f: F, kind: Ro
         num.exp -= r;
         if !q.is_zero() {
             den.pad_zero_digits(q);
-            den.exp -= Limb::BITS.as_i32() * q.as_i32();
+            den.exp -= <Limb as Integer>::BITS.as_i32() * q.as_i32();
         }
     }
 

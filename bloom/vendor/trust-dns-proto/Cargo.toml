@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "trust-dns-proto"
-version = "0.19.6"
+version = "0.19.7"
 authors = ["Benjamin Fry <benjaminfry@me.com>"]
 description = "Trust-DNS is a safe and secure DNS library. This is the foundational DNS protocol library for all Trust-DNS projects.\n"
 homepage = "http://www.trust-dns.org/index.html"
@@ -32,6 +32,10 @@ version = "0.1.30"
 
 [dependencies.backtrace]
 version = "0.3.44"
+optional = true
+
+[dependencies.cfg-if]
+version = "1"
 
 [dependencies.data-encoding]
 version = "2.2.0"
@@ -79,7 +83,7 @@ optional = true
 version = "1.2"
 
 [dependencies.socket2]
-version = "0.3.12"
+version = "0.3.16"
 optional = true
 
 [dependencies.thiserror]

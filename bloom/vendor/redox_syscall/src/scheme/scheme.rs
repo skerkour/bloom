@@ -4,14 +4,31 @@ use crate::data::*;
 use crate::error::*;
 use crate::flag::*;
 use crate::number::*;
+use crate::scheme::str_from_raw_parts;
 
 pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
         let res = match packet.a {
-            SYS_OPEN => self.open(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d, packet.uid, packet.gid),
-            SYS_CHMOD => self.chmod(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d as u16, packet.uid, packet.gid),
-            SYS_RMDIR => self.rmdir(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
-            SYS_UNLINK => self.unlink(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
+            SYS_OPEN => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                self.open(path, packet.d, packet.uid, packet.gid)
+            } else {
+                Err(Error::new(EINVAL))
+            },
+            SYS_CHMOD => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                self.chmod(path, packet.d as u16, packet.uid, packet.gid)
+            } else {
+                Err(Error::new(EINVAL))
+            },
+            SYS_RMDIR => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                self.rmdir(path, packet.uid, packet.gid)
+            } else {
+                Err(Error::new(EINVAL))
+            },
+            SYS_UNLINK => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                self.unlink(path, packet.uid, packet.gid)
+            } else {
+                Err(Error::new(EINVAL))
+            },
 
             SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
@@ -34,7 +51,11 @@ pub trait Scheme {
             SYS_FUNMAP_OLD => self.funmap_old(packet.b),
             SYS_FUNMAP => self.funmap(packet.b, packet.c),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
-            SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
+            SYS_FRENAME => if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
+                self.frename(packet.b, path, packet.uid, packet.gid)
+            } else {
+                Err(Error::new(EINVAL))
+            },
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
                 self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
             } else {
@@ -62,22 +83,22 @@ pub trait Scheme {
     /* Scheme operations */
 
     #[allow(unused_variables)]
-    fn open(&self, path: &[u8], flags: usize, uid: u32, gid: u32) -> Result<usize> {
+    fn open(&self, path: &str, flags: usize, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn chmod(&self, path: &[u8], mode: u16, uid: u32, gid: u32) -> Result<usize> {
+    fn chmod(&self, path: &str, mode: u16, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn rmdir(&self, path: &[u8], uid: u32, gid: u32) -> Result<usize> {
+    fn rmdir(&self, path: &str, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn unlink(&self, path: &[u8], uid: u32, gid: u32) -> Result<usize> {
+    fn unlink(&self, path: &str, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 
@@ -154,7 +175,7 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
-    fn frename(&self, id: usize, path: &[u8], uid: u32, gid: u32) -> Result<usize> {
+    fn frename(&self, id: usize, path: &str, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 

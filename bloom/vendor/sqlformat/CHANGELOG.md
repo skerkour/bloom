@@ -1,3 +1,7 @@
+### Version 0.1.6
+
+- Fix compatibility with Rust 1.44 which was broken in 0.1.5
+
 ### Version 0.1.5
 
 - Fix a possible panic on multibyte unicode strings

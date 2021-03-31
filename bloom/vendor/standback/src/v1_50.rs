@@ -1,7 +1,8 @@
-use crate::traits::{Float, Sealed};
 use core::cell::{RefCell, UnsafeCell};
 #[cfg(feature = "std")]
 use std::collections::{btree_map, hash_map};
+
+use crate::traits::{Float, Sealed};
 
 pub trait Bool_v1_50: Sealed<bool> {
     fn then<T, F: FnOnce() -> T>(self, f: F) -> Option<T>;
@@ -10,11 +11,7 @@ pub trait Bool_v1_50: Sealed<bool> {
 impl Bool_v1_50 for bool {
     #[inline]
     fn then<T, F: FnOnce() -> T>(self, f: F) -> Option<T> {
-        if self {
-            Some(f())
-        } else {
-            None
-        }
+        if self { Some(f()) } else { None }
     }
 }
 

@@ -82,7 +82,7 @@ mod transparent;
 pub use transparent::*;
 
 #[cfg(feature = "derive")]
-pub use bytemuck_derive::{Zeroable, Pod, TransparentWrapper, Contiguous};
+pub use bytemuck_derive::{Contiguous, Pod, TransparentWrapper, Zeroable};
 
 /*
 
@@ -112,9 +112,13 @@ fn something_went_wrong(src: &str, err: PodCastError) -> ! {
 /// empty slice might not match the pointer value of the input reference.
 #[inline]
 pub fn bytes_of<T: Pod>(t: &T) -> &[u8] {
-  match try_cast_slice::<T, u8>(core::slice::from_ref(t)) {
-    Ok(s) => s,
-    Err(_) => unreachable!(),
+  if size_of::<T>() == 0 {
+    &[]
+  } else {
+    match try_cast_slice::<T, u8>(core::slice::from_ref(t)) {
+      Ok(s) => s,
+      Err(_) => unreachable!(),
+    }
   }
 }
 
@@ -124,9 +128,13 @@ pub fn bytes_of<T: Pod>(t: &T) -> &[u8] {
 /// empty slice might not match the pointer value of the input reference.
 #[inline]
 pub fn bytes_of_mut<T: Pod>(t: &mut T) -> &mut [u8] {
-  match try_cast_slice_mut::<T, u8>(core::slice::from_mut(t)) {
-    Ok(s) => s,
-    Err(_) => unreachable!(),
+  if size_of::<T>() == 0 {
+    &mut []
+  } else {
+    match try_cast_slice_mut::<T, u8>(core::slice::from_mut(t)) {
+      Ok(s) => s,
+      Err(_) => unreachable!(),
+    }
   }
 }
 

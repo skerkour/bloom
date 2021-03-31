@@ -1,9 +1,8 @@
+use core::cell::Cell;
+use core::ops::{Bound, RangeBounds};
+use core::ptr;
+
 use crate::traits::Sealed;
-use core::{
-    cell::Cell,
-    ops::{Bound, RangeBounds},
-    ptr,
-};
 
 pub trait Cell_v1_37<T>: Sealed<Cell<T>> {
     fn from_mut(t: &mut T) -> &Cell<T>;

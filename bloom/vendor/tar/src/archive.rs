@@ -405,8 +405,7 @@ impl<'a> EntriesFields<'a> {
                 }
                 let off = block.offset()?;
                 let len = block.length()?;
-
-                if (size - remaining) % 512 != 0 {
+                if len != 0 && (size - remaining) % 512 != 0 {
                     return Err(other(
                         "previous block in sparse file was not \
                          aligned to 512-byte boundary",

@@ -33,7 +33,7 @@ macro_rules! impl_partial_eq_cow {
             #[inline]
             fn eq(&self, other: &$lhs) -> bool {
                 let this: &[u8] = (&**other).as_ref();
-                PartialEq::eq(this, other.as_bytes())
+                PartialEq::eq(this, self.as_bytes())
             }
         }
     };
@@ -938,7 +938,7 @@ mod bstring_arbitrary {
     use quickcheck::{Arbitrary, Gen};
 
     impl Arbitrary for BString {
-        fn arbitrary<G: Gen>(g: &mut G) -> BString {
+        fn arbitrary(g: &mut Gen) -> BString {
             BString::from(Vec::<u8>::arbitrary(g))
         }
 
@@ -966,4 +966,19 @@ fn test_debug() {
         //   \\xFF\\xEF\\xBF\\xBD\\xFF
         B(&format!("{:?}", b"\xFF\xEF\xBF\xBD\xFF".as_bstr())).as_bstr(),
     );
+}
+
+// See: https://github.com/BurntSushi/bstr/issues/82
+#[test]
+fn test_cows_regression() {
+    use crate::ByteSlice;
+    use std::borrow::Cow;
+
+    let c1 = Cow::from(b"hello bstr".as_bstr());
+    let c2 = b"goodbye bstr".as_bstr();
+    assert_ne!(c1, c2);
+
+    let c3 = Cow::from("hello str");
+    let c4 = "goodbye str";
+    assert_ne!(c3, c4);
 }

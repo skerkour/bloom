@@ -17,6 +17,7 @@ pub type uuid_t = ::uuid;
 
 pub type fsblkcnt_t = u64;
 pub type fsfilcnt_t = u64;
+pub type idtype_t = ::c_uint;
 
 pub type mqd_t = ::c_int;
 pub type sem_t = *mut sem;
@@ -170,6 +171,14 @@ s! {
         pub sdl_route: [::c_ushort; 16],
     }
 
+    pub struct xucred {
+        pub cr_version: ::c_uint,
+        pub cr_uid: ::uid_t,
+        pub cr_ngroups: ::c_short,
+        pub cr_groups: [::gid_t; 16],
+        __cr_unused1: *mut ::c_void,
+    }
+
     pub struct stack_t {
         pub ss_sp: *mut ::c_char,
         pub ss_size: ::size_t,
@@ -237,7 +246,6 @@ s_no_extra_traits! {
         pub sigev_value: ::sigval,
         __unused3: *mut ::c_void        //actually a function pointer
     }
-
 }
 
 cfg_if! {
@@ -982,8 +990,17 @@ pub const _SC_V7_LPBIG_OFFBIG: ::c_int = 125;
 pub const _SC_THREAD_ROBUST_PRIO_INHERIT: ::c_int = 126;
 pub const _SC_THREAD_ROBUST_PRIO_PROTECT: ::c_int = 127;
 
-pub const WCONTINUED: ::c_int = 4;
-pub const WSTOPPED: ::c_int = 0o177;
+pub const WCONTINUED: ::c_int = 0x4;
+pub const WSTOPPED: ::c_int = 0x2;
+pub const WNOWAIT: ::c_int = 0x8;
+pub const WEXITED: ::c_int = 0x10;
+pub const WTRAPPED: ::c_int = 0x20;
+
+// Similar to FreeBSD, only the standardized ones are exposed.
+// There are more.
+pub const P_PID: idtype_t = 0;
+pub const P_PGID: idtype_t = 2;
+pub const P_ALL: idtype_t = 7;
 
 // Values for struct rtprio (type_ field)
 pub const RTP_PRIO_REALTIME: ::c_ushort = 0;
@@ -1003,8 +1020,10 @@ pub const SF_XLINK: ::c_ulong = 0x01000000;
 pub const UTIME_OMIT: c_long = -2;
 pub const UTIME_NOW: c_long = -1;
 
-fn _CMSG_ALIGN(n: usize) -> usize {
-    (n + 3) & !3
+const_fn! {
+    {const} fn _CMSG_ALIGN(n: usize) -> usize {
+        (n + 3) & !3
+    }
 }
 
 f! {
@@ -1033,7 +1052,7 @@ f! {
         }
     }
 
-    pub fn CMSG_SPACE(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_SPACE(length: ::c_uint) -> ::c_uint {
         (_CMSG_ALIGN(::mem::size_of::<::cmsghdr>()) +
             _CMSG_ALIGN(length as usize)) as ::c_uint
     }
@@ -1059,6 +1078,13 @@ extern "C" {
     pub fn aio_waitcomplete(
         iocbp: *mut *mut aiocb,
         timeout: *mut ::timespec,
+    ) -> ::c_int;
+
+    pub fn waitid(
+        idtype: idtype_t,
+        id: ::id_t,
+        infop: *mut ::siginfo_t,
+        options: ::c_int,
     ) -> ::c_int;
 
     pub fn freelocale(loc: ::locale_t);

@@ -1,7 +1,8 @@
 mod sort;
 
-use crate::traits::Sealed;
 use core::cmp::Ordering;
+
+use crate::traits::Sealed;
 
 pub trait Slice_v1_49<T>: Sealed<[T]> {
     fn select_nth_unstable(&mut self, index: usize) -> (&mut [T], &mut T, &mut [T])

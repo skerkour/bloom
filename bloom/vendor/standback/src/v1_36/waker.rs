@@ -1,5 +1,7 @@
+use core::marker::PhantomData;
+use core::{fmt, mem};
+
 use crate::marker::Unpin;
-use core::{fmt, marker::PhantomData, mem};
 
 #[derive(PartialEq, Debug)]
 pub struct RawWaker {

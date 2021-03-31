@@ -114,7 +114,6 @@
 //!
 //! <p><b>Hello</b>, <i>world</i>! <img src="cid:123"></p>
 //! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1--
-//!
 //! ```
 //! </details>
 //!
@@ -125,8 +124,8 @@
 //!
 //! ```rust
 //! # use std::error::Error;
+//! use lettre::message::{header, Body, Message, MultiPart, Part, SinglePart};
 //! use std::fs;
-//! use lettre::message::{Body, header, Message, MultiPart, Part, SinglePart};
 //!
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let image = fs::read("docs/lettre.png")?;
@@ -236,7 +235,6 @@
 //!
 //! fn main() { println!("Hello, World!") }
 //! --0oVZ2r6AoLAhLlb0gPNSKy6BEqdS2IfwxrcbUuo1--
-//!
 //! ```
 //! </details>
 
@@ -252,8 +250,7 @@ mod mailbox;
 mod mimebody;
 mod utf8_b;
 
-use std::convert::TryFrom;
-use std::time::SystemTime;
+use std::{convert::TryFrom, time::SystemTime};
 
 use uuid::Uuid;
 
@@ -265,7 +262,8 @@ use crate::{
 
 const DEFAULT_MESSAGE_ID_DOMAIN: &str = "localhost";
 
-pub trait EmailFormat {
+/// Something that can be formatted as an email message
+trait EmailFormat {
     // Use a writer?
     fn format(&self, out: &mut Vec<u8>);
 }
@@ -334,7 +332,7 @@ impl MessageBuilder {
 
     /// Set `Sender` header. Should be used when providing several `From` mailboxes.
     ///
-    /// https://tools.ietf.org/html/rfc5322#section-3.6.2
+    /// Defined in [RFC5322](https://tools.ietf.org/html/rfc5322#section-3.6.2).
     ///
     /// Shortcut for `self.header(header::Sender(mbox))`.
     pub fn sender(self, mbox: Mailbox) -> Self {
@@ -343,7 +341,7 @@ impl MessageBuilder {
 
     /// Set or add mailbox to `From` header
     ///
-    /// https://tools.ietf.org/html/rfc5322#section-3.6.2
+    /// Defined in [RFC5322](https://tools.ietf.org/html/rfc5322#section-3.6.2).
     ///
     /// Shortcut for `self.mailbox(header::From(mbox))`.
     pub fn from(self, mbox: Mailbox) -> Self {
@@ -352,7 +350,7 @@ impl MessageBuilder {
 
     /// Set or add mailbox to `ReplyTo` header
     ///
-    /// https://tools.ietf.org/html/rfc5322#section-3.6.2
+    /// Defined in [RFC5322](https://tools.ietf.org/html/rfc5322#section-3.6.2).
     ///
     /// Shortcut for `self.mailbox(header::ReplyTo(mbox))`.
     pub fn reply_to(self, mbox: Mailbox) -> Self {
@@ -494,6 +492,7 @@ impl MessageBuilder {
 }
 
 /// Email message which can be formatted
+#[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
 #[derive(Clone, Debug)]
 pub struct Message {
     headers: Headers,

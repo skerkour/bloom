@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "ammonia"
-version = "3.1.0"
+version = "3.1.1"
 authors = ["Michael Howell <michael@notriddle.com>"]
 description = "HTML Sanitization"
 documentation = "https://docs.rs/ammonia/"

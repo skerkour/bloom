@@ -7,7 +7,7 @@ replace-with = "vendored-sources"
 
 [source."https://github.com/skerkour/stdx"]
 git = "https://github.com/skerkour/stdx"
-rev = "b5adb65059491d3f4bfdc8c485688ee9df6754a2"
+branch = "tokio02"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]

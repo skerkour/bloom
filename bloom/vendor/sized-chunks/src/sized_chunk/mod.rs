@@ -125,9 +125,13 @@ where
     fn clone(&self) -> Self {
         let mut out = Self::new();
         out.left = self.left;
-        out.right = self.right;
+        out.right = self.left;
         for index in self.left..self.right {
             unsafe { Chunk::force_write(index, (*self.ptr(index)).clone(), &mut out) }
+            // Panic safety, move the right index to cover only the really initialized things. This
+            // way we don't try to drop uninitialized, but also don't leak if we panic in the
+            // middle.
+            out.right = index + 1;
         }
         out
     }
@@ -151,6 +155,7 @@ where
 
     /// Construct a new chunk with one item.
     pub fn unit(value: A) -> Self {
+        assert!(Self::CAPACITY >= 1);
         let mut chunk = Self {
             left: 0,
             right: 1,
@@ -164,6 +169,7 @@ where
 
     /// Construct a new chunk with two items.
     pub fn pair(left: A, right: A) -> Self {
+        assert!(Self::CAPACITY >= 2);
         let mut chunk = Self {
             left: 0,
             right: 2,
@@ -257,6 +263,7 @@ where
         (&self.data as *const _ as *const A).add(index)
     }
 
+    /// It has no bounds checks
     #[inline]
     unsafe fn mut_ptr(&mut self, index: usize) -> *mut A {
         (&mut self.data as *mut _ as *mut A).add(index)
@@ -268,7 +275,8 @@ where
         chunk.ptr(index).read()
     }
 
-    /// Write a value at an index without trying to drop what's already there
+    /// Write a value at an index without trying to drop what's already there.
+    /// It has no bounds checks.
     #[inline]
     unsafe fn force_write(index: usize, value: A, chunk: &mut Self) {
         chunk.mut_ptr(index).write(value)
@@ -280,6 +288,49 @@ where
         if count > 0 {
             ptr::copy(chunk.ptr(from), chunk.mut_ptr(to), count)
         }
+    }
+
+    /// Write values from iterator into range starting at write_index.
+    ///
+    /// Will overwrite values at the relevant range without dropping even in case the values were
+    /// already initialized (it is expected they are empty). Does not update the left or right
+    /// index.
+    ///
+    /// # Safety
+    ///
+    /// Range checks must already have been performed.
+    ///
+    /// # Panics
+    ///
+    /// If the iterator panics, the chunk becomes conceptually empty and will leak any previous
+    /// elements (even the ones outside the range).
+    #[inline]
+    unsafe fn write_from_iter<I>(mut write_index: usize, iter: I, chunk: &mut Self)
+    where
+        I: ExactSizeIterator<Item = A>,
+    {
+        // Panic safety. We make the array conceptually empty, so we never ever drop anything that
+        // is unitialized. We do so because we expect to be called when there's a potential "hole"
+        // in the array that makes the space for the new elements to be written. We return it back
+        // to original when everything goes fine, but leak any elements on panic. This is bad, but
+        // better than dropping non-existing stuff.
+        //
+        // Should we worry about some better panic recovery than this?
+        let left = replace(&mut chunk.left, 0);
+        let right = replace(&mut chunk.right, 0);
+        let len = iter.len();
+        let expected_end = write_index + len;
+        for value in iter.take(len) {
+            Chunk::force_write(write_index, value, chunk);
+            write_index += 1;
+        }
+        // Oops, we have a hole in here now. That would be bad, give up.
+        assert_eq!(
+            expected_end, write_index,
+            "ExactSizeIterator yielded fewer values than advertised",
+        );
+        chunk.left = left;
+        chunk.right = right;
     }
 
     /// Copy a range between chunks
@@ -583,32 +634,23 @@ where
         if self.right == N::USIZE || (self.left >= insert_size && left_size < right_size) {
             unsafe {
                 Chunk::force_copy(self.left, self.left - insert_size, left_size, self);
-                let mut write_index = real_index - insert_size;
-                for value in iter {
-                    Chunk::force_write(write_index, value, self);
-                    write_index += 1;
-                }
+                let write_index = real_index - insert_size;
+                Chunk::write_from_iter(write_index, iter, self);
             }
             self.left -= insert_size;
         } else if self.left == 0 || (self.right + insert_size <= Self::CAPACITY) {
             unsafe {
                 Chunk::force_copy(real_index, real_index + insert_size, right_size, self);
-                let mut write_index = real_index;
-                for value in iter {
-                    Chunk::force_write(write_index, value, self);
-                    write_index += 1;
-                }
+                let write_index = real_index;
+                Chunk::write_from_iter(write_index, iter, self);
             }
             self.right += insert_size;
         } else {
             unsafe {
                 Chunk::force_copy(self.left, 0, left_size, self);
                 Chunk::force_copy(real_index, left_size + insert_size, right_size, self);
-                let mut write_index = left_size;
-                for value in iter {
-                    Chunk::force_write(write_index, value, self);
-                    write_index += 1;
-                }
+                let write_index = left_size;
+                Chunk::write_from_iter(write_index, iter, self);
             }
             self.right -= self.left;
             self.right += insert_size;
@@ -817,6 +859,11 @@ where
     N: ChunkLength<A>,
 {
     fn from(array: &mut InlineArray<A, T>) -> Self {
+        // The first capacity comparison is to help optimize it out
+        assert!(
+            InlineArray::<A, T>::CAPACITY <= Self::CAPACITY || array.len() <= Self::CAPACITY,
+            "CAPACITY too small"
+        );
         let mut out = Self::new();
         out.left = 0;
         out.right = array.len();
@@ -974,8 +1021,174 @@ where
 }
 
 #[cfg(test)]
+#[rustfmt::skip]
 mod test {
     use super::*;
+    use typenum::{U0, U1, U2, U3, U5};
+
+    #[test]
+    #[should_panic(expected = "Chunk::push_back: can't push to full chunk")]
+    fn issue_11_testcase1d() {
+        let mut chunk = Chunk::<usize, U2>::pair(123, 456);
+        chunk.push_back(789);
+    }
+
+    #[test]
+    #[should_panic(expected = "CAPACITY too small")]
+    fn issue_11_testcase2a() {
+        let mut from = InlineArray::<u8, [u8; 256]>::new();
+        from.push(1);
+
+        let _ = Chunk::<u8, U0>::from(from);
+    }
+
+    #[test]
+    fn issue_11_testcase2b() {
+        let mut from = InlineArray::<u8, [u8; 256]>::new();
+        from.push(1);
+
+        let _ = Chunk::<u8, U1>::from(from);
+    }
+
+    struct DropDetector(u32);
+
+    impl DropDetector {
+        fn new(num: u32) -> Self {
+            DropDetector(num)
+        }
+    }
+
+    impl Drop for DropDetector {
+        fn drop(&mut self) {
+            assert!(self.0 == 42 || self.0 == 43);
+        }
+    }
+
+    impl Clone for DropDetector {
+        fn clone(&self) -> Self {
+            if self.0 == 42 {
+                panic!("panic on clone")
+            }
+            DropDetector::new(self.0)
+        }
+    }
+
+    /// This is for miri to catch
+    #[test]
+    fn issue_11_testcase3a() {
+        let mut chunk = Chunk::<DropDetector, U3>::new();
+        chunk.push_back(DropDetector::new(42));
+        chunk.push_back(DropDetector::new(42));
+        chunk.push_back(DropDetector::new(43));
+        let _ = chunk.pop_front();
+
+        let _ = std::panic::catch_unwind(|| {
+            let _ = chunk.clone();
+        });
+    }
+
+    struct PanickingIterator {
+        current: u32,
+        panic_at: u32,
+        len: usize,
+    }
+
+    impl Iterator for PanickingIterator {
+        type Item = DropDetector;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            let num = self.current;
+
+            if num == self.panic_at {
+                panic!("panicking index")
+            }
+
+            self.current += 1;
+            Some(DropDetector::new(num))
+        }
+
+        fn size_hint(&self) -> (usize, Option<usize>) {
+            (self.len, Some(self.len))
+        }
+    }
+
+    impl ExactSizeIterator for PanickingIterator {}
+
+    #[test]
+    fn issue_11_testcase3b() {
+        let _ = std::panic::catch_unwind(|| {
+            let mut chunk = Chunk::<DropDetector, U5>::new();
+            chunk.push_back(DropDetector::new(1));
+            chunk.push_back(DropDetector::new(2));
+            chunk.push_back(DropDetector::new(3));
+
+            chunk.insert_from(
+                1,
+                PanickingIterator {
+                    current: 1,
+                    panic_at: 1,
+                    len: 1,
+                },
+            );
+        });
+    }
+
+    struct FakeSizeIterator { reported: usize, actual: usize }
+    impl Iterator for FakeSizeIterator {
+        type Item = u8;
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.actual == 0 {
+                None
+            } else {
+                self.actual -= 1;
+                Some(1)
+            }
+        }
+
+        fn size_hint(&self) -> (usize, Option<usize>) {
+            (self.reported, Some(self.reported))
+        }
+    }
+
+    impl ExactSizeIterator for FakeSizeIterator {
+        fn len(&self) -> usize {
+            self.reported
+        }
+    }
+
+    #[test]
+    fn iterator_too_long() {
+        let mut chunk = Chunk::<u8, U5>::new();
+        chunk.push_back(0);
+        chunk.push_back(1);
+        chunk.push_back(2);
+        chunk.insert_from(1, FakeSizeIterator { reported: 1, actual: 10 });
+
+        let mut chunk = Chunk::<u8, U5>::new();
+        chunk.push_back(1);
+        chunk.insert_from(0, FakeSizeIterator { reported: 1, actual: 10 });
+
+        let mut chunk = Chunk::<u8, U5>::new();
+        chunk.insert_from(0, FakeSizeIterator { reported: 1, actual: 10 });
+    }
+
+    #[test]
+    #[should_panic(expected = "ExactSizeIterator yielded fewer values than advertised")]
+    fn iterator_too_short1() {
+        let mut chunk = Chunk::<u8, U5>::new();
+        chunk.push_back(0);
+        chunk.push_back(1);
+        chunk.push_back(2);
+        chunk.insert_from(1, FakeSizeIterator { reported: 2, actual: 0 });
+    }
+
+    #[test]
+    #[should_panic(expected = "ExactSizeIterator yielded fewer values than advertised")]
+    fn iterator_too_short2() {
+        let mut chunk = Chunk::<u8, U5>::new();
+        chunk.push_back(1);
+        chunk.insert_from(1, FakeSizeIterator { reported: 4, actual: 2 });
+    }
 
     #[test]
     fn is_full() {
@@ -1182,5 +1395,17 @@ mod test {
             assert_eq!(30, counter.load(Ordering::Relaxed));
         }
         assert_eq!(0, counter.load(Ordering::Relaxed));
+    }
+
+    #[test]
+    #[should_panic(expected = "assertion failed: Self::CAPACITY >= 1")]
+    fn unit_on_empty() {
+        Chunk::<usize, U0>::unit(1);
+    }
+
+    #[test]
+    #[should_panic(expected = "assertion failed: Self::CAPACITY >= 2")]
+    fn pair_on_empty() {
+        Chunk::<usize, U0>::pair(1, 2);
     }
 }

@@ -486,8 +486,10 @@ pub const SO_PEERCRED: ::c_int = 17;
 pub const SO_RCVLOWAT: ::c_int = 18;
 pub const SO_SNDLOWAT: ::c_int = 19;
 pub const SO_ACCEPTCONN: ::c_int = 30;
+pub const SO_PEERSEC: ::c_int = 31;
 pub const SO_SNDBUFFORCE: ::c_int = 32;
 pub const SO_RCVBUFFORCE: ::c_int = 33;
+pub const SO_PASSSEC: ::c_int = 34;
 
 pub const SIGTTIN: ::c_int = 21;
 pub const SIGTTOU: ::c_int = 22;
@@ -1007,8 +1009,25 @@ pub const SYS_setfsuid: ::c_long = 215;
 pub const SYS_setfsgid: ::c_long = 216;
 pub const SYS_newfstatat: ::c_long = 293;
 pub const SYS_statx: ::c_long = 379;
+pub const SYS_pidfd_send_signal: ::c_long = 424;
+pub const SYS_io_uring_setup: ::c_long = 425;
+pub const SYS_io_uring_enter: ::c_long = 426;
+pub const SYS_io_uring_register: ::c_long = 427;
+pub const SYS_open_tree: ::c_long = 428;
+pub const SYS_move_mount: ::c_long = 429;
+pub const SYS_fsopen: ::c_long = 430;
+pub const SYS_fsconfig: ::c_long = 431;
+pub const SYS_fsmount: ::c_long = 432;
+pub const SYS_fspick: ::c_long = 433;
 pub const SYS_pidfd_open: ::c_long = 434;
 pub const SYS_clone3: ::c_long = 435;
+pub const SYS_close_range: ::c_long = 436;
+pub const SYS_openat2: ::c_long = 437;
+pub const SYS_pidfd_getfd: ::c_long = 438;
+pub const SYS_faccessat2: ::c_long = 439;
+pub const SYS_process_madvise: ::c_long = 440;
+pub const SYS_epoll_pwait2: ::c_long = 441;
+pub const SYS_mount_setattr: ::c_long = 442;
 
 extern "C" {
 

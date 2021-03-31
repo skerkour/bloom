@@ -1,4 +1,4 @@
-#![forbid(unsafe_code)]
+#![forbid(unsafe_code)] // https://github.com/rust-secure-code/cargo-geiger/issues/116
 #![warn(rust_2018_idioms, single_use_lifetimes)]
 
 use std::{

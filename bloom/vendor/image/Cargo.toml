@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "image"
-version = "0.23.13"
+version = "0.23.14"
 authors = ["The image-rs Developers"]
 exclude = ["src/png/testdata/*", "examples/*", "tests/*"]
 description = "Imaging library written in Rust. Provides basic filters and decoders for the most common image formats."
@@ -63,7 +63,7 @@ version = "0.11.1"
 optional = true
 
 [dependencies.jpeg]
-version = "0.1.17"
+version = "0.1.22"
 optional = true
 default-features = false
 package = "jpeg-decoder"

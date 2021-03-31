@@ -4,33 +4,102 @@
 //! * Pluggable email transports
 //! * Unicode support
 //! * Secure defaults
+//! * Async support
 //!
 //! Lettre requires Rust 1.45 or newer.
 //!
-//! ## Optional features
+//! ## Features
 //!
-//! * **builder**: Message builder
-//! * **file-transport**: Transport that write messages into a file
-//! * **file-transport-envelope**: Allow writing the envelope into a JSON file
-//! * **smtp-transport**: Transport over SMTP
-//! * **sendmail-transport**: Transport over SMTP
-//! * **rustls-tls**: TLS support with the `rustls` crate
-//! * **native-tls**: TLS support with the `native-tls` crate
-//! * **tokio02**: Allow to asyncronously send emails using tokio 0.2.x
-//! * **tokio02-rustls-tls**: Async TLS support with the `rustls` crate using tokio 0.2
-//! * **tokio02-native-tls**: Async TLS support with the `native-tls` crate using tokio 0.2
-//! * **tokio1**: Allow to asyncronously send emails using tokio 1.x
-//! * **tokio1-rustls-tls**: Async TLS support with the `rustls` crate using tokio 1.x
-//! * **tokio1-native-tls**: Async TLS support with the `native-tls` crate using tokio 1.x
-//! * **async-std1**: Allow to asynchronously send emails using async-std 1.x
-//! * NOTE: native-tls isn't supported with async-std at the moment
-//! * **async-std1-rustls-tls**: Async TLS support with the `rustls` crate using async-std 1.x
-//! * **r2d2**: Connection pool for SMTP transport
-//! * **tracing**: Logging using the `tracing` crate
+//! This section lists each lettre feature and briefly explains it.
+//! More info about each module can be found in the corresponding module page.
+//!
+//! Features with `📫` near them are enabled by default.
+//!
+//! ### Typed message builder
+//!
+//! _Strongly typed [`message`] builder_
+//!
+//! * **builder** 📫: Enable the [`Message`] builder
+//! * **hostname** 📫: Try to use the actual system hostname in the `Message-ID` header
+//!
+//! ### SMTP transport
+//!
+//! _Send emails using [`SMTP`]_
+//!
+//! * **smtp-transport** 📫: Enable the SMTP transport
+//! * **r2d2** 📫: Connection pool for SMTP transport
+//! * **hostname** 📫: Try to use the actual system hostname for the SMTP `CLIENTID`
+//!
+//! #### SMTP over TLS via the native-tls crate
+//!
+//! _Secure SMTP connections using TLS from the `native-tls` crate_
+//!
+//! Uses schannel on Windows, Security-Framework on macOS, and OpenSSL on Linux.
+//!
+//! * **native-tls** 📫: TLS support for the synchronous version of the API
+//! * **tokio02-native-tls**: TLS support for the `tokio02` async version of the API
+//! * **tokio1-native-tls**: TLS support for the `tokio1` async version of the API
+//!
+//! NOTE: native-tls isn't supported with `async-std`
+//!
+//! #### SMTP over TLS via the rustls crate
+//!
+//! _Secure SMTP connections using TLS from the `rustls-tls` crate_
+//!
+//! Rustls uses [ring] as the cryptography implementation. As a result, [not all Rust's targets are supported][ring-support].
+//!
+//! * **rustls-tls**: TLS support for the synchronous version of the API
+//! * **tokio02-rustls-tls**: TLS support for the `tokio02` async version of the API
+//! * **tokio1-rustls-tls**: TLS support for the `tokio1` async version of the API
+//! * **async-std1-rustls-tls**: TLS support for the `async-std1` async version of the API
+//!
+//! ### Sendmail transport
+//!
+//! _Send emails using the [`sendmail`] command_
+//!
+//! * **sendmail-transport**: Enable the `sendmail` transport
+//!
+//! ### File transport
+//!
+//! _Save emails as an `.eml` [`file`]_
+//!
+//! * **file-transport**: Enable the file transport (saves emails into an `.eml` file)
+//! * **file-transport-envelope**: Allow writing the envelope into a JSON file (additionally saves envelopes into a `.json` file)
+//!
+//! ### Async execution runtimes
+//!
+//! _Use [tokio] or [async-std] as an async execution runtime for sending emails_
+//!
+//! The correct runtime version must be chosen in order for lettre to work correctly.
+//! For example, when sending emails from a Tokio 1.3.0 context, the Tokio 1.x executor
+//! ([`Tokio1Executor`]) must be used. Using a different version (for example Tokio 0.2.x),
+//! or async-std, would result in a runtime panic.
+//!
+//! * **tokio02**: Allow to asynchronously send emails using [Tokio 0.2.x]
+//! * **tokio1**: Allow to asynchronously send emails using [Tokio 1.x]
+//! * **async-std1**: Allow to asynchronously send emails using [async-std 1.x]
+//!
+//! NOTE: native-tls isn't supported with `async-std`
+//!
+//! ### Misc features
+//!
+//! _Additional features_
+//!
 //! * **serde**: Serialization/Deserialization of entities
-//! * **hostname**: Ability to try to use actual hostname in SMTP transaction
+//! * **tracing**: Logging using the `tracing` crate
+//!
+//! [`SMTP`]: crate::transport::smtp
+//! [`sendmail`]: crate::transport::sendmail
+//! [`file`]: crate::transport::file
+//! [tokio]: https://docs.rs/tokio/1
+//! [async-std]: https://docs.rs/async-std/1
+//! [ring]: https://github.com/briansmith/ring#ring
+//! [ring-support]: https://github.com/briansmith/ring#online-automated-testing
+//! [Tokio 0.2.x]: https://docs.rs/tokio/0.2
+//! [Tokio 1.x]: https://docs.rs/tokio/1
+//! [async-std 1.x]: https://docs.rs/async-std/1
 
-#![doc(html_root_url = "https://docs.rs/crate/lettre/0.10.0-alpha.5")]
+#![doc(html_root_url = "https://docs.rs/crate/lettre/0.10.0-beta.3")]
 #![doc(html_favicon_url = "https://lettre.rs/favicon.ico")]
 #![doc(html_logo_url = "https://avatars0.githubusercontent.com/u/15113230?v=4")]
 #![forbid(unsafe_code)]
@@ -46,6 +115,8 @@
 
 pub mod address;
 pub mod error;
+#[cfg(any(feature = "tokio02", feature = "tokio1", feature = "async-std1"))]
+mod executor;
 #[cfg(feature = "builder")]
 #[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
 pub mod message;
@@ -55,117 +126,53 @@ pub mod transport;
 #[macro_use]
 extern crate hyperx;
 
+#[cfg(feature = "async-std1")]
+pub use self::executor::AsyncStd1Executor;
+#[cfg(all(any(feature = "tokio02", feature = "tokio1", feature = "async-std1")))]
+pub use self::executor::Executor;
+#[cfg(feature = "tokio02")]
+pub use self::executor::Tokio02Executor;
+#[cfg(feature = "tokio1")]
+pub use self::executor::Tokio1Executor;
+#[cfg(all(any(feature = "tokio02", feature = "tokio1", feature = "async-std1")))]
+#[doc(inline)]
+pub use self::transport::AsyncTransport;
 pub use crate::address::Address;
-use crate::address::Envelope;
-use crate::error::Error;
 #[cfg(feature = "builder")]
+#[doc(inline)]
 pub use crate::message::Message;
+#[cfg(all(
+    feature = "file-transport",
+    any(feature = "tokio02", feature = "tokio1", feature = "async-std1")
+))]
+#[doc(inline)]
+pub use crate::transport::file::AsyncFileTransport;
 #[cfg(feature = "file-transport")]
+#[doc(inline)]
 pub use crate::transport::file::FileTransport;
+#[cfg(all(
+    feature = "sendmail-transport",
+    any(feature = "tokio02", feature = "tokio1", feature = "async-std1")
+))]
+#[doc(inline)]
+pub use crate::transport::sendmail::AsyncSendmailTransport;
 #[cfg(feature = "sendmail-transport")]
+#[doc(inline)]
 pub use crate::transport::sendmail::SendmailTransport;
 #[cfg(all(
     feature = "smtp-transport",
-    any(feature = "tokio02", feature = "tokio1")
+    any(feature = "tokio02", feature = "tokio1", feature = "async-std1")
 ))]
 pub use crate::transport::smtp::AsyncSmtpTransport;
-#[cfg(all(feature = "smtp-transport", feature = "async-std1"))]
-pub use crate::transport::smtp::AsyncStd1Connector;
+#[doc(inline)]
+pub use crate::transport::Transport;
+use crate::{address::Envelope, error::Error};
+
 #[cfg(feature = "smtp-transport")]
 pub use crate::transport::smtp::SmtpTransport;
-#[cfg(all(feature = "smtp-transport", feature = "tokio02"))]
-pub use crate::transport::smtp::Tokio02Connector;
-#[cfg(all(feature = "smtp-transport", feature = "tokio1"))]
-pub use crate::transport::smtp::Tokio1Connector;
-#[cfg(any(feature = "async-std1", feature = "tokio02", feature = "tokio1"))]
-use async_trait::async_trait;
+use std::error::Error as StdError;
 
-/// Blocking Transport method for emails
-pub trait Transport {
-    /// Response produced by the Transport
-    type Ok;
-    /// Error produced by the Transport
-    type Error;
-
-    /// Sends the email
-    #[cfg(feature = "builder")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
-    fn send(&self, message: &Message) -> Result<Self::Ok, Self::Error> {
-        let raw = message.formatted();
-        self.send_raw(message.envelope(), &raw)
-    }
-
-    fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error>;
-}
-
-/// async-std 1.x based Transport method for emails
-#[cfg(feature = "async-std1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "async-std1")))]
-#[async_trait]
-pub trait AsyncStd1Transport {
-    /// Response produced by the Transport
-    type Ok;
-    /// Error produced by the Transport
-    type Error;
-
-    /// Sends the email
-    #[cfg(feature = "builder")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
-    // TODO take &Message
-    async fn send(&self, message: Message) -> Result<Self::Ok, Self::Error> {
-        let raw = message.formatted();
-        let envelope = message.envelope();
-        self.send_raw(&envelope, &raw).await
-    }
-
-    async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error>;
-}
-
-/// tokio 0.2.x based Transport method for emails
-#[cfg(feature = "tokio02")]
-#[cfg_attr(docsrs, doc(cfg(feature = "tokio02")))]
-#[async_trait]
-pub trait Tokio02Transport {
-    /// Response produced by the Transport
-    type Ok;
-    /// Error produced by the Transport
-    type Error;
-
-    /// Sends the email
-    #[cfg(feature = "builder")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
-    // TODO take &Message
-    async fn send(&self, message: Message) -> Result<Self::Ok, Self::Error> {
-        let raw = message.formatted();
-        let envelope = message.envelope();
-        self.send_raw(&envelope, &raw).await
-    }
-
-    async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error>;
-}
-
-/// tokio 1.x based Transport method for emails
-#[cfg(feature = "tokio1")]
-#[cfg_attr(docsrs, doc(cfg(feature = "tokio1")))]
-#[async_trait]
-pub trait Tokio1Transport {
-    /// Response produced by the Transport
-    type Ok;
-    /// Error produced by the Transport
-    type Error;
-
-    /// Sends the email
-    #[cfg(feature = "builder")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
-    // TODO take &Message
-    async fn send(&self, message: Message) -> Result<Self::Ok, Self::Error> {
-        let raw = message.formatted();
-        let envelope = message.envelope();
-        self.send_raw(&envelope, &raw).await
-    }
-
-    async fn send_raw(&self, envelope: &Envelope, email: &[u8]) -> Result<Self::Ok, Self::Error>;
-}
+pub(crate) type BoxError = Box<dyn StdError + Send + Sync>;
 
 #[cfg(test)]
 #[cfg(feature = "builder")]

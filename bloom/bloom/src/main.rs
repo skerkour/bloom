@@ -25,6 +25,8 @@ mod cli;
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 fn main() -> Result<(), kernel::Error> {
+    stdx::crypto::init()?;
+
     let cli = App::new(clap::crate_name!())
         .version(clap::crate_version!())
         .about(clap::crate_description!())
