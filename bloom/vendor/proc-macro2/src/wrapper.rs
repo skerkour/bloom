@@ -107,8 +107,12 @@ impl FromStr for TokenStream {
 
 // Work around https://github.com/rust-lang/rust/issues/58736.
 fn proc_macro_parse(src: &str) -> Result<proc_macro::TokenStream, LexError> {
-    panic::catch_unwind(|| src.parse().map_err(LexError::Compiler))
-        .unwrap_or(Err(LexError::Fallback(fallback::LexError)))
+    let result = panic::catch_unwind(|| src.parse().map_err(LexError::Compiler));
+    result.unwrap_or_else(|_| {
+        Err(LexError::Fallback(fallback::LexError {
+            span: fallback::Span::call_site(),
+        }))
+    })
 }
 
 impl Display for TokenStream {
@@ -243,6 +247,15 @@ impl Debug for TokenStream {
     }
 }
 
+impl LexError {
+    pub(crate) fn span(&self) -> Span {
+        match self {
+            LexError::Compiler(_) => Span::call_site(),
+            LexError::Fallback(e) => Span::Fallback(e.span()),
+        }
+    }
+}
+
 impl From<proc_macro::LexError> for LexError {
     fn from(e: proc_macro::LexError) -> LexError {
         LexError::Compiler(e)
@@ -270,7 +283,12 @@ impl Display for LexError {
             #[cfg(lexerror_display)]
             LexError::Compiler(e) => Display::fmt(e, f),
             #[cfg(not(lexerror_display))]
-            LexError::Compiler(_e) => Display::fmt(&fallback::LexError, f),
+            LexError::Compiler(_e) => Display::fmt(
+                &fallback::LexError {
+                    span: fallback::Span::call_site(),
+                },
+                f,
+            ),
             LexError::Fallback(e) => Display::fmt(e, f),
         }
     }

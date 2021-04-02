@@ -12,6 +12,7 @@ quoted-printable exposes two functions at the moment:
 ```rust
     decode<R: AsRef<[u8]>>(input: R, mode: ParseMode) -> Result<Vec<u8>, QuotedPrintableError>
     encode<R: AsRef<[u8]>>(input: R) -> Vec<u8>
+    encode_to_str<R: AsRef<[u8]>>(input: R) -> String
 ```
 
 using `R: AsRef<[u8]>` means that you can pass in a variety of types, including:
@@ -22,18 +23,7 @@ The decode function can be used to convert a quoted-printable string into the de
 The ParseMode option can be used to control whether the decoding is "strict" or "robust", as per the comments in that RFC.
 In general you should probably use "robust" decoding, as it will gracefully handle more malformed input.
 
-The encode function obviously does the reverse, and converts a set of raw bytes into quoted-printable.
-
-
-Additionally there is following helper function:
-
-```rust
-    encode_to_str<R: AsRef<[u8]>>(input: R) -> String
-```
-
-which takes advantage of the fact that the `Vec<u8>` returned by `encode` can only
-contain valid us-ascii and converts it to a `String` (using the unsafe
-`String::from_utf8_unchecked`)
+The encode and encode_to_str functions obviously do the reverse, and convert a set of raw bytes into quoted-printable.
 
 Documentation
 ---

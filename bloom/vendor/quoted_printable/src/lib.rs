@@ -1,25 +1,27 @@
+#![forbid(unsafe_code)]
+
 use std::fmt;
 use std::error;
 
 const LINE_LENGTH_LIMIT: usize = 76;
 
-static HEX_CHARS: &[u8] = &[
-    b'0',
-    b'1',
-    b'2',
-    b'3',
-    b'4',
-    b'5',
-    b'6',
-    b'7',
-    b'8',
-    b'9',
-    b'A',
-    b'B',
-    b'C',
-    b'D',
-    b'E',
-    b'F',
+static HEX_CHARS: &[char] = &[
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
 ];
 
 /// A flag that allows control over the decoding strictness.
@@ -225,8 +227,8 @@ fn _decode(input: &[u8], mode: ParseMode) -> Result<Vec<u8>, QuotedPrintableErro
 }
 
 fn append(
-    result: &mut Vec<u8>,
-    to_append: &[u8],
+    result: &mut String,
+    to_append: &[char],
     bytes_on_line: &mut usize,
     backup_pos: &mut usize,
 ) {
@@ -237,11 +239,9 @@ fn append(
             // break at the backup pos, which is just before the last thing
             // appended.
             *bytes_on_line = result.len() - *backup_pos;
-            result.insert(*backup_pos, b'=');
-            result.insert(*backup_pos + 1, b'\r');
-            result.insert(*backup_pos + 2, b'\n');
+            result.insert_str(*backup_pos, "=\r\n");
         } else {
-            result.extend([b'=', b'\r', b'\n'].iter().cloned());
+            result.push_str("=\r\n");
             *bytes_on_line = 0;
         }
     }
@@ -266,11 +266,12 @@ fn append(
 /// ```
 #[inline(always)]
 pub fn encode<R: AsRef<[u8]>>(input: R) -> Vec<u8> {
-    _encode(input.as_ref())
+    let encoded_as_string = _encode(input.as_ref());
+    encoded_as_string.into()
 }
 
-fn _encode(input: &[u8]) -> Vec<u8> {
-    let mut result = Vec::new();
+fn _encode(input: &[u8]) -> String {
+    let mut result = String::new();
     let mut on_line: usize = 0;
     let mut backup_pos: usize = 0;
     let mut was_cr = false;
@@ -279,14 +280,13 @@ fn _encode(input: &[u8]) -> Vec<u8> {
     while let Some(&byte) = it.next() {
         if was_cr {
             if byte == b'\n' {
-                result.push(b'\r');
-                result.push(b'\n');
+                result.push_str("\r\n");
                 on_line = 0;
                 was_cr = false;
                 continue;
             }
             // encode the CR ('\r') we skipped over before
-            append(&mut result, b"=0D", &mut on_line, &mut backup_pos);
+            append(&mut result, &['=', '0', 'D'], &mut on_line, &mut backup_pos);
         }
         if byte == b'\r' {
             // remember we had a CR ('\r') but do not encode it yet
@@ -300,7 +300,7 @@ fn _encode(input: &[u8]) -> Vec<u8> {
 
     // we haven't yet encoded the last CR ('\r') so do it now
     if was_cr {
-        append(&mut result, b"=0D", &mut on_line, &mut backup_pos);
+        append(&mut result, &['=', '0', 'D'], &mut on_line, &mut backup_pos);
     }
 
     result
@@ -308,10 +308,7 @@ fn _encode(input: &[u8]) -> Vec<u8> {
 
 /// Encodes some bytes into quoted-printable format.
 ///
-/// The difference to `encode` is that this function takes advantage of
-/// the fact that the `Vec<u8>` returned by `encode` can only contain
-/// valid us-ascii and converts it to a `String` (using the unsafe
-/// `String::from_utf8_unchecked`).
+/// The difference to `encode` is that this function returns a `String`.
 ///
 /// The quoted-printable transfer-encoding is defined in IETF RFC 2045, section
 /// 6.7. This function encodes a set of raw bytes into a format conformant with
@@ -327,31 +324,29 @@ fn _encode(input: &[u8]) -> Vec<u8> {
 /// ```
 #[inline(always)]
 pub fn encode_to_str<R: AsRef<[u8]>>(input: R) -> String {
-    let encoded_as_vec = encode(input);
-    //SAFE: result can only contain us-ascii characters
-    unsafe { String::from_utf8_unchecked(encoded_as_vec) }
+    _encode(input.as_ref())
 }
 
 #[inline]
-fn encode_byte(result: &mut Vec<u8>, to_append: u8, on_line: &mut usize, backup_pos: &mut usize) {
+fn encode_byte(result: &mut String, to_append: u8, on_line: &mut usize, backup_pos: &mut usize) {
     match to_append {
-        b'=' => append(result, b"=3D", on_line, backup_pos),
-        b'\t' | b' '..=b'~' => append(result, &[to_append], on_line, backup_pos),
+        b'=' => append(result, &['=', '3', 'D'], on_line, backup_pos),
+        b'\t' | b' '..=b'~' => append(result, &[char::from(to_append)], on_line, backup_pos),
         _ => append(result, &hex_encode_byte(to_append), on_line, backup_pos),
     }
 }
 
 #[inline(always)]
-fn hex_encode_byte(byte: u8) -> [u8; 3] {
+fn hex_encode_byte(byte: u8) -> [char; 3] {
     [
-        b'=',
+        '=',
         lower_nibble_to_hex(byte >> 4),
         lower_nibble_to_hex(byte),
     ]
 }
 
 #[inline(always)]
-fn lower_nibble_to_hex(half_byte: u8) -> u8 {
+fn lower_nibble_to_hex(half_byte: u8) -> char {
     HEX_CHARS[(half_byte & 0x0F) as usize]
 }
 
@@ -537,14 +532,14 @@ mod tests {
 
     #[test]
     fn test_lower_nibble_to_hex() {
-        let test_data: &[(u8, u8, u8)] = &[
-            (0, b'0', b'0'),
-            (1, b'0', b'1'),
-            (9, b'0', b'9'),
-            (10, b'0', b'A'),
-            (15, b'0', b'F'),
-            (16, b'1', b'0'),
-            (255, b'F', b'F'),
+        let test_data: &[(u8, char, char)] = &[
+            (0, '0', '0'),
+            (1, '0', '1'),
+            (9, '0', '9'),
+            (10, '0', 'A'),
+            (15, '0', 'F'),
+            (16, '1', '0'),
+            (255, 'F', 'F'),
         ];
 
         for &(nr, high, low) in test_data.iter() {

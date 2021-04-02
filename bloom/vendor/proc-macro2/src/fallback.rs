@@ -1,4 +1,4 @@
-use crate::parse::{token_stream, Cursor};
+use crate::parse::{self, Cursor};
 use crate::{Delimiter, Spacing, TokenTree};
 #[cfg(span_locations)]
 use std::cell::RefCell;
@@ -35,7 +35,15 @@ pub(crate) struct TokenStream {
 }
 
 #[derive(Debug)]
-pub(crate) struct LexError;
+pub(crate) struct LexError {
+    pub(crate) span: Span,
+}
+
+impl LexError {
+    pub(crate) fn span(&self) -> Span {
+        self.span
+    }
+}
 
 impl TokenStream {
     pub fn new() -> TokenStream {
@@ -139,12 +147,7 @@ impl FromStr for TokenStream {
         // Create a dummy file & add it to the source map
         let cursor = get_cursor(src);
 
-        let (rest, tokens) = token_stream(cursor)?;
-        if rest.is_empty() {
-            Ok(tokens)
-        } else {
-            Err(LexError)
-        }
+        parse::token_stream(cursor)
     }
 }
 

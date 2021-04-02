@@ -13,7 +13,7 @@
 [package]
 edition = "2018"
 name = "quoted_printable"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["Kartikaya Gupta <kats@seldon.staktrace.com>"]
 description = "A simple encoder/decoder for quoted-printable data"
 homepage = "https://github.com/staktrace/quoted-printable/blob/master/README.md"

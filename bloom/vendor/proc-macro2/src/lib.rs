@@ -78,10 +78,11 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.24")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.26")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_raw_ident, proc_macro_def_site))]
-#![allow(clippy::needless_doctest_main)]
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
+#![allow(clippy::needless_doctest_main, clippy::vec_init_then_push)]
 
 #[cfg(use_proc_macro)]
 extern crate proc_macro;
@@ -249,6 +250,12 @@ impl Debug for TokenStream {
     }
 }
 
+impl LexError {
+    pub fn span(&self) -> Span {
+        Span::_new(self.inner.span())
+    }
+}
+
 impl Debug for LexError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         Debug::fmt(&self.inner, f)
@@ -267,6 +274,7 @@ impl Error for LexError {}
 ///
 /// This type is semver exempt and not exposed by default.
 #[cfg(procmacro2_semver_exempt)]
+#[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
 #[derive(Clone, PartialEq, Eq)]
 pub struct SourceFile {
     inner: imp::SourceFile,
@@ -317,6 +325,7 @@ impl Debug for SourceFile {
 ///
 /// This type is semver exempt and not exposed by default.
 #[cfg(span_locations)]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct LineColumn {
     /// The 1-indexed line in the source file on which the span starts or ends
@@ -388,6 +397,7 @@ impl Span {
     ///
     /// This method is semver exempt and not exposed by default.
     #[cfg(procmacro2_semver_exempt)]
+    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
     pub fn def_site() -> Span {
         Span::_new(imp::Span::def_site())
     }
@@ -430,6 +440,7 @@ impl Span {
     ///
     /// This method is semver exempt and not exposed by default.
     #[cfg(procmacro2_semver_exempt)]
+    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
     pub fn source_file(&self) -> SourceFile {
         SourceFile::_new(self.inner.source_file())
     }
@@ -437,7 +448,14 @@ impl Span {
     /// Get the starting line/column in the source file for this span.
     ///
     /// This method requires the `"span-locations"` feature to be enabled.
+    ///
+    /// When executing in a procedural macro context, the returned line/column
+    /// are only meaningful if compiled with a nightly toolchain. The stable
+    /// toolchain does not have this information available. When executing
+    /// outside of a procedural macro, such as main.rs or build.rs, the
+    /// line/column are always meaningful regardless of toolchain.
     #[cfg(span_locations)]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
     pub fn start(&self) -> LineColumn {
         let imp::LineColumn { line, column } = self.inner.start();
         LineColumn { line, column }
@@ -446,7 +464,14 @@ impl Span {
     /// Get the ending line/column in the source file for this span.
     ///
     /// This method requires the `"span-locations"` feature to be enabled.
+    ///
+    /// When executing in a procedural macro context, the returned line/column
+    /// are only meaningful if compiled with a nightly toolchain. The stable
+    /// toolchain does not have this information available. When executing
+    /// outside of a procedural macro, such as main.rs or build.rs, the
+    /// line/column are always meaningful regardless of toolchain.
     #[cfg(span_locations)]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "span-locations")))]
     pub fn end(&self) -> LineColumn {
         let imp::LineColumn { line, column } = self.inner.end();
         LineColumn { line, column }
@@ -469,6 +494,7 @@ impl Span {
     ///
     /// This method is semver exempt and not exposed by default.
     #[cfg(procmacro2_semver_exempt)]
+    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
     pub fn eq(&self, other: &Span) -> bool {
         self.inner.eq(&other.inner)
     }
@@ -699,7 +725,7 @@ impl Debug for Group {
     }
 }
 
-/// An `Punct` is an single punctuation character like `+`, `-` or `#`.
+/// A `Punct` is a single punctuation character like `+`, `-` or `#`.
 ///
 /// Multicharacter operators like `+=` are represented as two instances of
 /// `Punct` with different forms of `Spacing` returned.
@@ -710,7 +736,7 @@ pub struct Punct {
     span: Span,
 }
 
-/// Whether an `Punct` is followed immediately by another `Punct` or followed by
+/// Whether a `Punct` is followed immediately by another `Punct` or followed by
 /// another token or whitespace.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Spacing {
@@ -899,6 +925,7 @@ impl Ident {
     ///
     /// This method is semver exempt and not exposed by default.
     #[cfg(procmacro2_semver_exempt)]
+    #[cfg_attr(doc_cfg, doc(cfg(procmacro2_semver_exempt)))]
     pub fn new_raw(string: &str, span: Span) -> Ident {
         Ident::_new_raw(string, span)
     }
@@ -987,7 +1014,7 @@ macro_rules! suffixed_int_literals {
         /// This function will create an integer like `1u32` where the integer
         /// value specified is the first part of the token and the integral is
         /// also suffixed at the end. Literals created from negative numbers may
-        /// not survive rountrips through `TokenStream` or strings and may be
+        /// not survive roundtrips through `TokenStream` or strings and may be
         /// broken into two tokens (`-` and positive literal).
         ///
         /// Literals created through this method have the `Span::call_site()`
@@ -1008,7 +1035,7 @@ macro_rules! unsuffixed_int_literals {
         /// specified on this token, meaning that invocations like
         /// `Literal::i8_unsuffixed(1)` are equivalent to
         /// `Literal::u32_unsuffixed(1)`. Literals created from negative numbers
-        /// may not survive rountrips through `TokenStream` or strings and may
+        /// may not survive roundtrips through `TokenStream` or strings and may
         /// be broken into two tokens (`-` and positive literal).
         ///
         /// Literals created through this method have the `Span::call_site()`
