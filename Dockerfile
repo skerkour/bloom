@@ -93,7 +93,7 @@ LABEL maintainer="Bloom <https://bloom.sh>"
 LABEL homepage=https://bloom.sh
 LABEL org.opencontainers.image.name=bloom
 LABEL repository=https://github.com/skerkour/bloom
-
+LABEL org.opencontainers.image.source = "https://github.com/skerkour/bloom"
 
 # If some crashes or slowness are noticed when running the static rust binary with musl and Jemalloc
 # see here: https://andygrove.io/2020/05/why-musl-extremely-slow/

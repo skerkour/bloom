@@ -17,7 +17,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           heroku container:login
-          echo ${{ secrets.GH_PERSONAL_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }}} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       # replace heroku pull by docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:latest
       # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
