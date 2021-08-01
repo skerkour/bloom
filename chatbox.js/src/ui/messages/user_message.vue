@@ -1,7 +1,6 @@
 <template>
   <div class="user-message">
-    <span v-html="message.body_html">
-    </span>
+    <span>{{ message.body_html }}</span>
   </div>
 </template>
 
