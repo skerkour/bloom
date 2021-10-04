@@ -30,7 +30,7 @@
           <ul>
             <li><a class="nav-link" href="https://kerkour.com" target="_blank" rel="noopener">Blog</a></li>
             <li><a class="nav-link" href="https://kerkour.com/subscribe" target="_blank" rel="noopener">Newsletter</a></li>
-            <li><a class="nav-link" href="https://twitter.com/sylvain_kerkour" target="_blank" rel="noopener">Twitter</a></li>
+            <li><a class="nav-link" href="https://twitter.com/https://twitter.com/SylvainKerkour" target="_blank" rel="noopener">Twitter</a></li>
             <li><a class="nav-link" href="https://github.com/skerkour/bloom" target="_blank" rel="noopener">GitHub</a></li>
             <li><a class="nav-link" href="https://social.kerkour.com/@sylvain" target="_blank" rel="me noopener">Mastodon</a></li>
           </ul>
