@@ -208,7 +208,8 @@ export default VueApp.extend({
     },
   },
   created() {
-    this.fetchData();
+    // this.fetchData();
+    this.error = 'Unavailable. Please contact support.';
   },
   methods: {
     filesize,
