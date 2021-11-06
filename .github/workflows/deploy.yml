@@ -23,10 +23,10 @@ jobs:
       # docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release -f Dockerfile.release .
       - name: Build and tag Docker image
         run: |
-          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom
-          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:release
-          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
-          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom:release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
+          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom-legacy
+          docker pull ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom-legacy:release
+          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom-legacy registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/web
+          docker tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/bloom-legacy:release registry.heroku.com/${{ secrets.HEROKU_APP_PRODUCTION }}/release
 
       - name: Docker image info
         run: docker images
