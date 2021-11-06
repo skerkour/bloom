@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+      - name: Deploy on Render
+        run: |
+          curl ${{ secrets.RENDER_DEPLOY_HOOK }
+
       - name: Login to container registries
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
