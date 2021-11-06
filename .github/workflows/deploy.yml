@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Deploy on Render
         run: |
-          curl ${{ secrets.RENDER_DEPLOY_HOOK }
+          curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
       - name: Login to container registries
         env:
