@@ -17,8 +17,8 @@ crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
 libc = { version = "^0.2.41", default-features = false }
-libsodium_sys = { version = "0.2.5", path = "crates/libsodium_sys", package = "crypto42_libsodium_sys" }
-zeroize_derive = { version = "0.10", path = "crates/zeroize_derive", optional = true }
+libsodium_sys = { version = "0.2.5", path = "../crypto42_libsodium_sys", package = "crypto42_libsodium_sys" }
+#zeroize_derive = { version = "0.10", path = "crates/zeroize_derive", optional = true }
 bytes = { version = "0.4", optional = true }
 
 

@@ -6,6 +6,9 @@ members = [
   "http_server",
   "scheduler",
   "worker",
+  "libs/stdx",
+  "libs/crypto42",
+  "libs/crypto42_libsodium_sys",
 
   # apps
   "analytics",

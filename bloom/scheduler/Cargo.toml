@@ -8,5 +8,5 @@ edition = "2018"
 
 [dependencies]
 kernel = { path = "../kernel" }
-stdx = { git = "https://github.com/skerkour/stdx", branch = "tokio02" }
+stdx = { path = "../libs/stdx" }
 

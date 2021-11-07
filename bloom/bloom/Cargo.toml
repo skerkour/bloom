@@ -23,7 +23,7 @@ codegen-units = 1
 kernel = { path = "../kernel" }
 http_server = { path = "../http_server" }
 worker = { path = "../worker" }
-stdx = { git = "https://github.com/skerkour/stdx", branch = "tokio02" }
+stdx = { path = "../libs/stdx" }
 
 scheduler = { path = "../scheduler" }
 files = { path = "../files" }
@@ -42,5 +42,5 @@ version = "0.3"
 
 
 [build-dependencies]
-stdx = { git = "https://github.com/skerkour/stdx", branch = "tokio02" }
+stdx = { path = "../libs/stdx" }
 
