@@ -8,6 +8,17 @@
 </p>
 
 
+## Project Status
+
+*as of february 2022*
+
+Bloom is about to see a new major release (a few weeks / months) that will completely diverge from the current feature set.
+
+I prefer not to say much before shipping, not to say things that won't be true, but it means that Bloom is no longer meant to be a GSuite / NextCloud alternative.
+
+
+--------------------------------
+
 Do you no longer trust tech monopolies with your data?<br/>
 Are you done with your privacy being invaded by advertisers? <br/>
 Are you tired of being abused by Big Companies?
