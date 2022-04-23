@@ -35,7 +35,7 @@ impl std::convert::From<Error> for kernel::Error {
             }
             Error::EventDatesAreInvalid => kernel::Error::InvalidArgument(String::from("Dates are not valid.")),
             Error::EventEndDateCantBeBeforeStartDate => {
-                kernel::Error::InvalidArgument(String::from("Start date canoot be after End date."))
+                kernel::Error::InvalidArgument(String::from("Start date cannot be after End date."))
             }
             Error::EventLocationIsTooLong => kernel::Error::InvalidArgument(String::from("Location is too long.")),
             Error::EventLocationIsInvalid => kernel::Error::InvalidArgument(String::from("Location is not valid.")),
