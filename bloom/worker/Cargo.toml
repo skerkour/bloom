@@ -13,5 +13,5 @@ stdx = { path = "../libs/stdx" }
 analytics = { path = "../analytics" }
 inbox = { path = "../inbox" }
 
-tokio = { version = "0.2", features = ["full"] }
+tokio = { version = "1.8", features = ["full"] }
 sentry = { version = "0.21", default-features = false, features = ["backtrace", "contexts", "panic", "reqwest", "rustls"] }
