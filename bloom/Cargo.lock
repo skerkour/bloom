@@ -364,9 +364,9 @@ dependencies = [
 
 [[package]]
 name = "ammonia"
-version = "3.1.1"
+version = "3.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ee7d6eb157f337c5cedc95ddf17f0cbc36d36eb7763c8e0d1c1aeb3722f6279"
+checksum = "b74b175af97d1aecc1add0878b1cbfcbf3bd4c22d7713eeb6d597da23e29bc0d"
 dependencies = [
  "html5ever",
  "lazy_static",
