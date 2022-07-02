@@ -12,9 +12,9 @@
 
 *as of february 2022*
 
-Bloom is about to see a new major release (a few weeks / months) that will completely diverge from the current feature set.
+Bloom is about to see a new major release (September / October 2022) that will completely diverge from the current features set.
 
-I prefer not to say much before shipping, not to say things that won't be true, but it means that Bloom is no longer meant to be a GSuite / NextCloud alternative.
+I prefer not to say much before shipping, not to say things that won't be true, but it means that Bloom is no longer meant to be a Google Suite / NextCloud alternative.
 
 
 --------------------------------
