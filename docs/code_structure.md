@@ -25,7 +25,7 @@ Crates are splitted according to domain logic.
 
 ## bloom.js
 
-The `bloom.js` project contains all the code to load other modules such as `chatbox.js` and send analytics events to backend.
+The `bloom.js` project contains all the code to load other modules such as `chatbox.js` and send analytic events to backend.
 
 
 ## chatbox.js
