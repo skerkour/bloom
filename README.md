@@ -1,11 +1,6 @@
 ## Project Status
 
-as of february 2022
-
-Bloom is about to see a new major release that will completely diverge from the current features set.
-
-
-I prefer not to say much before shipping, not to say things that won't be true, but it means that Bloom is no longer meant to be a Google Suite / NextCloud alternative.
+Bloom will no longer receive any update.
 
 
 --------------------------------
